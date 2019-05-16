@@ -20,6 +20,15 @@ using Poco::NotFoundException;
 using Poco::LibraryLoadException;
 using Poco::LibraryAlreadyLoadedException;
 
+#define CONNECT 0
+#define ALL_SEAL -1
+#define SEAL_BEGIN 0
+
+#include <stdio.h>
+#include <sstream>
+#include "Poco/StreamCopier.h"
+
+using namespace Poco;
 //接口说明：
 //原型：int IsUKIn()
 //描述：判断签章设备是否连接
@@ -33,7 +42,7 @@ typedef int (*GetSealCount)();
 //描述：获取签章数据
 //参数：nIndex 签章索引 0为第一个章，以此类推 - 1获取所有签章
 //返回值：签章数据
-typedef std::string (*ReadSealData)(int nIndex);
+typedef char* (*ReadSealData)(int nIndex);
 //ReadSealData 返回值格式如下：
 //<sealinfos>
 //	<sealbaseinfo>
@@ -46,8 +55,6 @@ typedef std::string (*ReadSealData)(int nIndex);
 //		<sealdata>签章印模base64数据</sealdata>
 //	</sealinfo>
 //</sealinfos>
-typedef int (*GimmeFiveFunc)();
-
 
 SharedLibraryTest::SharedLibraryTest(const std::string& name): CppUnit::TestCase(name)
 {
@@ -58,17 +65,11 @@ SharedLibraryTest::~SharedLibraryTest()
 {
 }
 
-#include <stdio.h>
-#include <sstream>
-#include "Poco/StreamCopier.h"
-
-using namespace Poco;
-
 void SharedLibraryTest::testXSSealProviderLib()
 {
-	std::string path = "XSSealProviderLib";
+	std::string path = "XSSealProviderLib.dll";
 	//XSSealProviderLibd.dll
-	path.append(SharedLibrary::suffix());
+	//path.append(SharedLibrary::suffix());
 	SharedLibrary sl;
 	sl.load(path);
 	//assert(sl.getPath() == path);
@@ -76,15 +77,15 @@ void SharedLibraryTest::testXSSealProviderLib()
 
 	IsUKIn isUKIn = (IsUKIn)sl.getSymbol("IsUKIn");
 	int ret = isUKIn();
-	assert(ret == 0);
+	//assert(ret == 0);
 
 	GetSealCount getSealCount = (GetSealCount)sl.getSymbol("GetSealCount");
 	int count = getSealCount();
-	assert(getSealCount() > 0);
+	//assert(getSealCount() > 0);
 
 	ReadSealData readSealData = (ReadSealData)sl.getSymbol("ReadSealData");
 
-	std::string data = readSealData(0);
+	std::string data(readSealData(ALL_SEAL));
 	std::istringstream istr(data);
 	std::ostringstream ostr;
 	std::streamsize n = StreamCopier::copyStreamUnbuffered(istr, ostr);
