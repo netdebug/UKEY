@@ -56,6 +56,39 @@ typedef char* (*ReadSealData)(int nIndex);
 //	</sealinfo>
 //</sealinfos>
 
+#define DEVAPI __stdcall
+#define SAR_OK 0x00000000
+
+typedef struct Struct_Version {
+	BYTE	major;
+	BYTE	minor;
+}VERSION;
+
+typedef struct Struct_DEVINFO {
+	VERSION Version;
+	CHAR	Manufacturer[64];
+	CHAR	Issuer[32];
+	CHAR	Label[32];
+	CHAR	SerialNumber[32];
+	VERSION HWVersion;
+	VERSION FirmwareVersion;
+	ULONG	AlgSymCap;
+	ULONG	AlgAsymCap;
+	ULONG	AlgHashCap;
+	ULONG	DevAuthAlgId;
+	ULONG	TotalSpace;
+	ULONG	FreeSpace;
+	ULONG	MaxECCBufferSize;
+	ULONG	MaxBufferSize;
+	BYTE	Reserved[64];
+}DEVINFO,	*PDEVINFO;
+
+typedef HANDLE DEVHANDLE;
+typedef ULONG	(DEVAPI *SKF_EnumDev)(BOOL bPresent, LPCSTR szNameList, ULONG* pulSize);
+typedef ULONG	(DEVAPI *SKF_ConnectDev)(LPCSTR szName, DEVHANDLE* phDev);
+typedef ULONG	(DEVAPI *SKF_DisConnectDev)(DEVHANDLE phDev);
+typedef ULONG	(DEVAPI *SKF_GetDevInfo)(DEVHANDLE hDev, DEVINFO* pDevInfo);
+
 SharedLibraryTest::SharedLibraryTest(const std::string& name): CppUnit::TestCase(name)
 {
 }
@@ -94,6 +127,35 @@ void SharedLibraryTest::testXSSealProviderLib()
 	assert(!sl.isLoaded());
 }
 
+void SharedLibraryTest::testSKFInterface()
+{
+	std::string path = "SKFAPI20549.DLL";
+	SharedLibrary sl;
+	sl.load(path);
+	assert(sl.isLoaded());
+
+	SKF_EnumDev fn_SKF_EnumDev = (SKF_EnumDev)sl.getSymbol("SKF_EnumDev");
+
+	ULONG pulSize;
+	char szNameList[2048] = {0};
+	assert(SAR_OK == fn_SKF_EnumDev(true, szNameList, &pulSize));
+
+	SKF_ConnectDev fn_SKF_ConnectDev = (SKF_ConnectDev)sl.getSymbol("SKF_ConnectDev");
+
+	DEVHANDLE hDev = NULL;
+	assert(SAR_OK == fn_SKF_ConnectDev(szNameList, &hDev) && hDev);
+
+	DEVINFO devInfo;
+	SKF_GetDevInfo fn_SKF_GetDevInfo = (SKF_GetDevInfo)sl.getSymbol("SKF_GetDevInfo");
+	assert(SAR_OK == fn_SKF_GetDevInfo(hDev, &devInfo));
+
+	SKF_DisConnectDev fn_SKF_DisConnectDev = (SKF_DisConnectDev)sl.getSymbol("SKF_DisConnectDev");
+	assert(SAR_OK == fn_SKF_DisConnectDev(hDev));
+
+	sl.unload();
+	assert(!sl.isLoaded());
+}
+
 void SharedLibraryTest::setUp()
 {
 }
@@ -109,6 +171,7 @@ CppUnit::Test* SharedLibraryTest::suite()
 	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("SharedLibraryTest");
 
 	CppUnit_addTest(pSuite, SharedLibraryTest, testXSSealProviderLib);
+	CppUnit_addTest(pSuite, SharedLibraryTest, testSKFInterface);
 
 	return pSuite;
 }

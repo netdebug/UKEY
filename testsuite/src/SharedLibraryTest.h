@@ -28,6 +28,7 @@ public:
 	void testSharedLibrary2();
 	void testSharedLibrary3();*/
 	void testXSSealProviderLib();
+	void testSKFInterface();
 
 	void setUp();
 	void tearDown();
