@@ -42,6 +42,9 @@
     <ClCompile Include="src\SealProviderTest.cpp">
       <Filter>SharedLibrary\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\GmskfProviderTest.cpp">
+      <Filter>SharedLibrary\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\FoundationTestSuite.h">
@@ -54,6 +57,9 @@
       <Filter>SharedLibrary\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\SealProviderTest.h">
+      <Filter>SharedLibrary\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GmskfProviderTest.h">
       <Filter>SharedLibrary\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
