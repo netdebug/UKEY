@@ -24,10 +24,6 @@ public:
 	SharedLibraryTest(const std::string& name);
 	~SharedLibraryTest();
 
-	/*void testSharedLibrary1();
-	void testSharedLibrary2();
-	void testSharedLibrary3();*/
-	void testXSSealProviderLib();
 	void testSKFInterface();
 
 	void setUp();

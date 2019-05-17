@@ -98,38 +98,9 @@ SharedLibraryTest::~SharedLibraryTest()
 {
 }
 
-void SharedLibraryTest::testXSSealProviderLib()
-{
-	std::string path = "XSSealProviderLib.dll";
-	//XSSealProviderLibd.dll
-	//path.append(SharedLibrary::suffix());
-	SharedLibrary sl;
-	sl.load(path);
-	//assert(sl.getPath() == path);
-	assert(sl.isLoaded());
-
-	IsUKIn isUKIn = (IsUKIn)sl.getSymbol("IsUKIn");
-	int ret = isUKIn();
-	//assert(ret == 0);
-
-	GetSealCount getSealCount = (GetSealCount)sl.getSymbol("GetSealCount");
-	int count = getSealCount();
-	//assert(getSealCount() > 0);
-
-	ReadSealData readSealData = (ReadSealData)sl.getSymbol("ReadSealData");
-
-	std::string data(readSealData(ALL_SEAL));
-	std::istringstream istr(data);
-	std::ostringstream ostr;
-	std::streamsize n = StreamCopier::copyStreamUnbuffered(istr, ostr);
-
-	sl.unload();
-	assert(!sl.isLoaded());
-}
-
 void SharedLibraryTest::testSKFInterface()
 {
-	std::string path = "SKFAPI20549.DLL";
+	/*std::string path = "SKFAPI20549.DLL";
 	SharedLibrary sl;
 	sl.load(path);
 	assert(sl.isLoaded());
@@ -153,7 +124,7 @@ void SharedLibraryTest::testSKFInterface()
 	assert(SAR_OK == fn_SKF_DisConnectDev(hDev));
 
 	sl.unload();
-	assert(!sl.isLoaded());
+	assert(!sl.isLoaded());*/
 }
 
 void SharedLibraryTest::setUp()
@@ -170,7 +141,6 @@ CppUnit::Test* SharedLibraryTest::suite()
 {
 	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("SharedLibraryTest");
 
-	CppUnit_addTest(pSuite, SharedLibraryTest, testXSSealProviderLib);
 	CppUnit_addTest(pSuite, SharedLibraryTest, testSKFInterface);
 
 	return pSuite;

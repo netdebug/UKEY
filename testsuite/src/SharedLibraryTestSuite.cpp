@@ -10,6 +10,7 @@
 
 #include "SharedLibraryTestSuite.h"
 #include "SharedLibraryTest.h"
+#include "SealProviderTest.h"
 
 
 CppUnit::Test* SharedLibraryTestSuite::suite()
@@ -18,6 +19,7 @@ CppUnit::Test* SharedLibraryTestSuite::suite()
 
 #if !defined(_WIN32) || defined(_DLL)
 	pSuite->addTest(SharedLibraryTest::suite());
+	pSuite->addTest(SealProviderTest::suite());
 #endif
 
 	return pSuite;
