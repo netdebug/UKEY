@@ -149,7 +149,7 @@ void GmskfProviderTest::testGetDevInfo()
 void GmskfProviderTest::setUp()
 {
 	//std::string path = "SKFAPI20549.dll";
-	std::string path = "SKF_APP_XS.dll";
+	std::string path = "SKFLibrary\\ShareSun\\SKF_APP_XS.dll";
 	sl.load(path);
 	assert(sl.isLoaded());
 }

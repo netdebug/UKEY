@@ -12,6 +12,8 @@
 #include "SharedLibraryTest.h"
 #include "SealProviderTest.h"
 #include "GmskfProviderTest.h"
+#include "RSProviderTest.h"
+#include "SOFProviderTest.h"
 
 
 CppUnit::Test* SharedLibraryTestSuite::suite()
@@ -22,6 +24,8 @@ CppUnit::Test* SharedLibraryTestSuite::suite()
 	pSuite->addTest(SharedLibraryTest::suite());
 	pSuite->addTest(SealProviderTest::suite());
 	pSuite->addTest(GmskfProviderTest::suite());
+	pSuite->addTest(RSProviderTest::suite());
+	pSuite->addTest(SOFProviderTest::suite());
 #endif
 
 	return pSuite;

@@ -107,7 +107,7 @@ void SealProviderTest::testReadSealContent()
 
 void SealProviderTest::setUp()
 {
-	std::string path = "XSSealProviderLib.dll";
+	std::string path = "SKFLibrary\\ShareSun\\XSSealProviderLib.dll";
 	sl.load(path);
 	assert(sl.isLoaded());
 }
