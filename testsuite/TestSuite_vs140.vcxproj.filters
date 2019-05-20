@@ -48,6 +48,9 @@
     <ClCompile Include="src\SOFProviderTest.cpp">
       <Filter>SharedLibrary\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\RSProviderTest.cpp">
+      <Filter>SharedLibrary\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\FoundationTestSuite.h">
@@ -66,6 +69,9 @@
       <Filter>SharedLibrary\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\SOFProviderTest.h">
+      <Filter>SharedLibrary\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\RSProviderTest.h">
       <Filter>SharedLibrary\Header Files</Filter>
     </ClInclude>
   </ItemGroup>

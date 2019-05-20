@@ -336,6 +336,7 @@
     <ClCompile Include="src\Driver.cpp" />
     <ClCompile Include="src\FoundationTestSuite.cpp" />
     <ClCompile Include="src\GmskfProviderTest.cpp" />
+    <ClCompile Include="src\RSProviderTest.cpp" />
     <ClCompile Include="src\SealProviderTest.cpp" />
     <ClCompile Include="src\SharedLibraryTest.cpp" />
     <ClCompile Include="src\SharedLibraryTestSuite.cpp" />
@@ -344,6 +345,7 @@
   <ItemGroup>
     <ClInclude Include="src\FoundationTestSuite.h" />
     <ClInclude Include="src\GmskfProviderTest.h" />
+    <ClInclude Include="src\RSProviderTest.h" />
     <ClInclude Include="src\SealProviderTest.h" />
     <ClInclude Include="src\SharedLibraryTest.h" />
     <ClInclude Include="src\SharedLibraryTestSuite.h" />
