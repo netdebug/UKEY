@@ -1,0 +1,10 @@
+#pragma once
+
+//签名算法标识
+//保留0x00040000~0x8000000FF
+
+#define SGD_SM3_RSA		0x00010001
+#define SGD_SHA1_RSA	0x00010002
+#define SGD_SHA256_RSA	0x00010004
+#define SGD_SM3_SM2		0x00020201
+#define SGD_RESERVE		0x00040000

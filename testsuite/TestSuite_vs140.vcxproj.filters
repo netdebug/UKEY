@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="_Suite">
+      <UniqueIdentifier>{40a76071-eda0-455b-a482-b5a37ffd0b9a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="_Suite\Source Files">
+      <UniqueIdentifier>{a38b8ef3-6882-4a35-850c-9380db4b7d8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="_Suite\Header Files">
+      <UniqueIdentifier>{ec6d5b4b-fcf5-4a4a-9e90-c1b548939c42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="_Driver">
+      <UniqueIdentifier>{128755f3-1063-45aa-b4ad-6f796da5b60c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="_Driver\Source Files">
+      <UniqueIdentifier>{52dde893-fa0a-4f27-8c92-e758a206d626}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SharedLibrary">
+      <UniqueIdentifier>{28e9fad5-5893-4214-8fb4-c7d21124eb45}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SharedLibrary\Header Files">
+      <UniqueIdentifier>{00264a87-46ad-47f4-afec-3bb8768ce61a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SharedLibrary\Source Files">
+      <UniqueIdentifier>{25a98bd2-26c0-4354-beb6-bec47d557f61}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\FoundationTestSuite.cpp">
+      <Filter>_Suite\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Driver.cpp">
+      <Filter>_Driver\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SharedLibraryTestSuite.cpp">
+      <Filter>SharedLibrary\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SharedLibraryTest.cpp">
+      <Filter>SharedLibrary\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SealProviderTest.cpp">
+      <Filter>SharedLibrary\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GmskfProviderTest.cpp">
+      <Filter>SharedLibrary\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SOFProviderTest.cpp">
+      <Filter>SharedLibrary\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RSProviderTest.cpp">
+      <Filter>SharedLibrary\Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\FoundationTestSuite.h">
+      <Filter>_Suite\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SharedLibraryTestSuite.h">
+      <Filter>SharedLibrary\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SharedLibraryTest.h">
+      <Filter>SharedLibrary\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SealProviderTest.h">
+      <Filter>SharedLibrary\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GmskfProviderTest.h">
+      <Filter>SharedLibrary\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SOFProviderTest.h">
+      <Filter>SharedLibrary\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\RSProviderTest.h">
+      <Filter>SharedLibrary\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SOFProvider\GMCrypto.h" />
+  </ItemGroup>
+</Project>

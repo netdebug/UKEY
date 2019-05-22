@@ -1,0 +1,38 @@
+//
+// SharedLibraryTest.h
+//
+// Definition of the SharedLibraryTest class.
+//
+// Copyright (c) 2004-2006, Applied Informatics Software Engineering GmbH.
+// and Contributors.
+//
+// SPDX-License-Identifier:	BSL-1.0
+//
+
+
+#ifndef SharedLibraryTest_INCLUDED
+#define SharedLibraryTest_INCLUDED
+
+
+#include "Poco/Foundation.h"
+#include "CppUnit/TestCase.h"
+
+
+class SharedLibraryTest: public CppUnit::TestCase
+{
+public:
+	SharedLibraryTest(const std::string& name);
+	~SharedLibraryTest();
+
+	void testSKFInterface();
+
+	void setUp();
+	void tearDown();
+
+	static CppUnit::Test* suite();
+
+private:
+};
+
+
+#endif // SharedLibraryTest_INCLUDED
