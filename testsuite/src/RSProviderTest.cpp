@@ -37,6 +37,10 @@ void RSProviderTest::testRSGetConfigParameters()
 	{
 
 	}
+	//void RS_ConfigParameters(const std::string& cmd, const std::string& val)
+	{
+
+	}
 }
 
 void RSProviderTest::testRSConfigParameters()
@@ -44,6 +48,10 @@ void RSProviderTest::testRSConfigParameters()
 	//using FJCA Interface to implement workflow ( in the parenthese)
 	{
 
+	}
+	//std::string RS_ConfigParameters(const std::string& cmd)
+	{
+		//retrun JSONString
 	}
 }
 
@@ -53,6 +61,10 @@ void RSProviderTest::testRSGetUserList()
 	{
 
 	}
+	//std::string RSGetUserList()
+	{
+		//retrun JSONString;
+	}
 }
 
 void RSProviderTest::testRSGetCertBase64String()
@@ -60,6 +72,10 @@ void RSProviderTest::testRSGetCertBase64String()
 	//using FJCA Interface to implement workflow ( in the parenthese)
 	{
 
+	}
+	//std::string RS_GetCertBase64String(const std::string& containId, short certType)
+	{
+		//return JSONString;
 	}
 }
 
@@ -69,6 +85,10 @@ void RSProviderTest::testRSGetCertInfo()
 	{
 
 	}
+	//std::string RS_GetCertInfo(const std::string& certBase64, const std::string& type)
+	{
+		//return JSONString;
+	}
 }
 
 void RSProviderTest::testRSCertLogin()
@@ -76,6 +96,10 @@ void RSProviderTest::testRSCertLogin()
 	//using FJCA Interface to implement workflow ( in the parenthese)
 	{
 
+	}
+	//std::string RS_CertLogin(const std::string& containId, const std::string& password)
+	{
+		//return JSONString;
 	}
 }
 
@@ -85,6 +109,10 @@ void RSProviderTest::testRSGetPinRetryCount()
 	{
 
 	}
+	//std::string RS_GetPinRetryCount(const std::string& containerId)
+	{
+		//return JSONString;
+	}
 }
 
 void RSProviderTest::testRSKeyGetKeySn()
@@ -92,6 +120,10 @@ void RSProviderTest::testRSKeyGetKeySn()
 	//using FJCA Interface to implement workflow ( in the parenthese)
 	{
 
+	}
+	//std::string RS_KeyGetKeySn()
+	{
+		//return JSONString;
 	}
 }
 
@@ -101,6 +133,10 @@ void RSProviderTest::testRSKeySignByP1()
 	{
 
 	}
+	//std::string RS_KeySignByP1(std::string& msg)
+	{
+		//return JSONString;
+	}
 }
 
 void RSProviderTest::testRSVerifySignByP1()
@@ -108,6 +144,10 @@ void RSProviderTest::testRSVerifySignByP1()
 	//using FJCA Interface to implement workflow ( in the parenthese)
 	{
 
+	}
+	//std::string RS_VerifySignByP1(std::string& certBase64, std::string& msg, const std::string signdMsg)
+	{
+		//return JSONString;
 	}
 }
 
@@ -117,6 +157,10 @@ void RSProviderTest::testRSKeyEncryptData()
 	{
 
 	}
+	//std::string RS_KeyEncryptData(std::string rsKey, std::string certBase64)
+	{
+		//return JSONString;
+	}
 }
 
 void RSProviderTest::testRSKeyDecryptData()
@@ -124,6 +168,10 @@ void RSProviderTest::testRSKeyDecryptData()
 	//using FJCA Interface to implement workflow ( in the parenthese)
 	{
 
+	}
+	//std::string RS_KeyDecryptData(std::string& encRsKey)
+	{
+		//return JSONString;
 	}
 }
 
@@ -133,6 +181,10 @@ void RSProviderTest::testRSKeyEncryptByDigitalEnvelope()
 	{
 
 	}
+	//std::string RS_KeyEncryptByDigitalEnvelope(const std::string& sourceFilePath, const std::string& encFilePath, std::string certBase64)
+	{
+		//return JSONString;
+	}
 }
 
 void RSProviderTest::testRSKeyDecryptByDigitalEnvelope()
@@ -141,11 +193,15 @@ void RSProviderTest::testRSKeyDecryptByDigitalEnvelope()
 	{
 
 	}
+	//std::string RS_KeyDecryptByDigitalEnvelope(const std::string& encFilePath, const std::string& dncDirectory Path, std::string& encKeyPath)
+	{
+		//return JSONString;
+	}
 }
 
 void RSProviderTest::setUp()
 {
-	std::string path = "SKFLibrary\\ShareSun\\XSSealProviderLib.dll";
+	std::string path = "RSProvider.dll";
 	sl.load(path);
 	assert(sl.isLoaded());
 }
