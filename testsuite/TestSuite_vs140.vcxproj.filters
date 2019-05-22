@@ -74,8 +74,6 @@
     <ClInclude Include="src\RSProviderTest.h">
       <Filter>SharedLibrary\Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ClassDiagram.cd" />
+    <ClInclude Include="..\include\SOFProvider\GMCrypto.h" />
   </ItemGroup>
 </Project>
