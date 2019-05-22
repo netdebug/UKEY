@@ -17,13 +17,14 @@
 #include <sstream>
 #include "Poco/StreamCopier.h"
 #include "SoFProvider.h"
+#include "GMCrypto.h"
 
 using Poco::SharedLibrary;
 using Poco::NotFoundException;
 using Poco::LibraryLoadException;
 using Poco::LibraryAlreadyLoadedException;
 
-typedef long(*pfn_GetLastError)();
+typedef long (*pfn_GetLastError)();
 
 SOFProviderTest::SOFProviderTest(const std::string& name): CppUnit::TestCase(name)
 {
@@ -44,104 +45,228 @@ SOFProviderTest::~SOFProviderTest()
 //	return ptr;
 //}
 
-void SOFProviderTest::testSOFGetVersion()
+void SOFProviderTest::testGetVersion()
 {
 
 }
 
-void SOFProviderTest::testSOFSetSignMethod()
+void SOFProviderTest::testSetSignMethod()
 {
-	typedef long(*pfn_SetSignMethod)(long SignMethod);
+	typedef long (*pfn_SetSignMethod)(long SignMethod);
+
+	std::string func("SOF_SetSignMethod");
+	assert(sl.isLoaded());
+	assert(sl.hasSymbol(func));
+	pfn_SetSignMethod ptr = (pfn_SetSignMethod)sl.getSymbol(func);
+	assertNotNullPtr(ptr);
 }
 
-void SOFProviderTest::testSOFSetEncryptMethod()
+void SOFProviderTest::testSetEncryptMethod()
 {
-	typedef long(*pfn_SetEncryptMethod)(long EncryptMethod);
+	typedef long (*pfn_SetEncryptMethod)(long EncryptMethod);
+
+	std::string func("SOF_SetEncryptMethod");
+	assert(sl.isLoaded());
+	assert(sl.hasSymbol(func));
+	pfn_SetEncryptMethod ptr = (pfn_SetEncryptMethod)sl.getSymbol(func);
+	assertNotNullPtr(ptr);
 }
 
-void SOFProviderTest::testSOFGetUserList()
+void SOFProviderTest::testGetUserList()
 {
-	typedef BSTR(*pfn_GetUserList)();
+	typedef BSTR (*pfn_GetUserList)();
+
+	std::string func("SOF_GetUserList");
+	assert(sl.isLoaded());
+	assert(sl.hasSymbol(func));
+	pfn_GetUserList ptr = (pfn_GetUserList)sl.getSymbol(func);
+	assertNotNullPtr(ptr);
 }
 
-void SOFProviderTest::testSOFExportUserCert()
+void SOFProviderTest::testExportUserCert()
 {
 	typedef BSTR(*pfn_ExportUserCert)(BSTR ContainerName);
+
+	std::string func("SOF_ExportUserCert");
+	assert(sl.isLoaded());
+	assert(sl.hasSymbol(func));
+	pfn_ExportUserCert ptr = (pfn_ExportUserCert)sl.getSymbol(func);
+	assertNotNullPtr(ptr);
 }
 
-void SOFProviderTest::testSOFLogin()
+void SOFProviderTest::testLogin()
 {
-	typedef BOOL(*pfn_Login)(BSTR  ContainerName, BSTR  PassWd);
+	typedef BOOL (*pfn_Login)(BSTR  ContainerName, BSTR  PassWd);
+
+	std::string func("SOF_Login");
+	assert(sl.isLoaded());
+	assert(sl.hasSymbol(func));
+	pfn_Login ptr = (pfn_Login)sl.getSymbol(func);
+	assertNotNullPtr(ptr);
 }
 
-void SOFProviderTest::testSOFGetPinRetryCount()
+void SOFProviderTest::testGetPinRetryCount()
 {
-	typedef long(*pfn_GetPinRetryCount)(BSTR AppName);
+	typedef long (*pfn_GetPinRetryCount)(BSTR AppName);
+
+	std::string func("SOF_GetPinRetryCount");
+	assert(sl.isLoaded());
+	assert(sl.hasSymbol(func));
+	pfn_GetPinRetryCount ptr = (pfn_GetPinRetryCount)sl.getSymbol(func);
+	assertNotNullPtr(ptr);
 }
 
-void SOFProviderTest::testSOFChangePassWd()
+void SOFProviderTest::testChangePassWd()
 {
-
+	/*
+	std::string func("SOF_ChangePassWd");
+	assert(sl.isLoaded());
+	assert(sl.hasSymbol(func));
+	ptr = ()sl.getSymbol(func);
+	assertNotNullPtr(ptr);
+	*/
 }
 
-void SOFProviderTest::testSOFExportExChangeUserCert()
+void SOFProviderTest::testExportExChangeUserCert()
 {
-	typedef BSTR(*pfn_ExportExChangeUserCert)(BSTR ContainerName);
+	typedef BSTR (*pfn_ExportExChangeUserCert)(BSTR ContainerName);
+
+	std::string func("SOF_ExportExChangeUserCert");
+	assert(sl.isLoaded());
+	assert(sl.hasSymbol(func));
+	pfn_ExportExChangeUserCert ptr = (pfn_ExportExChangeUserCert)sl.getSymbol(func);
+	assertNotNullPtr(ptr);
 }
 
-void SOFProviderTest::testSOFGetCertInfo()
+void SOFProviderTest::testGetCertInfo()
 {
-	typedef BSTR(*pfn_GetCertInfo)(BSTR Base64EncodeCert, short Type);
+	typedef BSTR (*pfn_GetCertInfo)(BSTR Base64EncodeCert, short Type);
+
+	std::string func("SOF_GetCertInfo");
+	assert(sl.isLoaded());
+	assert(sl.hasSymbol(func));
+	pfn_GetCertInfo ptr = (pfn_GetCertInfo)sl.getSymbol(func);
+	assertNotNullPtr(ptr);
 }
 
-void SOFProviderTest::testSOFSignData()
+void SOFProviderTest::testSignData()
 {
-	typedef BSTR(*pfn_SignData)(BSTR ContainerName, BSTR InData);
+	typedef BSTR (*pfn_SignData)(BSTR ContainerName, BSTR InData);
+
+	std::string func("SOF_SignData");
+	assert(sl.isLoaded());
+	assert(sl.hasSymbol(func));
+	pfn_SignData ptr = (pfn_SignData)sl.getSymbol(func);
+	assertNotNullPtr(ptr);
 }
 
-void SOFProviderTest::testSOFVerifySignedData()
+void SOFProviderTest::testVerifySignedData()
 {
-	typedef BOOL(*pfn_VerifySignedData)(BSTR Base64EncodeCert, BSTR InData, BSTR SignValue);
+	typedef BOOL (*pfn_VerifySignedData)(BSTR Base64EncodeCert, BSTR InData, BSTR SignValue);
+
+	std::string func("SOF_VerifySignedData");
+	assert(sl.isLoaded());
+	assert(sl.hasSymbol(func));
+	pfn_VerifySignedData ptr = (pfn_VerifySignedData)sl.getSymbol(func);
+	assertNotNullPtr(ptr);
 }
 
 void SOFProviderTest::testOpenDevice()
 {
-	typedef int(*pfn_OpenDevice)(void);
+	typedef int (*pfn_OpenDevice)(void);
+
+	std::string func("SOF_OpenDevice");
+	assert(sl.isLoaded());
+	assert(sl.hasSymbol(func));
+	pfn_OpenDevice ptr = (pfn_OpenDevice)sl.getSymbol(func);
+	assertNotNullPtr(ptr);
+	int val = ptr();
+	assertEqual(0, val);
+	std::cout << val << std::endl;
 }
 
 void SOFProviderTest::testCloseDevice()
 {
-	typedef int(*pfn_CloseDevice)(void);
+	typedef int (*pfn_CloseDevice)(void);
+
+	std::string func("SOF_CloseDevice");
+	assert(sl.isLoaded());
+	assert(sl.hasSymbol(func));
+	pfn_CloseDevice ptr = (pfn_CloseDevice)sl.getSymbol(func);
+	assertNotNullPtr(ptr);
+	int val = ptr();
+	assertEqual(0, val);
+	std::cout << val << std::endl;
 }
 
-void SOFProviderTest::testSOFGetDeviceInfo()
+void SOFProviderTest::testGetDeviceInfo()
 {
-
+	/*
+	std::string func("SOF_GetDeviceInfo");
+	assert(sl.isLoaded());
+	assert(sl.hasSymbol(func));
+	ptr = ()sl.getSymbol(func);
+	assertNotNullPtr(ptr);
+	*/
 }
 
-void SOFProviderTest::testSOFGenRandom()
+void SOFProviderTest::testGenRandom()
 {
-	typedef BSTR(*pfn_GenRandom)(short RandomLen);
+	typedef BSTR (*pfn_GenRandom)(short RandomLen);
+
+	std::string func("SOF_GenRandom");
+	assert(sl.isLoaded());
+	assert(sl.hasSymbol(func));
+	pfn_GenRandom ptr = (pfn_GenRandom)sl.getSymbol(func);
+	assertNotNullPtr(ptr);
+
+	BSTR ran = ptr(35);
+
+	std::cout << "true random:" << ran << std::endl;
 }
 
-void SOFProviderTest::testSOFEncryptFile()
+void SOFProviderTest::testEncryptFile()
 {
-	typedef BOOL(*pfn_EncryptFile)(BSTR Pwd, BSTR InFile, BSTR OutFile);
+	typedef BOOL (*pfn_EncryptFile)(BSTR Pwd, BSTR InFile, BSTR OutFile);
+
+	std::string func("SOF_EncryptFile");
+	assert(sl.isLoaded());
+	assert(sl.hasSymbol(func));
+	pfn_EncryptFile ptr = (pfn_EncryptFile)sl.getSymbol(func);
+	assertNotNullPtr(ptr);
 }
 
-void SOFProviderTest::testSOFDecryptFile()
+void SOFProviderTest::testDecryptFile()
 {
-	typedef BOOL(*pfn_DecryptFile)(BSTR Pwd, BSTR InFile, BSTR OutFile);
+	typedef BOOL (*pfn_DecryptFile)(BSTR Pwd, BSTR InFile, BSTR OutFile);
+
+	std::string func("SOF_DecryptFile");
+	assert(sl.isLoaded());
+	assert(sl.hasSymbol(func));
+	pfn_DecryptFile ptr = (pfn_DecryptFile)sl.getSymbol(func);
+	assertNotNullPtr(ptr);
 }
 
-void SOFProviderTest::testSOFAsEncrypt()
+void SOFProviderTest::testAsEncrypt()
 {
-	typedef BSTR(*pfn_AsEncrypt)(BSTR ContainerName, BSTR InData);
+	typedef BSTR (*pfn_AsEncrypt)(BSTR ContainerName, BSTR InData);
+
+	std::string func("SOF_AsEncrypt");
+	assert(sl.isLoaded());
+	assert(sl.hasSymbol(func));
+	pfn_AsEncrypt ptr = (pfn_AsEncrypt)sl.getSymbol(func);
+	assertNotNullPtr(ptr);
 }
 
-void SOFProviderTest::testSOFAsDecrypt()
+void SOFProviderTest::testAsDecrypt()
 {
-	typedef BSTR(*pfn_AsDecrypt)(BSTR ContainerName, BSTR Indata);
+	typedef BSTR (*pfn_AsDecrypt)(BSTR ContainerName, BSTR Indata);
+
+	std::string func("SOF_AsDecrypt");
+	assert(sl.isLoaded());
+	assert(sl.hasSymbol(func));
+	pfn_AsDecrypt ptr = (pfn_AsDecrypt)sl.getSymbol(func);
+	assertNotNullPtr(ptr);
 }
 
 void SOFProviderTest::setUp()
@@ -163,26 +288,26 @@ CppUnit::Test* SOFProviderTest::suite()
 {
 	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("SOFProviderTest");
 
-	CppUnit_addTest(pSuite, SOFProviderTest, testSOFGetVersion);
-	CppUnit_addTest(pSuite, SOFProviderTest, testSOFSetSignMethod);
-	CppUnit_addTest(pSuite, SOFProviderTest, testSOFSetEncryptMethod);
-	CppUnit_addTest(pSuite, SOFProviderTest, testSOFGetUserList);
-	CppUnit_addTest(pSuite, SOFProviderTest, testSOFExportUserCert);
-	CppUnit_addTest(pSuite, SOFProviderTest, testSOFLogin);
-	CppUnit_addTest(pSuite, SOFProviderTest, testSOFGetPinRetryCount);
-	CppUnit_addTest(pSuite, SOFProviderTest, testSOFChangePassWd);
-	CppUnit_addTest(pSuite, SOFProviderTest, testSOFExportExChangeUserCert);
-	CppUnit_addTest(pSuite, SOFProviderTest, testSOFGetCertInfo);
-	CppUnit_addTest(pSuite, SOFProviderTest, testSOFSignData);
-	CppUnit_addTest(pSuite, SOFProviderTest, testSOFVerifySignedData);
+	/*CppUnit_addTest(pSuite, SOFProviderTest, testGetVersion);
+	CppUnit_addTest(pSuite, SOFProviderTest, testSetSignMethod);
+	CppUnit_addTest(pSuite, SOFProviderTest, testSetEncryptMethod);
+	CppUnit_addTest(pSuite, SOFProviderTest, testGetUserList);
+	CppUnit_addTest(pSuite, SOFProviderTest, testExportUserCert);
+	CppUnit_addTest(pSuite, SOFProviderTest, testLogin);
+	CppUnit_addTest(pSuite, SOFProviderTest, testGetPinRetryCount);
+	CppUnit_addTest(pSuite, SOFProviderTest, testChangePassWd);
+	CppUnit_addTest(pSuite, SOFProviderTest, testExportExChangeUserCert);
+	CppUnit_addTest(pSuite, SOFProviderTest, testGetCertInfo);
+	CppUnit_addTest(pSuite, SOFProviderTest, testSignData);
+	CppUnit_addTest(pSuite, SOFProviderTest, testVerifySignedData);*/
 	CppUnit_addTest(pSuite, SOFProviderTest, testOpenDevice);
 	CppUnit_addTest(pSuite, SOFProviderTest, testCloseDevice);
-	CppUnit_addTest(pSuite, SOFProviderTest, testSOFGetDeviceInfo);
-	CppUnit_addTest(pSuite, SOFProviderTest, testSOFGenRandom);
-	CppUnit_addTest(pSuite, SOFProviderTest, testSOFEncryptFile);
-	CppUnit_addTest(pSuite, SOFProviderTest, testSOFDecryptFile);
-	CppUnit_addTest(pSuite, SOFProviderTest, testSOFAsEncrypt);
-	CppUnit_addTest(pSuite, SOFProviderTest, testSOFAsDecrypt);
+	/*CppUnit_addTest(pSuite, SOFProviderTest, testGetDeviceInfo);
+	CppUnit_addTest(pSuite, SOFProviderTest, testGenRandom);
+	CppUnit_addTest(pSuite, SOFProviderTest, testEncryptFile);
+	CppUnit_addTest(pSuite, SOFProviderTest, testDecryptFile);
+	CppUnit_addTest(pSuite, SOFProviderTest, testAsEncrypt);
+	CppUnit_addTest(pSuite, SOFProviderTest, testAsDecrypt);*/
 
 	return pSuite;
 }

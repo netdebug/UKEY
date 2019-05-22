@@ -26,34 +26,34 @@ public:
 	~SOFProviderTest();
 
 	
-	void testSOFGetVersion();
-	void testSOFSetSignMethod();
-	void testSOFSetEncryptMethod();
+	void testGetVersion();
+	void testSetSignMethod();
+	void testSetEncryptMethod();
 
 	//User Interaciton
-	void testSOFGetUserList();
-	void testSOFExportUserCert();
-	void testSOFLogin();
-	void testSOFGetPinRetryCount();
-	void testSOFChangePassWd();
-	void testSOFExportExChangeUserCert();
+	void testGetUserList();
+	void testExportUserCert();
+	void testLogin();
+	void testGetPinRetryCount();
+	void testChangePassWd();
+	void testExportExChangeUserCert();
 
-	void testSOFGetCertInfo();
-	void testSOFSignData();
-	void testSOFVerifySignedData();
+	void testGetCertInfo();
+	void testSignData();
+	void testVerifySignedData();
 
 	//Device Commuication
 	void testOpenDevice();
 	void testCloseDevice();
-	void testSOFGetDeviceInfo();
+	void testGetDeviceInfo();
 	
-	void testSOFGenRandom();
+	void testGenRandom();
 
-	void testSOFEncryptFile();
-	void testSOFDecryptFile();
+	void testEncryptFile();
+	void testDecryptFile();
 
-	void testSOFAsEncrypt();
-	void testSOFAsDecrypt();
+	void testAsEncrypt();
+	void testAsDecrypt();
 
 	void setUp();
 	void tearDown();
