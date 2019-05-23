@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Label="Conan-RootDirs">
+    <Conan-Poco-Root>$(USERPROFILE)\.conan\data\Poco\1.9.0\pocoproject\stable\package\4e65aacc8640f12e3667ab6e645865af5ebe2bb6</Conan-Poco-Root>
+    <Conan-OpenSSL-Root>$(USERPROFILE)\.conan\data\OpenSSL\1.0.2o\conan\stable\package\ee5dab950b6ea94ae953b93c55343e98c2ec39df</Conan-OpenSSL-Root>
+    <Conan-zlib-Root>$(USERPROFILE)\.conan\data\zlib\1.2.11\conan\stable\package\63da998e3642b50bee33f4449826b2d623661505</Conan-zlib-Root>
+  </PropertyGroup>
+    <PropertyGroup Label="ConanVariables">
+    <ConanBinaryDirectories>;%(ConanBinaryDirectories)</ConanBinaryDirectories>
+    <ConanResourceDirectories>;%(ConanResourceDirectories)$(</ConanResourceDirectories>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LocalDebuggerEnvironment>PATH=%PATH%;</LocalDebuggerEnvironment>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(USERPROFILE)\.conan\data\Poco\1.9.0\pocoproject\stable\package\4e65aacc8640f12e3667ab6e645865af5ebe2bb6\include;$(USERPROFILE)\.conan\data\OpenSSL\1.0.2o\conan\stable\package\ee5dab950b6ea94ae953b93c55343e98c2ec39df\include;$(USERPROFILE)\.conan\data\zlib\1.2.11\conan\stable\package\63da998e3642b50bee33f4449826b2d623661505\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>POCO_STATIC=ON;POCO_NO_AUTOMATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalOptions> %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(USERPROFILE)\.conan\data\Poco\1.9.0\pocoproject\stable\package\4e65aacc8640f12e3667ab6e645865af5ebe2bb6\lib;$(USERPROFILE)\.conan\data\OpenSSL\1.0.2o\conan\stable\package\ee5dab950b6ea94ae953b93c55343e98c2ec39df\lib;$(USERPROFILE)\.conan\data\zlib\1.2.11\conan\stable\package\63da998e3642b50bee33f4449826b2d623661505\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>PocoMongoDBmd.lib;PocoNetmd.lib;PocoNetSSLWinmd.lib;PocoCryptomd.lib;PocoDatamd.lib;PocoDataSQLitemd.lib;PocoZipmd.lib;PocoUtilmd.lib;PocoXMLmd.lib;PocoJSONmd.lib;PocoFoundationmd.lib;Iphlpapi.lib;Crypt32.lib;ssleay32.lib;libeay32.lib;crypt32.lib;msi.lib;ws2_32.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions> %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+    <Midl>
+      <AdditionalIncludeDirectories>$(USERPROFILE)\.conan\data\Poco\1.9.0\pocoproject\stable\package\4e65aacc8640f12e3667ab6e645865af5ebe2bb6\include;$(USERPROFILE)\.conan\data\OpenSSL\1.0.2o\conan\stable\package\ee5dab950b6ea94ae953b93c55343e98c2ec39df\include;$(USERPROFILE)\.conan\data\zlib\1.2.11\conan\stable\package\63da998e3642b50bee33f4449826b2d623661505\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </Midl>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(USERPROFILE)\.conan\data\Poco\1.9.0\pocoproject\stable\package\4e65aacc8640f12e3667ab6e645865af5ebe2bb6\include;$(USERPROFILE)\.conan\data\OpenSSL\1.0.2o\conan\stable\package\ee5dab950b6ea94ae953b93c55343e98c2ec39df\include;$(USERPROFILE)\.conan\data\zlib\1.2.11\conan\stable\package\63da998e3642b50bee33f4449826b2d623661505\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>POCO_STATIC=ON;POCO_NO_AUTOMATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalOptions> %(AdditionalOptions)</AdditionalOptions>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup />
+</Project>
