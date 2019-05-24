@@ -39,7 +39,6 @@
 #define SGD_CERT_SUBJECT_EMAIL						0x00000034
 
 //设备信息标签
-
 #define SGD_DEVICE_SORT								0x00000201
 #define SGD_DEVICE_TYPE								0x00000202
 #define	SGD_DEVICE_NAME								0x00000203
@@ -59,3 +58,22 @@
 #define SGD_DEVICE_DESCRIPTION						0x00000211
 #define SGD_DEVICE_MANAGER_INFO						0x00000212
 #define SGD_DEVICE_MAX_DATA_SIZE					0x00000213
+
+//对称加密算法
+#define SGD_SM1_ECB									0x00000101
+#define SGD_SM1_CBC									0x00000102
+#define SGD_SM1_CFB									0x00000104
+#define SGD_SM1_OFB									0x00000108
+#define SGD_SM1_MAC									0x00000110
+#define SGD_SSF33_ECB								0x00000201
+#define SGD_SSF33_CBC								0x00000202
+#define SGD_SSF33_CFB								0x00000204
+#define SGD_SSF33_OFB								0x00000208
+#define SGD_SSF33_MAC								0x00000210
+#define SGD_SM4_ECB									0x00000401
+#define SGD_SM4_CBC									0x00000402
+#define SGD_SM4_CFB									0x00000404
+#define SGD_SM4_OFB									0x00000408
+#define SGD_SM4_MAC									0x00000410
+#define SGD_ZUC_EEA3								0x00000801
+#define SGD_ZUC_EIA3								0x00000802
