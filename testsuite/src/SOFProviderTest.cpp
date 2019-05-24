@@ -17,7 +17,6 @@
 #include <sstream>
 #include "Poco/StreamCopier.h"
 #include "SoFProvider.h"
-#include "GMCrypto.h"
 
 using Poco::SharedLibrary;
 using Poco::NotFoundException;

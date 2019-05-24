@@ -3,11 +3,11 @@
 //签名算法标识
 //保留0x00040000~0x8000000FF
 
-#define SGD_SM3_RSA		0x00010001
-#define SGD_SHA1_RSA	0x00010002
-#define SGD_SHA256_RSA	0x00010004
-#define SGD_SM3_SM2		0x00020201
-#define SGD_RESERVE		0x00040000
+#define SGD_SM3_RSA									0x00010001
+#define SGD_SHA1_RSA								0x00010002
+#define SGD_SHA256_RSA								0x00010004
+#define SGD_SM3_SM2									0x00020201
+#define SGD_RESERVE									0x00040000
 
 //证书解析项标识
 //保留0x00000080~0x0000000FF
@@ -37,3 +37,22 @@
 #define SGD_CERT_SUBJECT_O							0x00000032
 #define SGD_CERT_SUBJECT_OU							0x00000033
 #define SGD_CERT_SUBJECT_EMAIL						0x00000034
+
+//对称加密算法
+#define SGD_SM1_ECB									0x00000101
+#define SGD_SM1_CBC									0x00000102
+#define SGD_SM1_CFB									0x00000104
+#define SGD_SM1_OFB									0x00000108
+#define SGD_SM1_MAC									0x00000110
+#define SGD_SSF33_ECB								0x00000201
+#define SGD_SSF33_CBC								0x00000202
+#define SGD_SSF33_CFB								0x00000204
+#define SGD_SSF33_OFB								0x00000208
+#define SGD_SSF33_MAC								0x00000210
+#define SGD_SM4_ECB									0x00000401
+#define SGD_SM4_CBC									0x00000402
+#define SGD_SM4_CFB									0x00000404
+#define SGD_SM4_OFB									0x00000408
+#define SGD_SM4_MAC									0x00000410
+#define SGD_ZUC_EEA3								0x00000801
+#define SGD_ZUC_EIA3								0x00000802
