@@ -26,6 +26,12 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\RSFoundation.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\RSFoundation.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectName>RSFoundation</ProjectName>
     <ProjectGuid>{B01196CC-B693-4548-8464-2FF60499E73F}</ProjectGuid>
@@ -122,7 +128,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug_shared|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\include;.\include\SOFProvider;$(USERPROFILE)\.conan\data\Poco\1.9.0\pocoproject\stable\package\4e65aacc8640f12e3667ab6e645865af5ebe2bb6\include;$(USERPROFILE)\.conan\data\OpenSSL\1.0.2o\conan\stable\package\ee5dab950b6ea94ae953b93c55343e98c2ec39df\include;$(USERPROFILE)\.conan\data\zlib\1.2.11\conan\stable\package\63da998e3642b50bee33f4449826b2d623661505\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;RSFoundation_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>true</MinimalRebuild>
@@ -138,12 +144,12 @@
       <CompileAs>Default</CompileAs>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>ws2_32.lib;iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PocoMongoDBmd.lib;PocoNetmd.lib;PocoNetSSLWinmd.lib;PocoCryptomd.lib;PocoDatamd.lib;PocoDataSQLitemd.lib;PocoZipmd.lib;PocoUtilmd.lib;PocoXMLmd.lib;PocoJSONmd.lib;PocoFoundationmd.lib;Iphlpapi.lib;Crypt32.lib;ssleay32.lib;libeay32.lib;crypt32.lib;msi.lib;ws2_32.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\bin\RSFoundationd.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>..\bin\RSFoundationd.pdb</ProgramDatabaseFile>
-      <AdditionalLibraryDirectories>..\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(USERPROFILE)\.conan\data\Poco\1.9.0\pocoproject\stable\package\4e65aacc8640f12e3667ab6e645865af5ebe2bb6\lib;$(USERPROFILE)\.conan\data\OpenSSL\1.0.2o\conan\stable\package\ee5dab950b6ea94ae953b93c55343e98c2ec39df\lib;$(USERPROFILE)\.conan\data\zlib\1.2.11\conan\stable\package\63da998e3642b50bee33f4449826b2d623661505\lib;..\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SubSystem>Console</SubSystem>
       <ImportLibrary>..\lib\RSFoundationd.lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
