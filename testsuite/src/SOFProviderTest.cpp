@@ -15,6 +15,7 @@
 #include "Poco/Exception.h"
 #include <stdio.h>
 #include <sstream>
+#include <iostream>
 #include "Poco/StreamCopier.h"
 #include "SoFProvider.h"
 

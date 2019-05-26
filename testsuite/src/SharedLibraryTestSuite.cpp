@@ -24,7 +24,7 @@ CppUnit::Test* SharedLibraryTestSuite::suite()
 	pSuite->addTest(SharedLibraryTest::suite());
 	pSuite->addTest(SealProviderTest::suite());
 	pSuite->addTest(GmskfProviderTest::suite());
-	pSuite->addTest(RSProviderTest::suite());
+	//pSuite->addTest(RSProviderTest::suite());
 	pSuite->addTest(SOFProviderTest::suite());
 #endif
 

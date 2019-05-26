@@ -14,6 +14,7 @@
 #include "Poco/SharedLibrary.h"
 #include "Poco/Exception.h"
 #include <stdio.h>
+#include <iostream>
 #include <sstream>
 
 using Poco::SharedLibrary;
