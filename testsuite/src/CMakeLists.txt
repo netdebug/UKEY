@@ -17,7 +17,7 @@ endif()
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
-target_include_directories(SOFTestRunner ../../include/SOFProvider)
+include_directories(../../include/SOFProvider)
 add_executable(SOFTestRunner Driver.cpp
 FoundationTestSuite.cpp
 GmskfProviderTest.cpp
