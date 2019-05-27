@@ -54,6 +54,7 @@
     <ProjectName>TestSuite</ProjectName>
     <ProjectGuid>{F1EE93DF-347F-4CB3-B191-C4E63F38E972}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release_static_mt|Win32'" Label="Configuration">
@@ -182,7 +183,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='debug_shared|Win32'">bin\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='debug_shared|Win32'">..\bin\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='debug_shared|Win32'">obj\TestSuite\$(Configuration)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='debug_shared|Win32'">true</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='debug_shared|x64'">true</LinkIncremental>
@@ -232,7 +233,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug_shared|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\RSFoundation;..\include;..\..\CppUnit\include;..\..\CppUnit\WinTestRunner\include;..\include\SOFProvider;$(USERPROFILE)\.conan\data\Poco\1.9.0\pocoproject\stable\package\4e65aacc8640f12e3667ab6e645865af5ebe2bb6\include;$(USERPROFILE)\.conan\data\OpenSSL\1.0.2o\conan\stable\package\ee5dab950b6ea94ae953b93c55343e98c2ec39df\include;$(USERPROFILE)\.conan\data\zlib\1.2.11\conan\stable\package\63da998e3642b50bee33f4449826b2d623661505\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;..\RSFoundation\include;..\RSFoundation\include\SOFProvider;..\..\CppUnit\include;..\..\CppUnit\WinTestRunner\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;WINVER=0x0600;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -249,9 +250,9 @@
       <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>PocoMongoDBmd.lib;PocoNetmd.lib;PocoNetSSLWinmd.lib;PocoCryptomd.lib;PocoDatamd.lib;PocoDataSQLitemd.lib;PocoZipmd.lib;PocoUtilmd.lib;PocoXMLmd.lib;PocoJSONmd.lib;PocoFoundationmd.lib;Iphlpapi.lib;Crypt32.lib;ssleay32.lib;libeay32.lib;crypt32.lib;msi.lib;ws2_32.lib;zlib.lib;CppUnitd.lib;PocoFoundationd.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>bin\TestSuited.exe</OutputFile>
-      <AdditionalLibraryDirectories>..\..\lib;$(USERPROFILE)\.conan\data\Poco\1.9.0\pocoproject\stable\package\4e65aacc8640f12e3667ab6e645865af5ebe2bb6\lib;$(USERPROFILE)\.conan\data\OpenSSL\1.0.2o\conan\stable\package\ee5dab950b6ea94ae953b93c55343e98c2ec39df\lib;$(USERPROFILE)\.conan\data\zlib\1.2.11\conan\stable\package\63da998e3642b50bee33f4449826b2d623661505\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>CppUnitd.lib;PocoFoundationd.lib;Iphlpapi.lib;msi.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>..\bin\TestSuited.exe</OutputFile>
+      <AdditionalLibraryDirectories>..\lib;..\lib\libpoco;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>bin\TestSuited.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
@@ -644,7 +645,6 @@
     <ClCompile Include="src\Driver.cpp" />
     <ClCompile Include="src\FoundationTestSuite.cpp" />
     <ClCompile Include="src\GmskfProviderTest.cpp" />
-    <ClCompile Include="src\RSProviderTest.cpp" />
     <ClCompile Include="src\SealProviderTest.cpp" />
     <ClCompile Include="src\SharedLibraryTest.cpp" />
     <ClCompile Include="src\SharedLibraryTestSuite.cpp" />
@@ -653,7 +653,6 @@
   <ItemGroup>
     <ClInclude Include="src\FoundationTestSuite.h" />
     <ClInclude Include="src\GmskfProviderTest.h" />
-    <ClInclude Include="src\RSProviderTest.h" />
     <ClInclude Include="src\SealProviderTest.h" />
     <ClInclude Include="src\SharedLibraryTest.h" />
     <ClInclude Include="src\SharedLibraryTestSuite.h" />
