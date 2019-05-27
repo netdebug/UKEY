@@ -433,7 +433,7 @@ std::string RSFoundation::RS_KeyEncryptData(std::string paintText, std::string b
 	return out.str();
 }
 
-std::string RSFoundation::RS_KeyDecryptData(std::string& encRsKey)
+std::string RSFoundation::RS_KeyDecryptData(std::string& uid, std::string& encRsKey)
 {
 	std::string JSONString;
 	return JSONString;

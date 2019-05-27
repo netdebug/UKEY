@@ -43,7 +43,7 @@ namespace Reach {
 		std::string RS_DecryptFile(std::string& kv, std::string& encrypt, std::string& decrypt);
 		//非对称加解密
 		std::string RS_KeyEncryptData(std::string rsKey, std::string certBase64);
-		std::string RS_KeyDecryptData(std::string& encRsKey);
+		std::string RS_KeyDecryptData(std::string& uid, std::string& encRsKey);
 		//数字信封加解密
 		std::string RS_KeyEncryptByDigitalEnvelope(const std::string& sourceFilePath, const std::string& encFilePath, std::string certBase64);
 		std::string RS_KeyDecryptByDigitalEnvelope(const std::string& encFilePath, const std::string& dncDirectoryPath, std::string& encKeyPath);
