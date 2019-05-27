@@ -12,9 +12,15 @@
     <ClCompile Include="src\RSFoundation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\UDevice.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\RSFoundation.h">
+    <ClInclude Include="src\UDevice.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RSFoundation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

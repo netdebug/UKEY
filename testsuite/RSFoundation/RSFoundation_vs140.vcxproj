@@ -52,9 +52,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\RSFoundation.cpp" />
+    <ClCompile Include="src\UDevice.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\RSFoundation.h" />
+    <ClInclude Include="include\RSFoundation.h" />
+    <ClInclude Include="src\UDevice.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectName>RSFoundation</ProjectName>

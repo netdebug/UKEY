@@ -25,6 +25,9 @@
     <Filter Include="SharedLibrary\Source Files">
       <UniqueIdentifier>{25a98bd2-26c0-4354-beb6-bec47d557f61}</UniqueIdentifier>
     </Filter>
+    <Filter Include="RSFoundation">
+      <UniqueIdentifier>{87d9fcb8-cae3-47b1-a7b9-69603349aec5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\FoundationTestSuite.cpp">
@@ -48,6 +51,9 @@
     <ClCompile Include="src\SOFProviderTest.cpp">
       <Filter>SharedLibrary\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\RSProviderTest.cpp">
+      <Filter>RSFoundation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\FoundationTestSuite.h">
@@ -67,6 +73,9 @@
     </ClInclude>
     <ClInclude Include="src\SOFProviderTest.h">
       <Filter>SharedLibrary\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\RSProviderTest.h">
+      <Filter>RSFoundation</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

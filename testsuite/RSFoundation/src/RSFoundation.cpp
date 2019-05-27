@@ -12,14 +12,30 @@
 #include "Poco/SharedLibrary.h"
 #include "Poco/Exception.h"
 #include "Poco/StreamCopier.h"
+#include "Poco/RegularExpression.h"
+#include "Poco/JSON/Object.h"
+#include "Poco/JSON/Array.h"
+#include "Poco/JSON/JSONException.h"
+#include <vector>
+#include <iostream>
 #include <stdio.h>
 #include <sstream>
-#include "SOFProvider.h"
+#include "UDevice.h"
+#include "SoFProvider.h"
 
+using Poco::JSON::Object;
+using Poco::JSON::Array;
+using Poco::RegularExpression;
 using Poco::SharedLibrary;
 using Poco::NotFoundException;
 using Poco::LibraryLoadException;
 using Poco::LibraryAlreadyLoadedException;
+using namespace Reach;
+
+class UDevice;
+class UCertificate;
+class GmASCrypto;
+class GmSM4Crypto;
 
 RSFoundation::RSFoundation(const std::string& name)
 {
@@ -32,27 +48,53 @@ RSFoundation::~RSFoundation()
 
 void RSFoundation::RS_ConfigParameters(const std::string& cmd, const std::string& val)
 {
-	//GetParamFromJSONFile;
+	
 }
 
 
 
-std::string RSFoundation::RS_ConfigParameters(const std::string& cmd)
+std::string RSFoundation::RS_GetParameters(const std::string& cmd)
 {
-	//SetConfigParam
-	//retrun JSONString
+	return "";
 }
-
 
 std::string RSFoundation::RS_GetUserList()
 {
-	int val = SOF_OpenDevice();
-	poco_assert(0 == val);
-	std::string list = SOF_GetUserList();
+	UDevice ukey; //throw exception if opendevice failed.
+
+	char* list = SOF_GetUserList();
+	std::string line(list, 4096);//4K cert size
+
+	std::string pattern;
+	int options = 0;
+	options += RegularExpression::RE_CASELESS;
+	options += RegularExpression::RE_EXTENDED;
+
 	//1||ContainerName1&&&user1
 	//2||ContainerName2&&&user2
-	std::string JSONString;
-	JSONString toJSON(list);
+
+	RegularExpression re(pattern, options);
+	RegularExpression::Match mtch;
+
+	if (!re.match(line, mtch))
+		throw Poco::LogicException("RS_GetUserList Exception!", 0x31);
+
+	std::vector<std::string> uids;
+	re.split(line, uids, options);
+
+	Poco::JSON::Array ce;
+
+	for each (auto uid in uids)
+		ce.add(uid);
+
+	Poco::JSON::Object users;
+	users.set("userlist", ce);
+
+	Poco::JSON::Object result;
+	result.set("code", "0000");
+	result.set("msg", "successful");
+	result.set("data", users);
+
 	/*{
 		"code":"0000",
 			"msg" : "Ö´ÐÐ³É¹¦",
@@ -65,27 +107,24 @@ std::string RSFoundation::RS_GetUserList()
 			]
 		}
 	}*/
-	val = SOF_CloseDevice();
-	poco_assert(0 == val);
-	return JSONString;
+	std::ostringstream out;
+	result.stringify(out);
+	
+	return out.str();
 }
 
 
-std::string RSFoundation::RS_GetCertBase64String(const std::string& containerId, short certType)
+std::string RSFoundation::RS_GetCertBase64String(short ctype, const std::string& uid)
 {
-	enum certType
-	{
-		sign = 0,
-		crypto
-	};
+	UDevice ukey;
 
-	short certType;
+	enum certType {	sign = 0,crypto};
 	std::string certContent;
-	std::string containerId("ContainerName");
-	switch (certType)
+	
+	switch (ctype)
 	{
 	case certType::sign:
-		certContent = SOF_ExportUserCert((char*)containerId.c_str());
+		certContent = SOF_ExportUserCert(const_cast<char*>(uid.c_str()));
 		break;
 		/*
 		{
@@ -120,7 +159,7 @@ std::string RSFoundation::RS_GetCertBase64String(const std::string& containerId,
 		}
 		*/
 	case certType::crypto:
-		certContent = SOF_ExportExChangeUserCert((char*)containerId.c_str());
+		certContent = SOF_ExportExChangeUserCert(const_cast<char*>(uid.c_str()));
 		break;
 		/*
 		{
@@ -156,78 +195,242 @@ std::string RSFoundation::RS_GetCertBase64String(const std::string& containerId,
 		*/
 	}
 
-	return toJSON(certContent);
+	Poco::JSON::Object base64;
+	base64.set("certBase64", certContent);
+
+	Poco::JSON::Object result;
+	result.set("code", "0000");
+	result.set("msg", "successful");
+	result.set("data", base64);
+
+	std::ostringstream out;
+	result.stringify(out);
+
+	return out.str();
 }
 
-std::string RSFoundation::RS_GetCertInfo(const std::string& certBase64, short type)
+std::string RSFoundation::RS_GetCertInfo(const std::string& base64, short type)
 {
-	std::string certItem;
+	UDevice ukey;
+
+	std::string item;
 
 	if (SGD_CERT_VERSION < type < SGD_CERT_DER_EXTENSIONS ||
 		SGD_CERT_ISSUER_CN < type < SGD_CERT_SUBJECT_EMAIL)
 	{
-		certItem = SOF_GetCertInfo(certBase64, type);
+		item = SOF_GetCertInfo(const_cast<char*>(base64.c_str()), type);
 	}
 
 	if (SGD_EXT_AUTHORITYKEYIDENTIFIER_INFO < type < SGD_EXT_SELFDEFINED_EXTENSION_INFO)
 	{
-		certItem = SOF_GetCertInfoByOid(certBase64, type);
+		//certItem = SOF_GetCertInfoByOid(const_cast<char*>(certBase64.c_str()), type);
 	}
 
-	return toJSON(certItem);
+	Poco::JSON::Object info;
+	info.set("certBase64", item);
+
+	Poco::JSON::Object result;
+	result.set("code", "0000");
+	result.set("msg", "successful");
+	result.set("info", info);
+
+	std::ostringstream out;
+	result.stringify(out);
+
+	return out.str();
 }
 
-std::string RSFoundation::RS_CertLogin(const std::string& containId, const std::string& password)
+std::string RSFoundation::RS_CertLogin(const std::string& uid, const std::string& password)
 {
-	std::string CId(containId);
-	std::string PW(password);
-	if (CId.empty() || PW.empty())
-	{
-		std::cout << "Message Box for user" << std::endl;
+	UDevice ukey;
+
+	if (uid.empty() || password.empty())
+		throw Poco::InvalidArgumentException("Argument Invalid!",0x34);
+
+	char* _uid = const_cast<char*>(uid.c_str());
+	char* _pw = const_cast<char*>(password.c_str());
+	int retryCount = SOF_GetPinRetryCount(_uid);
+	if (retryCount <= 0)
+		throw Poco::LogicException("UKEY have been locked!", 0x33);
+
+	if (!SOF_Login(_uid, _pw))
+		throw Poco::LogicException("UKEY Login failed!", 0x35);
+
+	Poco::JSON::Object info;
+	info.set("data", "{}");
+
+	Poco::JSON::Object result;
+	result.set("code", "0000");
+	result.set("msg", "successful");
+	result.set("data", info);
+
+	std::ostringstream out;
+	result.stringify(out);
+
+	return out.str();
+}
+
+std::string RSFoundation::RS_GetPinRetryCount(const std::string& uid)
+{
+	UDevice ukey;
+	
+	char* _uid = const_cast<char*>(uid.c_str());
+	int retryCount = SOF_GetPinRetryCount(_uid);
+
+	Poco::JSON::Object data;
+	data.set("retryCount", retryCount);
+
+	Poco::JSON::Object result;
+	result.set("code", "0000");
+	result.set("msg", "successful");
+	result.set("data", data);
+
+	std::ostringstream out;
+	result.stringify(out);
+
+	return out.str();
+}
+
+std::string RSFoundation::RS_KeyGetKeySn(std::string& uid)
+{
+	UDevice ukey;
+
+	char* _uid = const_cast<char*>(uid.c_str());
+	std::string SNkey = SOF_GetDeviceInfo(_uid, SGD_DEVICE_SERIAL_NUMBER);
+	
+	Poco::JSON::Object data;
+	data.set("containerId", uid);
+	data.set("keySn", SNkey);
+
+	Poco::JSON::Object result;
+	result.set("code", "0000");
+	result.set("msg", "successful");
+	result.set("data", data);
+
+	std::ostringstream out;
+	result.stringify(out);
+
+	return out.str();
+}
+
+std::string RSFoundation::RS_KeySignByP1(std::string& uid, std::string& msg)
+{
+	UDevice ukey;
+
+	char* _uid = const_cast<char*>(uid.c_str());
+	char* _msg = const_cast<char*>(msg.c_str());
+	std::string signature = SOF_SignData(_uid, _msg);
+	if (signature.empty())
+		throw Poco::LogicException("SOF_SignData failed!", 0x36);
+
+	Poco::JSON::Object data;
+	data.set("signdMsg", signature);
+
+	Poco::JSON::Object result;
+	result.set("code", "0000");
+	result.set("msg", "successful");
+	result.set("data", data);
+
+	std::ostringstream out;
+	result.stringify(out);
+
+	return out.str();
+}
+
+std::string RSFoundation::RS_VerifySignByP1(std::string& base64, std::string& msg, const std::string signature)
+{
+	UDevice ukey;
+
+	Poco::JSON::Object data;
+	Poco::JSON::Object result;
+	result.set("code", "0000");
+	result.set("msg", "successful");
+	result.set("data", data);
+
+	char* _base64 = const_cast<char*>(base64.c_str());
+	char* _msg = const_cast<char*>(msg.c_str());
+	char* _signature = const_cast<char*>(signature.c_str());
+
+	bool val = SOF_VerifySignedData(_base64, _msg, _signature);
+	if (!val) {
+		result.set("code", "0001");
+		result.set("msg", "unsuccessful");
 	}
 
-	int retryCount = SOF_GetPinRetryCount(CId);
-	assert(retryCount > 0);
-	std::string JSONString << SOF_Login(CID, PW);
+	std::ostringstream out;
+	result.stringify(out);
 
-	return JSONString;
+	return out.str();
 }
 
-std::string RSFoundation::RS_GetPinRetryCount(const std::string& containerId)
+std::string RSFoundation::RS_EncryptFile(std::string& source, std::string& encrypt)
 {
+	char* _src = const_cast<char*>(source.c_str());
+	char* _enc = const_cast<char*>(encrypt.c_str());
+	char* ck = SOF_GenRandom(32);
+	SOF_SetEncryptMethod(SGD_SM4_CBC);
 
-	std::string CId(containId);
-	int retryCount = SOF_GetPinRetryCount(CId);
+	if (!SOF_EncryptFile(ck, _src, _enc))
+		throw Poco::LogicException("SOF_EncryptFile failed!",0x37);
 
-	return toJSON(retryCount);
+	Poco::JSON::Object symkey;
+	symkey.set("symKey", ck);
+	Poco::JSON::Object result;
+	result.set("code", "0000");
+	result.set("msg", "successful");
+	result.set("data", symkey);
+
+	std::ostringstream out;
+	result.stringify(out);
+
+	return out.str();
 }
 
-std::string RSFoundation::RS_KeyGetKeySn()
+std::string RSFoundation::RS_DecryptFile(std::string& kv, std::string& encrypt, std::string& decrypt)
 {
-	std::cout << "Message Box for selection" << std::endl;
-	std::string KEY_SN = SOF_GetDeviceInfo(containerId, SGD_DEVICE_SERIAL_NUMBER);
-	return toJSON(KEY_SN);
+	char* _enc = const_cast<char*>(encrypt.c_str());
+	char* _dec = const_cast<char*>(decrypt.c_str());
+	char* ck = const_cast<char*>(kv.c_str());
+
+	if (!SOF_DecryptFile(ck, _enc, _dec))
+		throw Poco::LogicException("SOF_DecryptFile failed!", 0x38);
+
+	Poco::JSON::Object data;
+	Poco::JSON::Object result;
+	result.set("code", "0000");
+	result.set("msg", "successful");
+	result.set("data", data);
+
+	std::ostringstream out;
+	result.stringify(out);
+
+	return out.str();
 }
 
-std::string RSFoundation::RS_KeySignByP1(std::string& msg)
+std::string RSFoundation::RS_KeyEncryptData(std::string paintText, std::string base64)
 {
-	std::string CId(containId);
-	std::string signature = SOF_SignData(CId, msg);
-	assert(!signature.empty);
+	char* _base64 = const_cast<char*>(base64.c_str());
+	char* _text = const_cast<char*>(paintText.c_str());
 
-	return toJSON(signature);
-}
+	SOF_SetSignMethod(SGD_SM3_SM2);
+	SOF_SetEncryptMethod(SGD_SM4_ECB);
 
-std::string RSFoundation::RS_VerifySignByP1(std::string& certBase64, std::string& msg, const std::string signature)
-{
-	bool val = SOF_VerifySignedData(certBase64, msg, signature);
-	return toJSON(val);
-}
+	std::string encData = SOF_AsEncrypt(_base64, _text);
+	encData.append('@', 3);
+	encData.append(base64);
 
-std::string RSFoundation::RS_KeyEncryptData(std::string rsKey, std::string certBase64)
-{
-	std::string JSONString;
-	return JSONString;
+	Poco::JSON::Object data;
+	data.set("encRsKey", encData);
+
+	Poco::JSON::Object result;
+	result.set("code", "0000");
+	result.set("msg", "successful");
+	result.set("data", data);
+
+	std::ostringstream out;
+	result.stringify(out);
+
+	return out.str();
 }
 
 std::string RSFoundation::RS_KeyDecryptData(std::string& encRsKey)
@@ -242,7 +445,7 @@ std::string RSFoundation::RS_KeyEncryptByDigitalEnvelope(const std::string& sour
 	return JSONString;
 }
 
-std::string RSFoundation::RS_KeyDecryptByDigitalEnvelope(const std::string& encFilePath, const std::string& dncDirectory Path, std::string& encKeyPath)
+std::string RSFoundation::RS_KeyDecryptByDigitalEnvelope(const std::string& encFilePath, const std::string& dncDirectoryPath, std::string& encKeyPath)
 {
 	std::string JSONString;
 	return JSONString;

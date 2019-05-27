@@ -16,6 +16,7 @@
 #include <stdio.h>
 #include <sstream>
 #include "Poco/StreamCopier.h"
+#include "RSFoundation.h"
 #include "GMCrypto.h"
 #include "SOFProvider.h"
 
@@ -237,17 +238,7 @@ void RSProviderTest::testRSCertLogin()
 
 void RSProviderTest::testRSGetPinRetryCount()
 {
-	//using FJCA Interface to implement workflow ( in the parenthese)
-	{
-
-	}
-	//std::string RS_GetPinRetryCount(const std::string& containerId)
-	{
-		std::string CId(containId);
-		int retryCount = SOF_GetPinRetryCount(CId);
-
-		return toJSON(retryCount);
-	}
+	
 }
 
 void RSProviderTest::testRSKeyGetKeySn()
