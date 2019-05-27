@@ -17,6 +17,7 @@
 #include <sstream>
 #include "Poco/StreamCopier.h"
 #include "GMCrypto.h"
+#include "SOFProvider.h"
 
 using Poco::SharedLibrary;
 using Poco::NotFoundException;
@@ -40,11 +41,7 @@ void RSProviderTest::testRSGetConfigParameters()
 	}
 	//void RS_ConfigParameters(const std::string& cmd, const std::string& val)
 	{
-		int val = SOF_OpenDevice();
-		assertEqual(0, val);
-
-		val = SOF_CloseDevice();
-		assertEqual(0, val);
+		//GetParamFromJSONFile;
 	}
 }
 
@@ -56,6 +53,7 @@ void RSProviderTest::testRSConfigParameters()
 	}
 	//std::string RS_ConfigParameters(const std::string& cmd)
 	{
+		//SetConfigParam
 		//retrun JSONString
 	}
 }
@@ -229,7 +227,7 @@ void RSProviderTest::testRSCertLogin()
 			std::cout << "Message Box for user" << std::endl;
 		}
 
-		int retryCount = SOF_GetPinRetryCount(CID);
+		int retryCount = SOF_GetPinRetryCount(CId);
 		assert(retryCount > 0);
 		std::string JSONString << SOF_Login(CID, PW);
 		
@@ -245,7 +243,10 @@ void RSProviderTest::testRSGetPinRetryCount()
 	}
 	//std::string RS_GetPinRetryCount(const std::string& containerId)
 	{
-		//return JSONString;
+		std::string CId(containId);
+		int retryCount = SOF_GetPinRetryCount(CId);
+
+		return toJSON(retryCount);
 	}
 }
 
@@ -257,7 +258,9 @@ void RSProviderTest::testRSKeyGetKeySn()
 	}
 	//std::string RS_KeyGetKeySn()
 	{
-		//return JSONString;
+		std::cout << "Message Box for user" << std::endl;
+		std::string KEY_SN = SOF_GetDeviceInfo(containerId, SGD_DEVICE_SERIAL_NUMBER);
+		return toJSON(KEY_SN);
 	}
 }
 
@@ -269,7 +272,11 @@ void RSProviderTest::testRSKeySignByP1()
 	}
 	//std::string RS_KeySignByP1(std::string& msg)
 	{
-		//return JSONString;
+		std::string CId(containId);
+		std::string signature = SOF_SignData(CId, msg);
+		assert(!signature.empty);
+
+		return toJSON(signature);
 	}
 }
 
@@ -279,9 +286,10 @@ void RSProviderTest::testRSVerifySignByP1()
 	{
 
 	}
-	//std::string RS_VerifySignByP1(std::string& certBase64, std::string& msg, const std::string signdMsg)
+	//std::string RS_VerifySignByP1(std::string& certBase64, std::string& msg, const std::string signature)
 	{
-		//return JSONString;
+		bool val = SOF_VerifySignedData(certBase64, msg, signature);
+		return toJSON(val);
 	}
 }
 

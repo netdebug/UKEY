@@ -1,4 +1,4 @@
-//
+#pragma once
 //typedef char* BSTR ;
 //typedef long BOOL;
 #include <string.h>
@@ -8,7 +8,7 @@
 extern "C" {
 #endif
 
-	typedef char* BSTR;
+	typedef char * BSTR;
 	int SOF_OpenDevice(void);
 	int SOF_CloseDevice(void);
 	long SOF_SetSignMethod(long SignMethod);

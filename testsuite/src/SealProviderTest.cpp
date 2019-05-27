@@ -15,6 +15,7 @@
 #include "Poco/Exception.h"
 #include <stdio.h>
 #include <sstream>
+#include <iostream>
 
 using Poco::SharedLibrary;
 using Poco::NotFoundException;
