@@ -26,8 +26,8 @@ public:
 	~RSProviderTest();
 
 	//14 RS Interfaces
-	void testRSGetConfigParameters();
-	void testRSConfigParameters();
+/*	void testRSGetConfigParameters();
+	void testRSConfigParameters()*/;
 	void testRSGetUserList();
 	void testRSGetCertBase64String();
 	void testRSGetCertInfo();
