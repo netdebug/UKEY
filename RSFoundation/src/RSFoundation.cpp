@@ -96,7 +96,7 @@ std::string RSFoundation::RS_GetCertBase64String(short ctype, const std::string&
 {
 	UDevice::default();
 
-	enum certType {	sign = 0,crypto};
+	enum certType {	sign = 1,crypto};
 	std::string certContent;
 	
 	switch (ctype)
@@ -206,7 +206,10 @@ std::string RSFoundation::RS_GetCertInfo(const std::string& base64, short type)
 	if (SGD_CERT_VERSION < type < SGD_CERT_DER_EXTENSIONS ||
 		SGD_CERT_ISSUER_CN < type < SGD_CERT_SUBJECT_EMAIL)
 	{
-		item = SOF_GetCertInfo(const_cast<char*>(base64.c_str()), type);
+		char* _base64 = const_cast<char*>(base64.c_str());
+		char* data = SOF_GetCertInfo(_base64, type);
+		if (data)
+			item = data;
 	}
 
 	if (SGD_EXT_AUTHORITYKEYIDENTIFIER_INFO < type < SGD_EXT_SELFDEFINED_EXTENSION_INFO)
@@ -215,12 +218,12 @@ std::string RSFoundation::RS_GetCertInfo(const std::string& base64, short type)
 	}
 
 	Poco::JSON::Object info;
-	info.set("certBase64", item);
+	info.set("info", item);
 
 	Poco::JSON::Object result;
 	result.set("code", "0000");
 	result.set("msg", "successful");
-	result.set("info", info);
+	result.set("data", info);
 
 	std::ostringstream out;
 	result.stringify(out);
