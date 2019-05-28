@@ -11,8 +11,10 @@
 #include "UDevice.h"
 #include "SoFProvider.h"
 #include "Poco/Exception.h"
+#include "Poco/SingletonHolder.h"
 
 using namespace Reach;
+using Poco::SingletonHolder;
 
 UDevice::UDevice()
 	:bOpened(false)
@@ -46,4 +48,14 @@ void UDevice::close()
 bool UDevice::isopen()
 {
 	return bOpened;
+}
+
+namespace
+{
+	static SingletonHolder<UDevice> ukey;
+}
+
+UDevice& UDevice::default()
+{
+	return *ukey.get();
 }

@@ -22,10 +22,10 @@ CppUnit::Test* SharedLibraryTestSuite::suite()
 
 #if !defined(_WIN32) || defined(_DLL)
 	pSuite->addTest(SharedLibraryTest::suite());
-	pSuite->addTest(SealProviderTest::suite());
-	pSuite->addTest(GmskfProviderTest::suite());
-	//pSuite->addTest(RSProviderTest::suite());
-	pSuite->addTest(SOFProviderTest::suite());
+	//pSuite->addTest(SealProviderTest::suite());
+	//pSuite->addTest(GmskfProviderTest::suite());
+	pSuite->addTest(RSProviderTest::suite());
+	//pSuite->addTest(SOFProviderTest::suite());
 #endif
 
 	return pSuite;

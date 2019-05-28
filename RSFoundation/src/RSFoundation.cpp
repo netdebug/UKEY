@@ -17,6 +17,7 @@
 #include "Poco/JSON/Object.h"
 #include "Poco/JSON/Array.h"
 #include "Poco/JSON/JSONException.h"
+
 #include <vector>
 #include <iostream>
 #include <stdio.h>
@@ -31,20 +32,23 @@ using Poco::SharedLibrary;
 using Poco::NotFoundException;
 using Poco::LibraryLoadException;
 using Poco::LibraryAlreadyLoadedException;
+
 using namespace Reach;
 
-class UDevice;
 class UCertificate;
 class GmASCrypto;
 class GmSM4Crypto;
 
+
 RSFoundation::RSFoundation()
 {
+	
 }
 
 
 RSFoundation::~RSFoundation()
 {
+
 }
 
 void RSFoundation::RS_ConfigParameters(const std::string& cmd, const std::string& val)
@@ -62,53 +66,25 @@ std::string RSFoundation::RS_GetParameters(const std::string& cmd)
 
 std::string RSFoundation::RS_GetUserList()
 {
-	UDevice ukey; //throw exception if opendevice failed.
+	UDevice::default(); //throw 
 
-	char* list = SOF_GetUserList();
-	std::string line(list, 4096);//4K cert size
-
-	std::string pattern;
-	int options = 0;
-	options += RegularExpression::RE_CASELESS;
-	options += RegularExpression::RE_EXTENDED;
-
-	//1||ContainerName1&&&user1
-	//2||ContainerName2&&&user2
-
-	RegularExpression re(pattern, options);
-	RegularExpression::Match mtch;
-
-	if (!re.match(line, mtch))
-		throw Poco::LogicException("RS_GetUserList Exception!", 0x31);
-
-	std::vector<std::string> uids;
-	re.split(line, uids, options);
-
-	Poco::JSON::Array ce;
-
-	for each (auto uid in uids)
-		ce.add(uid);
-
-	Poco::JSON::Object users;
-	users.set("userlist", ce);
-
+	std::string line = SOF_GetUserList();
 	Poco::JSON::Object result;
 	result.set("code", "0000");
 	result.set("msg", "successful");
+	Poco::JSON::Object users;
+	users.set("userlist", line);
 	result.set("data", users);
 
-	/*{
+	/* example
+	{
 		"code":"0000",
 			"msg" : "Ö´ÐÐ³É¹¦",
 			"data" : {
-			"userlist":[
-				{
-					"user1":"ContainerId1",
-					"user2":"ContainerId2"
-				}
-			]
+			"userlist":"BJCA-Application||806000119631708&&&BJCA-Application||806000119631714"
 		}
-	}*/
+	}
+	*/
 	std::ostringstream out;
 	result.stringify(out);
 	
@@ -118,7 +94,7 @@ std::string RSFoundation::RS_GetUserList()
 
 std::string RSFoundation::RS_GetCertBase64String(short ctype, const std::string& uid)
 {
-	UDevice ukey;
+	UDevice::default();
 
 	enum certType {	sign = 0,crypto};
 	std::string certContent;
@@ -126,8 +102,13 @@ std::string RSFoundation::RS_GetCertBase64String(short ctype, const std::string&
 	switch (ctype)
 	{
 	case certType::sign:
-		certContent = SOF_ExportUserCert(const_cast<char*>(uid.c_str()));
+	{
+		char* _uid = const_cast<char*>(uid.c_str());
+		char* cert = SOF_ExportUserCert(_uid);
+		if (cert)
+			certContent = cert;
 		break;
+	}
 		/*
 		{
 			"code":"0000",
@@ -161,8 +142,13 @@ std::string RSFoundation::RS_GetCertBase64String(short ctype, const std::string&
 		}
 		*/
 	case certType::crypto:
-		certContent = SOF_ExportExChangeUserCert(const_cast<char*>(uid.c_str()));
+	{
+		char* _uid = const_cast<char*>(uid.c_str());
+		char* cert = SOF_ExportExChangeUserCert(_uid);
+		if (cert)
+			certContent = cert;
 		break;
+	}
 		/*
 		{
 			"code":"0000",
@@ -213,7 +199,7 @@ std::string RSFoundation::RS_GetCertBase64String(short ctype, const std::string&
 
 std::string RSFoundation::RS_GetCertInfo(const std::string& base64, short type)
 {
-	UDevice ukey;
+	UDevice::default();
 
 	std::string item;
 
@@ -244,7 +230,7 @@ std::string RSFoundation::RS_GetCertInfo(const std::string& base64, short type)
 
 std::string RSFoundation::RS_CertLogin(const std::string& uid, const std::string& password)
 {
-	UDevice ukey;
+	UDevice::default();
 
 	if (uid.empty() || password.empty())
 		throw Poco::InvalidArgumentException("Argument Invalid!",0x34);
@@ -274,7 +260,7 @@ std::string RSFoundation::RS_CertLogin(const std::string& uid, const std::string
 
 std::string RSFoundation::RS_GetPinRetryCount(const std::string& uid)
 {
-	UDevice ukey;
+	UDevice::default();
 	
 	char* _uid = const_cast<char*>(uid.c_str());
 	int retryCount = SOF_GetPinRetryCount(_uid);
@@ -295,7 +281,7 @@ std::string RSFoundation::RS_GetPinRetryCount(const std::string& uid)
 
 std::string RSFoundation::RS_KeyGetKeySn(std::string& uid)
 {
-	UDevice ukey;
+	UDevice::default();
 
 	char* _uid = const_cast<char*>(uid.c_str());
 	std::string SNkey = SOF_GetDeviceInfo(_uid, SGD_DEVICE_SERIAL_NUMBER);
@@ -317,7 +303,7 @@ std::string RSFoundation::RS_KeyGetKeySn(std::string& uid)
 
 std::string RSFoundation::RS_KeySignByP1(std::string& uid, std::string& msg)
 {
-	UDevice ukey;
+	UDevice::default();
 
 	char* _uid = const_cast<char*>(uid.c_str());
 	char* _msg = const_cast<char*>(msg.c_str());
@@ -341,7 +327,7 @@ std::string RSFoundation::RS_KeySignByP1(std::string& uid, std::string& msg)
 
 std::string RSFoundation::RS_VerifySignByP1(std::string& base64, std::string& msg, const std::string signature)
 {
-	UDevice ukey;
+	UDevice::default();
 
 	Poco::JSON::Object data;
 	Poco::JSON::Object result;
@@ -365,8 +351,13 @@ std::string RSFoundation::RS_VerifySignByP1(std::string& base64, std::string& ms
 	return out.str();
 }
 
+#include "Poco/File.h"
 std::string RSFoundation::RS_EncryptFile(std::string& source, std::string& encrypt)
 {
+	Poco::File fi(source);
+	if (!fi.exists()) 
+		throw Poco::FileExistsException("Source File Not Exists!", 0x40);
+		
 	char* _src = const_cast<char*>(source.c_str());
 	char* _enc = const_cast<char*>(encrypt.c_str());
 	char* ck = SOF_GenRandom(32);
@@ -437,8 +428,46 @@ std::string RSFoundation::RS_KeyEncryptData(std::string paintText, std::string b
 
 std::string RSFoundation::RS_KeyDecryptData(std::string& uid, std::string& encRsKey)
 {
-	std::string JSONString;
-	return JSONString;
+	UDevice::default();
+	
+	std::string pattern;
+	int options = 0;
+	options += RegularExpression::RE_CASELESS;
+	options += RegularExpression::RE_EXTENDED;
+
+	RegularExpression re(pattern, options);
+	RegularExpression::Match mtch;
+
+	if (!re.match(encRsKey, mtch))
+		throw Poco::LogicException("RS_KeyDecryptData enRsKey Exception!", 0x40);
+
+	std::vector<std::string> tags;
+	re.split(encRsKey, tags, options);
+
+	char* _uid = const_cast<char*>(uid.c_str());
+	char* _enc = const_cast<char*>(tags[0].c_str());
+
+	std::string kc = SOF_ExportExChangeUserCert(_uid);
+	if (kc != tags[2])
+		throw Poco::LogicException("certificate error");
+	
+	SOF_SetSignMethod(SGD_SM3_SM2);
+	SOF_SetEncryptMethod(SGD_SM4_ECB);
+	
+	std::string decdata = SOF_AsDecrypt(_uid, _enc);
+
+	Poco::JSON::Object data;
+	data.set("rsKey", decdata);
+
+	Poco::JSON::Object result;
+	result.set("code", "0000");
+	result.set("msg", "successful");
+	result.set("data", data);
+
+	std::ostringstream out;
+	result.stringify(out);
+
+	return out.str();
 }
 
 std::string RSFoundation::RS_KeyEncryptByDigitalEnvelope(const std::string& sourceFilePath, const std::string& encFilePath, std::string certBase64)

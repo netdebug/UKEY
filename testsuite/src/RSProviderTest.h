@@ -36,8 +36,8 @@ public:
 	void testRSKeyGetKeySn();
 	void testRSKeySignByP1();
 	void testRSVerifySignByP1();
-	void testRSKeyEncryptData();
-	void testRSKeyDecryptData();
+	void testRsaEncryptAndDecrypt();
+	void testSymEncryptAndDecrypt();
 	void testRSKeyEncryptByDigitalEnvelope();
 	void testRSKeyDecryptByDigitalEnvelope();
 
@@ -48,6 +48,7 @@ public:
 
 private:
 	Poco::SharedLibrary sl;
+	std::string uid;
 };
 
 

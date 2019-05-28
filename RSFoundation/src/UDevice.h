@@ -28,6 +28,7 @@ namespace Reach {
 		void close();
 		bool isopen();
 
+		static UDevice& default();
 	private:
 		//Poco::SharedLibrary sl;
 		bool bOpened;
