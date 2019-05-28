@@ -370,7 +370,7 @@ std::string RSFoundation::RS_EncryptFile(std::string& source, std::string& encry
 		throw Poco::LogicException("SOF_EncryptFile failed!",0x37);
 
 	Poco::JSON::Object symkey;
-	symkey.set("symKey", ck);
+	symkey.set("symKey", std::string(ck));
 	Poco::JSON::Object result;
 	result.set("code", "0000");
 	result.set("msg", "successful");
@@ -411,8 +411,12 @@ std::string RSFoundation::RS_KeyEncryptData(std::string paintText, std::string b
 	SOF_SetSignMethod(SGD_SM3_SM2);
 	SOF_SetEncryptMethod(SGD_SM4_ECB);
 
-	std::string encData = SOF_AsEncrypt(_base64, _text);
-	encData.append('@', 3);
+	char* _encData = SOF_AsEncrypt(_base64, _text);
+	if (!_encData)
+		throw Poco::LogicException("RS_KeyEncryptData failed!", 0x39);
+
+	std::string encData = _encData;
+	encData.append("@@@");
 	encData.append(base64);
 
 	Poco::JSON::Object data;
@@ -433,10 +437,10 @@ std::string RSFoundation::RS_KeyDecryptData(std::string& uid, std::string& encRs
 {
 	UDevice::default();
 	
-	std::string pattern;
+	std::string pattern("(\\S+)@@@(\\S+)");
 	int options = 0;
-	options += RegularExpression::RE_CASELESS;
-	options += RegularExpression::RE_EXTENDED;
+	/*options += RegularExpression::RE_CASELESS;
+	options += RegularExpression::RE_EXTENDED;*/
 
 	RegularExpression re(pattern, options);
 	RegularExpression::Match mtch;
@@ -448,16 +452,20 @@ std::string RSFoundation::RS_KeyDecryptData(std::string& uid, std::string& encRs
 	re.split(encRsKey, tags, options);
 
 	char* _uid = const_cast<char*>(uid.c_str());
-	char* _enc = const_cast<char*>(tags[0].c_str());
+	char* _enc = const_cast<char*>(tags[1].c_str());
 
 	std::string kc = SOF_ExportExChangeUserCert(_uid);
 	if (kc != tags[2])
 		throw Poco::LogicException("certificate error");
 	
-	SOF_SetSignMethod(SGD_SM3_SM2);
-	SOF_SetEncryptMethod(SGD_SM4_ECB);
+	/*SOF_SetSignMethod(SGD_SM3_SM2);
+	SOF_SetEncryptMethod(SGD_SM4_ECB);*/
 	
-	std::string decdata = SOF_AsDecrypt(_uid, _enc);
+	char* _dec = SOF_AsDecrypt(_uid, _enc);
+	if (!_dec)
+		throw Poco::LogicException("SOF_AsDecrypt decrypt Exception", 0x41);
+
+	std::string decdata = _dec;
 
 	Poco::JSON::Object data;
 	data.set("rsKey", decdata);
