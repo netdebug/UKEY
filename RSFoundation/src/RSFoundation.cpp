@@ -37,7 +37,7 @@ class UCertificate;
 class GmASCrypto;
 class GmSM4Crypto;
 
-RSFoundation::RSFoundation(const std::string& name)
+RSFoundation::RSFoundation()
 {
 }
 
@@ -48,13 +48,14 @@ RSFoundation::~RSFoundation()
 
 void RSFoundation::RS_ConfigParameters(const std::string& cmd, const std::string& val)
 {
-	
+	throw Poco::NotImplementedException("RS_ConfigParameters Not Implmented!");
 }
 
 
 
 std::string RSFoundation::RS_GetParameters(const std::string& cmd)
 {
+	throw Poco::NotImplementedException("RS_ConfigParameters Not Implmented!");
 	return "";
 }
 
