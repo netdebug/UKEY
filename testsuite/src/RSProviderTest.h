@@ -21,6 +21,7 @@
 
 class RSProviderTest: public CppUnit::TestCase
 {
+	enum certType { sign = 1, crypto };
 public:
 	RSProviderTest(const std::string& name);
 	~RSProviderTest();

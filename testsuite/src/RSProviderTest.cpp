@@ -70,7 +70,6 @@ void RSProviderTest::testRSGetUserList()
 
 void RSProviderTest::testRSGetCertBase64String()
 {
-	enum certType { sign = 0, crypto };
 	Reach::RSFoundation rsf;
 	std::string signd = rsf.RS_GetCertBase64String(sign, uid);
 	std::cout << "signd" << signd << std::endl;
@@ -84,7 +83,6 @@ void RSProviderTest::testRSGetCertInfo()
 	#define SGD_CERT_SERIAL 0x00000002
 
 	Reach::RSFoundation rsf;
-	enum certType { sign = 1, crypto };
 	
 	{
 		std::string json = rsf.RS_GetCertBase64String(sign, uid);
@@ -153,17 +151,42 @@ void RSProviderTest::testRsaEncryptAndDecrypt()
 {
 	Reach::RSFoundation rsf;
 	std::string paintText("what is up? what the fucking library!");
-	enum certType { sign = 0, crypto };
-	std::string cert = rsf.RS_GetCertBase64String(crypto, uid);
-	std::string encrypt = rsf.RS_KeyEncryptData(paintText, cert);
-	
-	std::cout << "paintText:" << paintText << std::endl
-		<< "RS_GetCertBase64String certificate:" << cert << std::endl
-		<< "RS_KeyEncryptData encrypt:" << encrypt << std::endl;
 
-	std::string decrypt = rsf.RS_KeyDecryptData(uid, encrypt);
+	std::string json = rsf.RS_GetCertBase64String(crypto, uid);
 
-	assert(paintText == decrypt);
+	{
+		Parser parser;
+		Var result = parser.parse(json);
+		assert(result.type() == typeid(Object::Ptr));
+
+		Object object = *result.extract<Object::Ptr>();
+		Var test = object.get("data");
+		Object subObject = *test.extract<Object::Ptr>();
+		std::string cert = subObject.get("certBase64");
+
+		json = rsf.RS_KeyEncryptData(paintText, cert);
+
+		std::cout << "paintText:" << paintText << std::endl
+			<< "RS_GetCertBase64String certificate:" << cert << std::endl
+			<< "RS_KeyEncryptData encrypt:" << json << std::endl;
+	}
+
+	{
+		Parser parser;
+		Var result = parser.parse(json);
+		assert(result.type() == typeid(Object::Ptr));
+
+		Object object = *result.extract<Object::Ptr>();
+		Var test = object.get("data");
+		Object subObject = *test.extract<Object::Ptr>();
+		std::string encrypt = subObject.get("encRsKey");
+
+		std::string xia("00000000");
+		std::cout << "RS_CertLogin except ok:" << rsf.RS_CertLogin(uid, xia) << std::endl;
+
+		std::string decrypt = rsf.RS_KeyDecryptData(uid, encrypt);
+		//assert(paintText == decrypt);
+	}
 }
 
 #include "Poco/File.h"
@@ -183,9 +206,9 @@ void RSProviderTest::testSymEncryptAndDecrypt()
 	Var result = parser.parse(jsonkv);
 	Object object = *result.extract<Object::Ptr>();
 	assert(result.type() == typeid(Object::Ptr));
-
-	DynamicStruct ds = object;
-	std::string kv = ds["synKey"];
+	Var test = object.get("data");
+	Object subObject = *test.extract<Object::Ptr>();
+	std::string kv = subObject.get("symKey");
 
 	std::string in("F:/source/RSTestRunner/bin/encryptText.txt");
 	std::string out("F:/source/RSTestRunner/bin/DecryOut.txt");
