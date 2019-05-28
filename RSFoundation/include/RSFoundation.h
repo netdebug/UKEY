@@ -18,12 +18,10 @@
 #include "Poco/SharedLibrary.h"
 #include <string>
 
-#if (defined(_WIN32) || defined(_WIN32_WCE)) && defined(RS_DLL)
-	#if defined(RSFoundation_EXPORTS)
-		#define RSFoundation_API __declspec(dllexport)
+#if defined(RSFoundation_EXPORTS)
+#define RSFoundation_API __declspec(dllexport)
 #else
-		#define RSFoundation_API __declspec(dllimport)
-	#endif
+#define RSFoundation_API __declspec(dllimport)
 #endif
 
 namespace Reach {
