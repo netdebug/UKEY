@@ -14,8 +14,8 @@
 #define RSFoundation_INCLUDED
 
 
-#include "Poco/Foundation.h"
-#include "Poco/SharedLibrary.h"
+//#include "Poco/Foundation.h"
+//#include "Poco/SharedLibrary.h"
 #include <string>
 
 #if defined(RSFoundation_EXPORTS)
