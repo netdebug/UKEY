@@ -51,10 +51,11 @@ void RSProviderTest::testRSGetUserList()
 		std::cout << json << std::endl;
 		Parser parser;
 		Var result = parser.parse(json);
-		Object object = *result.extract<Object::Ptr>();
 		assert(result.type() == typeid(Object::Ptr));
 
+		Object object = *result.extract<Object::Ptr>();
 		DynamicStruct ds = object;
+
 		assert(ds["code"] == "0000");
 	}
 	catch (JSONException& jsone)
@@ -83,18 +84,38 @@ void RSProviderTest::testRSGetCertInfo()
 	#define SGD_CERT_SERIAL 0x00000002
 
 	Reach::RSFoundation rsf;
-	enum certType { sign = 0, crypto };
+	enum certType { sign = 1, crypto };
 	
 	{
-		std::string cert = rsf.RS_GetCertBase64String(sign, uid);
-		std::cout << "SGD_CERT_SERIAL" << rsf.RS_GetCertInfo(cert, SGD_CERT_VERSION) << std::endl;
+		std::string json = rsf.RS_GetCertBase64String(sign, uid);
+		std::cout << json << std::endl;
+		Parser parser;
+		Var result = parser.parse(json);
+		assert(result.type() == typeid(Object::Ptr));
+
+		Object object = *result.extract<Object::Ptr>();
+		Var test = object.get("data");
+		Object subObject = *test.extract<Object::Ptr>();
+		std::string cert = subObject.get("certBase64");
+
+		std::cout << "SGD_CERT_VERSION" << rsf.RS_GetCertInfo(cert, SGD_CERT_VERSION) << std::endl;
 		std::cout << "SGD_CERT_SERIAL" << rsf.RS_GetCertInfo(cert, SGD_CERT_SERIAL) << std::endl;
 	}
 
 
 	{
-		std::string cert = rsf.RS_GetCertBase64String(crypto, uid);
-		std::cout << "SGD_CERT_SERIAL" << rsf.RS_GetCertInfo(cert, SGD_CERT_VERSION) << std::endl;
+		std::string json = rsf.RS_GetCertBase64String(crypto, uid);
+		std::cout << json << std::endl;
+		Parser parser;
+		Var result = parser.parse(json);
+		assert(result.type() == typeid(Object::Ptr));
+
+		Object object = *result.extract<Object::Ptr>();
+		Var test = object.get("data");
+		Object subObject = *test.extract<Object::Ptr>();
+		std::string cert = subObject.get("certBase64");
+
+		std::cout << "SGD_CERT_VERSION" << rsf.RS_GetCertInfo(cert, SGD_CERT_VERSION) << std::endl;
 		std::cout << "SGD_CERT_SERIAL" << rsf.RS_GetCertInfo(cert, SGD_CERT_SERIAL) << std::endl;
 	}
 }
@@ -102,8 +123,8 @@ void RSProviderTest::testRSGetCertInfo()
 void RSProviderTest::testRSCertLogin()
 {
 	Reach::RSFoundation rsf;
-	std::string xia('0', 8);
-	std::string lg('1', 6);
+	std::string xia("00000000");
+	std::string lg("1111111");
 	std::cout << "RS_CertLogin except ok:" << rsf.RS_CertLogin(uid, xia) << std::endl;
 	std::cout << "RS_CertLogin except failed:" << rsf.RS_CertLogin(uid, lg) << std::endl;
 }
@@ -117,7 +138,7 @@ void RSProviderTest::testRSGetPinRetryCount()
 void RSProviderTest::testRSKeyGetKeySn()
 {
 	Reach::RSFoundation rsf;
-	rsf.RS_KeyGetKeySn(uid);
+	std::cout << "UKey SN:" << rsf.RS_KeyGetKeySn(uid) << std::endl;
 }
 
 void RSProviderTest::testRSKeySignByP1()
@@ -136,7 +157,9 @@ void RSProviderTest::testRsaEncryptAndDecrypt()
 	std::string cert = rsf.RS_GetCertBase64String(crypto, uid);
 	std::string encrypt = rsf.RS_KeyEncryptData(paintText, cert);
 	
-	std::cout << "" << paintText << std::endl;
+	std::cout << "paintText:" << paintText << std::endl
+		<< "RS_GetCertBase64String certificate:" << cert << std::endl
+		<< "RS_KeyEncryptData encrypt:" << encrypt << std::endl;
 
 	std::string decrypt = rsf.RS_KeyDecryptData(uid, encrypt);
 
