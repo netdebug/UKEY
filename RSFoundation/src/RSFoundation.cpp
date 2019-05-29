@@ -242,13 +242,13 @@ std::string RSFoundation::RS_CertLogin(const std::string& uid, const std::string
 	char* _pw = const_cast<char*>(password.c_str());
 	int retryCount = SOF_GetPinRetryCount(_uid);
 	if (retryCount <= 0)
-		throw Poco::LogicException("UKEY have been locked!", 0x33);
+		throw Poco::LogicException("UKEY have been locked! containerId is", uid, 0x33);
 
 	if (!SOF_Login(_uid, _pw))
-		throw Poco::LogicException("UKEY Login failed!", 0x35);
+		throw Poco::LogicException("UKEY Login failed! containerId is", uid, 0x35);
 
 	Poco::JSON::Object info;
-	info.set("data", "{}");
+	info.set("containerId", uid);
 
 	Poco::JSON::Object result;
 	result.set("code", "0000");
