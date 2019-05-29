@@ -123,8 +123,16 @@ void RSProviderTest::testRSCertLogin()
 	Reach::RSFoundation rsf;
 	std::string xia("00000000");
 	std::string lg("1111111");
-	std::cout << "RS_CertLogin except ok:" << rsf.RS_CertLogin(uid, xia) << std::endl;
-	std::cout << "RS_CertLogin except failed:" << rsf.RS_CertLogin(uid, lg) << std::endl;
+
+	try
+	{
+		std::cout << "RS_CertLogin except ok:" << rsf.RS_CertLogin(uid, xia) << std::endl;
+		std::cout << "RS_CertLogin except failed:" << rsf.RS_CertLogin(uid, lg) << std::endl;
+	}
+	catch (Poco::LogicException& e)
+	{
+		std::cout << "RS_CertLogin" << e.message() << std::endl;
+	}
 }
 
 void RSProviderTest::testRSGetPinRetryCount()

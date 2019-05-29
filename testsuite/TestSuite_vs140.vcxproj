@@ -181,7 +181,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>CppUnit.lib;PocoFoundation.lib;RSFoundation.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>bin\TestSuite.exe</OutputFile>
+      <OutputFile>..\bin\TestSuite.exe</OutputFile>
       <AdditionalLibraryDirectories>..\lib;..\lib\libpoco;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <ProgramDatabaseFile>
