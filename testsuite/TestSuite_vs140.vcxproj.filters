@@ -25,6 +25,9 @@
     <Filter Include="SharedLibrary\Source Files">
       <UniqueIdentifier>{25a98bd2-26c0-4354-beb6-bec47d557f61}</UniqueIdentifier>
     </Filter>
+    <Filter Include="RSFoundation">
+      <UniqueIdentifier>{87d9fcb8-cae3-47b1-a7b9-69603349aec5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\FoundationTestSuite.cpp">
@@ -49,7 +52,7 @@
       <Filter>SharedLibrary\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\RSProviderTest.cpp">
-      <Filter>SharedLibrary\Source Files</Filter>
+      <Filter>_Suite\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -72,8 +75,7 @@
       <Filter>SharedLibrary\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\RSProviderTest.h">
-      <Filter>SharedLibrary\Header Files</Filter>
+      <Filter>_Suite\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\SOFProvider\GMCrypto.h" />
   </ItemGroup>
 </Project>
