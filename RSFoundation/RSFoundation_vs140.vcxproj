@@ -27,11 +27,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\JSONStringify.cpp" />
     <ClCompile Include="src\RSFoundation.cpp" />
     <ClCompile Include="src\UDevice.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\RSFoundation.h" />
+    <ClInclude Include="src\JSONStringify.h" />
     <ClInclude Include="src\UDevice.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -64,7 +66,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release_shared|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v120_xp</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug_shared|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
