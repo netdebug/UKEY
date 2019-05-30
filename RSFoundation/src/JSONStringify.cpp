@@ -35,7 +35,7 @@ JSONStringify::~JSONStringify()
 
 void JSONStringify::format()
 {
-	result.set("code", code);
+	result.set("code", "0000");
 	result.set("msg", message);
 }
 
