@@ -149,6 +149,49 @@ void RSProviderTest::testRSKeyGetKeySn()
 
 void RSProviderTest::testRSKeySignByP1()
 {
+	Reach::RSFoundation rsf;
+
+	std::string message("what is up? what the fucking library!Signed the data!");
+	std::string signedResult = rsf.RS_KeySignByP1(uid, message);
+	std::cout << "signedResult:" << signedResult << std::endl;
+	std::string value;
+	{
+		Parser parse;
+		Var result = parse.parse(signedResult);
+		assert(result.type() == typeid(Object::Ptr));
+
+		Object object = *result.extract<Object::Ptr>();
+		Var test = object.get("data");
+		Object subObject = *test.extract<Object::Ptr>();
+		value = subObject.get("signdMsg").toString();
+	}
+	
+	std::string json = rsf.RS_GetCertBase64String(sign, uid);
+	std::cout << json << std::endl;
+	std::string cert;
+	{
+		Parser parser;
+		Var result = parser.parse(json);
+		assert(result.type() == typeid(Object::Ptr));
+
+		Object object = *result.extract<Object::Ptr>();
+		Var test = object.get("data");
+		Object subObject = *test.extract<Object::Ptr>();
+		cert = subObject.get("certBase64").toString();
+	}
+
+	{
+		std::string t = rsf.RS_VerifySignByP1(cert, message, value);
+
+		std::cout << t << std::endl;
+		Parser parser;
+		Var rt = parser.parse(t);
+		assert(rt.type() == typeid(Object::Ptr));
+
+		Object object = *rt.extract<Object::Ptr>();
+		DynamicStruct ds = object;
+		assert(ds["code"] == 0);
+	}
 }
 
 void RSProviderTest::testRSVerifySignByP1()

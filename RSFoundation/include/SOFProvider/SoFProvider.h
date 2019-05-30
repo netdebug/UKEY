@@ -1,36 +1,54 @@
-#pragma once
-//typedef char* BSTR ;
-//typedef long BOOL;
-#include <string.h>
-#include "GMCrypto.h"
+#ifndef _SOFPROVIDER_H_
+#define _SOFPROVIDER_H_
+
+#include <string>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-	typedef char * BSTR;
 	int SOF_OpenDevice(void);
+
 	int SOF_CloseDevice(void);
-	long SOF_SetSignMethod(long SignMethod);
-	long SOF_SetEncryptMethod(long EncryptMethod);
+
+	long SOF_SetSignMethod (long SignMethod);
+
+	long SOF_SetEncryptMethod (long EncryptMethod);
+
 	long SOF_GetLastError();
-	BSTR SOF_GenRandom(short RandomLen);
-	BOOL SOF_Login(BSTR  ContainerName, BSTR  PassWd);
-	long SOF_GetPinRetryCount(BSTR AppName);
-	BSTR SOF_GetCertInfo(BSTR Base64EncodeCert, short Type);
-	BSTR SOF_GetDeviceInfo(BSTR ContainerName, long type);
-	BSTR SOF_SignData(BSTR ContainerName, BSTR InData);
-	BOOL SOF_VerifySignedData(BSTR Base64EncodeCert, BSTR InData, BSTR SignValue);
-	BOOL SOF_EncryptFile(BSTR Pwd, BSTR InFile, BSTR OutFile);
-	BOOL SOF_DecryptFile(BSTR Pwd, BSTR InFile, BSTR OutFile);
-	BSTR SOF_AsEncrypt(BSTR Base64Cert, BSTR InData);
-	BSTR SOF_AsDecrypt(BSTR Base64Cert, BSTR Indata);
-	BSTR SOF_ExportUserCert(BSTR ContainerName);
-	BSTR SOF_ExportExChangeUserCert(BSTR ContainerName);
-	BSTR SOF_GetUserList();
-	
 #ifdef __cplusplus
 }
+#endif
+
+std::string SOF_ExportUserCert(std::string ContainerName);
+
+std::string SOF_GetUserList();
+
+std::string SOF_GenRandom(short RandomLen);
+
+BOOL SOF_Login(std::string ContainerName,std::string PassWd);
+
+long SOF_GetPinRetryCount(std::string AppName);
+
+std::string SOF_ExportExChangeUserCert(std::string ContainerName);
+
+std::string SOF_GetCertInfo(std::string Base64EncodeCert, short Type);
+
+std::string SOF_SignData(std::string ContainerName,std::string InData);
+
+BOOL SOF_VerifySignedData(std::string Base64EncodeCert, std::string InData, std::string SignValue);
+
+BOOL SOF_EncryptFile(std::string Pwd, std::string InFile, std::string OutFile);
+
+BOOL SOF_DecryptFile(std::string Pwd, std::string InFile, std::string OutFile);
+
+std::string SOF_GetVersion();
+
+std::string SOF_GetDeviceInfo(std::string ContainerName,long type);
+
+std::string SOF_AsEncrypt(std::string Base64EncodeCert, std::string Indata);
+
+std::string SOF_AsDecrypt(std::string ContainerName, std::string InData);
+
 #endif
 
 

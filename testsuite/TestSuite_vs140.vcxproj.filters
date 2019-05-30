@@ -48,9 +48,6 @@
     <ClCompile Include="src\GmskfProviderTest.cpp">
       <Filter>SharedLibrary\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\SOFProviderTest.cpp">
-      <Filter>SharedLibrary\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\RSProviderTest.cpp">
       <Filter>_Suite\Source Files</Filter>
     </ClCompile>

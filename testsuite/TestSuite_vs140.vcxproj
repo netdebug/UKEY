@@ -341,7 +341,6 @@
     <ClCompile Include="src\SealProviderTest.cpp" />
     <ClCompile Include="src\SharedLibraryTest.cpp" />
     <ClCompile Include="src\SharedLibraryTestSuite.cpp" />
-    <ClCompile Include="src\SOFProviderTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\FoundationTestSuite.h" />
