@@ -56,7 +56,7 @@ void RSProviderTest::testRSGetUserList()
 		Object object = *result.extract<Object::Ptr>();
 		DynamicStruct ds = object;
 
-		assert(ds["code"] == "0000");
+		assert(ds["code"] == 0);
 	}
 	catch (JSONException& jsone)
 	{

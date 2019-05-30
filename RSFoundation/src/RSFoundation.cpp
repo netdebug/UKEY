@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <sstream>
 #include "UDevice.h"
+#include "JSONStringify.h"
 #include "SoFProvider.h"
 
 using Poco::JSON::Object;
@@ -66,15 +67,7 @@ std::string RSFoundation::RS_GetParameters(const std::string& cmd)
 
 std::string RSFoundation::RS_GetUserList()
 {
-	UDevice::default(); //throw 
-
-	std::string line = SOF_GetUserList();
-	Poco::JSON::Object result;
-	result.set("code", "0000");
-	result.set("msg", "successful");
-	Poco::JSON::Object users;
-	users.set("userlist", line);
-	result.set("data", users);
+	UDevice::default();
 
 	/* example
 	{
@@ -85,12 +78,11 @@ std::string RSFoundation::RS_GetUserList()
 		}
 	}
 	*/
-	std::ostringstream out;
-	result.stringify(out);
-	
-	return out.str();
+	std::string line = SOF_GetUserList();
+	JSONStringify data;
+	data.addObject("userlist", line);
+	return data;
 }
-
 
 std::string RSFoundation::RS_GetCertBase64String(short ctype, const std::string& uid)
 {
@@ -182,19 +174,9 @@ std::string RSFoundation::RS_GetCertBase64String(short ctype, const std::string&
 		}
 		*/
 	}
-
-	Poco::JSON::Object base64;
-	base64.set("certBase64", certContent);
-
-	Poco::JSON::Object result;
-	result.set("code", "0000");
-	result.set("msg", "successful");
-	result.set("data", base64);
-
-	std::ostringstream out;
-	result.stringify(out);
-
-	return out.str();
+	JSONStringify data;
+	data.addObject("certBase64", certContent);
+	return data;
 }
 
 std::string RSFoundation::RS_GetCertInfo(const std::string& base64, short type)
@@ -217,18 +199,9 @@ std::string RSFoundation::RS_GetCertInfo(const std::string& base64, short type)
 		//certItem = SOF_GetCertInfoByOid(const_cast<char*>(certBase64.c_str()), type);
 	}
 
-	Poco::JSON::Object info;
-	info.set("info", item);
-
-	Poco::JSON::Object result;
-	result.set("code", "0000");
-	result.set("msg", "successful");
-	result.set("data", info);
-
-	std::ostringstream out;
-	result.stringify(out);
-
-	return out.str();
+	JSONStringify data;
+	data.addObject("info", item);
+	return data;
 }
 
 std::string RSFoundation::RS_CertLogin(const std::string& uid, const std::string& password)
@@ -247,18 +220,9 @@ std::string RSFoundation::RS_CertLogin(const std::string& uid, const std::string
 	if (!SOF_Login(_uid, _pw))
 		throw Poco::LogicException("UKEY Login failed! containerId is", uid, 0x35);
 
-	Poco::JSON::Object info;
-	info.set("containerId", uid);
-
-	Poco::JSON::Object result;
-	result.set("code", "0000");
-	result.set("msg", "successful");
-	result.set("data", info);
-
-	std::ostringstream out;
-	result.stringify(out);
-
-	return out.str();
+	JSONStringify data;
+	data.addObject("containerId", uid);
+	return data;
 }
 
 std::string RSFoundation::RS_GetPinRetryCount(const std::string& uid)
@@ -268,18 +232,9 @@ std::string RSFoundation::RS_GetPinRetryCount(const std::string& uid)
 	char* _uid = const_cast<char*>(uid.c_str());
 	int retryCount = SOF_GetPinRetryCount(_uid);
 
-	Poco::JSON::Object data;
-	data.set("retryCount", retryCount);
-
-	Poco::JSON::Object result;
-	result.set("code", "0000");
-	result.set("msg", "successful");
-	result.set("data", data);
-
-	std::ostringstream out;
-	result.stringify(out);
-
-	return out.str();
+	JSONStringify data;
+	data.addObject("retryCount", retryCount);
+	return data;
 }
 
 std::string RSFoundation::RS_KeyGetKeySn(std::string& uid)
@@ -289,19 +244,10 @@ std::string RSFoundation::RS_KeyGetKeySn(std::string& uid)
 	char* _uid = const_cast<char*>(uid.c_str());
 	std::string SNkey = SOF_GetDeviceInfo(_uid, SGD_DEVICE_SERIAL_NUMBER);
 	
-	Poco::JSON::Object data;
-	data.set("containerId", uid);
-	data.set("keySn", SNkey);
-
-	Poco::JSON::Object result;
-	result.set("code", "0000");
-	result.set("msg", "successful");
-	result.set("data", data);
-
-	std::ostringstream out;
-	result.stringify(out);
-
-	return out.str();
+	JSONStringify data;
+	data.addObject("containerId", uid);
+	data.addObject("keySn", SNkey);
+	return data;
 }
 
 std::string RSFoundation::RS_KeySignByP1(std::string& uid, std::string& msg)
@@ -314,44 +260,26 @@ std::string RSFoundation::RS_KeySignByP1(std::string& uid, std::string& msg)
 	if (signature.empty())
 		throw Poco::LogicException("SOF_SignData failed!", 0x36);
 
-	Poco::JSON::Object data;
-	data.set("signdMsg", signature);
-
-	Poco::JSON::Object result;
-	result.set("code", "0000");
-	result.set("msg", "successful");
-	result.set("data", data);
-
-	std::ostringstream out;
-	result.stringify(out);
-
-	return out.str();
+	JSONStringify data;
+	data.addObject("signdMsg", signature);
+	return data;
 }
 
 std::string RSFoundation::RS_VerifySignByP1(std::string& base64, std::string& msg, const std::string signature)
 {
 	UDevice::default();
 
-	Poco::JSON::Object data;
-	Poco::JSON::Object result;
-	result.set("code", "0000");
-	result.set("msg", "successful");
-	result.set("data", data);
-
 	char* _base64 = const_cast<char*>(base64.c_str());
 	char* _msg = const_cast<char*>(msg.c_str());
 	char* _signature = const_cast<char*>(signature.c_str());
 
 	bool val = SOF_VerifySignedData(_base64, _msg, _signature);
-	if (!val) {
-		result.set("code", "0001");
-		result.set("msg", "unsuccessful");
-	}
+	if (val)
+		throw Poco::LogicException("SOF_VerifySignedData failed", val);
 
-	std::ostringstream out;
-	result.stringify(out);
-
-	return out.str();
+	JSONStringify data;
+	data.addNullObject();
+	return data;
 }
 
 #include "Poco/File.h"
@@ -369,17 +297,9 @@ std::string RSFoundation::RS_EncryptFile(std::string& source, std::string& encry
 	if (!SOF_EncryptFile(ck, _src, _enc))
 		throw Poco::LogicException("SOF_EncryptFile failed!",0x37);
 
-	Poco::JSON::Object symkey;
-	symkey.set("symKey", std::string(ck));
-	Poco::JSON::Object result;
-	result.set("code", "0000");
-	result.set("msg", "successful");
-	result.set("data", symkey);
-
-	std::ostringstream out;
-	result.stringify(out);
-
-	return out.str();
+	JSONStringify data;
+	data.addObject("symKey", ck);
+	return data;
 }
 
 std::string RSFoundation::RS_DecryptFile(std::string& kv, std::string& encrypt, std::string& decrypt)
@@ -391,16 +311,9 @@ std::string RSFoundation::RS_DecryptFile(std::string& kv, std::string& encrypt, 
 	if (!SOF_DecryptFile(ck, _enc, _dec))
 		throw Poco::LogicException("SOF_DecryptFile failed!", 0x38);
 
-	Poco::JSON::Object data;
-	Poco::JSON::Object result;
-	result.set("code", "0000");
-	result.set("msg", "successful");
-	result.set("data", data);
-
-	std::ostringstream out;
-	result.stringify(out);
-
-	return out.str();
+	JSONStringify data;
+	data.addNullObject();
+	return data;
 }
 
 std::string RSFoundation::RS_KeyEncryptData(std::string paintText, std::string base64)
@@ -419,18 +332,9 @@ std::string RSFoundation::RS_KeyEncryptData(std::string paintText, std::string b
 	encData.append("@@@");
 	encData.append(base64);
 
-	Poco::JSON::Object data;
-	data.set("encRsKey", encData);
-
-	Poco::JSON::Object result;
-	result.set("code", "0000");
-	result.set("msg", "successful");
-	result.set("data", data);
-
-	std::ostringstream out;
-	result.stringify(out);
-
-	return out.str();
+	JSONStringify data;
+	data.addObject("encRsKey", encData);
+	return data;
 }
 
 std::string RSFoundation::RS_KeyDecryptData(std::string& uid, std::string& encRsKey)
@@ -465,20 +369,9 @@ std::string RSFoundation::RS_KeyDecryptData(std::string& uid, std::string& encRs
 	if (!_dec)
 		throw Poco::LogicException("SOF_AsDecrypt decrypt Exception", 0x41);
 
-	std::string decdata = _dec;
-
-	Poco::JSON::Object data;
-	data.set("rsKey", decdata);
-
-	Poco::JSON::Object result;
-	result.set("code", "0000");
-	result.set("msg", "successful");
-	result.set("data", data);
-
-	std::ostringstream out;
-	result.stringify(out);
-
-	return out.str();
+	JSONStringify data;
+	data.addObject("rsKey", _dec);
+	return data;
 }
 
 std::string RSFoundation::RS_KeyEncryptByDigitalEnvelope(const std::string& sourceFilePath, const std::string& encFilePath, std::string certBase64)

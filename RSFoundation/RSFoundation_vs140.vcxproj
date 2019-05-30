@@ -27,11 +27,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\JSONStringify.cpp" />
     <ClCompile Include="src\RSFoundation.cpp" />
     <ClCompile Include="src\UDevice.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\RSFoundation.h" />
+    <ClInclude Include="src\JSONStringify.h" />
     <ClInclude Include="src\UDevice.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
