@@ -149,7 +149,7 @@
       <CompileAs>Default</CompileAs>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>PocoFoundationd.lib;SoFProvider.lib;Iphlpapi.lib;msi.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PocoFoundationd.lib;SoFProvider.lib;PocoJSONd.lib;Iphlpapi.lib;msi.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\bin\RSFoundationd.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
