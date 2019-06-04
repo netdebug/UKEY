@@ -197,6 +197,12 @@ std::string RSFoundation::RS_GetCertInfo(const std::string& base64, short type)
 	return data;
 }
 
+std::string RSFoundation::RS_VerifyIdentity(const std::string& base64, const std::string& authNo)
+{
+	JSONStringify data;
+	return data;
+}
+
 std::string RSFoundation::RS_CertLogin(const std::string& uid, const std::string& password)
 {
 	UDevice::default();
@@ -216,6 +222,12 @@ std::string RSFoundation::RS_CertLogin(const std::string& uid, const std::string
 	return data;
 }
 
+std::string RSFoundation::RS_ChangePassWd(const std::string& oldCode, const std::string& newCode)
+{
+	JSONStringify data;
+	return data;
+}
+
 std::string RSFoundation::RS_GetPinRetryCount(const std::string& uid)
 {
 	UDevice::default();
@@ -227,7 +239,7 @@ std::string RSFoundation::RS_GetPinRetryCount(const std::string& uid)
 	return data;
 }
 
-std::string RSFoundation::RS_KeyGetKeySn(std::string& uid)
+std::string RSFoundation::RS_KeyGetKeySn(const std::string& uid)
 {
 	UDevice::default();
 
@@ -242,7 +254,7 @@ std::string RSFoundation::RS_KeyGetKeySn(std::string& uid)
 	return data;
 }
 
-std::string RSFoundation::RS_KeySignByP1(std::string& uid, std::string& msg)
+std::string RSFoundation::RS_KeySignByP1(const std::string& uid, const std::string& msg)
 {
 	UDevice::default();
 
@@ -255,7 +267,7 @@ std::string RSFoundation::RS_KeySignByP1(std::string& uid, std::string& msg)
 	return data;
 }
 
-std::string RSFoundation::RS_VerifySignByP1(std::string& base64, std::string& msg, const std::string signature)
+std::string RSFoundation::RS_VerifySignByP1(const std::string& base64, const std::string& msg, const std::string signature)
 {
 	UDevice::default();
 
@@ -268,21 +280,45 @@ std::string RSFoundation::RS_VerifySignByP1(std::string& base64, std::string& ms
 	return data;
 }
 
-#include "Poco/File.h"
-std::string RSFoundation::RS_EncryptFile(std::string& source, std::string& encrypt)
+std::string RSFoundation::RS_KeyDigitalSignByP1(const std::string& asn1Msg, const std::string& uid)
 {
-	assert(!source.empty());
+	JSONStringify data;
+	return data;
+}
 
-	Poco::File fi(source);
+std::string RSFoundation::RS_VerifyDigitalSignByP1(const std::string& base64, const std::string& asn1Msg, const std::string& signature)
+{
+	JSONStringify data;
+	return data;
+}
+
+std::string RSFoundation::RS_KeySignByP7(const std::string& uid, const std::string& asn1Msg, const std::string& flag)
+{
+	JSONStringify data;
+	return data;
+}
+
+std::string RSFoundation::RS_VerifySignByP7(const std::string& base64, const std::string& asn1Msg, const std::string& signature)
+{
+	JSONStringify data;
+	return data;
+}
+
+#include "Poco/File.h"
+std::string RSFoundation::RS_EncryptFile(std::string& srcfile, std::string& encfile)
+{
+	assert(!srcfile.empty());
+
+	Poco::File fi(srcfile);
 	if (!fi.exists())
 		throw Poco::FileExistsException("Source File Not Exists!", 0x40);
 
 	std::string ck = SOF_GenRandom(32);
 	SOF_SetEncryptMethod(SGD_SM4_CBC);
 
-	assert(!source.empty());
+	assert(!srcfile.empty());
 
-	if (!SOF_EncryptFile(ck, source, encrypt))
+	if (!SOF_EncryptFile(ck, srcfile, encfile))
 		throw Poco::LogicException("SOF_EncryptFile failed!", 0x37);
 
 	JSONStringify data;
@@ -290,14 +326,14 @@ std::string RSFoundation::RS_EncryptFile(std::string& source, std::string& encry
 	return data;
 }
 
-std::string RSFoundation::RS_DecryptFile(std::string& kv, std::string& encrypt, std::string& decrypt)
+std::string RSFoundation::RS_DecryptFile(std::string& kv, std::string& encfile, std::string& decdir)
 {
-	assert(!encrypt.empty() || !decrypt.empty());
+	assert(!encfile.empty() || !decdir.empty());
 
-	if (!encrypt.empty())
-		throw Poco::FileNotFoundException(encrypt, 0x44);
+	if (!encfile.empty())
+		throw Poco::FileNotFoundException(encfile, 0x44);
 
-	if (!SOF_DecryptFile(kv, encrypt, decrypt))
+	if (!SOF_DecryptFile(kv, encfile, decdir))
 		throw Poco::LogicException("SOF_DecryptFile failed!", 0x38);
 
 	JSONStringify data;
@@ -360,13 +396,31 @@ std::string RSFoundation::RS_KeyDecryptData(std::string& uid, std::string& encRs
 	return data;
 }
 
-std::string RSFoundation::RS_KeyEncryptByDigitalEnvelope(const std::string& sourceFilePath, const std::string& encFilePath, std::string certBase64)
+std::string RSFoundation::RS_KeyEncryptByDigitalEnvelope(const std::string& srcfile, const std::string& encfile, std::string base64)
 {
+	assert(!srcfile.empty());
+
+	Poco::File fi(srcfile);
+	if (!fi.exists())
+		throw Poco::FileExistsException("Source File Not Exists!", 0x40);
+
+	std::string ck = SOF_GenRandom(32);
+	SOF_SetEncryptMethod(SGD_SM4_CBC);
+
+	assert(!srcfile.empty());
+
+	if (!SOF_EncryptFile(ck, srcfile, encfile))
+		throw Poco::LogicException("SOF_EncryptFile failed!", 0x37);
+
+	std::string encData = SOF_AsEncrypt(ck, ck);
+	if (encData.empty())
+		throw Poco::LogicException("RS_KeyEncryptData failed!", 0x39);
+
 	std::string JSONString;
 	return JSONString;
 }
 
-std::string RSFoundation::RS_KeyDecryptByDigitalEnvelope(const std::string& encFilePath, const std::string& dncDirectoryPath, std::string& encKeyPath)
+std::string RSFoundation::RS_KeyDecryptByDigitalEnvelope(const std::string& encfile, const std::string& decdir, std::string& encKeyfile)
 {
 	std::string JSONString;
 	return JSONString;
