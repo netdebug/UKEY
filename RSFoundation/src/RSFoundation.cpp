@@ -378,7 +378,7 @@ std::string RSFoundation::RS_KeyDecryptData(std::string& uid, std::string& encRs
 	std::vector<std::string> tags;
 	re.split(encRsKey, tags, options);
 
-	assert(tags.size() > 3);
+	assert(tags.size() > 2);
 	std::string kc = SOF_ExportExChangeUserCert(uid);
 	if (kc != tags[2])
 		throw Poco::LogicException("certificate error");
