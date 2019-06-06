@@ -18,6 +18,13 @@
 #include "Poco/JSON/Parser.h"
 #include "Poco/JSON/Array.h"
 #include "Poco/Dynamic/Struct.h"
+#include "Poco/Base64Encoder.h"
+#include "Poco/Base64Decoder.h"
+#include "Poco/Logger.h"
+#include "Poco/LogStream.h"
+#include "Poco/WindowsConsoleChannel.h"
+#include "Poco/AutoPtr.h"
+
 #include <stdio.h>
 #include <sstream>
 #include <iostream>
@@ -31,7 +38,15 @@ using Poco::LibraryLoadException;
 using Poco::LibraryAlreadyLoadedException;
 using namespace Poco::JSON;
 using namespace Poco::Dynamic;
+using Poco::Base64Decoder;
+using Poco::Base64Encoder;
 using Poco::DynamicStruct;
+using Poco::Logger;
+using Poco::LogStream;
+using Poco::Channel;
+using Poco::WindowsColorConsoleChannel;
+using Poco::Message;
+using Poco::AutoPtr;
 
 RSProviderTest::RSProviderTest(const std::string& name): CppUnit::TestCase(name)
 {
@@ -44,11 +59,14 @@ RSProviderTest::~RSProviderTest()
 
 void RSProviderTest::testRSGetUserList()
 {
+	Logger& root = Logger::get("LoggerTest");//Logger::root();
+	LogStream ls(root);
+
 	try
 	{
 		Reach::RSFoundation rsf;
 		std::string json = rsf.RS_GetUserList();
-		std::cout << json << std::endl;
+		ls.trace() << json << std::endl;
 		Parser parser;
 		Var result = parser.parse(json);
 		assert(result.type() == typeid(Object::Ptr));
@@ -60,25 +78,31 @@ void RSProviderTest::testRSGetUserList()
 	}
 	catch (JSONException& jsone)
 	{
-		std::cout << jsone.message() << std::endl;
+		ls.error() << jsone.message() << std::endl;
 	}
 	catch (Poco::Exception& e)
 	{
-		std::cout << e.message() << std::endl;
+		ls.error() << e.message() << std::endl;
 	}
 }
 
 void RSProviderTest::testRSGetCertBase64String()
 {
+	Logger& root = Logger::get("LoggerTest");//Logger::root();
+	LogStream ls(root);
+
 	Reach::RSFoundation rsf;
 	std::string signd = rsf.RS_GetCertBase64String(sign, uid);
-	std::cout << "signd" << signd << std::endl;
+	ls.trace() << "signd" << signd << std::endl;
 	std::string cypto = rsf.RS_GetCertBase64String(crypto, uid);
-	std::cout << "cypto" << cypto << std::endl;
+	ls.trace() << "cypto" << cypto << std::endl;
 }
 
 void RSProviderTest::testRSGetCertInfo()
 {
+	Logger& root = Logger::get("LoggerTest");//Logger::root();
+	LogStream ls(root);
+
 	#define SGD_CERT_VERSION 0x00000001
 	#define SGD_CERT_SERIAL 0x00000002
 
@@ -86,7 +110,7 @@ void RSProviderTest::testRSGetCertInfo()
 	
 	{
 		std::string json = rsf.RS_GetCertBase64String(sign, uid);
-		std::cout << json << std::endl;
+		ls.trace() << json << std::endl;
 		Parser parser;
 		Var result = parser.parse(json);
 		assert(result.type() == typeid(Object::Ptr));
@@ -96,14 +120,14 @@ void RSProviderTest::testRSGetCertInfo()
 		Object subObject = *test.extract<Object::Ptr>();
 		std::string cert = subObject.get("certBase64");
 
-		std::cout << "SGD_CERT_VERSION" << rsf.RS_GetCertInfo(cert, SGD_CERT_VERSION) << std::endl;
-		std::cout << "SGD_CERT_SERIAL" << rsf.RS_GetCertInfo(cert, SGD_CERT_SERIAL) << std::endl;
+		ls.trace() << "SGD_CERT_VERSION" << rsf.RS_GetCertInfo(cert, SGD_CERT_VERSION) << std::endl;
+		ls.trace() << "SGD_CERT_SERIAL" << rsf.RS_GetCertInfo(cert, SGD_CERT_SERIAL) << std::endl;
 	}
 
 
 	{
 		std::string json = rsf.RS_GetCertBase64String(crypto, uid);
-		std::cout << json << std::endl;
+		ls.trace() << json << std::endl;
 		Parser parser;
 		Var result = parser.parse(json);
 		assert(result.type() == typeid(Object::Ptr));
@@ -113,47 +137,59 @@ void RSProviderTest::testRSGetCertInfo()
 		Object subObject = *test.extract<Object::Ptr>();
 		std::string cert = subObject.get("certBase64");
 
-		std::cout << "SGD_CERT_VERSION" << rsf.RS_GetCertInfo(cert, SGD_CERT_VERSION) << std::endl;
-		std::cout << "SGD_CERT_SERIAL" << rsf.RS_GetCertInfo(cert, SGD_CERT_SERIAL) << std::endl;
+		ls.trace() << "SGD_CERT_VERSION" << rsf.RS_GetCertInfo(cert, SGD_CERT_VERSION) << std::endl;
+		ls.trace() << "SGD_CERT_SERIAL" << rsf.RS_GetCertInfo(cert, SGD_CERT_SERIAL) << std::endl;
 	}
 }
 
 void RSProviderTest::testRSCertLogin()
 {
+	Logger& root = Logger::get("LoggerTest");//Logger::root();
+	LogStream ls(root);
+
 	Reach::RSFoundation rsf;
 	std::string xia("00000000");
 	std::string lg("1111111");
 
 	try
 	{
-		std::cout << "RS_CertLogin except ok:" << rsf.RS_CertLogin(uid, xia) << std::endl;
-		std::cout << "RS_CertLogin except failed:" << rsf.RS_CertLogin(uid, lg) << std::endl;
+		ls.trace() << "RS_CertLogin except ok:" << rsf.RS_CertLogin(uid, xia) << std::endl;
+		ls.trace() << "RS_CertLogin except failed:" << rsf.RS_CertLogin(uid, lg) << std::endl;
 	}
 	catch (Poco::LogicException& e)
 	{
-		std::cout << "RS_CertLogin" << e.message() << std::endl;
+		ls.error() << "RS_CertLogin" << e.message() << std::endl;
 	}
 }
 
 void RSProviderTest::testRSGetPinRetryCount()
 {
+	Logger& root = Logger::get("LoggerTest");//Logger::root();
+	LogStream ls(root);
+
 	Reach::RSFoundation rsf;
-	std::cout << "Retry Count:" << rsf.RS_GetPinRetryCount(uid) << std::endl;
+	ls.trace() << "Retry Count:" << rsf.RS_GetPinRetryCount(uid) << std::endl;
 }
 
 void RSProviderTest::testRSKeyGetKeySn()
 {
+	Logger& root = Logger::get("LoggerTest");//Logger::root();
+	LogStream ls(root);
+
 	Reach::RSFoundation rsf;
-	std::cout << "UKey SN:" << rsf.RS_KeyGetKeySn(uid) << std::endl;
+	ls.trace() << "UKey SN:" << rsf.RS_KeyGetKeySn(uid) << std::endl;
 }
 
 void RSProviderTest::testRSKeySignByP1()
 {
+	Logger& root = Logger::get("LoggerTest");//Logger::root();
+	LogStream ls(root);
+
 	Reach::RSFoundation rsf;
 
-	std::string message("what is up? what the fucking library!Signed the data!");
+	std::string message("what is up? what the library!Signed the data!");
 	std::string signedResult = rsf.RS_KeySignByP1(uid, message);
-	std::cout << "signedResult:" << signedResult << std::endl;
+	ls.trace() << "signedResult:" << signedResult << std::endl;
 	std::string value;
 	{
 		Parser parse;
@@ -167,7 +203,7 @@ void RSProviderTest::testRSKeySignByP1()
 	}
 	
 	std::string json = rsf.RS_GetCertBase64String(sign, uid);
-	std::cout << json << std::endl;
+	ls.trace() << json << std::endl;
 	std::string cert;
 	{
 		Parser parser;
@@ -183,7 +219,7 @@ void RSProviderTest::testRSKeySignByP1()
 	{
 		std::string t = rsf.RS_VerifySignByP1(cert, message, value);
 
-		std::cout << t << std::endl;
+		ls.trace() << t << std::endl;
 		Parser parser;
 		Var rt = parser.parse(t);
 		assert(rt.type() == typeid(Object::Ptr));
@@ -200,8 +236,11 @@ void RSProviderTest::testRSVerifySignByP1()
 
 void RSProviderTest::testRsaEncryptAndDecrypt()
 {
+	Logger& root = Logger::get("LoggerTest");//Logger::root();
+	LogStream ls(root);
+
 	Reach::RSFoundation rsf;
-	std::string paintText("what is up? what the fucking library!");
+	std::string paintText("what is up? what library it is!");
 
 	std::string json = rsf.RS_GetCertBase64String(crypto, uid);
 
@@ -217,7 +256,7 @@ void RSProviderTest::testRsaEncryptAndDecrypt()
 
 		json = rsf.RS_KeyEncryptData(paintText, cert);
 
-		std::cout << "paintText:" << paintText << std::endl
+		ls.trace() << "paintText:" << paintText << std::endl
 			<< "RS_GetCertBase64String certificate:" << cert << std::endl
 			<< "RS_KeyEncryptData encrypt:" << json << std::endl;
 	}
@@ -233,22 +272,40 @@ void RSProviderTest::testRsaEncryptAndDecrypt()
 		std::string encrypt = subObject.get("encRsKey");
 
 		std::string xia("00000000");
-		std::cout << "RS_CertLogin except ok:" << rsf.RS_CertLogin(uid, xia) << std::endl;
+		ls.trace() << "RS_CertLogin except ok:" << rsf.RS_CertLogin(uid, xia) << std::endl;
 
 		std::string decrypt = rsf.RS_KeyDecryptData(uid, encrypt);
-		//assert(paintText == decrypt);
+
+		Var result2 = parser.parse(decrypt);
+		assert(result2.type() == typeid(Object::Ptr));
+		Object object2 = *result2.extract<Object::Ptr>();
+		Var test2 = object2.get("data");
+		Object subObject2 = *test2.extract<Object::Ptr>();
+		std::string base64 = subObject2.get("rsKey");
+		std::istringstream istr(base64);
+		Base64Decoder decoder(istr, Poco::BASE64_URL_ENCODING);
+		std::string dt;
+		int c = decoder.get();
+		while (c != -1) { dt += char(c); c = decoder.get(); }
+		assert(paintText == dt);
+		ls.trace() << "decrypt text : " << dt << std::endl
+			<< "uid:" << uid << std::endl
+			<< "RS_KeyDecryptData decrypt:" << decrypt << std::endl;
 	}
 }
 
 #include "Poco/File.h"
 void RSProviderTest::testSymEncryptAndDecrypt()
 {
+	Logger& root = Logger::get("LoggerTest");//Logger::root();
+	LogStream ls(root);
+
 	Reach::RSFoundation rsf;
 	std::string paintDir("F:/source/RSTestRunner/bin/paintText.txt");
 	std::string encryptDir("F:/source/RSTestRunner/bin/encryptText.txt");
 	std::string jsonkv = rsf.RS_EncryptFile(paintDir, encryptDir);
 
-	std::cout
+	ls.trace()
 		<< paintDir << std::endl
 		<< encryptDir << std::endl
 		<< "RS_EncryptFile:jsonkv\n" << jsonkv << std::endl;
@@ -265,7 +322,7 @@ void RSProviderTest::testSymEncryptAndDecrypt()
 	std::string out("F:/source/RSTestRunner/bin/DecryOut.txt");
 	std::string decrypt = rsf.RS_DecryptFile(kv, in, out);
 
-	std::cout 
+	ls.trace() 
 		<< in << std::endl << out << std::endl << 
 		"RS_DecryptFile:decrypt\n" << decrypt << std::endl;
 }
@@ -281,9 +338,12 @@ void RSProviderTest::testRSKeyDecryptByDigitalEnvelope()
 void RSProviderTest::setUp()
 {
 	uid = "{1B57694E-911E-41D9-8123-971EDD71342C}";
-	//std::string path = "RSProvider.dll";
-	//sl.load(path);
-	//assert(sl.isLoaded());
+	
+	AutoPtr<Channel> pChannel = new WindowsColorConsoleChannel;
+	pChannel->setProperty("traceColor", "lightGreen");
+	Logger& root = Poco::Logger::get("LoggerTest");//Logger::root();
+	root.setChannel(pChannel.get());
+	root.setLevel(Message::PRIO_TRACE);
 }
 
 

@@ -50,6 +50,7 @@ public:
 private:
 	Poco::SharedLibrary sl;
 	std::string uid;
+	std::string selected;
 };
 
 

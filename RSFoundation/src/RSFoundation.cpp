@@ -98,8 +98,8 @@ std::string RSFoundation::RS_GetCertBase64String(short ctype, const std::string&
 		case certType::sign:
 		{
 			certContent = SOF_ExportUserCert(uid);
-			break;
 		}
+			break;
 		/*
 		{
 			"code":"0000",
@@ -134,9 +134,10 @@ std::string RSFoundation::RS_GetCertBase64String(short ctype, const std::string&
 		*/
 		case certType::crypto:
 		{
+			certContent = "";
 			certContent = SOF_ExportExChangeUserCert(uid);
-			break;
 		}
+			break;
 		/*
 		{
 			"code":"0000",
@@ -328,9 +329,9 @@ std::string RSFoundation::RS_EncryptFile(std::string& srcfile, std::string& encf
 
 std::string RSFoundation::RS_DecryptFile(std::string& kv, std::string& encfile, std::string& decdir)
 {
-	assert(!encfile.empty() || !decdir.empty());
+	assert(!decdir.empty());
 
-	if (!encfile.empty())
+	if (encfile.empty())
 		throw Poco::FileNotFoundException(encfile, 0x44);
 
 	if (!SOF_DecryptFile(kv, encfile, decdir))
@@ -343,7 +344,10 @@ std::string RSFoundation::RS_DecryptFile(std::string& kv, std::string& encfile, 
 
 std::string RSFoundation::RS_KeyEncryptData(std::string paintText, std::string base64)
 {
-	assert(!paintText.empty() || !base64.empty());
+	assert(!paintText.empty() && !base64.empty());
+	if (paintText.empty()) return "";
+	if (base64.empty())
+		throw Poco::LogicException("RS_KeyEncryptData certificate must not be empty!", 0x45);
 
 	SOF_SetSignMethod(SGD_SM3_SM2);
 	SOF_SetEncryptMethod(SGD_SM4_ECB);
@@ -377,18 +381,20 @@ std::string RSFoundation::RS_KeyDecryptData(std::string& uid, std::string& encRs
 
 	std::vector<std::string> tags;
 	re.split(encRsKey, tags, options);
+	std::string& enc = tags[1];
+	std::string& cer = tags[2];
 
 	assert(tags.size() > 2);
 	std::string kc = SOF_ExportExChangeUserCert(uid);
-	if (kc != tags[2])
+	
+	if (kc != cer)
 		throw Poco::LogicException("certificate error");
 
 	/*SOF_SetSignMethod(SGD_SM3_SM2);
 	SOF_SetEncryptMethod(SGD_SM4_ECB);*/
-
-	std::string decrypt = SOF_AsDecrypt(uid, tags[1]);
+	std::string decrypt = SOF_AsDecrypt(uid, enc);
 	assert(!decrypt.empty());
-	if (!decrypt.empty())
+	if (decrypt.empty())
 		throw Poco::LogicException("SOF_AsDecrypt decrypt Exception", 0x41);
 
 	JSONStringify data;
