@@ -39,6 +39,9 @@ public:
 	void testRSVerifySignByP1();
 	void testRsaEncryptAndDecrypt();
 	void testSymEncryptAndDecrypt();
+	void testDesEncryptAndDecrypt();
+	void testMethodInfomation();
+	void testSignVerifyByFile();
 	void testRSKeyEncryptByDigitalEnvelope();
 	void testRSKeyDecryptByDigitalEnvelope();
 

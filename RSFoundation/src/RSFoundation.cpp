@@ -17,6 +17,7 @@
 #include "Poco/JSON/Object.h"
 #include "Poco/JSON/Array.h"
 #include "Poco/JSON/JSONException.h"
+#include "Poco/File.h"
 
 #include <vector>
 #include <iostream>
@@ -200,6 +201,8 @@ std::string RSFoundation::RS_GetCertInfo(const std::string& base64, short type)
 
 std::string RSFoundation::RS_VerifyIdentity(const std::string& base64, const std::string& authNo)
 {
+	UDevice::default();
+
 	JSONStringify data;
 	return data;
 }
@@ -223,8 +226,18 @@ std::string RSFoundation::RS_CertLogin(const std::string& uid, const std::string
 	return data;
 }
 
-std::string RSFoundation::RS_ChangePassWd(const std::string& oldCode, const std::string& newCode)
+std::string RSFoundation::RS_ChangePassWd(const std::string& uid, const std::string& oldCode, const std::string& newCode)
 {
+	UDevice::default();
+
+	assert(!uid.empty());
+
+	if (!SOF_ChangePassWd(uid, oldCode, newCode))
+	{
+		int error = SOF_GetLastError();
+		throw Poco::LogicException("SOF_ChangePassWd failed", error);
+	}
+
 	JSONStringify data;
 	return data;
 }
@@ -283,31 +296,40 @@ std::string RSFoundation::RS_VerifySignByP1(const std::string& base64, const std
 
 std::string RSFoundation::RS_KeyDigitalSignByP1(const std::string& asn1Msg, const std::string& uid)
 {
+	UDevice::default();
+
 	JSONStringify data;
 	return data;
 }
 
 std::string RSFoundation::RS_VerifyDigitalSignByP1(const std::string& base64, const std::string& asn1Msg, const std::string& signature)
 {
+	UDevice::default();
+
 	JSONStringify data;
 	return data;
 }
 
 std::string RSFoundation::RS_KeySignByP7(const std::string& uid, const std::string& asn1Msg, const std::string& flag)
 {
+	UDevice::default();
+
 	JSONStringify data;
 	return data;
 }
 
 std::string RSFoundation::RS_VerifySignByP7(const std::string& base64, const std::string& asn1Msg, const std::string& signature)
 {
+	UDevice::default();
+
 	JSONStringify data;
 	return data;
 }
 
-#include "Poco/File.h"
 std::string RSFoundation::RS_EncryptFile(std::string& srcfile, std::string& encfile)
 {
+	UDevice::default();
+
 	assert(!srcfile.empty());
 
 	Poco::File fi(srcfile);
@@ -329,6 +351,8 @@ std::string RSFoundation::RS_EncryptFile(std::string& srcfile, std::string& encf
 
 std::string RSFoundation::RS_DecryptFile(std::string& kv, std::string& encfile, std::string& decdir)
 {
+	UDevice::default();
+
 	assert(!decdir.empty());
 
 	if (encfile.empty())
@@ -344,6 +368,8 @@ std::string RSFoundation::RS_DecryptFile(std::string& kv, std::string& encfile, 
 
 std::string RSFoundation::RS_KeyEncryptData(std::string paintText, std::string base64)
 {
+	UDevice::default();
+
 	assert(!paintText.empty() && !base64.empty());
 	if (paintText.empty()) return "";
 	if (base64.empty())
@@ -404,6 +430,8 @@ std::string RSFoundation::RS_KeyDecryptData(std::string& uid, std::string& encRs
 
 std::string RSFoundation::RS_KeyEncryptByDigitalEnvelope(const std::string& srcfile, const std::string& encfile, std::string base64)
 {
+	UDevice::default();
+
 	assert(!srcfile.empty());
 
 	Poco::File fi(srcfile);
@@ -428,6 +456,121 @@ std::string RSFoundation::RS_KeyEncryptByDigitalEnvelope(const std::string& srcf
 
 std::string RSFoundation::RS_KeyDecryptByDigitalEnvelope(const std::string& encfile, const std::string& decdir, std::string& encKeyfile)
 {
+	UDevice::default();
+
 	std::string JSONString;
 	return JSONString;
+}
+
+
+std::string RSFoundation::GetSignMethod()
+{
+	UDevice::default();
+
+	enum{none = 0};
+	unsigned long method = SOF_GetSignMethod();
+	if (none == method)
+	{
+		int error = SOF_GetLastError();
+		throw Poco::LogicException("SOF_GetSignMethod was failed!", error);
+	}
+
+	JSONStringify data;
+	data.addObject("SignMethod", method);
+	return data;
+}
+
+std::string RSFoundation::GetEncryptMethod()
+{
+	UDevice::default();
+
+	enum { none = 0 };
+	unsigned long method = SOF_GetEncryptMethod();
+	if (none == method)
+	{
+		int error = SOF_GetLastError();
+		throw Poco::LogicException("SOF_GetSignMethod was failed!", error);
+	}
+
+	JSONStringify data;
+	data.addObject("EncryptMethod", method);
+	return data;
+}
+
+std::string RSFoundation::SignFile(const std::string& uid, const std::string& toSign)
+{
+	UDevice::default();
+
+	assert(!uid.empty());
+
+	Poco::File fi(toSign);
+	if (!fi.exists())
+		throw Poco::LogicException("The file that need to sign does not exist!", 0x46);
+
+	std::string signature = SOF_SignFile(uid, fi.path());
+	if (signature.empty())
+	{
+		int error = SOF_GetLastError();
+		throw Poco::LogicException("SOF_SignFile was failed!", error);
+	}
+
+	JSONStringify data;
+	data.addObject("signature", signature);
+	return data;
+}
+
+std::string RSFoundation::VerifySignedFile(const std::string& base64, const std::string& toVerify, const std::string& signature)
+{
+	UDevice::default();
+
+	Poco::File fi(toVerify);
+	if(!fi.exists())
+		throw Poco::LogicException("The file that need to verify does not exist!", 0x46);
+
+	bool val = SOF_VerifySignedFile(base64, fi.path(), signature);
+	if (val)
+	{
+		int error = SOF_GetLastError();
+		throw Poco::LogicException("SOF_VerifySignedData failed!", error);
+	}
+
+	JSONStringify ok;
+	ok.addNullObject();
+	return ok;
+}
+
+std::string RSFoundation::DesEncrypt(const std::string& paintText, const std::string& base64)
+{
+	UDevice::default();
+
+	assert(!base64.empty());
+
+	std::string encrypt = SOF_EncryptData(base64, paintText);
+	if (encrypt.empty())
+	{
+		int error = SOF_GetLastError();
+		throw Poco::LogicException("SOF_EncryptData failed!", error);
+	}
+		
+	JSONStringify data;
+	data.addObject("encrypt", encrypt);
+	return data;
+}
+
+std::string RSFoundation::DesDecrypt(const std::string& encryptText, const std::string& base64)
+{
+	UDevice::default();
+
+	assert(!base64.empty());
+
+	std::string decrypt = SOF_DecryptData(base64, encryptText);
+	if (decrypt.empty())
+	{
+		int error = SOF_GetLastError();
+		throw Poco::LogicException("SOF_DecryptData failed!", error);
+	}
+
+	JSONStringify data;
+	data.addObject("decrypt", decrypt);
+	return data;
 }

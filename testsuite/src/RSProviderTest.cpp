@@ -48,7 +48,7 @@ using Poco::WindowsColorConsoleChannel;
 using Poco::Message;
 using Poco::AutoPtr;
 
-RSProviderTest::RSProviderTest(const std::string& name): CppUnit::TestCase(name)
+RSProviderTest::RSProviderTest(const std::string& name) : CppUnit::TestCase(name)
 {
 }
 
@@ -103,11 +103,11 @@ void RSProviderTest::testRSGetCertInfo()
 	Logger& root = Logger::get("LoggerTest");//Logger::root();
 	LogStream ls(root);
 
-	#define SGD_CERT_VERSION 0x00000001
-	#define SGD_CERT_SERIAL 0x00000002
+#define SGD_CERT_VERSION 0x00000001
+#define SGD_CERT_SERIAL 0x00000002
 
 	Reach::RSFoundation rsf;
-	
+
 	{
 		std::string json = rsf.RS_GetCertBase64String(sign, uid);
 		ls.trace() << json << std::endl;
@@ -201,7 +201,7 @@ void RSProviderTest::testRSKeySignByP1()
 		Object subObject = *test.extract<Object::Ptr>();
 		value = subObject.get("signdMsg").toString();
 	}
-	
+
 	std::string json = rsf.RS_GetCertBase64String(sign, uid);
 	ls.trace() << json << std::endl;
 	std::string cert;
@@ -322,9 +322,123 @@ void RSProviderTest::testSymEncryptAndDecrypt()
 	std::string out("F:/source/RSTestRunner/bin/DecryOut.txt");
 	std::string decrypt = rsf.RS_DecryptFile(kv, in, out);
 
-	ls.trace() 
-		<< in << std::endl << out << std::endl << 
+	ls.trace()
+		<< in << std::endl << out << std::endl <<
 		"RS_DecryptFile:decrypt\n" << decrypt << std::endl;
+}
+
+void RSProviderTest::testDesEncryptAndDecrypt()
+{
+	Logger& root = Logger::get("LoggerTest");//Logger::root();
+	LogStream ls(root);
+
+	std::string paintText("@This is a demo for test DesEncrypt And Decrypt,123@");
+	std::string encryptText;
+
+	Reach::RSFoundation rsf;
+
+	{
+		std::string json = rsf.RS_GetCertBase64String(crypto, uid);
+		Parser parser;
+		Var result = parser.parse(json);
+		assert(result.type() == typeid(Object::Ptr));
+
+		Object object = *result.extract<Object::Ptr>();
+		Var test = object.get("data");
+		Object subObject = *test.extract<Object::Ptr>();
+
+		std::string cert = subObject.get("certBase64");
+
+		{
+			encryptText = rsf.DesEncrypt(paintText, cert);
+
+			ls.trace() << "DesEncrypt paintText :" << paintText << std::endl
+				<< "base64 certificate content :" << cert << std::endl
+				<< "DesEncrypt encryptText json : " << encryptText << std::endl;
+
+			Parser parser;
+			Var result = parser.parse(encryptText);
+			assert(result.type() == typeid(Object::Ptr));
+
+			Object object = *result.extract<Object::Ptr>();
+			Var test = object.get("data");
+			Object subObject = *test.extract<Object::Ptr>();
+
+			std::string encryptText = subObject.get("encrypt");
+
+			{
+				std::string resultJson = rsf.DesDecrypt(encryptText, cert);
+
+				ls.trace() << "DesEncrypt paintText :" << paintText << std::endl
+					<< "base64 certificate content :" << cert << std::endl
+					<< "DesEncrypt encryptText json : " << resultJson << std::endl;
+
+				Parser parser;
+				Var result = parser.parse(resultJson);
+				assert(result.type() == typeid(Object::Ptr));
+
+				Object object = *result.extract<Object::Ptr>();
+				Var test = object.get("data");
+				Object subObject = *test.extract<Object::Ptr>();
+
+				std::string encryptText = subObject.get("decrypt");
+
+				assert(encryptText == paintText);
+			}
+		}
+	}
+}
+
+void RSProviderTest::testMethodInfomation()
+{
+	Logger& root = Logger::get("LoggerTest");//Logger::root();
+	LogStream ls(root);
+
+	Reach::RSFoundation rsf;
+
+	ls.trace() << "GetSignMethod Json\n" << rsf.GetSignMethod() << std::endl;
+	ls.trace() << "GetEncryptMethod \n" << rsf.GetEncryptMethod() << std::endl;
+}
+
+void RSProviderTest::testSignVerifyByFile()
+{
+	Logger& root = Logger::get("LoggerTest");//Logger::root();
+	LogStream ls(root);
+
+	std::string toSign("F:/source/RSTestRunner/bin/encryptText.txt");
+	std::string signature;
+	Reach::RSFoundation rsf;
+
+	signature = rsf.SignFile(uid, toSign);
+
+	ls.trace() << "SignFile signature json: " << signature << std::endl;
+
+	{
+		Parser parser;
+		Var result = parser.parse(signature);
+		assert(result.type() == typeid(Object::Ptr));
+
+		Object object = *result.extract<Object::Ptr>();
+		Var test = object.get("data");
+		Object subObject = *test.extract<Object::Ptr>();
+
+		std::string value = subObject.get("signature");
+
+		{
+			std::string json = rsf.RS_GetCertBase64String(crypto, uid);
+			Parser parser;
+			Var result = parser.parse(json);
+			assert(result.type() == typeid(Object::Ptr));
+
+			Object object = *result.extract<Object::Ptr>();
+			Var test = object.get("data");
+			Object subObject = *test.extract<Object::Ptr>();
+
+			std::string cert = subObject.get("certBase64");
+
+			ls.trace() << "VerifySignedFile result json : " << rsf.VerifySignedFile(cert, toSign, value) << std::endl;
+		}
+	}
 }
 
 void RSProviderTest::testRSKeyEncryptByDigitalEnvelope()
@@ -338,7 +452,7 @@ void RSProviderTest::testRSKeyDecryptByDigitalEnvelope()
 void RSProviderTest::setUp()
 {
 	uid = "{1B57694E-911E-41D9-8123-971EDD71342C}";
-	
+
 	AutoPtr<Channel> pChannel = new WindowsColorConsoleChannel;
 	pChannel->setProperty("traceColor", "lightGreen");
 	Logger& root = Poco::Logger::get("LoggerTest");//Logger::root();
@@ -372,6 +486,9 @@ CppUnit::Test* RSProviderTest::suite()
 	CppUnit_addTest(pSuite, RSProviderTest, testSymEncryptAndDecrypt);
 	CppUnit_addTest(pSuite, RSProviderTest, testRSKeyEncryptByDigitalEnvelope);
 	CppUnit_addTest(pSuite, RSProviderTest, testRSKeyDecryptByDigitalEnvelope);
+	CppUnit_addTest(pSuite, RSProviderTest, testDesEncryptAndDecrypt);
+	CppUnit_addTest(pSuite, RSProviderTest, testMethodInfomation);
+	CppUnit_addTest(pSuite, RSProviderTest, testSignVerifyByFile);
 
 	return pSuite;
 }

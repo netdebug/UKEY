@@ -45,7 +45,7 @@ namespace Reach {
 
 		//用户密码服务
 		std::string RS_CertLogin(const std::string& uid, const std::string& password);
-		std::string RS_ChangePassWd(const std::string& oldCode, const std::string& newCode);
+		std::string RS_ChangePassWd(const std::string& uid, const std::string& oldCode, const std::string& newCode);
 		std::string RS_GetPinRetryCount(const std::string& uid);
 
 		//签名和验签
@@ -69,6 +69,14 @@ namespace Reach {
 		//数字信封加解密
 		std::string RS_KeyEncryptByDigitalEnvelope(const std::string& srcfile, const std::string& encfile, std::string base64);
 		std::string RS_KeyDecryptByDigitalEnvelope(const std::string& encfile, const std::string& decdir, std::string& encKeyfile);
+
+		//其他
+		std::string GetSignMethod();
+		std::string GetEncryptMethod();
+		std::string SignFile(const std::string& uid, const std::string& file);
+		std::string VerifySignedFile(const std::string& base64, const std::string& file, const std::string& signature);
+		std::string DesEncrypt(const std::string& paintText, const std::string& base64);
+		std::string DesDecrypt(const std::string& encryptText, const std::string& base64);
 	};
 }
 
