@@ -75,8 +75,8 @@ namespace Reach {
 		std::string GetEncryptMethod();
 		std::string SignFile(const std::string& uid, const std::string& file);
 		std::string VerifySignedFile(const std::string& base64, const std::string& file, const std::string& signature);
-		std::string DesEncrypt(const std::string& paintText, const std::string& base64);
-		std::string DesDecrypt(const std::string& encryptText, const std::string& base64);
+		std::string DesEncrypt(const std::string& paintText/*, const std::string& base64*/);
+		std::string DesDecrypt(const std::string& encryptText, const std::string& kv);
 	};
 }
 

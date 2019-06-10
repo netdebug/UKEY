@@ -350,7 +350,7 @@ void RSProviderTest::testDesEncryptAndDecrypt()
 		std::string cert = subObject.get("certBase64");
 
 		{
-			encryptText = rsf.DesEncrypt(paintText, cert);
+			encryptText = rsf.DesEncrypt(paintText/*, cert*/);
 
 			ls.trace() << "DesEncrypt paintText :" << paintText << std::endl
 				<< "base64 certificate content :" << cert << std::endl
@@ -365,9 +365,10 @@ void RSProviderTest::testDesEncryptAndDecrypt()
 			Object subObject = *test.extract<Object::Ptr>();
 
 			std::string encryptText = subObject.get("encrypt");
+			std::string kv = subObject.get("symKey");
 
 			{
-				std::string resultJson = rsf.DesDecrypt(encryptText, cert);
+				std::string resultJson = rsf.DesDecrypt(encryptText, kv);
 
 				ls.trace() << "DesEncrypt paintText :" << paintText << std::endl
 					<< "base64 certificate content :" << cert << std::endl
@@ -425,7 +426,7 @@ void RSProviderTest::testSignVerifyByFile()
 		std::string value = subObject.get("signature");
 
 		{
-			std::string json = rsf.RS_GetCertBase64String(crypto, uid);
+			std::string json = rsf.RS_GetCertBase64String(sign, uid);
 			Parser parser;
 			Var result = parser.parse(json);
 			assert(result.type() == typeid(Object::Ptr));
