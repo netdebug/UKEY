@@ -30,6 +30,9 @@ namespace Reach {
 		JSONStringify& addObject(const std::string& k, int v);
 		JSONStringify& addNullObject();
 
+		JSONStringify& addObjectItem(const std::string& k, const std::string& v);
+		JSONStringify& addObjectItem(const std::string& k, int v);
+
 		operator std::string();
 	protected:
 		void format();
