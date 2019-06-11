@@ -187,6 +187,9 @@ void RSProviderTest::testRSKeySignByP1()
 
 	Reach::RSFoundation rsf;
 
+	std::string xia("00000000");
+	rsf.RS_CertLogin(uid, xia);
+
 	std::string message("what is up? what the library!Signed the data!");
 	std::string signedResult = rsf.RS_KeySignByP1(uid, message);
 	ls.trace() << "signedResult:" << signedResult << std::endl;
