@@ -202,7 +202,7 @@ std::string RSFoundation::RS_GetCertInfo(const std::string& base64, short type)
 std::string RSFoundation::RS_VerifyIdentity(const std::string& base64, const std::string& authNo)
 {
 	UDevice::default();
-
+	//需要服务端配合
 	JSONStringify data;
 	return data;
 }
@@ -317,7 +317,7 @@ std::string RSFoundation::RS_VerifyDigitalSignByP1(const std::string& base64, co
 std::string RSFoundation::RS_KeySignByP7(const std::string& uid, const std::string& asn1Msg, const std::string& flag)
 {
 	UDevice::default();
-
+	//SOF_SignMessage
 	JSONStringify data;
 	return data;
 }
@@ -325,7 +325,7 @@ std::string RSFoundation::RS_KeySignByP7(const std::string& uid, const std::stri
 std::string RSFoundation::RS_VerifySignByP7(const std::string& base64, const std::string& asn1Msg, const std::string& signature)
 {
 	UDevice::default();
-
+	//SOF_VerifySignedMessage
 	JSONStringify data;
 	return data;
 }
@@ -370,7 +370,7 @@ std::string RSFoundation::RS_DecryptFile(std::string& kv, std::string& encfile, 
 	return data;
 }
 
-std::string RSFoundation::RS_KeyEncryptData(std::string paintText, std::string base64)
+std::string RSFoundation::KeyEncryptData(std::string& paintText, std::string& base64)
 {
 	UDevice::default();
 
@@ -389,12 +389,21 @@ std::string RSFoundation::RS_KeyEncryptData(std::string paintText, std::string b
 	encData.append("@@@");
 	encData.append(base64);
 
+	return encData;
+}
+
+std::string RSFoundation::RS_KeyEncryptData(std::string paintText, std::string base64)
+{
+	UDevice::default();
+
+	std::string encData = KeyEncryptData(paintText, base64);
+
 	JSONStringify data;
 	data.addObject("encRsKey", encData);
 	return data;
 }
 
-std::string RSFoundation::RS_KeyDecryptData(std::string& uid, std::string& encRsKey)
+std::string RSFoundation::KeyDecryptData(std::string& uid, std::string& encRsKey)
 {
 	UDevice::default();
 
@@ -427,6 +436,15 @@ std::string RSFoundation::RS_KeyDecryptData(std::string& uid, std::string& encRs
 	if (decrypt.empty())
 		throw Poco::LogicException("SOF_AsDecrypt decrypt Exception", 0x41);
 
+	return decrypt;
+}
+
+std::string RSFoundation::RS_KeyDecryptData(std::string& uid, std::string& encRsKey)
+{
+	UDevice::default();
+
+	std::string decrypt = KeyDecryptData(uid, encRsKey);
+
 	JSONStringify data;
 	data.addObject("rsKey", decrypt);
 	return data;
@@ -448,22 +466,46 @@ std::string RSFoundation::RS_KeyEncryptByDigitalEnvelope(const std::string& srcf
 	assert(!srcfile.empty());
 
 	if (!SOF_EncryptFile(ck, srcfile, encfile))
-		throw Poco::LogicException("SOF_EncryptFile failed!", 0x37);
+		throw Poco::LogicException("SOF_EncryptFile encrypt file failed!", 0x37);
 
-	std::string encData = SOF_AsEncrypt(ck, ck);
+	std::string encData = RS_KeyEncryptData(base64, ck);
+	/*std::string encData = SOF_AsEncrypt(base64, ck);
 	if (encData.empty())
-		throw Poco::LogicException("RS_KeyEncryptData failed!", 0x39);
+		throw Poco::LogicException("RS_KeyEncryptData encrypt random failed!", 0x39);
 
-	std::string JSONString;
-	return JSONString;
+	encData.append("@@@");
+	encData.append(base64);*/
+
+	JSONStringify data;
+	data.addObject("rsKey", encData);
+	return data;
 }
 
-std::string RSFoundation::RS_KeyDecryptByDigitalEnvelope(const std::string& encfile, const std::string& decdir, std::string& encKeyfile)
+std::string RSFoundation::RS_KeyDecryptByDigitalEnvelope(std::string& uid, std::string& encfile, std::string& decdir, std::string& encRsKey)
 {
 	UDevice::default();
 
-	std::string JSONString;
-	return JSONString;
+	Poco::File encrypt(encfile);
+	if (!encrypt.exists())
+		throw Poco::FileExistsException("Encrypt File was not existd!", 0x40);
+
+	/*std::string ck = SOF_AsDecrypt(uid, encRsKey);
+	if (ck.empty()) {
+		int error = SOF_GetLastError();
+		throw Poco::LogicException("SOF_AsDecrypt encRsKey failed!", error);
+	}*/
+
+	std::string ck = KeyDecryptData(uid, encRsKey);
+
+	if (!SOF_DecryptFile(ck, encfile, decdir))
+	{
+		int error = SOF_GetLastError();
+		throw Poco::LogicException("SOF_DecryptFile decrypt file failed!", error);
+	}
+	
+	JSONStringify data;
+	data.addNullObject();
+	return data;
 }
 
 
