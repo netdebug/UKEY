@@ -68,7 +68,7 @@ namespace Reach {
 
 		//数字信封加解密
 		std::string RS_KeyEncryptByDigitalEnvelope(const std::string& srcfile, const std::string& encfile, std::string base64);
-		std::string RS_KeyDecryptByDigitalEnvelope(const std::string& encfile, const std::string& decdir, std::string& encKeyfile);
+		std::string RS_KeyDecryptByDigitalEnvelope(std::string& uid, std::string& encfile, std::string& decdir, std::string& encRsKey);
 
 		//其他
 		std::string GetSignMethod();
@@ -77,6 +77,10 @@ namespace Reach {
 		std::string VerifySignedFile(const std::string& base64, const std::string& file, const std::string& signature);
 		std::string DesEncrypt(const std::string& paintText/*, const std::string& base64*/);
 		std::string DesDecrypt(const std::string& encryptText, const std::string& kv);
+
+	protected:
+		std::string KeyEncryptData(std::string& paintText, std::string& base64);
+		std::string KeyDecryptData(std::string& uid, std::string& encRsKey);
 	};
 }
 

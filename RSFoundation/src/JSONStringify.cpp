@@ -14,22 +14,23 @@
 #include "Poco/Dynamic/Var.h"
 #include <iostream>
 #include <cassert>
+#include <iomanip>
+#include <sstream>
 #include <set>
 
 using namespace Reach;
-using Poco::JSON_PRESERVE_KEY_ORDER;
 using Poco::JSON::Object;
 using Poco::JSON::Query;
 using Poco::Dynamic::Var;
 
 JSONStringify::JSONStringify() :
-	code(0), message("successful"), result(Poco::JSON_PRESERVE_KEY_ORDER)
+	code(0), message("successful"), result(JSONOptions)
 {
 	format();
 }
 
 JSONStringify::JSONStringify(std::string _message, int _code) :
-	code(_code), message(_message), result(Poco::JSON_PRESERVE_KEY_ORDER)
+	code(_code), message(_message), result(JSONOptions)
 {
 	format();
 }
@@ -41,13 +42,16 @@ JSONStringify::~JSONStringify()
 
 void JSONStringify::format()
 {
-	result.set("code", code);
+	std::stringstream _;
+	_ << std::setw(4) << std::left << std::setfill('0') << code;
+
+	result.set("code", _.str());
 	result.set("msg", message);
 }
 
 JSONStringify& JSONStringify::addObject(const std::string& k, const std::string& v)
 {
-	Object O(JSON_PRESERVE_KEY_ORDER);
+	Object O(JSONOptions);
 	O.set(k, v);
 	result.set("data", O);
 	return *this;
@@ -55,7 +59,7 @@ JSONStringify& JSONStringify::addObject(const std::string& k, const std::string&
 
 JSONStringify& JSONStringify::addObject(const std::string& k, int v)
 {
-	Object O(JSON_PRESERVE_KEY_ORDER);
+	Object O(JSONOptions);
 	O.set(k, v);
 	result.set("data", O);
 	return *this;
@@ -63,7 +67,7 @@ JSONStringify& JSONStringify::addObject(const std::string& k, int v)
 
 JSONStringify& JSONStringify::addNullObject()
 {
-	Object O(JSON_PRESERVE_KEY_ORDER);
+	Object O(JSONOptions);
 	O.set("", "");
 	result.set("data", O);
 	return *this;
@@ -76,7 +80,7 @@ JSONStringify& JSONStringify::addObjectItem(const std::string& k, const std::str
 	Query query(result);
 	Object::Ptr d = query.findObject("data");
 	assert(!d.isNull());
-	Object t;
+	Object t(JSONOptions);
 	t = std::move(*d);
 	t.set(k, v);
 	result.set("data", t);
@@ -91,7 +95,7 @@ JSONStringify& JSONStringify::addObjectItem(const std::string& k, int v)
 	Query query(result);
 	Object::Ptr d = query.findObject("data");
 	assert(!d.isNull());
-	Object t;
+	Object t(JSONOptions);
 	t = std::move(*d);
 	t.set(k, v);
 	result.set("data", t);
