@@ -63,6 +63,7 @@ Source: ".\release\PocoFoundation.dll"; DestDir: "{app}"
 Source: ".\release\PocoJSON.dll"; DestDir: "{app}";
 Source: ".\release\RSFoundation.dll"; DestDir: "{app}";
 Source: ".\release\SoFProvider.dll"; DestDir: "{app}"; 
+Source: ".\release\config.ini"; DestDir: "{app}";
 
 ; 001 CFCA œËÍ…
 Source: ".\release\SKF_Library\001\SKF_APP_XS.dll"; DestDir: "{sys}\SKF_Library\001\"
@@ -73,7 +74,6 @@ Source: ".\release\SKF_Library\003\lgu3073_p1514_gm.dll"; DestDir: "{sys}\SKF_Li
 Source: ".\release\SKF_Library\003\lgu3073_p1514_gm_x64.dll"; DestDir: "{sys}\SKF_Library\003\"
 
 [Code]
-
 function InitializeSetup(): boolean;  
 var  
   ResultStr: String;  
