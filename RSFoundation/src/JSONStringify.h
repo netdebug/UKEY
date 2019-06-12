@@ -41,8 +41,7 @@ namespace Reach {
 		int code;
 		std::string message;
 		Poco::JSON::Object result;
-		const int JSONOptions = (Poco::JSONOptions::JSON_PRESERVE_KEY_ORDER| 
-			Poco::JSONOptions::JSON_ESCAPE_UNICODE);
+		const int JSONOptions = (Poco::JSONOptions::JSON_PRESERVE_KEY_ORDER);
 	};
 }
 

@@ -14,6 +14,8 @@
 #include "Poco/Dynamic/Var.h"
 #include <iostream>
 #include <cassert>
+#include <iomanip>
+#include <sstream>
 #include <set>
 
 using namespace Reach;
@@ -40,7 +42,10 @@ JSONStringify::~JSONStringify()
 
 void JSONStringify::format()
 {
-	result.set("code", code);
+	std::stringstream _;
+	_ << std::setw(4) << std::left << std::setfill('0') << code;
+
+	result.set("code", _.str());
 	result.set("msg", message);
 }
 
