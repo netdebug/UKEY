@@ -50,7 +50,7 @@ Source: ".\release\msvcrt.dll"; DestDir: "{app}"
 Source: ".\release\mfc120u.dll"; DestDir: "{app}"
 Source: ".\release\msvcp100.dll"; DestDir: "{app}"
 Source: ".\release\msvcp120.dll"; DestDir: "{app}";
-Source: ".\release\msvcp140.dll"; DestDir: "{app}";
+;Source: ".\release\msvcp140.dll"; DestDir: "{app}";
 Source: ".\release\msvcr90.dll"; DestDir: "{app}";
 Source: ".\release\msvcr100.dll"; DestDir: "{app}";
 Source: ".\release\msvcr120.dll"; DestDir: "{app}";
