@@ -57,6 +57,13 @@ RSProviderTest::~RSProviderTest()
 {
 }
 
+#include "Poco/UnicodeConverter.h"
+#include "Poco/JSON/Query.h"
+#include <iomanip>
+
+using Poco::UnicodeConverter;
+using Poco::JSON::Query;
+
 void RSProviderTest::testRSGetUserList()
 {
 	Logger& root = Logger::get("LoggerTest");//Logger::root();
@@ -74,7 +81,14 @@ void RSProviderTest::testRSGetUserList()
 		Object object = *result.extract<Object::Ptr>();
 		DynamicStruct ds = object;
 
-		assert(ds["code"] == 0);
+		Query query(result);
+		Object::Ptr d = query.findObject("data");
+		assert(!d.isNull());
+		std::string list = d->getValue<std::string>("userlist");
+		Poco::UTF16String out;
+		UnicodeConverter::convert(list, out);
+		std::wcout << std::setw(out.size()) << out << std::endl;
+		assert(ds["code"] == "0000");
 	}
 	catch (JSONException& jsone)
 	{
