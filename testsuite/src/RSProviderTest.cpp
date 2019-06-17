@@ -57,6 +57,13 @@ RSProviderTest::~RSProviderTest()
 {
 }
 
+#include "Poco/UnicodeConverter.h"
+#include "Poco/JSON/Query.h"
+#include <iomanip>
+
+using Poco::UnicodeConverter;
+using Poco::JSON::Query;
+
 void RSProviderTest::testRSGetUserList()
 {
 	Logger& root = Logger::get("LoggerTest");//Logger::root();
@@ -74,7 +81,14 @@ void RSProviderTest::testRSGetUserList()
 		Object object = *result.extract<Object::Ptr>();
 		DynamicStruct ds = object;
 
-		assert(ds["code"] == 0);
+		Query query(result);
+		Object::Ptr d = query.findObject("data");
+		assert(!d.isNull());
+		std::string list = d->getValue<std::string>("userlist");
+		Poco::UTF16String out;
+		UnicodeConverter::convert(list, out);
+		std::wcout << std::setw(out.size()) << out << std::endl;
+		assert(ds["code"] == "0000");
 	}
 	catch (JSONException& jsone)
 	{
@@ -187,8 +201,9 @@ void RSProviderTest::testRSKeySignByP1()
 
 	Reach::RSFoundation rsf;
 
-	std::string xia("00000000");
-	rsf.RS_CertLogin(uid, xia);
+	//std::string xia("00000000");
+	//std::string lg("1111111");
+	rsf.RS_CertLogin(uid, pwd);
 
 	std::string message("what is up? what the library!Signed the data!");
 	std::string signedResult = rsf.RS_KeySignByP1(uid, message);
@@ -274,8 +289,8 @@ void RSProviderTest::testRsaEncryptAndDecrypt()
 		Object subObject = *test.extract<Object::Ptr>();
 		std::string encrypt = subObject.get("encRsKey");
 
-		std::string xia("00000000");
-		ls.trace() << "RS_CertLogin except ok:" << rsf.RS_CertLogin(uid, xia) << std::endl;
+		
+		ls.trace() << "RS_CertLogin except ok:" << rsf.RS_CertLogin(uid, pwd) << std::endl;
 
 		std::string decrypt = rsf.RS_KeyDecryptData(uid, encrypt);
 
@@ -456,7 +471,9 @@ void RSProviderTest::testRSKeyDecryptByDigitalEnvelope()
 void RSProviderTest::setUp()
 {
 	uid = "{1B57694E-911E-41D9-8123-971EDD71342C}";
-
+	pwd = "00000000";
+	//uid = "4334801F-55EA-4F16-982C-CFB2AB8B44F7";
+	//pwd = "111111";
 	AutoPtr<Channel> pChannel = new WindowsColorConsoleChannel;
 	pChannel->setProperty("traceColor", "lightGreen");
 	Logger& root = Poco::Logger::get("LoggerTest");//Logger::root();
