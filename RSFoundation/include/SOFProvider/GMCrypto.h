@@ -108,3 +108,11 @@
 
 //设备信息标识
 #define SGD_DEVICE_SERIAL_NUMBER	0x00000208
+
+//非对称加解密算法
+//保留0x00000080~0x0000000FF
+#define SGD_RSA				0x00010000
+#define SGD_SM2				0x00020100
+#define SGD_SM2_2			0x00020200
+#define SGD_SM2_3			0x00020400
+#define Reversed			0x00000080~0x0000000FF

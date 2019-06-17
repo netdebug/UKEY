@@ -272,7 +272,7 @@ std::string RSFoundation::RS_KeySignByP1(const std::string& uid, const std::stri
 {
 	UDevice::default();
 
-	SOF_SetSignMethod(SGD_SM3_SM2);
+	//SOF_SetSignMethod(SGD_SM3_SM2);
 
 	std::string signature = SOF_SignData(uid, msg);
 	if (signature.empty())
@@ -287,7 +287,7 @@ std::string RSFoundation::RS_VerifySignByP1(const std::string& base64, const std
 {
 	UDevice::default();
 
-	SOF_SetSignMethod(SGD_SM3_SM2);
+	//SOF_SetSignMethod(SGD_SM3_SM2);
 
 	bool val = SOF_VerifySignedData(base64, msg, signature);
 	if (!val)
@@ -340,8 +340,8 @@ std::string RSFoundation::RS_EncryptFile(std::string& srcfile, std::string& encf
 	if (!fi.exists())
 		throw Poco::FileExistsException("Source File Not Exists!", 0x40);
 
-	std::string ck = SOF_GenRandom(32);
-	SOF_SetEncryptMethod(SGD_SM4_CBC);
+	std::string ck = SOF_GenRandom(UDevice::default().random());
+	//SOF_SetEncryptMethod(SGD_SM4_CBC);
 
 	assert(!srcfile.empty());
 
@@ -379,8 +379,8 @@ std::string RSFoundation::KeyEncryptData(std::string& paintText, std::string& ba
 	if (base64.empty())
 		throw Poco::LogicException("RS_KeyEncryptData certificate must not be empty!", 0x45);
 
-	SOF_SetSignMethod(SGD_SM3_SM2);
-	SOF_SetEncryptMethod(SGD_SM4_ECB);
+	/*SOF_SetSignMethod(SGD_SM3_SM2);
+	SOF_SetEncryptMethod(SGD_SM4_ECB);*/
 
 	std::string encData = SOF_AsEncrypt(base64, paintText);
 	if (encData.empty())
@@ -460,8 +460,8 @@ std::string RSFoundation::RS_KeyEncryptByDigitalEnvelope(const std::string& srcf
 	if (!fi.exists())
 		throw Poco::FileExistsException("Source File Not Exists!", 0x40);
 
-	std::string ck = SOF_GenRandom(32);
-	SOF_SetEncryptMethod(SGD_SM4_CBC);
+	std::string ck = SOF_GenRandom(UDevice::default().random());
+	//SOF_SetEncryptMethod(SGD_SM4_CBC);
 
 	assert(!srcfile.empty());
 
@@ -591,8 +591,8 @@ std::string RSFoundation::DesEncrypt(const std::string& paintText/*, const std::
 
 	//assert(!base64.empty());
 
-	std::string ck = SOF_GenRandom(32);
-	SOF_SetEncryptMethod(SGD_SM4_CBC);
+	std::string ck = SOF_GenRandom(UDevice::default().random());
+	//SOF_SetEncryptMethod(SGD_SM4_CBC);
 
 	assert(!ck.empty());
 
