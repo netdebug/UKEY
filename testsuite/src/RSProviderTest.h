@@ -47,7 +47,7 @@ public:
 
 	void setUp();
 	void tearDown();
-
+	void waitforuser();
 	static CppUnit::Test* suite();
 
 private:

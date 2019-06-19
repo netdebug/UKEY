@@ -178,6 +178,8 @@ void RSProviderTest::testRSCertLogin()
 
 void RSProviderTest::testRSGetPinRetryCount()
 {
+	waitforuser();
+
 	Logger& root = Logger::get("LoggerTest");//Logger::root();
 	LogStream ls(root);
 
@@ -250,6 +252,7 @@ void RSProviderTest::testRSKeySignByP1()
 
 void RSProviderTest::testRSVerifySignByP1()
 {
+	waitforuser();
 }
 
 void RSProviderTest::testRsaEncryptAndDecrypt()
@@ -468,10 +471,30 @@ void RSProviderTest::testRSKeyDecryptByDigitalEnvelope()
 {
 }
 
+void RSProviderTest::waitforuser()
+{
+	Logger& root = Logger::get("LoggerTest");//Logger::root();
+	LogStream ls(root);
+
+	std::string c;
+
+	while (true) {
+		std::cin >> c;
+		ls.trace() << c << std::endl;
+		if (c == "g")
+			break;
+	}
+
+
+	ls.trace() << "go" << std::endl;
+}
+
 void RSProviderTest::setUp()
 {
-	uid = "{1B57694E-911E-41D9-8123-971EDD71342C}";
-	pwd = "00000000";
+	/*uid = "{1B57694E-911E-41D9-8123-971EDD71342C}";
+	pwd = "00000000";*/
+	uid = "806000119631708";
+	pwd = "111111";
 	//uid = "4334801F-55EA-4F16-982C-CFB2AB8B44F7";
 	//pwd = "111111";
 	AutoPtr<Channel> pChannel = new WindowsColorConsoleChannel;
