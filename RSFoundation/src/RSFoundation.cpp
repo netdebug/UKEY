@@ -314,19 +314,46 @@ std::string RSFoundation::RS_VerifyDigitalSignByP1(const std::string& base64, co
 	return data;
 }
 
-std::string RSFoundation::RS_KeySignByP7(const std::string& uid, const std::string& asn1Msg, const std::string& flag)
+std::string RSFoundation::RS_KeySignByP7(const std::string& textual, const std::string& flag, const std::string& uid)
 {
+	enum { Attached = 0, Detached };
+
 	UDevice::default();
-	//SOF_SignMessage
+
+	short mode = std::stoi(flag);
+	std::string signature = SOF_SignMessage(mode, uid, textual);
+	if (signature.empty())
+	{
+		JSONStringify data("unsuccessful", 3325);
+		data.addNullObject();
+		return data;
+	}
+
 	JSONStringify data;
+	data.addObject("signdMsg", signature);
 	return data;
 }
 
-std::string RSFoundation::RS_VerifySignByP7(const std::string& base64, const std::string& asn1Msg, const std::string& signature)
+std::string RSFoundation::RS_VerifySignByP7(const std::string& textual, const std::string& signature, const std::string& flag)
 {
+	enum { Attached = 0, Detached };
+
 	UDevice::default();
-	//SOF_VerifySignedMessage
+
+	short mode = std::stoi(flag);
+	std::string orginal = textual;
+	if (Attached == mode)//1 = Detached mode
+		orginal.clear();
+
+	if (!SOF_VerifySignedMessage(signature, orginal))
+	{
+		JSONStringify data("unsuccessful", 3325);
+		data.addNullObject();
+		return data;
+	}
+
 	JSONStringify data;
+	data.addNullObject();
 	return data;
 }
 
@@ -434,7 +461,10 @@ std::string RSFoundation::KeyDecryptData(std::string& uid, std::string& encRsKey
 	std::string decrypt = SOF_AsDecrypt(uid, enc);
 	assert(!decrypt.empty());
 	if (decrypt.empty())
-		throw Poco::LogicException("SOF_AsDecrypt decrypt Exception", 0x41);
+	{
+		int error = SOF_GetLastError();
+		throw Poco::LogicException("SOF_AsDecrypt decrypt Exception", error);
+	}
 
 	return decrypt;
 }

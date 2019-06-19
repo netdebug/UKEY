@@ -15,6 +15,8 @@ extern "C" {
 	long SOF_SetEncryptMethod(long EncryptMethod);
 
 	long SOF_GetLastError();
+
+	BOOL SOF_VerifySignedMessage(const char * MessageData, char * InData);
 #ifdef __cplusplus
 }
 #endif
@@ -63,6 +65,17 @@ std::string SOF_SignFile(std::string ContainerName, std::string InFile);
 
 BOOL SOF_VerifySignedFile(std::string Base64EncodeCert, std::string InFile, std::string SignValue);
 
+std::string SOF_SignMessage(short flag, std::string ContainerName, std::string InData);
+
+BOOL SOF_VerifySignedMessage(std::string MessageData, std::string InData);
+
+std::string SOF_GetInfoFromSignedMessage(std::string SignedMessage, short type);
+
+std::string SOF_GetCertInfoByOid(std::string Base64EncodeCert, std::string oid);
+
 #endif
+
+
+
 
 

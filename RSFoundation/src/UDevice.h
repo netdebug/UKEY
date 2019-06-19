@@ -15,8 +15,13 @@
 
 #include "Poco/Foundation.h"
 //#include "Poco/SharedLibrary.h"
+#include "Poco/Logger.h"
+#include "Poco/LogStream.h"
 
 namespace Reach {
+
+	using Poco::Logger;
+	using Poco::LogStream;
 
 	class UDevice
 	{
@@ -39,6 +44,7 @@ namespace Reach {
 		const int success = 0;
 		bool initial;
 		int random_size;
+		LogStream ls;
 	};
 }
 

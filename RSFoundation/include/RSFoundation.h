@@ -55,8 +55,8 @@ namespace Reach {
 		std::string RS_KeyDigitalSignByP1(const std::string& asn1Msg, const std::string& uid);
 		std::string RS_VerifyDigitalSignByP1(const std::string& base64, const std::string& asn1Msg, const std::string& signature);
 
-		std::string RS_KeySignByP7(const std::string& uid, const std::string& asn1Msg, const std::string& flag);
-		std::string RS_VerifySignByP7(const std::string& base64, const std::string& asn1Msg, const std::string& signature);
+		std::string RS_KeySignByP7(const std::string& textual, const std::string& flag, const std::string& uid);
+		std::string RS_VerifySignByP7(const std::string& textual, const std::string& signature, const std::string& flag);
 
 		//∂‘≥∆º”Ω‚√‹
 		std::string RS_EncryptFile(std::string& srcfile, std::string& encfile);
