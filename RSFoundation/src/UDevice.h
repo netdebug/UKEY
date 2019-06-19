@@ -14,10 +14,13 @@
 #define RS_UDevice_INCLUDE
 
 #include "Poco/Foundation.h"
+#include "Poco/Logger.h"
+#include "Poco/LogStream.h"
 //#include "Poco/SharedLibrary.h"
-
 namespace Reach {
 
+	using Poco::LogStream;
+	
 	class UDevice
 	{
 	public:
@@ -39,6 +42,7 @@ namespace Reach {
 		const int success = 0;
 		bool initial;
 		int random_size;
+		LogStream ls;
 	};
 }
 

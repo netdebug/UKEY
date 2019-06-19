@@ -17,9 +17,11 @@
 
 using namespace Reach;
 using Poco::SingletonHolder;
+using Poco::Logger;
+using Poco::LogStream;
 
 UDevice::UDevice()
-	:bOpened(false), initial(false), random_size(16)
+	:bOpened(false), initial(false), random_size(16),ls(Logger::get("LoggerTest"))
 {
 	open();
 	InitialMethods();
@@ -86,6 +88,8 @@ void UDevice::InitialMethods()
 
 void UDevice::open()
 {
+	ls.trace() << "UDevice::open()" << bOpened << std::endl;
+
 	if (bOpened) return;
 
 	if (success != SOF_OpenDevice())
@@ -98,6 +102,8 @@ void UDevice::open()
 
 void UDevice::close()
 {
+	ls.trace() << "UDevice::close()" << bOpened << std::endl;
+
 	if (!bOpened) return;
 
 	if (success != SOF_CloseDevice())

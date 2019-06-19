@@ -70,7 +70,7 @@ std::string RSFoundation::RS_GetParameters(const std::string& cmd)
 
 std::string RSFoundation::RS_GetUserList()
 {
-	UDevice::default();
+	UDevice dev;
 
 	/* example
 	{
@@ -89,7 +89,7 @@ std::string RSFoundation::RS_GetUserList()
 
 std::string RSFoundation::RS_GetCertBase64String(short ctype, const std::string& uid)
 {
-	UDevice::default();
+	UDevice dev;
 
 	enum certType { sign = 1, crypto };
 	std::string certContent;
@@ -179,7 +179,7 @@ std::string RSFoundation::RS_GetCertBase64String(short ctype, const std::string&
 
 std::string RSFoundation::RS_GetCertInfo(const std::string& base64, short type)
 {
-	UDevice::default();
+	UDevice dev;
 
 	std::string item;
 
@@ -201,7 +201,7 @@ std::string RSFoundation::RS_GetCertInfo(const std::string& base64, short type)
 
 std::string RSFoundation::RS_VerifyIdentity(const std::string& base64, const std::string& authNo)
 {
-	UDevice::default();
+	UDevice dev;
 	//需要服务端配合
 	JSONStringify data;
 	return data;
@@ -209,7 +209,7 @@ std::string RSFoundation::RS_VerifyIdentity(const std::string& base64, const std
 
 std::string RSFoundation::RS_CertLogin(const std::string& uid, const std::string& password)
 {
-	UDevice::default();
+	UDevice dev;
 
 	if (uid.empty() || password.empty())
 		throw Poco::InvalidArgumentException("Argument Invalid!", 0x34);
@@ -228,7 +228,7 @@ std::string RSFoundation::RS_CertLogin(const std::string& uid, const std::string
 
 std::string RSFoundation::RS_ChangePassWd(const std::string& uid, const std::string& oldCode, const std::string& newCode)
 {
-	UDevice::default();
+	UDevice dev;
 
 	assert(!uid.empty());
 
@@ -244,7 +244,7 @@ std::string RSFoundation::RS_ChangePassWd(const std::string& uid, const std::str
 
 std::string RSFoundation::RS_GetPinRetryCount(const std::string& uid)
 {
-	UDevice::default();
+	UDevice dev;
 
 	int retryCount = SOF_GetPinRetryCount(uid);
 
@@ -255,7 +255,7 @@ std::string RSFoundation::RS_GetPinRetryCount(const std::string& uid)
 
 std::string RSFoundation::RS_KeyGetKeySn(const std::string& uid)
 {
-	UDevice::default();
+	UDevice dev;
 
 	std::string SNkey = SOF_GetDeviceInfo(uid, SGD_DEVICE_SERIAL_NUMBER);
 
@@ -270,7 +270,7 @@ std::string RSFoundation::RS_KeyGetKeySn(const std::string& uid)
 
 std::string RSFoundation::RS_KeySignByP1(const std::string& uid, const std::string& msg)
 {
-	UDevice::default();
+	UDevice dev;
 
 	//SOF_SetSignMethod(SGD_SM3_SM2);
 
@@ -285,7 +285,7 @@ std::string RSFoundation::RS_KeySignByP1(const std::string& uid, const std::stri
 
 std::string RSFoundation::RS_VerifySignByP1(const std::string& base64, const std::string& msg, const std::string signature)
 {
-	UDevice::default();
+	UDevice dev;
 
 	//SOF_SetSignMethod(SGD_SM3_SM2);
 
@@ -300,7 +300,7 @@ std::string RSFoundation::RS_VerifySignByP1(const std::string& base64, const std
 
 std::string RSFoundation::RS_KeyDigitalSignByP1(const std::string& asn1Msg, const std::string& uid)
 {
-	UDevice::default();
+	UDevice dev;
 
 	JSONStringify data;
 	return data;
@@ -308,7 +308,7 @@ std::string RSFoundation::RS_KeyDigitalSignByP1(const std::string& asn1Msg, cons
 
 std::string RSFoundation::RS_VerifyDigitalSignByP1(const std::string& base64, const std::string& asn1Msg, const std::string& signature)
 {
-	UDevice::default();
+	UDevice dev;
 
 	JSONStringify data;
 	return data;
@@ -316,7 +316,7 @@ std::string RSFoundation::RS_VerifyDigitalSignByP1(const std::string& base64, co
 
 std::string RSFoundation::RS_KeySignByP7(const std::string& uid, const std::string& asn1Msg, const std::string& flag)
 {
-	UDevice::default();
+	UDevice dev;
 	//SOF_SignMessage
 	JSONStringify data;
 	return data;
@@ -324,7 +324,7 @@ std::string RSFoundation::RS_KeySignByP7(const std::string& uid, const std::stri
 
 std::string RSFoundation::RS_VerifySignByP7(const std::string& base64, const std::string& asn1Msg, const std::string& signature)
 {
-	UDevice::default();
+	UDevice dev;
 	//SOF_VerifySignedMessage
 	JSONStringify data;
 	return data;
@@ -332,7 +332,7 @@ std::string RSFoundation::RS_VerifySignByP7(const std::string& base64, const std
 
 std::string RSFoundation::RS_EncryptFile(std::string& srcfile, std::string& encfile)
 {
-	UDevice::default();
+	UDevice dev;
 
 	assert(!srcfile.empty());
 
@@ -355,7 +355,7 @@ std::string RSFoundation::RS_EncryptFile(std::string& srcfile, std::string& encf
 
 std::string RSFoundation::RS_DecryptFile(std::string& kv, std::string& encfile, std::string& decdir)
 {
-	UDevice::default();
+	UDevice dev;
 
 	assert(!decdir.empty());
 
@@ -372,7 +372,7 @@ std::string RSFoundation::RS_DecryptFile(std::string& kv, std::string& encfile, 
 
 std::string RSFoundation::KeyEncryptData(std::string& paintText, std::string& base64)
 {
-	UDevice::default();
+	UDevice dev;
 
 	assert(!paintText.empty() && !base64.empty());
 	if (paintText.empty()) return "";
@@ -394,7 +394,7 @@ std::string RSFoundation::KeyEncryptData(std::string& paintText, std::string& ba
 
 std::string RSFoundation::RS_KeyEncryptData(std::string paintText, std::string base64)
 {
-	UDevice::default();
+	UDevice dev;
 
 	std::string encData = KeyEncryptData(paintText, base64);
 
@@ -405,7 +405,7 @@ std::string RSFoundation::RS_KeyEncryptData(std::string paintText, std::string b
 
 std::string RSFoundation::KeyDecryptData(std::string& uid, std::string& encRsKey)
 {
-	UDevice::default();
+	UDevice dev;
 
 	std::string pattern("(\\S+)@@@(\\S+)");
 	int options = 0;
@@ -441,7 +441,7 @@ std::string RSFoundation::KeyDecryptData(std::string& uid, std::string& encRsKey
 
 std::string RSFoundation::RS_KeyDecryptData(std::string& uid, std::string& encRsKey)
 {
-	UDevice::default();
+	UDevice dev;
 
 	std::string decrypt = KeyDecryptData(uid, encRsKey);
 
@@ -452,7 +452,7 @@ std::string RSFoundation::RS_KeyDecryptData(std::string& uid, std::string& encRs
 
 std::string RSFoundation::RS_KeyEncryptByDigitalEnvelope(const std::string& srcfile, const std::string& encfile, std::string base64)
 {
-	UDevice::default();
+	UDevice dev;
 
 	assert(!srcfile.empty());
 
@@ -483,7 +483,7 @@ std::string RSFoundation::RS_KeyEncryptByDigitalEnvelope(const std::string& srcf
 
 std::string RSFoundation::RS_KeyDecryptByDigitalEnvelope(std::string& uid, std::string& encfile, std::string& decdir, std::string& encRsKey)
 {
-	UDevice::default();
+	UDevice dev;
 
 	Poco::File encrypt(encfile);
 	if (!encrypt.exists())
@@ -511,7 +511,7 @@ std::string RSFoundation::RS_KeyDecryptByDigitalEnvelope(std::string& uid, std::
 
 std::string RSFoundation::GetSignMethod()
 {
-	UDevice::default();
+	UDevice dev;
 
 	enum { none = 0 };
 	unsigned long method = SOF_GetSignMethod();
@@ -528,7 +528,7 @@ std::string RSFoundation::GetSignMethod()
 
 std::string RSFoundation::GetEncryptMethod()
 {
-	UDevice::default();
+	UDevice dev;
 
 	enum { none = 0 };
 	unsigned long method = SOF_GetEncryptMethod();
@@ -545,7 +545,7 @@ std::string RSFoundation::GetEncryptMethod()
 
 std::string RSFoundation::SignFile(const std::string& uid, const std::string& toSign)
 {
-	UDevice::default();
+	UDevice dev;
 
 	assert(!uid.empty());
 
@@ -567,7 +567,7 @@ std::string RSFoundation::SignFile(const std::string& uid, const std::string& to
 
 std::string RSFoundation::VerifySignedFile(const std::string& base64, const std::string& toVerify, const std::string& signature)
 {
-	UDevice::default();
+	UDevice dev;
 
 	Poco::File fi(toVerify);
 	if (!fi.exists())
@@ -587,7 +587,7 @@ std::string RSFoundation::VerifySignedFile(const std::string& base64, const std:
 
 std::string RSFoundation::DesEncrypt(const std::string& paintText/*, const std::string& base64*/)
 {
-	UDevice::default();
+	UDevice dev;
 
 	//assert(!base64.empty());
 
@@ -612,7 +612,7 @@ std::string RSFoundation::DesEncrypt(const std::string& paintText/*, const std::
 
 std::string RSFoundation::DesDecrypt(const std::string& encryptText, const std::string& kv)
 {
-	UDevice::default();
+	UDevice dev;
 
 	assert(!kv.empty());
 
