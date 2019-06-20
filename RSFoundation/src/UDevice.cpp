@@ -19,7 +19,7 @@ using namespace Reach;
 using Poco::SingletonHolder;
 
 UDevice::UDevice()
-	:bOpened(false), initial(false), random_size(16)
+	:bOpened(false), initial(false), random_size(16),ls(Logger::get("LoggerTest"))
 {
 	open();
 	InitialMethods();
@@ -43,6 +43,8 @@ void UDevice::InitialMethods()
 {
 	if (initial) return;
 
+	ls.trace() << "UDevice::InitialMethods() enter" << std::endl;
+
 	std::string list = SOF_GetUserList();
 	std::string pattern("(\\S+)\\|\\|(\\S+)[&&&]*");
 	int options = 0;
@@ -62,6 +64,7 @@ void UDevice::InitialMethods()
 
 	if (supported.empty()) {
 		int error = SOF_GetLastError();
+		ls.warning() << "UDevice no supported():" << error << std::endl;
 		throw Poco::LogicException("SOF_GetDeviceInfo failed!", error);
 	}
 
@@ -78,10 +81,15 @@ void UDevice::InitialMethods()
 	if (success != (result1 | result2))
 	{
 		int error = SOF_GetLastError();
+		ls.warning() << "UDevice::InitialMethods() failed!" << error << std::endl;
 		throw Poco::LogicException("SOF_SetSignMethod or SOF_SetEncryptMethod failed!", error);
 	}
 
 	initial = true;
+
+	ls.trace() << "UDevice::InitialMethods() exit" << std::endl
+		<< "Sign :" << SOF_GetSignMethod() << std::endl
+		<< "Encrypt :" << SOF_GetEncryptMethod() << std::endl;
 }
 
 void UDevice::open()
@@ -91,6 +99,7 @@ void UDevice::open()
 	if (success != SOF_OpenDevice())
 	{
 		int error = SOF_GetLastError();
+		ls.warning() << "UDevice::open() failed!" << error << std::endl;
 		throw Poco::LogicException("UDevice open failed!", error);
 	}
 	bOpened = true;
@@ -103,6 +112,7 @@ void UDevice::close()
 	if (success != SOF_CloseDevice())
 	{
 		int error = SOF_GetLastError();
+		ls.warning() << "UDevice::close() failed!" << error << std::endl;
 		throw Poco::LogicException("UDevice close failed!", error);
 	}
 	bOpened = false;

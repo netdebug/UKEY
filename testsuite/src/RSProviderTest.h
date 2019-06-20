@@ -36,7 +36,7 @@ public:
 	void testRSGetPinRetryCount();
 	void testRSKeyGetKeySn();
 	void testRSKeySignByP1();
-	void testRSVerifySignByP1();
+	void testRSVerifySignByP7();
 	void testRsaEncryptAndDecrypt();
 	void testSymEncryptAndDecrypt();
 	void testDesEncryptAndDecrypt();
@@ -44,6 +44,8 @@ public:
 	void testSignVerifyByFile();
 	void testRSKeyEncryptByDigitalEnvelope();
 	void testRSKeyDecryptByDigitalEnvelope();
+
+	void waitforuser();
 
 	void setUp();
 	void tearDown();

@@ -178,6 +178,8 @@ void RSProviderTest::testRSCertLogin()
 
 void RSProviderTest::testRSGetPinRetryCount()
 {
+	waitforuser();
+
 	Logger& root = Logger::get("LoggerTest");//Logger::root();
 	LogStream ls(root);
 
@@ -248,8 +250,58 @@ void RSProviderTest::testRSKeySignByP1()
 	}
 }
 
-void RSProviderTest::testRSVerifySignByP1()
+void RSProviderTest::testRSVerifySignByP7()
 {
+	Logger& root = Logger::get("LoggerTest");//Logger::root();
+	LogStream ls(root);
+
+	Reach::RSFoundation rsf;
+
+	//std::string xia("00000000");
+	//std::string lg("1111111");
+	rsf.RS_CertLogin(uid, pwd);
+
+	std::string message("what is up? what the library!Signed the data!");
+	std::string signedResult = rsf.RS_KeySignByP7(message, "1", uid);
+	ls.trace() << "signedResult:" << signedResult << std::endl;
+	std::string value;
+	{
+		Parser parse;
+		Var result = parse.parse(signedResult);
+		assert(result.type() == typeid(Object::Ptr));
+
+		Object object = *result.extract<Object::Ptr>();
+		Var test = object.get("data");
+		Object subObject = *test.extract<Object::Ptr>();
+		value = subObject.get("signdMsg").toString();
+	}
+
+	std::string json = rsf.RS_GetCertBase64String(sign, uid);
+	ls.trace() << json << std::endl;
+	std::string cert;
+	{
+		Parser parser;
+		Var result = parser.parse(json);
+		assert(result.type() == typeid(Object::Ptr));
+
+		Object object = *result.extract<Object::Ptr>();
+		Var test = object.get("data");
+		Object subObject = *test.extract<Object::Ptr>();
+		cert = subObject.get("certBase64").toString();
+	}
+
+	{
+		std::string t = rsf.RS_VerifySignByP7(message, value, "1");
+
+		ls.trace() << t << std::endl;
+		Parser parser;
+		Var rt = parser.parse(t);
+		assert(rt.type() == typeid(Object::Ptr));
+
+		Object object = *rt.extract<Object::Ptr>();
+		DynamicStruct ds = object;
+		assert(ds["code"] == 0);
+	}
 }
 
 void RSProviderTest::testRsaEncryptAndDecrypt()
@@ -468,10 +520,30 @@ void RSProviderTest::testRSKeyDecryptByDigitalEnvelope()
 {
 }
 
+void RSProviderTest::waitforuser()
+{
+	Logger& root = Logger::get("LoggerTest");//Logger::root();
+	LogStream ls(root);
+
+	std::string c;
+
+	while (true) {
+		std::cin >> c;
+		ls.trace() << c << std::endl;
+		if (c == "g")
+			break;
+	}
+
+
+	ls.trace() << "go" << std::endl;
+}
+
 void RSProviderTest::setUp()
 {
-	uid = "{1B57694E-911E-41D9-8123-971EDD71342C}";
-	pwd = "00000000";
+	/*uid = "{1B57694E-911E-41D9-8123-971EDD71342C}";
+	pwd = "00000000";*/
+	uid = "806000119631708";
+	pwd = "111111";
 	//uid = "4334801F-55EA-4F16-982C-CFB2AB8B44F7";
 	//pwd = "111111";
 	AutoPtr<Channel> pChannel = new WindowsColorConsoleChannel;
@@ -502,7 +574,7 @@ CppUnit::Test* RSProviderTest::suite()
 	CppUnit_addTest(pSuite, RSProviderTest, testRSGetPinRetryCount);
 	CppUnit_addTest(pSuite, RSProviderTest, testRSKeyGetKeySn);
 	CppUnit_addTest(pSuite, RSProviderTest, testRSKeySignByP1);
-	CppUnit_addTest(pSuite, RSProviderTest, testRSVerifySignByP1);
+	CppUnit_addTest(pSuite, RSProviderTest, testRSVerifySignByP7);
 	CppUnit_addTest(pSuite, RSProviderTest, testRsaEncryptAndDecrypt);
 	CppUnit_addTest(pSuite, RSProviderTest, testSymEncryptAndDecrypt);
 	CppUnit_addTest(pSuite, RSProviderTest, testRSKeyEncryptByDigitalEnvelope);
