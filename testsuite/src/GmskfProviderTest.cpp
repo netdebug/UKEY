@@ -13,6 +13,10 @@
 #include "CppUnit/TestSuite.h"
 #include "Poco/SharedLibrary.h"
 #include "Poco/Exception.h"
+#include "Poco/Logger.h"
+#include "Poco/LogStream.h"
+#include "Poco/WindowsConsoleChannel.h"
+#include "Poco/AutoPtr.h"
 #include <stdio.h>
 #include <iostream>
 #include <sstream>
@@ -21,6 +25,12 @@ using Poco::SharedLibrary;
 using Poco::NotFoundException;
 using Poco::LibraryLoadException;
 using Poco::LibraryAlreadyLoadedException;
+using Poco::Logger;
+using Poco::LogStream;
+using Poco::Channel;
+using Poco::WindowsColorConsoleChannel;
+using Poco::Message;
+using Poco::AutoPtr;
 
 #define DEVAPI __stdcall
 #define SAR_OK 0x00000000
@@ -47,15 +57,25 @@ typedef struct Struct_DEVINFO {
 	ULONG	MaxECCBufferSize;
 	ULONG	MaxBufferSize;
 	BYTE	Reserved[64];
-}DEVINFO,	*PDEVINFO;
+}DEVINFO, *PDEVINFO;
 
 typedef HANDLE DEVHANDLE;
+typedef ULONG	(DEVAPI *SKF_WaitForDevEvent)(LPSTR szDevName, ULONG *pulDevNameLen, ULONG *pulEvent);
+typedef ULONG	(DEVAPI *SKF_CancelWaitForDevEvent)();
 typedef ULONG	(DEVAPI *SKF_EnumDev)(BOOL bPresent, LPCSTR szNameList, ULONG* pulSize);
 typedef ULONG	(DEVAPI *SKF_ConnectDev)(LPCSTR szName, DEVHANDLE* phDev);
 typedef ULONG	(DEVAPI *SKF_DisConnectDev)(DEVHANDLE phDev);
+typedef ULONG	(DEVAPI *SKF_GetDevState)(LPCSTR szDevName, ULONG * pulDevState);
+typedef ULONG	(DEVAPI *SKF_SetLabel)(DEVHANDLE hDev, LPSTR szLabel);
 typedef ULONG	(DEVAPI *SKF_GetDevInfo)(DEVHANDLE hDev, DEVINFO* pDevInfo);
+typedef ULONG	(DEVAPI *SKF_LockDev)(DEVHANDLE hDev, ULONG ulTimeOut);
+typedef ULONG	(DEVAPI *SKF_UnlockDev)(DEVHANDLE hDev);
+typedef ULONG	(DEVAPI *SKF_Transmit)(DEVHANDLE hDev, BYTE * pbCommand, ULONG ulCommandLen, BYTE * pbData, ULONG * pulDataLen);
 
-GmskfProviderTest::GmskfProviderTest(const std::string& name): CppUnit::TestCase(name)
+typedef ULONG	(DEVAPI *SKF_GetLastError)();
+
+GmskfProviderTest::GmskfProviderTest(const std::string& name)
+	: CppUnit::TestCase(name), ls(Logger::get("LoggerTest"))//Logger::root();
 {
 }
 
@@ -66,22 +86,16 @@ GmskfProviderTest::~GmskfProviderTest()
 
 void GmskfProviderTest::testEnumDev()
 {
-	std::string fnName("SKF_EnumDev");
+	ULONG pulSize = 512;
+	std::string name(pulSize, 0);
+	//std::vector<char> list(name.data(), name.data() + name.size() + 1u);
+	auto p = name.data();
+	assertEqual(SAR_OK, Symbol(SKF_EnumDev)(true, p, &pulSize));
 
-	assert(sl.isLoaded());
-	assert(sl.hasSymbol(fnName));
-	SKF_EnumDev fnTest = (SKF_EnumDev)sl.getSymbol(fnName);
-	assertNotNullPtr(fnTest);
+	ls.trace()
+		<< "testEnumDev :" << name << std::endl;
 
-	ULONG pulSize = 0;
-	char szNameList[2048] = {0};
-	assertEqual(SAR_OK, fnTest(true, szNameList, &pulSize));
-
-	std::ostringstream ostr;
-	ostr << "API:" << fnName << std::endl;
-	ostr << "The function actual result is :" << std::string(szNameList, pulSize) << std::endl;
-	ostr << "We will test Now!" << std::endl;
-	std::cout << ostr.str() << std::endl;
+	
 }
 
 void GmskfProviderTest::testGetDevInfo()
@@ -91,66 +105,87 @@ void GmskfProviderTest::testGetDevInfo()
 	DEVHANDLE hDev = NULL;
 
 	{
-		std::string fnName("SKF_EnumDev");
-		assert(sl.isLoaded());
-		assert(sl.hasSymbol(fnName));
-		SKF_EnumDev fnTest = (SKF_EnumDev)sl.getSymbol(fnName);
-		assertNotNullPtr(fnTest);
-
-		//ULONG pulSize = 0;
-		//char szNameList[2048] = { 0 };
+		SKF_EnumDev fnTest = getSymbol<SKF_EnumDev>("SKF_EnumDev");
 		assertEqual(SAR_OK, fnTest(true, szNameList, &pulSize));
 	}
-	
-	{
-		std::string fnName("SKF_ConnectDev");
-		assert(sl.isLoaded());
-		assert(sl.hasSymbol(fnName));
-		SKF_ConnectDev fnTest = (SKF_ConnectDev)sl.getSymbol(fnName);
-		assertNotNullPtr(fnTest);
 
-		/*DEVHANDLE hDev = NULL;*/
+	{
+		SKF_ConnectDev fnTest = getSymbol<SKF_ConnectDev>("SKF_ConnectDev");
 		assertEqual(SAR_OK, fnTest(szNameList, &hDev));
 		assertNotNullPtr(hDev);
 	}
 
 	{
-		std::string fnName("SKF_GetDevInfo");
-		assert(sl.isLoaded());
-		assert(sl.hasSymbol(fnName));
-		SKF_GetDevInfo fnTest = (SKF_GetDevInfo)sl.getSymbol(fnName);
-		assertNotNullPtr(fnTest);
+		DEVINFO* devInfo = new DEVINFO;
+		SKF_GetDevInfo fnTest = Symbol(SKF_GetDevInfo);
+		assertEqual(SAR_OK, fnTest(hDev, devInfo));
 
-		DEVINFO devInfo = { 0 };
-		assertEqual(SAR_OK, fnTest(hDev, &devInfo));
-
-		std::ostringstream ostr;
-		ostr << "devInfo.Version:" << devInfo.Version.major << "-" << devInfo.Version.minor << std::endl
-			<< "devInfo.Manufacturer:" <<devInfo.Manufacturer << std::endl
-			<< "devInfo.Issuer:" << devInfo.Issuer << std::endl 
-			<< "devInfo.Label:" << devInfo.Label << std::endl
-			<< "devInfo.SerialNumber" << devInfo.SerialNumber << std::endl 
-			<< "devInfo.HWVersion:" << devInfo.HWVersion.major << "-" << devInfo.HWVersion.minor << std::endl
-			<< "devInfo.FirmwareVersion:" << devInfo.FirmwareVersion.major << "-" << devInfo.FirmwareVersion.minor 
+		ls.trace() << "devInfo->Version:" << std::to_string(devInfo->Version.major) << "." << std::to_string(devInfo->Version.minor) << std::endl
+			<< "devInfo->Manufacturer:" << devInfo->Manufacturer << std::endl
+			<< "devInfo->Issuer:" << devInfo->Issuer << std::endl
+			<< "devInfo->Label:" << devInfo->Label << std::endl
+			<< "devInfo->SerialNumber" << devInfo->SerialNumber << std::endl
+			<< "devInfo->HWVersion:" << std::to_string(devInfo->HWVersion.major) << "." << std::to_string(devInfo->HWVersion.minor) << std::endl
+			<< "devInfo->FirmwareVersion:" << std::to_string(devInfo->FirmwareVersion.major) << "." << std::to_string(devInfo->FirmwareVersion.minor)
 			<< std::endl;
 
-		std::cout << ostr.str() << std::endl;
+		//delete devInfo;
 	}
 
 	{
-		std::string fnName("SKF_DisConnectDev");
-		assert(sl.isLoaded());
-		assert(sl.hasSymbol(fnName));
-		SKF_DisConnectDev fnTest = (SKF_DisConnectDev)sl.getSymbol(fnName);
-		assertNotNullPtr(fnTest);
-		assertEqual(SAR_OK, fnTest(hDev));
+		assertEqual(SAR_OK, Symbol(SKF_DisConnectDev)(hDev));
+		//hDev = nullptr;
+	}
+}
+
+#include <iostream>
+#include <sstream>
+
+void GmskfProviderTest::testHotSwap()
+{
+	/*ULONG ulEvent = 0;
+	ULONG ulDevNameLen = 2048;*/
+	//LPSTR szDevName = new CHAR[ulDevNameLen];
+	//std::string name(ulDevNameLen, 'a');
+	//std::vector<char> fcv(name.data(), name.data() + name.size() + 1u);
+	//auto p = fcv.data();
+
+	ULONG pulSize = 512;
+	std::string name(pulSize, 0);
+	auto v = name.data();
+	assertEqual(SAR_OK, Symbol(SKF_EnumDev)(true, v, &pulSize));
+
+	while (true) {
+
+		/*ULONG Len = fcv.size();
+		ULONG result = Symbol(SKF_WaitForDevEvent)(p, &Len, &ulEvent);
+		if (SAR_OK != result) {
+			ls.trace() << "error - " << std::hex << result << std::endl;
+		}
+		ls.trace() << "SKF_WaitForDevEvent : " << name << std::endl
+			<< "DevNameLen" << Len << std::endl
+			<< "Event :" << ulEvent << std::endl;
+		assertEqual(SAR_OK, Symbol(SKF_CancelWaitForDevEvent)());*/
+		
+		testEnumDev();
+		/*ULONG ulDevState = 0;
+		assertEqual(SAR_OK, Symbol(SKF_GetDevState)(v, &ulDevState));
+
+		ls.trace() << "SKF_GetDevState : " << std::endl
+			<< v  << std::endl << "ulDevState : " << ulDevState << std::endl;*/
 	}
 }
 
 void GmskfProviderTest::setUp()
 {
-	//std::string path = "SKFAPI20549.dll";
-	std::string path = "SKFLibrary\\ShareSun\\SKF_APP_XS.dll";
+	AutoPtr<Channel> pChannel = new WindowsColorConsoleChannel;
+	pChannel->setProperty("traceColor", "lightGreen");
+	Logger& root = Poco::Logger::get("LoggerTest");//Logger::root();
+	root.setChannel(pChannel.get());
+	root.setLevel(Message::PRIO_TRACE);
+	//std::string path = "SKF_Library\\001\\SKF_APP_XS.dll";
+	//std::string path = "SKF_Library\\002\\SKFAPI20549.dll";
+	std::string path = "SKF_Library\\003\\lgu3073_p1514_gm.dll";
 	sl.load(path);
 	assert(sl.isLoaded());
 }
@@ -168,7 +203,8 @@ CppUnit::Test* GmskfProviderTest::suite()
 	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("GmskfProviderTest");
 
 	CppUnit_addTest(pSuite, GmskfProviderTest, testEnumDev);
-	CppUnit_addTest(pSuite, GmskfProviderTest, testGetDevInfo);
+	CppUnit_addTest(pSuite, GmskfProviderTest, testGetDevInfo); 
+	CppUnit_addTest(pSuite, GmskfProviderTest, testHotSwap);
 
 	return pSuite;
 }

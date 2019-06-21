@@ -17,6 +17,8 @@
 #include "Poco/Foundation.h"
 #include "Poco/SharedLibrary.h"
 #include "CppUnit/TestCase.h"
+#include "Poco/Logger.h"
+#include "Poco/LogStream.h"
 
 
 class GmskfProviderTest: public CppUnit::TestCase
@@ -25,8 +27,21 @@ public:
 	GmskfProviderTest(const std::string& name);
 	~GmskfProviderTest();
 
+#define Symbol( n ) getSymbol<##n>(#n)
+
+	template<typename T>
+	T getSymbol(const std::string& name)
+	{
+		assert(sl.isLoaded());
+		assert(sl.hasSymbol(name));
+		T fn = (T)sl.getSymbol(name);
+		assertNotNullPtr(fn);
+		return fn;
+	}
+
 	void testEnumDev();
 	void testGetDevInfo();
+	void testHotSwap();
 
 	void setUp();
 	void tearDown();
@@ -35,6 +50,7 @@ public:
 
 private:
 	Poco::SharedLibrary sl;
+	Poco::LogStream ls;
 };
 
 
