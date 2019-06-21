@@ -132,3 +132,23 @@ UDevice& UDevice::default()
 {
 	return *ukey.get();
 }
+
+void UDevice::defaultSignMethod()
+{
+	//SM2 default signed method
+	if (success != SOF_SetSignMethod(SGD_SM3_SM2))
+	{
+		int error = SOF_GetLastError();
+		throw Poco::LogicException("SOF_SetSignMethod failed", error);
+	}
+}
+
+void UDevice::defaultEncryptMethod()
+{
+	//SM2 default encrypt method
+	if (success != SOF_SetEncryptMethod(SGD_SM4_ECB))
+	{
+		int error = SOF_GetLastError();
+		throw Poco::LogicException("SOF_SetEncryptMethod failed", error);
+	}
+}

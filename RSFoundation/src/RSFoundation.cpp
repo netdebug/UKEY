@@ -272,8 +272,6 @@ std::string RSFoundation::RS_KeySignByP1(const std::string& uid, const std::stri
 {
 	UDevice::default();
 
-	//SOF_SetSignMethod(SGD_SM3_SM2);
-
 	std::string signature = SOF_SignData(uid, msg);
 	if (signature.empty())
 		throw Poco::LogicException("SOF_SignData failed!", 0x36);
@@ -285,10 +283,6 @@ std::string RSFoundation::RS_KeySignByP1(const std::string& uid, const std::stri
 
 std::string RSFoundation::RS_VerifySignByP1(const std::string& base64, const std::string& msg, const std::string signature)
 {
-	UDevice::default();
-
-	//SOF_SetSignMethod(SGD_SM3_SM2);
-
 	bool val = SOF_VerifySignedData(base64, msg, signature);
 	if (!val)
 		throw Poco::LogicException("SOF_VerifySignedData failed", val);
@@ -338,8 +332,6 @@ std::string RSFoundation::RS_VerifySignByP7(const std::string& textual, const st
 {
 	enum { Attached = 0, Detached };
 
-	UDevice::default();
-
 	short mode = std::stoi(flag);
 	std::string orginal = textual;
 	if (Attached == mode)//1 = Detached mode
@@ -368,7 +360,6 @@ std::string RSFoundation::RS_EncryptFile(std::string& srcfile, std::string& encf
 		throw Poco::FileExistsException("Source File Not Exists!", 0x40);
 
 	std::string ck = SOF_GenRandom(UDevice::default().random());
-	//SOF_SetEncryptMethod(SGD_SM4_CBC);
 
 	assert(!srcfile.empty());
 
@@ -406,9 +397,6 @@ std::string RSFoundation::KeyEncryptData(std::string& paintText, std::string& ba
 	if (base64.empty())
 		throw Poco::LogicException("RS_KeyEncryptData certificate must not be empty!", 0x45);
 
-	/*SOF_SetSignMethod(SGD_SM3_SM2);
-	SOF_SetEncryptMethod(SGD_SM4_ECB);*/
-
 	std::string encData = SOF_AsEncrypt(base64, paintText);
 	if (encData.empty())
 		throw Poco::LogicException("RS_KeyEncryptData failed!", 0x39);
@@ -436,8 +424,6 @@ std::string RSFoundation::KeyDecryptData(std::string& uid, std::string& encRsKey
 
 	std::string pattern("(\\S+)@@@(\\S+)");
 	int options = 0;
-	/*options += RegularExpression::RE_CASELESS;
-	options += RegularExpression::RE_EXTENDED;*/
 
 	RegularExpression re(pattern, options);
 	RegularExpression::Match mtch;
@@ -456,8 +442,6 @@ std::string RSFoundation::KeyDecryptData(std::string& uid, std::string& encRsKey
 	if (kc != cer)
 		throw Poco::LogicException("certificate error");
 
-	/*SOF_SetSignMethod(SGD_SM3_SM2);
-	SOF_SetEncryptMethod(SGD_SM4_ECB);*/
 	std::string decrypt = SOF_AsDecrypt(uid, enc);
 	assert(!decrypt.empty());
 	if (decrypt.empty())
@@ -491,7 +475,6 @@ std::string RSFoundation::RS_KeyEncryptByDigitalEnvelope(const std::string& srcf
 		throw Poco::FileExistsException("Source File Not Exists!", 0x40);
 
 	std::string ck = SOF_GenRandom(UDevice::default().random());
-	//SOF_SetEncryptMethod(SGD_SM4_CBC);
 
 	assert(!srcfile.empty());
 
@@ -499,12 +482,6 @@ std::string RSFoundation::RS_KeyEncryptByDigitalEnvelope(const std::string& srcf
 		throw Poco::LogicException("SOF_EncryptFile encrypt file failed!", 0x37);
 
 	std::string encData = RS_KeyEncryptData(base64, ck);
-	/*std::string encData = SOF_AsEncrypt(base64, ck);
-	if (encData.empty())
-		throw Poco::LogicException("RS_KeyEncryptData encrypt random failed!", 0x39);
-
-	encData.append("@@@");
-	encData.append(base64);*/
 
 	JSONStringify data;
 	data.addObject("rsKey", encData);
@@ -518,12 +495,6 @@ std::string RSFoundation::RS_KeyDecryptByDigitalEnvelope(std::string& uid, std::
 	Poco::File encrypt(encfile);
 	if (!encrypt.exists())
 		throw Poco::FileExistsException("Encrypt File was not existd!", 0x40);
-
-	/*std::string ck = SOF_AsDecrypt(uid, encRsKey);
-	if (ck.empty()) {
-		int error = SOF_GetLastError();
-		throw Poco::LogicException("SOF_AsDecrypt encRsKey failed!", error);
-	}*/
 
 	std::string ck = KeyDecryptData(uid, encRsKey);
 
@@ -619,10 +590,7 @@ std::string RSFoundation::DesEncrypt(const std::string& paintText/*, const std::
 {
 	UDevice::default();
 
-	//assert(!base64.empty());
-
 	std::string ck = SOF_GenRandom(UDevice::default().random());
-	//SOF_SetEncryptMethod(SGD_SM4_CBC);
 
 	assert(!ck.empty());
 

@@ -35,13 +35,14 @@ namespace Reach {
 		int random();
 
 		static UDevice& default();
-
+		static void defaultSignMethod();
+		static void defaultEncryptMethod();
 	protected:
 		void InitialMethods();
 	private:
 		//Poco::SharedLibrary sl;
 		bool bOpened;
-		const int success = 0;
+		static const int success = 0;
 		bool initial;
 		int random_size;
 		LogStream ls;
