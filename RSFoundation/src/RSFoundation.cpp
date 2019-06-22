@@ -260,7 +260,10 @@ std::string RSFoundation::RS_KeyGetKeySn(const std::string& uid)
 	std::string SNkey = SOF_GetDeviceInfo(uid, SGD_DEVICE_SERIAL_NUMBER);
 
 	if (SNkey.empty())
-		throw Poco::LogicException("SOF_GetDeviceInfo Not Get UKEY SN", 0x43);
+	{
+		int error = SOF_GetLastError();
+		throw Poco::LogicException("SOF_GetDeviceInfo Not Get UKEY SN", error);
+	}
 
 	JSONStringify data;
 	data.addObject("containerId", uid);
@@ -273,8 +276,10 @@ std::string RSFoundation::RS_KeySignByP1(const std::string& uid, const std::stri
 	UDevice::default();
 
 	std::string signature = SOF_SignData(uid, msg);
-	if (signature.empty())
-		throw Poco::LogicException("SOF_SignData failed!", 0x36);
+	if (signature.empty()) {
+		int error = SOF_GetLastError();
+		throw Poco::LogicException("SOF_SignData failed!", error);
+	}
 
 	JSONStringify data;
 	data.addObject("signdMsg", signature);
@@ -284,8 +289,11 @@ std::string RSFoundation::RS_KeySignByP1(const std::string& uid, const std::stri
 std::string RSFoundation::RS_VerifySignByP1(const std::string& base64, const std::string& msg, const std::string signature)
 {
 	bool val = SOF_VerifySignedData(base64, msg, signature);
-	if (!val)
-		throw Poco::LogicException("SOF_VerifySignedData failed", val);
+	if (!val) {
+		JSONStringify data("unsuccessful", 3325);
+		data.addNullObject();
+		return data;
+	}
 
 	JSONStringify data;
 	data.addNullObject();
@@ -357,14 +365,17 @@ std::string RSFoundation::RS_EncryptFile(std::string& srcfile, std::string& encf
 
 	Poco::File fi(srcfile);
 	if (!fi.exists())
-		throw Poco::FileExistsException("Source File Not Exists!", 0x40);
+		throw Poco::FileExistsException("Source File Not Exists!", srcfile);
 
 	std::string ck = SOF_GenRandom(UDevice::default().random());
 
-	assert(!srcfile.empty());
+	assert(!encfile.empty());
 
-	if (!SOF_EncryptFile(ck, srcfile, encfile))
-		throw Poco::LogicException("SOF_EncryptFile failed!", 0x37);
+	if (!SOF_EncryptFile(ck, srcfile, encfile)) 
+	{
+		int error = SOF_GetLastError();
+		throw Poco::LogicException("SOF_EncryptFile failed!", error);
+	}
 
 	JSONStringify data;
 	data.addObject("symKey", ck);
@@ -375,13 +386,16 @@ std::string RSFoundation::RS_DecryptFile(std::string& kv, std::string& encfile, 
 {
 	UDevice::default();
 
+	if (encfile.empty())
+		throw Poco::FileNotFoundException("Source File Not Exists!", encfile);
+
 	assert(!decdir.empty());
 
-	if (encfile.empty())
-		throw Poco::FileNotFoundException(encfile, 0x44);
-
 	if (!SOF_DecryptFile(kv, encfile, decdir))
-		throw Poco::LogicException("SOF_DecryptFile failed!", 0x38);
+	{
+		int error = SOF_GetLastError();
+		throw Poco::LogicException("SOF_DecryptFile failed!", error);
+	}
 
 	JSONStringify data;
 	data.addNullObject();
@@ -399,7 +413,10 @@ std::string RSFoundation::KeyEncryptData(std::string& paintText, std::string& ba
 
 	std::string encData = SOF_AsEncrypt(base64, paintText);
 	if (encData.empty())
-		throw Poco::LogicException("RS_KeyEncryptData failed!", 0x39);
+	{
+		int error = SOF_GetLastError();
+		throw Poco::LogicException("RS_KeyEncryptData failed!", error);
+	}
 
 	encData.append("@@@");
 	encData.append(base64);
@@ -479,7 +496,10 @@ std::string RSFoundation::RS_KeyEncryptByDigitalEnvelope(const std::string& srcf
 	assert(!srcfile.empty());
 
 	if (!SOF_EncryptFile(ck, srcfile, encfile))
-		throw Poco::LogicException("SOF_EncryptFile encrypt file failed!", 0x37);
+	{
+		int error = SOF_GetLastError();
+		throw Poco::LogicException("SOF_EncryptFile encrypt file failed!", error);
+	}
 
 	std::string encData = RS_KeyEncryptData(base64, ck);
 
