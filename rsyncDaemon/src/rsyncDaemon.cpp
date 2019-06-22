@@ -17,6 +17,8 @@
 #include "Poco/Task.h"
 #include "Poco/TaskManager.h"
 #include "Poco/DateTimeFormatter.h"
+#include "Poco/LogStream.h"
+#include "Poco/Process.h"
 #include <iostream>
 
 
@@ -31,6 +33,9 @@ using Poco::Util::HelpFormatter;
 using Poco::Task;
 using Poco::TaskManager;
 using Poco::DateTimeFormatter;
+using Poco::LogStream;
+using Poco::Process;
+using Poco::ProcessHandle;
 
 
 class SampleTask: public Task
@@ -43,9 +48,28 @@ public:
 	void runTask()
 	{
 		Application& app = Application::instance();
-		while (!sleep(5000))
+		LogStream ls(app.logger());
+		std::string name("updater");
+		std::string cmd;
+#if defined(_DEBUG) && (POCO_OS != POCO_OS_ANDROID)
+		name += "d";
+#endif
+		std::vector<std::string> args;
+		args.push_back("-checkforupdates");
+
+		std::string initialDirectory = app.config().getString("application.dir");
+		cmd.append(initialDirectory);
+		cmd.append(name);
+
+		while (!sleep(5000*12*30))
 		{
-			Application::instance().logger().information("busy doing nothing... " + DateTimeFormatter::format(app.uptime()));
+			ls.information("busy doing nothing... " + DateTimeFormatter::format(app.uptime())) << std::endl
+				<< ("application.dir = " + app.config().getString("application.dir")) << std::endl
+				<< ("launch " + cmd) << std::endl;
+
+			ProcessHandle ph = Process::launch(cmd, args, initialDirectory);
+
+			ls.information("Process::PID ... : ") << ph.id() << "isRunning :" << Process::isRunning(ph) << std::endl;
 		}
 	}
 };

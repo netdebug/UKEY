@@ -7,6 +7,9 @@
     <Filter Include="Source Files">
       <UniqueIdentifier>{0f09eddf-b305-465e-b1cb-f940ee0f9bd7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Configuration Files">
+      <UniqueIdentifier>{01352a7e-3dd9-4d63-8c01-01edde847e61}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\rsyncDaemon.cpp">
@@ -17,5 +20,18 @@
     <ClInclude Include="src\rsyncDaemon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="rsyncDaemon.properties">
+      <Filter>Configuration Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="src\rsyncDaemon.rc">
+      <Filter>Configuration Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>
