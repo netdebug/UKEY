@@ -20,15 +20,6 @@ namespace Reach {
 	using Poco::Util::ServerApplication;
 	using Poco::Util::OptionSet;
 
-	//class SampleTask
-	//	: public Task
-	//{
-	//public:
-	//	SampleTask();
-	//	void runTask();
-	//};
-
-
 	class rsyncDaemon
 		: public ServerApplication
 	{
