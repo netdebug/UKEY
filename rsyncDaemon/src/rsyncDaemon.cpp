@@ -10,17 +10,12 @@
 //
 
 #include "rsyncDaemon.h"
+#include "UpdateTask.h"
 #include "Poco/Util/ServerApplication.h"
 #include "Poco/Util/Option.h"
 #include "Poco/Util/OptionSet.h"
 #include "Poco/Util/HelpFormatter.h"
-#include "Poco/Task.h"
 #include "Poco/TaskManager.h"
-#include "Poco/DateTimeFormatter.h"
-#include "Poco/LogStream.h"
-#include "Poco/Process.h"
-#include <iostream>
-
 
 using namespace Reach;
 
@@ -30,50 +25,7 @@ using Poco::Util::Option;
 using Poco::Util::OptionSet;
 using Poco::Util::OptionCallback;
 using Poco::Util::HelpFormatter;
-using Poco::Task;
 using Poco::TaskManager;
-using Poco::DateTimeFormatter;
-using Poco::LogStream;
-using Poco::Process;
-using Poco::ProcessHandle;
-
-
-class SampleTask: public Task
-{
-public:
-	SampleTask(): Task("SampleTask")
-	{
-	}
-
-	void runTask()
-	{
-		Application& app = Application::instance();
-		LogStream ls(app.logger());
-		std::string name("updater");
-		std::string cmd;
-#if defined(_DEBUG) && (POCO_OS != POCO_OS_ANDROID)
-		name += "d";
-#endif
-		std::vector<std::string> args;
-		args.push_back("-checkforupdates");
-
-		std::string initialDirectory = app.config().getString("application.dir");
-		cmd.append(initialDirectory);
-		cmd.append(name);
-
-		while (!sleep(5000*12*30))
-		{
-			ls.information("busy doing nothing... " + DateTimeFormatter::format(app.uptime())) << std::endl
-				<< ("application.dir = " + app.config().getString("application.dir")) << std::endl
-				<< ("launch " + cmd) << std::endl;
-
-			ProcessHandle ph = Process::launch(cmd, args, initialDirectory);
-
-			ls.information("Process::PID ... : ") << ph.id() << "isRunning :" << Process::isRunning(ph) << std::endl;
-		}
-	}
-};
-
 
 rsyncDaemon::rsyncDaemon() : _helpRequested(false)
 {
@@ -128,7 +80,7 @@ int rsyncDaemon::main(const ArgVec& args)
 	if (!_helpRequested)
 	{
 		TaskManager tm;
-		tm.start(new SampleTask);
+		tm.start(new UpdateTask);
 		waitForTerminationRequest();
 		tm.cancelAll();
 		tm.joinAll();
