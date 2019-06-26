@@ -179,7 +179,7 @@ std::string RSFoundation::RS_GetCertBase64String(short ctype, const std::string&
 
 std::string RSFoundation::RS_GetCertInfo(const std::string& base64, short type)
 {
-	UDevice::default();
+	//UDevice::default();
 
 	std::string item;
 
