@@ -29,9 +29,11 @@
   <ItemGroup>
     <ClInclude Include="src\resource.h" />
     <ClInclude Include="src\rsyncDaemon.h" />
+    <ClInclude Include="src\UpdateTask.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\rsyncDaemon.cpp" />
+    <ClCompile Include="src\UpdateTask.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="rsyncDaemon.properties" />
@@ -165,6 +167,11 @@
       </ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y $(ProjectDir)rsyncDaemon.cmd $(OutDir)
+xcopy /y $(ProjectDir)rsyncDaemon.properties $(OutDir)
+xcopy /y $(ProjectDir)removedrsyncDaemon.cmd $(OutDir)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='release_shared|Win32'">
     <ClCompile>

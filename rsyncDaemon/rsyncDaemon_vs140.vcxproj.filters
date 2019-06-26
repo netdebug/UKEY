@@ -15,12 +15,18 @@
     <ClCompile Include="src\rsyncDaemon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\UpdateTask.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\rsyncDaemon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UpdateTask.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
