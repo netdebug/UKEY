@@ -1,5 +1,5 @@
 //
-// rsyncDaemon.cpp
+// rsyncAgent.cpp
 //
 // This sample demonstrates the ServerApplication class.
 //
@@ -10,7 +10,7 @@
 //
 
 #include "rsyncAgent.h"
-#include "Poco/Util/ServerApplication.h"
+#include "Poco/Util/Application.h"
 #include "Poco/Util/Option.h"
 #include "Poco/Util/OptionSet.h"
 #include "Poco/Util/HelpFormatter.h"
@@ -19,7 +19,6 @@
 using namespace Reach;
 
 using Poco::Util::Application;
-using Poco::Util::ServerApplication;
 using Poco::Util::Option;
 using Poco::Util::OptionSet;
 using Poco::Util::OptionCallback;
@@ -37,19 +36,19 @@ rsyncAgent::~rsyncAgent()
 void rsyncAgent::initialize(Application& self)
 {
 	loadConfiguration(); // load default configuration files, if present
-	ServerApplication::initialize(self);
+	Application::initialize(self);
 	logger().information("starting up");
 }
 
 void rsyncAgent::uninitialize()
 {
 	logger().information("shutting down");
-	ServerApplication::uninitialize();
+	Application::uninitialize();
 }
 
 void rsyncAgent::defineOptions(OptionSet& options)
 {
-	ServerApplication::defineOptions(options);
+	Application::defineOptions(options);
 
 	options.addOption(
 		Option("help", "h", "display help information on command line arguments")
@@ -70,14 +69,29 @@ void rsyncAgent::displayHelp()
 	HelpFormatter helpFormatter(options());
 	helpFormatter.setCommand(commandName());
 	helpFormatter.setUsage("OPTIONS");
-	helpFormatter.setHeader("A sample server application that demonstrates some of the features of the Util::ServerApplication class.");
+	helpFormatter.setHeader("A sample application that demonstrates some of the features of the Util::Application class.");
 	helpFormatter.format(std::cout);
 }
 
+#include <sstream>
 int rsyncAgent::main(const ArgVec& args)
 {
 	if (!_helpRequested)
 	{
+		logger().information("Command line:");
+		std::ostringstream ostr;
+		for (ArgVec::const_iterator it = argv().begin(); it != argv().end(); ++it)
+		{
+			ostr << *it << ' ';
+		}
+		logger().information(ostr.str());
+		logger().information("Arguments to main():");
+		for (ArgVec::const_iterator it = args.begin(); it != args.end(); ++it)
+		{
+			logger().information(*it);
+		}
+		logger().information("Application properties:");
+		printProperties("");
 		/*TaskManager tm;
 		tm.start(new HTTPServer);
 		waitForTerminationRequest();
@@ -86,6 +100,34 @@ int rsyncAgent::main(const ArgVec& args)
 	}
 	return Application::EXIT_OK;
 }
+#include "Poco/Util/AbstractConfiguration.h"
+using Poco::Util::AbstractConfiguration;
 
+void rsyncAgent::printProperties(const std::string& base)
+{
+	AbstractConfiguration::Keys keys;
+	config().keys(base, keys);
+	if (keys.empty())
+	{
+		if (config().hasProperty(base))
+		{
+			std::string msg;
+			msg.append(base);
+			msg.append(" = ");
+			msg.append(config().getString(base));
+			logger().information(msg);
+		}
+	}
+	else
+	{
+		for (AbstractConfiguration::Keys::const_iterator it = keys.begin(); it != keys.end(); ++it)
+		{
+			std::string fullKey = base;
+			if (!fullKey.empty()) fullKey += '.';
+			fullKey.append(*it);
+			printProperties(fullKey);
+		}
+	}
+}
 
-POCO_SERVER_MAIN(rsyncAgent)
+POCO_APP_MAIN(rsyncAgent)
