@@ -78,56 +78,39 @@ int rsyncAgent::main(const ArgVec& args)
 {
 	if (!_helpRequested)
 	{
-		logger().information("Command line:");
-		std::ostringstream ostr;
-		for (ArgVec::const_iterator it = argv().begin(); it != argv().end(); ++it)
-		{
-			ostr << *it << ' ';
-		}
-		logger().information(ostr.str());
-		logger().information("Arguments to main():");
-		for (ArgVec::const_iterator it = args.begin(); it != args.end(); ++it)
-		{
-			logger().information(*it);
-		}
-		logger().information("Application properties:");
-		printProperties("");
-		/*TaskManager tm;
+		startHttpServer();
+		waitForTerminationRequest();
+		/*
+		TaskManager tm;
 		tm.start(new HTTPServer);
 		waitForTerminationRequest();
 		tm.cancelAll();
-		tm.joinAll();*/
+		tm.joinAll();
+		*/
 	}
 	return Application::EXIT_OK;
 }
-#include "Poco/Util/AbstractConfiguration.h"
-using Poco::Util::AbstractConfiguration;
 
-void rsyncAgent::printProperties(const std::string& base)
+#include "Poco/Net/ServerSocket.h"
+#include "Poco/Net/HTTPServer.h"
+#include "Poco/Net/HTTPServerParams.h"
+#include "RequestHandlerFactory.h"
+
+using Poco::Net::ServerSocket;
+using Poco::Net::HTTPServer;
+using Poco::Net::HTTPServerParams;
+
+void rsyncAgent::startHttpServer()
 {
-	AbstractConfiguration::Keys keys;
-	config().keys(base, keys);
-	if (keys.empty())
-	{
-		if (config().hasProperty(base))
-		{
-			std::string msg;
-			msg.append(base);
-			msg.append(" = ");
-			msg.append(config().getString(base));
-			logger().information(msg);
-		}
-	}
-	else
-	{
-		for (AbstractConfiguration::Keys::const_iterator it = keys.begin(); it != keys.end(); ++it)
-		{
-			std::string fullKey = base;
-			if (!fullKey.empty()) fullKey += '.';
-			fullKey.append(*it);
-			printProperties(fullKey);
-		}
-	}
+
+	unsigned short port = (unsigned short)config().getInt("HTTPFormServer.port", 9980);
+
+	ServerSocket svs(port);
+	HTTPServer srv(new RequestHandlerFactory, svs, new HTTPServerParams);
+
+	srv.start();
+	waitForTerminationRequest();
+	srv.stop();
 }
 
-POCO_APP_MAIN(rsyncAgent)
+POCO_SERVER_MAIN(rsyncAgent)

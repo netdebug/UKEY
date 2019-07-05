@@ -10,6 +10,9 @@
     <Filter Include="Configuration Files">
       <UniqueIdentifier>{01352a7e-3dd9-4d63-8c01-01edde847e61}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\RequestHandler">
+      <UniqueIdentifier>{6b2e64e4-7619-4a67-a2bb-d2dd566cc671}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="rsyncAgent.properties">
@@ -23,9 +26,30 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\RequestHandlerFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\RedirectRequestHandler.h">
+      <Filter>Header Files\RequestHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="src\EchoHeaderRequestHandler.h">
+      <Filter>Header Files\RequestHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="src\EchoBodyRequestHandler.h">
+      <Filter>Header Files\RequestHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BufferRequestHandler.h">
+      <Filter>Header Files\RequestHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="src\AuthRequestHandler.h">
+      <Filter>Header Files\RequestHandler</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\rsyncAgent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RequestHandlerFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

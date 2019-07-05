@@ -10,17 +10,17 @@
 //
 
 
-#include "Poco/Util/Application.h"
+#include "Poco/Util/ServerApplication.h"
 #include "Poco/Util/OptionSet.h"
 #include <iostream>
 
 namespace Reach {
 
-	using Poco::Util::Application;
+	using Poco::Util::ServerApplication;
 	using Poco::Util::OptionSet;
 
 	class rsyncAgent
-		: public Application
+		: public ServerApplication
 	{
 	public:
 		rsyncAgent();
@@ -32,7 +32,10 @@ namespace Reach {
 		void defineOptions(OptionSet& options);
 		void handleHelp(const std::string& name, const std::string& value);
 		void displayHelp();
+		void printProperties();
 		void printProperties(const std::string& base);
+
+		void startHttpServer();
 
 		int main(const ArgVec& args);
 
