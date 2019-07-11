@@ -9,101 +9,95 @@
 #
 # $Id$
 
-#use strict;
+use strict;
 use warnings;
-
-my $dir = "";
-my $prefix = "";
-
-my $errorcount = 0;
-## my $openssl = $ENV{OPENSSL} || "openssl";
-## my $pwd;
-my $x509hash = "-subject_hash";
-my $crlhash = "-hash";
-my $verbose = 0;
-
+use Path::Tiny;
+use Carp;
 ##  Parse flags.
 while ( $ARGV[0] =~ /^-/ ) {
-    my $flag = shift @ARGV;
-    last if ( $flag eq '--');
-    if ( $flag eq '-old') {
-      print "-subject_hash_old\n";
-      print "-hash_old\n";
-	    ##$x509hash = "-subject_hash_old";
-	    ##$crlhash = "-hash_old";
-    } elsif ( $flag eq '-h' || $flag eq '-help' ) {
-	    help();
-    } elsif ( $flag eq '-n' ) {
-	    createTemplateProject();
-    } elsif ( $flag eq '-v' ) {
-	    #$verbose++;
-      print "verbose\n";
-    }
-    else {
-	    print STDERR "Usage error; try -h.\n";
-	    exit 1;
-    }
+  my $flag = shift @ARGV;
+  last if ( $flag eq '--');
+  if ( $flag eq '-h' || $flag eq '-help' ) {
+    help();
+  } elsif ( $flag eq '-n' ) {
+    createTemplateProject($ARGV[0]);
+  } elsif ( $flag eq '-v' ) {
+    print "verbose\n";
+  }
+  else {
+    print STDERR "Usage error; try -h.\n";
+    exit 1;
+  }
 }
 
 sub createTemplateProject {
-  use Path::Tiny;
-  $dir = path($ARGV[0])->stringify();
-  $path = Path::Tiny->cwd; # path( Cwd::getcwd )
-  @paths = path($path)->children();
-  # create directory for include / src
-  $include = $dir.join('','/','include');
-  $src = $dir.join('','/','src');
-  $col = 0;
+  my $path = Path::Tiny->cwd;
+  print "current working directory : $path \n";
+  print "createTemplateProject argv : @_\n";
 
-  $target = path($dir)->basename();
-  $hpp = $target.join('','.h');
-  $cpp = $target.join('','.cpp');
-  $vcxproj = $target.join('','.vcxproj');
-  $vcxprojfilter = $target.join('','.vcxproj.filter');
-  # foreach $fi (@paths) {
-  #   $col++;
-  #   print "$col $target $include $src $hpp $cpp\n";
-  # }
-  #create directorys
-    my @dirs;
-    push(@dirs, $include);
-    push(@dirs, $src);
-    foreach $a (@dirs) {
-      print "$a\n";
-      $obj = path($a);
-      unless($obj->exists()) {
-        $obj->mkpath();
-      }
-    }
-
-  #create files
-  if(path($src)->exists()) {
-    my @files;
-    push(@files, $src.join('', '/', $hpp));
-    push(@files, $src.join('', '/', $cpp));
-    push(@files, $src.join('', '/', $vcxproj));
-    push(@files, $src.join('', '/', $vcxprojfilter));
-    foreach $a (@files) {
-        print "$a\n";
-        $o = path($a);
-        unless($o->exists()){
-          $o->touch();
-        }
-    }
+  my $dir = $_[0];
+  unless (path($dir)->exists()) {
+    croak "$dir do not exists!";
   }
 
-  #print "path($src.join($hpp))";
-  #print "path($src.join($cpp))";
-  #create .vcxproj/.filter configure file(xml)
-  #create project.name.h project.name.cpp
+  my @dirs = (
+    $dir.join('','/','include'),
+    $dir.join('','/','src')
+  );
+  createDirs(@dirs);
+
+  my $target = path($dir)->basename();
+  my $targetDir = $dir.join('','/','src');
+  createSource($target, $targetDir);
+}
+
+sub createDirs {
+  print "createDirs argv : @_\n";
+  foreach my $a (@_) {
+    print "$a\n";
+    unless(path($a)->exists()) {
+      path($a)->mkpath();
+    }
+  }
+}
+
+sub createSource {
+  print "createSource argv : @_\n";
+  my $t = $_[0]; ## target filename
+  my $hpp = $t.join('','.h');
+  my $cpp = $t.join('','.cpp');
+  my $vcxproj = $t.join('','.vcxproj');
+  my $vcxprojfilter = $t.join('','.vcxproj.filters');
+
+  #create files
+  my $p = $_[1]; ## srouce code path
+  unless (path($p)->exists()) {
+    carp "$_[1] do not exists!";
+  }
+  my @files = (
+    $p.join('', '/', $hpp),
+    $p.join('', '/', $cpp),
+    $p.join('', '/', $vcxproj),
+    $p.join('', '/', $vcxprojfilter)
+  );
+  # push(@files, $_[1].join('', '/', $hpp));
+  # push(@files, $_[1].join('', '/', $cpp));
+  # push(@files, $_[1].join('', '/', $vcxproj));
+  # push(@files, $_[1].join('', '/', $vcxprojfilter));
+  foreach my $a (@files) {
+    print "$a\n";
+    unless (path($a)->exists()) {
+      path($a)->touch();
+    }
+  }
 }
 
 sub help {
   print "This script, when run on a directory, copy templete vcxproj and vcxproj.filters
-with params, create include ,src directory , create project file etc.\n";
+  with params, create include ,src directory , create project file etc.\n";
 
-	print "Usage: mkProj [-h] [-help] [-v] [-n] [dirs...]\n";
-	print "   -h or -help print this help text\n";
+  print "Usage: mkProj [-h] [-help] [-v] [-n] [dirs...]\n";
+  print "   -h or -help print this help text\n";
   print "   -n create template project";
-	exit 0;
+  exit 0;
 }
