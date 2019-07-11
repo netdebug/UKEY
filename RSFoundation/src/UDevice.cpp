@@ -13,10 +13,13 @@
 #include "SoFProvider.h"
 #include "Poco/Exception.h"
 #include "Poco/SingletonHolder.h"
+#include "Poco/RegularExpression.h"
+#include "StrategyCollection.h"
 #include <map>
 
 using namespace Reach;
 using Poco::SingletonHolder;
+using Poco::RegularExpression;
 
 UDevice::UDevice()
 	:bOpened(false), initial(false), random_size(16),ls(Logger::get("LoggerTest"))
@@ -35,61 +38,114 @@ int UDevice::random()
 	return random_size;
 }
 
-#include "Poco/RegularExpression.h"
-
-using Poco::RegularExpression;
 
 void UDevice::InitialMethods()
 {
-	if (initial) return;
-
 	ls.trace() << "UDevice::InitialMethods() enter" << std::endl;
 
-	std::string list = SOF_GetUserList();
-	std::string pattern("(\\S+)\\|\\|(\\S+)[&&&]*");
-	int options = 0;
+	if (initial) return;
 
-	RegularExpression re(pattern, options);
-	RegularExpression::Match mtch;
-
-	if (!re.match(list, mtch))
-		throw Poco::LogicException("RS_KeyDecryptData uid Exception!", 0x40);
-
-	std::vector<std::string> tags;
-	re.split(list, tags, options);
-	std::string& name = tags[1];
-	std::string& uid = tags[2];
-
-	std::string supported = SOF_GetDeviceInfo(uid, SGD_DEVICE_SUPPORT_ALG);
-
-	if (supported.empty()) {
-		int error = SOF_GetLastError();
-		ls.warning() << "UDevice no supported():" << error << std::endl;
-		throw Poco::LogicException("SOF_GetDeviceInfo failed!", error);
-	}
-
-	typedef std::pair<int, int> method;
-	typedef std::map<std::string, method> method_table;
-	method_table algtable;
-
-	algtable["1"] = method(SGD_SM3_RSA, SGD_RSA);//RSA
-	algtable["2"] = method(SGD_SM3_SM2, SGD_SM4_ECB);//SM2
-
-	long result1 = SOF_SetSignMethod(algtable[supported].first);
-	long result2 = SOF_SetEncryptMethod(algtable[supported].second);
-
-	if (success != (result1 | result2))
-	{
-		int error = SOF_GetLastError();
-		ls.warning() << "UDevice::InitialMethods() failed!" << error << std::endl;
-		throw Poco::LogicException("SOF_SetSignMethod or SOF_SetEncryptMethod failed!", error);
-	}
+	EncryptStrategy encrypt(*this);
+	SignedStrategy sign(*this);
 
 	initial = true;
 
 	ls.trace() << "UDevice::InitialMethods() exit" << std::endl
 		<< "Sign :" << SOF_GetSignMethod() << std::endl
 		<< "Encrypt :" << SOF_GetEncryptMethod() << std::endl;
+}
+
+bool UDevice::findEncryptMethod(std::string key)
+{
+	return (std::find(_encrypt_methods.begin(), _encrypt_methods.end(), key) != _encrypt_methods.end());
+}
+
+void UDevice::getCapability()
+{
+	_encrypt_methods = SOF_GetDeviceCapability(getUID(), 0);
+
+	for (int i = 0; i < _encrypt_methods.size(); i++) {
+		ls.trace() << i << ":" << _encrypt_methods[i] << std::endl;
+	}
+}
+
+void UDevice::setRandom(int type)
+{
+	std::map<int, int> algorithms;
+	algorithms[SGD_SM1_ECB] = 16;
+	algorithms[SGD_SM1_CBC] = 32;
+
+	/*algorithms[SGD_SSF33_ECB]	= 16;
+	algorithms[SGD_SSF33_CBC]	= 32;*/
+
+	algorithms[SGD_SM4_ECB] = 16;
+	algorithms[SGD_SM4_CBC] = 32;
+
+	/// current ecb cbc have limited! So make random_size right
+	random_size = algorithms[type];
+}
+
+void UDevice::setEncryptMethod(int type)
+{
+	setRandom(type);
+
+	if (success != SOF_SetEncryptMethod(type)) {
+		int error = SOF_GetLastError();
+		ls.warning() << "UDevice::SOF_SetEncryptMethod() failed!" << error << std::endl;
+		throw Poco::LogicException("SOF_SetEncryptMethod failed!", error);
+	}
+}
+
+std::string UDevice::getContainerType()
+{
+	/// offset is betweent SOF_GetDeviceInfo and containerTypes vector
+	std::size_t offset = 1;
+	std::size_t supported = std::stoi(SOF_GetDeviceInfo(getUID(), SGD_DEVICE_SUPPORT_ALG)) - offset;
+	std::vector<std::string> containerTypes;
+	containerTypes.push_back("RSA"); // 1 - RSA Container Type
+	containerTypes.push_back("SM2"); // 2 - SM Container Type
+	/// index from zero
+	/// (0 =>1)
+	return containerTypes[supported];
+}
+
+void UDevice::setSignMethod(int type)
+{
+	if (SGD_SHA1_RSA != type && SGD_SM3_SM2 != type)
+		throw Poco::LogicException("Out of range value for SOF_SetSignMethod!");
+
+	if(success != SOF_SetSignMethod(type)) {
+		int error = SOF_GetLastError();
+		ls.warning() << "UDevice::setSignMethod() failed!" << error << std::endl;
+		throw Poco::LogicException("setSignMethod failed!", error);
+	}
+}
+
+std::string UDevice::getUID()
+{
+	return _cid;
+}
+
+std::string UDevice::getName()
+{
+	return _cname;
+}
+
+void UDevice::spiltEntries()
+{
+	std::string pattern("(\\S+)\\|\\|(\\S+)[&&&]*");
+	int options = 0;
+
+	RegularExpression re(pattern, options);
+	RegularExpression::Match mtch;
+
+	if (!re.match(entries, mtch))
+		throw Poco::LogicException("RS_KeyDecryptData uid Exception!", 0x40);
+
+	std::vector<std::string> tags;
+	re.split(entries, tags, options);
+	_cname = tags[1];
+	_cid = tags[2];
 }
 
 void UDevice::open()
@@ -102,6 +158,11 @@ void UDevice::open()
 		ls.warning() << "UDevice::open() failed!" << error << std::endl;
 		throw Poco::LogicException("UDevice open failed!", error);
 	}
+	/// Do not change the call order.
+	entries = SOF_GetUserList();
+	spiltEntries();
+	getCapability();
+
 	bOpened = true;
 }
 

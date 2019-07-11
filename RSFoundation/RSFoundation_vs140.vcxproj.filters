@@ -18,6 +18,9 @@
     <ClCompile Include="src\JSONStringify.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\StrategyCollection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\UDevice.h">
@@ -27,6 +30,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\JSONStringify.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\StrategyCollection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

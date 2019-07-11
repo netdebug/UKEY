@@ -49,7 +49,7 @@
       <Filter>SharedLibrary\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\RSProviderTest.cpp">
-      <Filter>_Suite\Source Files</Filter>
+      <Filter>RSFoundation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -72,7 +72,7 @@
       <Filter>SharedLibrary\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\RSProviderTest.h">
-      <Filter>_Suite\Header Files</Filter>
+      <Filter>RSFoundation</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

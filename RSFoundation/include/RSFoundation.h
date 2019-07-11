@@ -40,7 +40,8 @@ namespace Reach {
 		std::string RS_KeyGetKeySn(const std::string& uid);
 
 		//证书信息和有效性验证
-		std::string RS_GetCertInfo(const std::string& base64, short type);
+		std::string RS_GetCertInfo(const std::string& base64, int type);
+		std::string RS_GetCertInfoEx(const std::string & base64, const std::string & oid);
 		std::string RS_VerifyIdentity(const std::string& base64, const std::string& authNo);
 
 		//用户密码服务

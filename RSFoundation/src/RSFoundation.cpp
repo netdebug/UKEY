@@ -177,7 +177,7 @@ std::string RSFoundation::RS_GetCertBase64String(short ctype, const std::string&
 	return data;
 }
 
-std::string RSFoundation::RS_GetCertInfo(const std::string& base64, short type)
+std::string RSFoundation::RS_GetCertInfo(const std::string& base64, int type)
 {
 	//UDevice::default();
 
@@ -188,11 +188,43 @@ std::string RSFoundation::RS_GetCertInfo(const std::string& base64, short type)
 	{
 		item = SOF_GetCertInfo(base64, type);
 	}
+	if (SGD_OID_IDENTIFY_NUMBER == type) {
+		std::string special_oid("1.2.156.10260.4.1.1");
+		item = SOF_GetCertInfoByOid(base64, special_oid);
+		if (item.empty()) {
+			/// SGD_CERT_SUBJECT_CN identify card (330602197108300018)
+			/// CN = 041@0330602197108300018@测试个人一@00000001
+			/// 十八位：^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$
+			/// 十五位：^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}[0-9Xx]$
+			std::string CN_ITEM = SOF_GetCertInfo(base64, SGD_CERT_SUBJECT_CN);
+			std::string pattern("@(\\d+)@");
+			int options = 0;
 
-	if (SGD_EXT_AUTHORITYKEYIDENTIFIER_INFO < type < SGD_EXT_SELFDEFINED_EXTENSION_INFO)
-	{
-		//certItem = SOF_GetCertInfoByOid(const_cast<char*>(certBase64.c_str()), type);
+			RegularExpression re(pattern, options);
+			RegularExpression::Match mtch;
+
+			if (!re.match(CN_ITEM, mtch))
+				throw Poco::LogicException("RS_KeyDecryptData uid Exception!", 0x40);
+
+			std::vector<std::string> tags;
+			re.split(CN_ITEM, tags, options);
+			std::string id = tags[1];
+			/// erase 0 if is id card
+			if( id.at(0) == '0')
+				item = id.erase(id.at(0));
+		}
 	}
+
+	JSONStringify data;
+	data.addObject("info", item);
+	return data;
+}
+
+std::string RSFoundation::RS_GetCertInfoEx(const std::string& base64, const std::string& oid)
+{
+	std::string item;
+
+	item = SOF_GetCertInfoByOid(base64, oid);
 
 	JSONStringify data;
 	data.addObject("info", item);
