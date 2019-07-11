@@ -14,7 +14,6 @@
 #define RS_UDevice_INCLUDE
 
 #include "Poco/Foundation.h"
-//#include "Poco/SharedLibrary.h"
 #include "Poco/Logger.h"
 #include "Poco/LogStream.h"
 
@@ -39,13 +38,28 @@ namespace Reach {
 		static void defaultEncryptMethod();
 	protected:
 		void InitialMethods();
+		std::string getContainerType();
+		void getCapability();
+		void setRandom(int type);
+		void setEncryptMethod(int type);
+		bool findEncryptMethod(std::string key);
+		void setSignMethod(int type);
+		std::string getUID();
+		std::string getName();
+		void spiltEntries();
 	private:
-		//Poco::SharedLibrary sl;
+		std::string _cname;
+		std::string _cid;
+		std::vector<std::string> _encrypt_methods;
+		std::string entries;//user cert entry list
 		bool bOpened;
 		static const int success = 0;
 		bool initial;
 		int random_size;
 		LogStream ls;
+
+		friend class EncryptStrategy;
+		friend class SignedStrategy;
 	};
 }
 

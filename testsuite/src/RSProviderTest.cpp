@@ -119,6 +119,7 @@ void RSProviderTest::testRSGetCertInfo()
 
 #define SGD_CERT_VERSION 0x00000001
 #define SGD_CERT_SERIAL 0x00000002
+#define SGD_OID_IDENTIFY_NUMBER 0x01100034
 
 	Reach::RSFoundation rsf;
 
@@ -136,6 +137,7 @@ void RSProviderTest::testRSGetCertInfo()
 
 		ls.trace() << "SGD_CERT_VERSION" << rsf.RS_GetCertInfo(cert, SGD_CERT_VERSION) << std::endl;
 		ls.trace() << "SGD_CERT_SERIAL" << rsf.RS_GetCertInfo(cert, SGD_CERT_SERIAL) << std::endl;
+		ls.trace() << "RS_GetCertInfo:" << rsf.RS_GetCertInfo(cert, SGD_OID_IDENTIFY_NUMBER) << std::endl;
 	}
 
 
@@ -153,6 +155,7 @@ void RSProviderTest::testRSGetCertInfo()
 
 		ls.trace() << "SGD_CERT_VERSION" << rsf.RS_GetCertInfo(cert, SGD_CERT_VERSION) << std::endl;
 		ls.trace() << "SGD_CERT_SERIAL" << rsf.RS_GetCertInfo(cert, SGD_CERT_SERIAL) << std::endl;
+		ls.trace() << "RS_GetCertInfo:" << rsf.RS_GetCertInfo(cert, SGD_OID_IDENTIFY_NUMBER) << std::endl;
 	}
 }
 
