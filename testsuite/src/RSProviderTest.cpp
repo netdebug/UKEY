@@ -543,10 +543,10 @@ void RSProviderTest::waitforuser()
 
 void RSProviderTest::setUp()
 {
-	/*uid = "{1B57694E-911E-41D9-8123-971EDD71342C}";
-	pwd = "00000000";*/
-	uid = "806000119631708";
-	pwd = "111111";
+	uid = "{1B57694E-911E-41D9-8123-971EDD71342C}";
+	pwd = "00000000";
+	/*uid = "806000119631708";
+	pwd = "111111";*/
 	//uid = "4334801F-55EA-4F16-982C-CFB2AB8B44F7";
 	//pwd = "111111";
 	AutoPtr<Channel> pChannel = new WindowsColorConsoleChannel;

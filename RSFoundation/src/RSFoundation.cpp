@@ -210,8 +210,8 @@ std::string RSFoundation::RS_GetCertInfo(const std::string& base64, int type)
 			re.split(CN_ITEM, tags, options);
 			std::string id = tags[1];
 			/// erase 0 if is id card
-			if( id.at(0) == '0')
-				item = id.erase(id.at(0));
+			if (id.at(0) == '0')
+				item = id.replace(0, 1, "");
 		}
 	}
 
