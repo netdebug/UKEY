@@ -341,6 +341,7 @@
     <ClCompile Include="src\SealProviderTest.cpp" />
     <ClCompile Include="src\SharedLibraryTest.cpp" />
     <ClCompile Include="src\SharedLibraryTestSuite.cpp" />
+    <ClCompile Include="src\TestUtil.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\FoundationTestSuite.h" />
@@ -350,6 +351,7 @@
     <ClInclude Include="src\SharedLibraryTest.h" />
     <ClInclude Include="src\SharedLibraryTestSuite.h" />
     <ClInclude Include="src\SOFProviderTest.h" />
+    <ClInclude Include="src\TestUtil.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
