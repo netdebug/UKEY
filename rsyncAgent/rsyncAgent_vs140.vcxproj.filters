@@ -13,6 +13,12 @@
     <Filter Include="Header Files\RequestHandler">
       <UniqueIdentifier>{6b2e64e4-7619-4a67-a2bb-d2dd566cc671}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\RequestHandler\rs class">
+      <UniqueIdentifier>{fef5e808-1b4e-4fef-ab3c-a5d35a067b81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\RequestHandler\rs device">
+      <UniqueIdentifier>{2c58c06a-3fc6-4f01-b241-5db49d3ef74c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="rsyncAgent.properties">
@@ -44,6 +50,90 @@
     <ClInclude Include="src\AuthRequestHandler.h">
       <Filter>Header Files\RequestHandler</Filter>
     </ClInclude>
+    <ClInclude Include="src\KeySignByP7RequestHandler.h">
+      <Filter>Header Files\RequestHandler\rs class</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KeySignByP1RequestHandler.h">
+      <Filter>Header Files\RequestHandler\rs class</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KeyGetKeySnRequestHandler.h">
+      <Filter>Header Files\RequestHandler\rs class</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KeyEncryptDataRequestHandler.h">
+      <Filter>Header Files\RequestHandler\rs class</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KeyEncryptByDigitalEnvelopeRequestHandler.h">
+      <Filter>Header Files\RequestHandler\rs class</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KeyDigitalSignByP1RequestHandler.h">
+      <Filter>Header Files\RequestHandler\rs class</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KeyDecryptDataRequestHandler.h">
+      <Filter>Header Files\RequestHandler\rs class</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KeyDecryptByDigitalEnvelopeRequestHandler.h">
+      <Filter>Header Files\RequestHandler\rs class</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GetUserListRequestHandler.h">
+      <Filter>Header Files\RequestHandler\rs class</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GetPinRetryCountRequestHandler.h">
+      <Filter>Header Files\RequestHandler\rs class</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GetParametersRequestHandler.h">
+      <Filter>Header Files\RequestHandler\rs class</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GetCertInfoRequestHandler.h">
+      <Filter>Header Files\RequestHandler\rs class</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GetCertInfoExRequestHandler.h">
+      <Filter>Header Files\RequestHandler\rs class</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GetCertBase64StringRequestHandler.h">
+      <Filter>Header Files\RequestHandler\rs class</Filter>
+    </ClInclude>
+    <ClInclude Include="src\EncryptFileRequestHandler.h">
+      <Filter>Header Files\RequestHandler\rs class</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DecryptFileRequestHandler.h">
+      <Filter>Header Files\RequestHandler\rs class</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ConfigParametersRequestHandler.h">
+      <Filter>Header Files\RequestHandler\rs class</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChangePassWdRequestHandler.h">
+      <Filter>Header Files\RequestHandler\rs class</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CertLoginRequestHandler.h">
+      <Filter>Header Files\RequestHandler\rs class</Filter>
+    </ClInclude>
+    <ClInclude Include="src\VerifySignByP7RequestHandler.h">
+      <Filter>Header Files\RequestHandler\rs class</Filter>
+    </ClInclude>
+    <ClInclude Include="src\VerifySignByP1RequestHandler.h">
+      <Filter>Header Files\RequestHandler\rs class</Filter>
+    </ClInclude>
+    <ClInclude Include="src\VerifyIdentityRequestHandler.h">
+      <Filter>Header Files\RequestHandler\rs class</Filter>
+    </ClInclude>
+    <ClInclude Include="src\VerifyDigitalSignByP1RequestHandler.h">
+      <Filter>Header Files\RequestHandler\rs class</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UDevice.h">
+      <Filter>Header Files\RequestHandler\rs device</Filter>
+    </ClInclude>
+    <ClInclude Include="src\StrategyCollection.h">
+      <Filter>Header Files\RequestHandler\rs device</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SoFProvider.h">
+      <Filter>Header Files\RequestHandler\rs device</Filter>
+    </ClInclude>
+    <ClInclude Include="src\JSONStringify.h">
+      <Filter>Header Files\RequestHandler\rs device</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GMCrypto.h">
+      <Filter>Header Files\RequestHandler\rs device</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\rsyncAgent.cpp">
@@ -51,6 +141,15 @@
     </ClCompile>
     <ClCompile Include="src\RequestHandlerFactory.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\StrategyCollection.cpp">
+      <Filter>Header Files\RequestHandler\rs device</Filter>
+    </ClCompile>
+    <ClCompile Include="src\JSONStringify.cpp">
+      <Filter>Header Files\RequestHandler\rs device</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UDevice.cpp">
+      <Filter>Header Files\RequestHandler\rs device</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

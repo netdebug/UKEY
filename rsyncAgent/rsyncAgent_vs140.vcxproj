@@ -33,15 +33,46 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="src\AuthRequestHandler.h" />
     <ClInclude Include="src\BufferRequestHandler.h" />
+    <ClInclude Include="src\CertLoginRequestHandler.h" />
+    <ClInclude Include="src\ChangePassWdRequestHandler.h" />
+    <ClInclude Include="src\ConfigParametersRequestHandler.h" />
+    <ClInclude Include="src\DecryptFileRequestHandler.h" />
     <ClInclude Include="src\EchoBodyRequestHandler.h" />
     <ClInclude Include="src\EchoHeaderRequestHandler.h" />
+    <ClInclude Include="src\EncryptFileRequestHandler.h" />
+    <ClInclude Include="src\GetCertBase64StringRequestHandler.h" />
+    <ClInclude Include="src\GetCertInfoExRequestHandler.h" />
+    <ClInclude Include="src\GetCertInfoRequestHandler.h" />
+    <ClInclude Include="src\GetParametersRequestHandler.h" />
+    <ClInclude Include="src\GetPinRetryCountRequestHandler.h" />
+    <ClInclude Include="src\GetUserListRequestHandler.h" />
+    <ClInclude Include="src\GMCrypto.h" />
+    <ClInclude Include="src\JSONStringify.h" />
+    <ClInclude Include="src\KeyDecryptByDigitalEnvelopeRequestHandler.h" />
+    <ClInclude Include="src\KeyDecryptDataRequestHandler.h" />
+    <ClInclude Include="src\KeyDigitalSignByP1RequestHandler.h" />
+    <ClInclude Include="src\KeyEncryptByDigitalEnvelopeRequestHandler.h" />
+    <ClInclude Include="src\KeyEncryptDataRequestHandler.h" />
+    <ClInclude Include="src\KeyGetKeySnRequestHandler.h" />
+    <ClInclude Include="src\KeySignByP1RequestHandler.h" />
+    <ClInclude Include="src\KeySignByP7RequestHandler.h" />
     <ClInclude Include="src\RedirectRequestHandler.h" />
     <ClInclude Include="src\RequestHandlerFactory.h" />
     <ClInclude Include="src\rsyncAgent.h" />
+    <ClInclude Include="src\SoFProvider.h" />
+    <ClInclude Include="src\StrategyCollection.h" />
+    <ClInclude Include="src\UDevice.h" />
+    <ClInclude Include="src\VerifyDigitalSignByP1RequestHandler.h" />
+    <ClInclude Include="src\VerifyIdentityRequestHandler.h" />
+    <ClInclude Include="src\VerifySignByP1RequestHandler.h" />
+    <ClInclude Include="src\VerifySignByP7RequestHandler.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\JSONStringify.cpp" />
     <ClCompile Include="src\RequestHandlerFactory.cpp" />
     <ClCompile Include="src\rsyncAgent.cpp" />
+    <ClCompile Include="src\StrategyCollection.cpp" />
+    <ClCompile Include="src\UDevice.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="rsyncAgent.rc" />
@@ -161,7 +192,7 @@
       <CompileAs>Default</CompileAs>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>PocoFoundationd.lib;PocoJSONd.lib;PocoNetd.lib;PocoUtild.lib;Iphlpapi.lib;msi.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PocoFoundationd.lib;PocoJSONd.lib;PocoNetd.lib;PocoUtild.lib;SoFProviderd.lib;Iphlpapi.lib;msi.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\bin\rsyncAgentd.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
