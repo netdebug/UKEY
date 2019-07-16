@@ -15,6 +15,9 @@ namespace Reach {
 	public:
 		void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
 		{
+			response.set("Access-Control-Allow-Origin", "*");
+			response.set("Access-Control-Allow-Methods", "GET, POST, HEAD");
+
 			std::string data("GetCertInfoExRequestHandler");
 			response.sendBuffer(data.data(), data.length());
 		}

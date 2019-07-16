@@ -63,6 +63,8 @@ namespace Reach {
 		{
 			Application& app = Application::instance();
 			app.logger().information("CertLoginRequestHandler Request from " + request.clientAddress().toString());
+			response.set("Access-Control-Allow-Origin", "*");
+			response.set("Access-Control-Allow-Methods", "GET, POST, HEAD");
 
 			std::string data;
 			HTMLForm form(request, request.stream());
@@ -72,6 +74,7 @@ namespace Reach {
 				CertLogin command(uid, pwd);
 				data += command.execute();
 			}
+
 			return response.sendBuffer(data.data(), data.length());
 		}
 	};

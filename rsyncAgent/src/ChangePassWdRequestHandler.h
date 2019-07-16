@@ -49,6 +49,9 @@ namespace Reach {
 			Application& app = Application::instance();
 			app.logger().information("ChangePassWdRequestHandler Request from " + request.clientAddress().toString());
 
+			response.set("Access-Control-Allow-Origin", "*");
+			response.set("Access-Control-Allow-Methods", "GET, POST, HEAD");
+
 			std::string data;
 			HTMLForm form(request, request.stream());
 			if (!form.empty()) {
@@ -58,6 +61,7 @@ namespace Reach {
 				ChangePassWd command(uid, oldCode, newCode);
 				data += command.execute();
 			}
+
 			return response.sendBuffer(data.data(), data.length());
 		}
 	};

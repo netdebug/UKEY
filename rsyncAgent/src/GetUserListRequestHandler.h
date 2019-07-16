@@ -59,10 +59,13 @@ namespace Reach {
 		{
 			Application& app = Application::instance();
 			app.logger().information("GetUserListRequestHandler Request from " + request.clientAddress().toString());
+			response.set("Access-Control-Allow-Origin", "*");
+			response.set("Access-Control-Allow-Methods", "GET, POST, HEAD");
 
 			std::string data;
 			GetUserList command;
 			data += command.execute();
+
 			return response.sendBuffer(data.data(), data.length());
 		}
 	};
