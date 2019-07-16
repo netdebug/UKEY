@@ -15,6 +15,10 @@
 #include "Poco/Util/OptionSet.h"
 #include "Poco/Util/HelpFormatter.h"
 #include "Poco/TaskManager.h"
+#include "Poco/Net/ServerSocket.h"
+#include "Poco/Net/HTTPServer.h"
+#include "Poco/Net/HTTPServerParams.h"
+#include "RequestHandlerFactory.h"
 
 using namespace Reach;
 
@@ -23,6 +27,9 @@ using Poco::Util::Option;
 using Poco::Util::OptionSet;
 using Poco::Util::OptionCallback;
 using Poco::Util::HelpFormatter;
+using Poco::Net::ServerSocket;
+using Poco::Net::HTTPServer;
+using Poco::Net::HTTPServerParams;
 using Poco::TaskManager;
 
 rsyncAgent::rsyncAgent() : _helpRequested(false)
@@ -78,39 +85,17 @@ int rsyncAgent::main(const ArgVec& args)
 {
 	if (!_helpRequested)
 	{
-		startHttpServer();
+		unsigned short port = (unsigned short)config().getInt("HTTPFormServer.port", 9980);
+		ServerSocket svs(port);
+		HTTPServer srv(new RequestHandlerFactory, svs, new HTTPServerParams);
+		srv.start();
+		Application& app = Application::instance();
+		app.logger().information("HTTPServer Listen from " + svs.address().toString());
 		waitForTerminationRequest();
-		/*
-		TaskManager tm;
-		tm.start(new HTTPServer);
-		waitForTerminationRequest();
-		tm.cancelAll();
-		tm.joinAll();
-		*/
+		srv.stop();
+
 	}
 	return Application::EXIT_OK;
-}
-
-#include "Poco/Net/ServerSocket.h"
-#include "Poco/Net/HTTPServer.h"
-#include "Poco/Net/HTTPServerParams.h"
-#include "RequestHandlerFactory.h"
-
-using Poco::Net::ServerSocket;
-using Poco::Net::HTTPServer;
-using Poco::Net::HTTPServerParams;
-
-void rsyncAgent::startHttpServer()
-{
-
-	unsigned short port = (unsigned short)config().getInt("HTTPFormServer.port", 9980);
-
-	ServerSocket svs(port);
-	HTTPServer srv(new RequestHandlerFactory, svs, new HTTPServerParams);
-
-	srv.start();
-	waitForTerminationRequest();
-	srv.stop();
 }
 
 POCO_SERVER_MAIN(rsyncAgent)

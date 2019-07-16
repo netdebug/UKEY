@@ -35,8 +35,6 @@ namespace Reach {
 		void printProperties();
 		void printProperties(const std::string& base);
 
-		void startHttpServer();
-
 		int main(const ArgVec& args);
 
 	private:
