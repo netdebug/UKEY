@@ -3,20 +3,96 @@
 #include "Poco/Net/HTTPRequestHandler.h"
 #include "Poco/Net/HTTPServerResponse.h"
 #include "Poco/Net/HTTPServerRequest.h"
+#include "Poco/Net/HTMLForm.h"
+#include "Poco/Net/NameValueCollection.h"
+#include "Poco/Util/Application.h"
+#include "UDevice.h"
+#include "JSONStringify.h"
+#include "GMCrypto.h"
+#include "SoFProvider.h"
 
 namespace Reach {
 
 	using Poco::Net::HTTPRequestHandler;
 	using Poco::Net::HTTPServerRequest;
 	using Poco::Net::HTTPServerResponse;
+	using Poco::Net::HTMLForm;
+	using Poco::Net::NameValueCollection;
+	using Poco::Util::Application;
+	using Reach::UDevice;
+	using Reach::JSONStringify;
+
+	///RS_KeyDecryptData
+	class KeyDecryptData
+	{
+	public:
+		KeyDecryptData(const std::string& uid, const std::string& encryptBuffer)
+			:_uid(uid),_encrypt_data(encryptBuffer)
+		{}
+		KeyDecryptData& execute()
+		{
+			UDevice::default();
+
+			std::string pattern("(\\S+)@@@(\\S+)");
+			int options = 0;
+
+			RegularExpression re(pattern, options);
+			RegularExpression::Match mtch;
+
+			if (!re.match(_encrypt_data, mtch))
+				throw Poco::LogicException("RS_KeyDecryptData enRsKey Exception!", 0x40);
+
+			std::vector<std::string> tags;
+			re.split(_encrypt_data, tags, options);
+			std::string& encrypt = tags[1];
+			std::string& cert = tags[2];
+
+			assert(tags.size() > 2);
+			std::string content = SOF_ExportExChangeUserCert(_uid);
+
+			if (content != cert)
+				throw Poco::LogicException("certificate error");
+
+			_decrypt_data = SOF_AsDecrypt(_uid, encrypt);
+			assert(!_decrypt_data.empty());
+			if (_decrypt_data.empty())
+			{
+				int error = SOF_GetLastError();
+				throw Poco::LogicException("SOF_AsDecrypt decrypt Exception", error);
+			}
+
+			return *this;
+		}
+
+		operator std::string()
+		{
+			JSONStringify data;
+			data.addObject("rsKey", _decrypt_data);
+			return data;
+		}
+	private:
+		std::string _uid;
+		std::string _encrypt_data;
+		std::string _decrypt_data;
+	};
 
 	class KeyDecryptDataRequestHandler : public HTTPRequestHandler
 	{
 	public:
 		void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
 		{
-			std::string data("KeyDecryptDataRequestHandler");
-			response.sendBuffer(data.data(), data.length());
+			Application& app = Application::instance();
+			app.logger().information("KeyDecryptDataRequestHandler Request from " + request.clientAddress().toString());
+
+			std::string data;
+			HTMLForm form(request, request.stream());
+			if (!form.empty()) {
+				std::string uid(form.get("containerId", ""));
+				std::string encryptBuffer(form.get("encRsKey", ""));
+				KeyDecryptData command(uid, encryptBuffer);
+				data += command.execute();
+			}
+			return response.sendBuffer(data.data(), data.length());
 		}
 	};
 }
