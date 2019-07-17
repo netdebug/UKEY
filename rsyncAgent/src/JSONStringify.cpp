@@ -12,6 +12,7 @@
 #include "Poco/JSON/Object.h"
 #include "Poco/JSON/Query.h"
 #include "Poco/Dynamic/Var.h"
+#include "Poco/NumberFormatter.h"
 #include <iostream>
 #include <cassert>
 #include <iomanip>
@@ -22,6 +23,7 @@ using namespace Reach;
 using Poco::JSON::Object;
 using Poco::JSON::Query;
 using Poco::Dynamic::Var;
+using Poco::NumberFormatter;
 
 JSONStringify::JSONStringify() :
 	code(0), message("successful"), result(JSONOptions)
@@ -43,7 +45,7 @@ JSONStringify::~JSONStringify()
 void JSONStringify::format()
 {
 	std::stringstream _;
-	_ << std::setw(4) << std::left << std::setfill('0') << code;
+	_ << std::setw(4) << std::left << std::setfill('0') << NumberFormatter::formatHex(code);
 
 	result.set("code", _.str());
 	result.set("msg", message);

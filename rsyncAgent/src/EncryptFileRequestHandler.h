@@ -53,7 +53,9 @@ namespace Reach {
 			if (!_encrypted)
 			{
 				int error = SOF_GetLastError();
-				throw Poco::LogicException("SOF_EncryptFile failed!", error);
+				JSONStringify data("unsuccessful", error);
+				data.addNullObject();
+				return data;
 			}
 
 			JSONStringify data;

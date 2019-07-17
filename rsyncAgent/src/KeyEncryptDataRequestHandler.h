@@ -30,7 +30,7 @@ namespace Reach {
 	{
 	public:
 		KeyEncryptData(const std::string& paintText, const std::string& base64)
-			:_paintext(paintText),_base64(base64)
+			:_paintext(paintText),_base64(base64), _encrypt_data("")
 		{}
 		KeyEncryptData& execute()
 		{
@@ -38,24 +38,26 @@ namespace Reach {
 
 			assert(!_paintext.empty() && !_base64.empty());
 			if (_paintext.empty()) return *this;
-			if (_base64.empty())
-				throw Poco::LogicException("RS_KeyEncryptData certificate must not be empty!", 0x45);
 
-			std::string _encrypt_data = SOF_AsEncrypt(_base64, _paintext);
-			if (_encrypt_data.empty())
-			{
-				int error = SOF_GetLastError();
-				throw Poco::LogicException("RS_KeyEncryptData failed!", error);
+			_encrypt_data = SOF_AsEncrypt(_base64, _paintext);
+			if (!_encrypt_data.empty()) {
+				_encrypt_data.append("@@@");
+				_encrypt_data.append(_base64);
 			}
-
-			_encrypt_data.append("@@@");
-			_encrypt_data.append(_base64);
-
+		
 			return *this;
 		}
 
 		operator std::string()
 		{
+			if (_encrypt_data.empty())
+			{
+				int error = SOF_GetLastError();
+				JSONStringify data("unsuccessful", error);
+				data.addNullObject();
+				return data;
+			}
+
 			JSONStringify data;
 			data.addObject("encRsKey", _encrypt_data);
 			return data;

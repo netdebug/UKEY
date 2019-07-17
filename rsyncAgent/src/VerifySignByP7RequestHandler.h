@@ -19,6 +19,7 @@ namespace Reach {
 		{}
 		VerifySignByP7& execute()
 		{
+			UDevice::default();
 			/////1 = Detached mode ,textual must be cleared!
 			if (_mode)
 				_textual.clear();
@@ -30,7 +31,8 @@ namespace Reach {
 		operator std::string()
 		{
 			if (!_verify) {
-				JSONStringify data("unsuccessful", 3325);
+				int error = SOF_GetLastError();
+				JSONStringify data("unsuccessful", error);
 				data.addNullObject();
 				return data;
 			}

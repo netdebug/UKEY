@@ -53,29 +53,28 @@ namespace Reach {
 			///_encrypt_data = symmetric-key_algorithm(_random_digital,_source_data);
 			_random_digital = SOF_GenRandom(UDevice::default().random());
 			_encrypted = SOF_EncryptFile(_random_digital, _source, _encrypt);
-			if(!_encrypted)
-			{
-				int error = SOF_GetLastError();
-				throw Poco::LogicException("SOF_EncryptFile encrypt file failed!", error);
-			}
+			if (!_encrypted) return *this;
 
 			///Asymmetric_key algorithm by public cert
 			///_cryptogrphic = asymmetric_key_algorithm(_cert,_random_digital);
 			_cryptogrphic = SOF_AsEncrypt(_cert, _random_digital);
-			if (_cryptogrphic.empty())
+			if (!_cryptogrphic.empty())
 			{
-				int error = SOF_GetLastError();
-				throw Poco::LogicException("RS_KeyEncryptData failed!", error);
+				_cryptogrphic.append("@@@");
+				_cryptogrphic.append(_cert);
 			}
-
-			_cryptogrphic.append("@@@");
-			_cryptogrphic.append(_cert);
 
 			return *this;
 		}
 
 		operator std::string()
 		{
+			if (!_encrypted || _cryptogrphic.empty()) {
+				int error = SOF_GetLastError();
+				JSONStringify data("unsuccessful", error);
+				data.addNullObject();
+				return data;
+			}
 			JSONStringify data;
 			data.addObject("rsKey", _cryptogrphic);
 			return data;

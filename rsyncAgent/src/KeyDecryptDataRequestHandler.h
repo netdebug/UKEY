@@ -54,18 +54,20 @@ namespace Reach {
 				throw Poco::LogicException("certificate error");
 
 			_decrypt_data = SOF_AsDecrypt(_uid, encrypt);
-			assert(!_decrypt_data.empty());
-			if (_decrypt_data.empty())
-			{
-				int error = SOF_GetLastError();
-				throw Poco::LogicException("SOF_AsDecrypt decrypt Exception", error);
-			}
 
 			return *this;
 		}
 
 		operator std::string()
 		{
+			if (_decrypt_data.empty())
+			{
+				int error = SOF_GetLastError();
+				JSONStringify data("unsuccessful", error);
+				data.addNullObject();
+				return data;
+			}
+
 			JSONStringify data;
 			data.addObject("rsKey", _decrypt_data);
 			return data;

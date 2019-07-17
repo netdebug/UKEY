@@ -19,6 +19,8 @@ namespace Reach {
 		{}
 		VerifySignByP1& execute()
 		{
+			UDevice::default();
+
 			_val = SOF_VerifySignedData(_base64, _msg, _signature);
 			return *this;
 		}
@@ -26,7 +28,8 @@ namespace Reach {
 		operator std::string()
 		{
 			if (!_val) {
-				JSONStringify data("unsuccessful", 3325);
+				int error = SOF_GetLastError();
+				JSONStringify data("unsuccessful", error);
 				data.addNullObject();
 				return data;
 			}

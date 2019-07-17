@@ -29,7 +29,8 @@ namespace Reach {
 		{
 			if (_signature.empty())
 			{
-				JSONStringify data("unsuccessful", 3325);
+				int error = SOF_GetLastError();
+				JSONStringify data("unsuccessful", error);
 				data.addNullObject();
 				return data;
 			}

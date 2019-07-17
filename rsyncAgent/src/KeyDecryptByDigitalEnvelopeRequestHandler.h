@@ -29,7 +29,8 @@ namespace Reach {
 	{
 	public:
 		KeyDecryptByDigitalEnvelope(std::string& uid, std::string& EncryptFile, std::string& OutDir, std::string& cryptogrphic)
-			:_uid(uid),_cryptogrphic(cryptogrphic),_encrypt(EncryptFile), _decrypt_directory(OutDir)
+			:_uid(uid),_cryptogrphic(cryptogrphic),_encrypt(EncryptFile), _decrypt_directory(OutDir),
+			_decrypted(false)
 		{
 			File fi(_encrypt);
 			if (!fi.exists())
@@ -51,10 +52,10 @@ namespace Reach {
 
 			std::vector<std::string> tags;
 			re.split(_cryptogrphic, tags, options);
+			assert(tags.size() > 2);
 			std::string& encrypt = tags[1];
 			std::string& cert = tags[2];
 
-			assert(tags.size() > 2);
 			std::string content = SOF_ExportExChangeUserCert(_uid);
 
 			if (content != cert)
@@ -62,20 +63,11 @@ namespace Reach {
 
 			///Asymmetric_key algorithm by private cert
 			///_cryptogrphic = asymmetric_key_algorithm(_cert,_random_digital);
-			std::string _random_digital = SOF_AsDecrypt(_uid, encrypt);
-			assert(!_random_digital.empty());
-			if (_random_digital.empty())
-			{
-				int error = SOF_GetLastError();
-				throw Poco::LogicException("SOF_AsDecrypt decrypt Exception", error);
-			}
-
-			///Symmetric-key algorithm by _random_digital
-			///_encrypt_data = symmetric-key_algorithm(_random_digital,_source_data);
-			if (!SOF_DecryptFile(_random_digital, _encrypt, _decrypt_directory))
-			{
-				int error = SOF_GetLastError();
-				throw Poco::LogicException("SOF_DecryptFile decrypt file failed!", error);
+			_random_digital = SOF_AsDecrypt(_uid, encrypt);
+			if (!_random_digital.empty()) {
+				///Symmetric-key algorithm by _random_digital
+				///_encrypt_data = symmetric-key_algorithm(_random_digital,_source_data);
+				_decrypted = SOF_DecryptFile(_random_digital, _encrypt, _decrypt_directory);
 			}
 
 			return *this;
@@ -83,6 +75,13 @@ namespace Reach {
 
 		operator std::string()
 		{
+			if (_random_digital.empty() || !_decrypted) {
+				int error = SOF_GetLastError();
+				JSONStringify data("unsuccessful", error);
+				data.addNullObject();
+				return data;
+			}
+
 			JSONStringify data;
 			data.addNullObject();
 			return data;
@@ -95,6 +94,7 @@ namespace Reach {
 		std::string _encrypt;
 		std::string _decrypt_directory;
 		std::string _random_digital;
+		bool _decrypted;
 	};
 
 	class KeyDecryptByDigitalEnvelopeRequestHandler : public HTTPRequestHandler
