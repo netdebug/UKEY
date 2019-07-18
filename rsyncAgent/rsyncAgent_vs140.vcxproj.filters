@@ -19,6 +19,9 @@
     <Filter Include="Header Files\RequestHandler\rs device">
       <UniqueIdentifier>{2c58c06a-3fc6-4f01-b241-5db49d3ef74c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\RequestHandler\sof class">
+      <UniqueIdentifier>{ac5efd6c-5cc1-46ba-a70d-a414cd6208aa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="rsyncAgent.properties">
@@ -133,6 +136,12 @@
     </ClInclude>
     <ClInclude Include="src\GMCrypto.h">
       <Filter>Header Files\RequestHandler\rs device</Filter>
+    </ClInclude>
+    <ClInclude Include="src\extCloseDeviceRequestHandler.h">
+      <Filter>Header Files\RequestHandler\sof class</Filter>
+    </ClInclude>
+    <ClInclude Include="src\extOpenDeviceRequestHandler.h">
+      <Filter>Header Files\RequestHandler\sof class</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

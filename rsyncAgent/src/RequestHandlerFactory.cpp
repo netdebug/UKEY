@@ -29,6 +29,8 @@
 #include "KeyDecryptDataRequestHandler.h"
 #include "KeyEncryptByDigitalEnvelopeRequestHandler.h"
 #include "KeyDecryptByDigitalEnvelopeRequestHandler.h"
+#include "extOpenDeviceRequestHandler.h"
+#include "extCloseDeviceRequestHandler.h"
 
 using namespace Reach;
 
@@ -94,6 +96,10 @@ HTTPRequestHandler * Reach::RequestHandlerFactory::createRequestHandler(const HT
 		return new KeyEncryptByDigitalEnvelopeRequestHandler;
 	else if (request.getURI() == "/RS_KeyDecryptByDigitalEnvelope")
 		return new KeyDecryptByDigitalEnvelopeRequestHandler;
+	else if (request.getURI() == "/SOF_OpenDevice")
+		return new extOpenDeviceRequestHandler;
+	else if (request.getURI() == "/SOF_CloseDevice")
+		return new extCloseDeviceRequestHandler;
 
 		return 0;
 }

@@ -40,6 +40,8 @@
     <ClInclude Include="src\EchoBodyRequestHandler.h" />
     <ClInclude Include="src\EchoHeaderRequestHandler.h" />
     <ClInclude Include="src\EncryptFileRequestHandler.h" />
+    <ClInclude Include="src\extCloseDeviceRequestHandler.h" />
+    <ClInclude Include="src\extOpenDeviceRequestHandler.h" />
     <ClInclude Include="src\GetCertBase64StringRequestHandler.h" />
     <ClInclude Include="src\GetCertInfoExRequestHandler.h" />
     <ClInclude Include="src\GetCertInfoRequestHandler.h" />
