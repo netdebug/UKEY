@@ -6,14 +6,14 @@
 [Setup]
 AppName={cm:MyAppName}
 AppId=62DA7343-2512-4713-8976-73C42F9D63EA
-AppVerName={cm:MyAppVerName,1.0.30}
+AppVerName={cm:MyAppVerName,1.0.33.0003}
 WizardStyle=modern
 DefaultDirName={pf}\{cm:MyAppName}
 DefaultGroupName={cm:MyAppName}
 UninstallDisplayIcon={app}\MyProg.exe
 VersionInfoDescription=testSuite
 VersionInfoProductName=testSuite
-VersionInfoVersion=1.0.30
+VersionInfoVersion=1.0.33.0003
 OutputBaseFilename=testSuite
 OutputDir=.\output
 ; Uncomment the following line to disable the "Select Setup Language"
@@ -80,7 +80,7 @@ Source: "..\bin\PocoNet.dll"; DestDir: "{app}";
 Source: "..\bin\PocoXML.dll"; DestDir: "{app}";
 Source: "..\bin\PocoUtil.dll"; DestDir: "{app}";
 
-Source: ".\release\SoFProvider.dll"; DestDir: "{app}"; 
+Source: "..\bin\SoFProvider.dll"; DestDir: "{app}"; 
 Source: ".\release\config.ini"; DestDir: "{app}";
 
 [Icons]
