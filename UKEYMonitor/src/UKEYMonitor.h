@@ -37,7 +37,15 @@ namespace Reach {
 
 		int main(const ArgVec& args);
 
+		static void __stdcall ServiceControlHandler(DWORD control, DWORD eventType, LPVOID eventData, LPVOID context);
+		static void deviceEventNotify(DWORD eventType, LPVOID eventData);
+
+		void RegisterUKEYNotification();
+
 	private:
 		bool _helpRequested;
+		static SERVICE_STATUS        _serviceStatus;
+		static SERVICE_STATUS_HANDLE _serviceStatusHandle;
+		static HDEVNOTIFY _notify;
 	};
 }
