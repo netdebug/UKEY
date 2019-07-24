@@ -4,6 +4,7 @@
 #include "Poco/Util/Application.h"
 #include "Poco/Event.h"
 #include "Poco/NamedEvent.h"
+#include "DeviceEventFilter.h"
 
 namespace Reach {
 
@@ -54,7 +55,7 @@ namespace Reach {
 			SRV_UNREGISTER
 		};
 		static BOOL __stdcall ConsoleCtrlHandler(DWORD ctrlType);
-		static void __stdcall ServiceControlHandler(DWORD control);
+		static DWORD __stdcall ServiceControlHandler(DWORD control, DWORD eventType, LPVOID eventData, LPVOID context);
 		static void __stdcall ServiceMain(DWORD argc, LPWSTR* argv);
 
 		bool hasConsole();
@@ -71,11 +72,12 @@ namespace Reach {
 		std::string _displayName;
 		std::string _description;
 		std::string _startup;
+		DeviceEventFilter _filter;
 
 		static Poco::Event           _terminated;
+		static Poco::NamedEvent      _terminate;
 		static SERVICE_STATUS        _serviceStatus;
 		static SERVICE_STATUS_HANDLE _serviceStatusHandle;
-		static Poco::NamedEvent      _terminate;
 	};
 } //namespace Reach
 

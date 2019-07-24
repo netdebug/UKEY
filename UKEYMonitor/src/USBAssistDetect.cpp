@@ -1,4 +1,5 @@
 #include "USBAssistDetect.h"
+#include "DeviceEventFilter.h"
 #include "Poco/Util/Option.h"
 #include "Poco/Util/OptionSet.h"
 #include "Poco/Util/OptionException.h"
@@ -220,7 +221,7 @@ BOOL USBAssistDetect::ConsoleCtrlHandler(DWORD ctrlType)
 	}
 }
 
-void USBAssistDetect::ServiceControlHandler(DWORD control)
+DWORD USBAssistDetect::ServiceControlHandler(DWORD control, DWORD eventType, LPVOID eventData, LPVOID context)
 {
 	switch (control)
 	{
@@ -228,11 +229,17 @@ void USBAssistDetect::ServiceControlHandler(DWORD control)
 	case SERVICE_CONTROL_SHUTDOWN:
 		terminate();
 		_serviceStatus.dwCurrentState = SERVICE_STOP_PENDING;
+		DeviceEventFilter::unregisterNotification();
 		break;
 	case SERVICE_CONTROL_INTERROGATE:
 		break;
+	case SERVICE_CONTROL_DEVICEEVENT:
+		DeviceEventFilter::emit(eventType, eventData);
+		break;
 	}
 	SetServiceStatus(_serviceStatusHandle, &_serviceStatus);
+
+	return NO_ERROR;
 }
 
 void USBAssistDetect::ServiceMain(DWORD argc, LPWSTR * argv)
@@ -241,10 +248,12 @@ void USBAssistDetect::ServiceMain(DWORD argc, LPWSTR * argv)
 
 	app.config().setBool("application.runAsService", true);
 
-	_serviceStatusHandle = RegisterServiceCtrlHandlerW(L"", ServiceControlHandler);
+	_serviceStatusHandle = RegisterServiceCtrlHandlerExW(L"", ServiceControlHandler, 0);
 
 	if (!_serviceStatusHandle)
 		throw SystemException("cannot register service control handler");
+
+	DeviceEventFilter::registerNotification(_serviceStatusHandle);
 
 	_serviceStatus.dwServiceType = SERVICE_WIN32;
 	_serviceStatus.dwCurrentState = SERVICE_START_PENDING;
@@ -322,6 +331,7 @@ void USBAssistDetect::registerService()
 		service.setDescription(_description);
 	logger().information("The application has been successfully registered as a service.");
 }
+
 void USBAssistDetect::unregisterService()
 {
 	std::string name = config().getString("application.baseName");
@@ -330,22 +340,27 @@ void USBAssistDetect::unregisterService()
 	service.unregisterService();
 	logger().information("The service has been successfully unregistered.");
 }
+
 void USBAssistDetect::handleRegisterService(const std::string& name, const std::string& value)
 {
 	_action = SRV_REGISTER;
 }
+
 void USBAssistDetect::handleUnregisterService(const std::string& name, const std::string& value)
 {
 	_action = SRV_UNREGISTER;
 }
+
 void USBAssistDetect::handleDisplayName(const std::string& name, const std::string& value)
 {
 	_displayName = value;
 }
+
 void USBAssistDetect::handleDescription(const std::string& name, const std::string& value)
 {
 	_description = value;
 }
+
 void USBAssistDetect::handleStartup(const std::string& name, const std::string& value)
 {
 	if (Poco::icompare(value, 4, std::string("auto")) == 0)

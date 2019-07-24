@@ -23,6 +23,9 @@
     <ClCompile Include="src\USBAssistDetect.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\DeviceEventFilter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\UKEYMonitor.h">
@@ -30,6 +33,9 @@
     </ClInclude>
     <ClInclude Include="resource.h" />
     <ClInclude Include="src\USBAssistDetect.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DeviceEventFilter.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
