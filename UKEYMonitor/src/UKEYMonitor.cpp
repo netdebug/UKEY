@@ -188,4 +188,4 @@ int UKEYMonitor::main(const ArgVec& args)
 	return Application::EXIT_OK;
 }
 
-POCO_SERVER_MAIN(UKEYMonitor)
+//POCO_SERVER_MAIN(UKEYMonitor)

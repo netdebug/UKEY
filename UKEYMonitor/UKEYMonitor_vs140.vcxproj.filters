@@ -20,12 +20,18 @@
     <ClCompile Include="src\UKEYMonitor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\USBAssistDetect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\UKEYMonitor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h" />
+    <ClInclude Include="src\USBAssistDetect.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="UKEYMonitor.rc" />
