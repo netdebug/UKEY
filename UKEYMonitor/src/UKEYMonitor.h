@@ -10,17 +10,16 @@
 //
 
 
-#include "Poco/Util/ServerApplication.h"
+#include "USBAssistDetect.h"
 #include "Poco/Util/OptionSet.h"
 #include <iostream>
 
 namespace Reach {
 
-	using Poco::Util::ServerApplication;
 	using Poco::Util::OptionSet;
 
 	class UKEYMonitor
-		: public ServerApplication
+		: public USBAssistDetect
 	{
 	public:
 		UKEYMonitor();

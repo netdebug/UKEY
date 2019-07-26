@@ -31,10 +31,6 @@ using Poco::Task;
 using Poco::DateTimeFormatter;
 using Poco::SystemException;
 
-SERVICE_STATUS        UKEYMonitor::_serviceStatus;
-SERVICE_STATUS_HANDLE UKEYMonitor::_serviceStatusHandle = 0;
-HDEVNOTIFY UKEYMonitor::_notify = 0;
-
 class SampleTask : public Task
 {
 public:
@@ -57,7 +53,6 @@ public:
 
 UKEYMonitor::UKEYMonitor() : _helpRequested(false)
 {
-	std::memset(&_serviceStatus, 0, sizeof(_serviceStatus));
 }
 
 UKEYMonitor::~UKEYMonitor()
@@ -67,19 +62,19 @@ UKEYMonitor::~UKEYMonitor()
 void UKEYMonitor::initialize(Application& self)
 {
 	loadConfiguration(); // load default configuration files, if present
-	ServerApplication::initialize(self);
+	USBAssistDetect::initialize(self);
 	logger().information("starting up");
 }
 
 void UKEYMonitor::uninitialize()
 {
 	logger().information("shutting down");
-	ServerApplication::uninitialize();
+	USBAssistDetect::uninitialize();
 }
 
 void UKEYMonitor::defineOptions(OptionSet& options)
 {
-	ServerApplication::defineOptions(options);
+	USBAssistDetect::defineOptions(options);
 
 	options.addOption(
 		Option("help", "h", "display help information on command line arguments")
@@ -104,83 +99,12 @@ void UKEYMonitor::displayHelp()
 	helpFormatter.format(std::cout);
 }
 
-
-//DEFINE_GUID(GUID_CLASS_USB, 0x25dbce51, 0x6c8f, 0x4a72, \
-//	0x8a, 0x6d, 0xb5, 0x4c, 0x2b, 0x4f, 0xc8, 0x35);
-
-GUID WceusbshGUID = { 0x25dbce51, 0x6c8f, 0x4a72,
-					  0x8a,0x6d,0xb5,0x4c,0x2b,0x4f,0xc8,0x35 };
-
-#include <Dbt.h>
-#include <WinIoCtl.h>
-
-void UKEYMonitor::deviceEventNotify(DWORD eventType, LPVOID eventData)
-{
-	switch (eventType)
-	{
-		case DBT_DEVICEARRIVAL:
-		{
-			Application& app = Application::instance();
-			app.logger().information("DBT_DEVICEARRIVAL... " + DateTimeFormatter::format(app.uptime()));
-
-			break;
-		}
-		case DBT_DEVICEREMOVECOMPLETE:
-		{
-			Application& app = Application::instance();
-			app.logger().information("DBT_DEVICEREMOVECOMPLETE... " + DateTimeFormatter::format(app.uptime()));
-			break;
-		}
-	}
-}
-
-void UKEYMonitor::ServiceControlHandler(DWORD control, DWORD eventType, LPVOID eventData, LPVOID context)
-{
-	switch (control)
-	{
-	case SERVICE_CONTROL_STOP:
-	case SERVICE_CONTROL_SHUTDOWN:
-		UnregisterDeviceNotification(_notify);
-		terminate();
-		_serviceStatus.dwCurrentState = SERVICE_STOP_PENDING;
-		break;
-	case SERVICE_CONTROL_INTERROGATE:
-		break;
-	case SERVICE_CONTROL_DEVICEEVENT:
-		deviceEventNotify(eventType, eventData);
-		break;
-	}
-	SetServiceStatus(_serviceStatusHandle, &_serviceStatus);
-}
-
-void UKEYMonitor::RegisterUKEYNotification()
-{
-	_serviceStatusHandle = RegisterServiceCtrlHandlerEx("", (LPHANDLER_FUNCTION_EX)ServiceControlHandler, 0);
-	if (!_serviceStatusHandle)
-		throw SystemException("cannot register service control handler");
-
-	DEV_BROADCAST_DEVICEINTERFACE NotificationFilter;
-
-	ZeroMemory(&NotificationFilter, sizeof(NotificationFilter));
-	NotificationFilter.dbcc_size =
-		sizeof(DEV_BROADCAST_DEVICEINTERFACE);
-	NotificationFilter.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
-	memcpy(&(NotificationFilter.dbcc_classguid),
-		&(WceusbshGUID),
-		sizeof(struct _GUID));
-	_notify = RegisterDeviceNotification(_serviceStatusHandle,
-		&NotificationFilter,
-		DEVICE_NOTIFY_SERVICE_HANDLE | DEVICE_NOTIFY_ALL_INTERFACE_CLASSES);
-}
-
-#include <sstream>
 int UKEYMonitor::main(const ArgVec& args)
 {
 	if (!_helpRequested)
 	{
 		TaskManager tm;
 		tm.start(new SampleTask);
-		//RegisterUKEYNotification();
 		waitForTerminationRequest();
 		tm.cancelAll();
 		tm.joinAll();
@@ -188,4 +112,4 @@ int UKEYMonitor::main(const ArgVec& args)
 	return Application::EXIT_OK;
 }
 
-//POCO_SERVER_MAIN(UKEYMonitor)
+MAIN(UKEYMonitor)
