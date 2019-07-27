@@ -16,6 +16,9 @@ namespace Reach {
 		void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
 		{
 			response.requireAuthentication("/auth");
+
+			response.set("Access-Control-Allow-Origin", "*");
+			response.set("Access-Control-Allow-Methods", "GET, POST, HEAD");
 			response.send();
 		}
 	};

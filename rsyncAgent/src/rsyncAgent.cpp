@@ -43,19 +43,19 @@ rsyncAgent::~rsyncAgent()
 void rsyncAgent::initialize(Application& self)
 {
 	loadConfiguration(); // load default configuration files, if present
-	Application::initialize(self);
+	ServerApplication::initialize(self);
 	logger().information("starting up");
 }
 
 void rsyncAgent::uninitialize()
 {
 	logger().information("shutting down");
-	Application::uninitialize();
+	ServerApplication::uninitialize();
 }
 
 void rsyncAgent::defineOptions(OptionSet& options)
 {
-	Application::defineOptions(options);
+	ServerApplication::defineOptions(options);
 
 	options.addOption(
 		Option("help", "h", "display help information on command line arguments")
