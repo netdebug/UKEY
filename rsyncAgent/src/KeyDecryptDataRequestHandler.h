@@ -6,6 +6,7 @@
 #include "Poco/Net/HTMLForm.h"
 #include "Poco/Net/NameValueCollection.h"
 #include "Poco/Util/Application.h"
+#include "Poco/Base64Decoder.h"
 #include "UDevice.h"
 #include "JSONStringify.h"
 #include "GMCrypto.h"
@@ -20,7 +21,9 @@ namespace Reach {
 	using Poco::Net::NameValueCollection;
 	using Poco::Util::Application;
 	using Reach::UDevice;
+	using Poco::Base64Decoder;
 	using Reach::JSONStringify;
+	
 
 	///RS_KeyDecryptData
 	class KeyDecryptData
@@ -55,12 +58,16 @@ namespace Reach {
 
 			_decrypt_data = SOF_AsDecrypt(_uid, encrypt);
 
+			std::istringstream istr(_decrypt_data);
+			Base64Decoder decoder(istr);
+			decoder >> _text;
+
 			return *this;
 		}
 
 		operator std::string()
 		{
-			if (_decrypt_data.empty())
+			if (_text.empty())
 			{
 				int error = SOF_GetLastError();
 				JSONStringify data("unsuccessful", error);
@@ -69,13 +76,14 @@ namespace Reach {
 			}
 
 			JSONStringify data;
-			data.addObject("rsKey", _decrypt_data);
+			data.addObject("rsKey", _text);
 			return data;
 		}
 	private:
 		std::string _uid;
 		std::string _encrypt_data;
 		std::string _decrypt_data;
+		std::string _text;
 	};
 
 	class KeyDecryptDataRequestHandler : public HTTPRequestHandler
