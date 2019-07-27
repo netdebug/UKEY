@@ -36,7 +36,7 @@ DeviceFilter::DeviceFilter(const std::string& enumerate_id, bool removed)
 	}
 	catch (Poco::Exception& e)
 	{
-		Debugger::message(format("DeviceFilter Exception :%d - %s - %s", e.code(), e.message(), e.name()));
+		dbgview(format("DeviceFilter Exception : %d - %s - %s - %s", e.code(), e.displayText(), std::string(e.what()), std::string(e.className())));
 	}
 
 }
@@ -45,7 +45,6 @@ DeviceFilter::~DeviceFilter()
 {
 
 }
-
 
 void DeviceFilter::loadConfigure()
 {
@@ -57,10 +56,8 @@ void DeviceFilter::loadConfigure()
 	std::string dir = Poco::replace(app.commandPath(), fullname, std::string(""));
 
 	Path filePath(dir, configuration);
-#ifndef _DEBUG
-	::OutputDebugStringA(format("removed :%b configuration filePath : %s", _removed, filePath.toString()).c_str());
-#endif // !_NDEBUG
-	Debugger::message(format("removed :%b configuration filePath : %s", _removed, filePath.toString()));
+	dbgview(format("removed :%b configuration filePath : %s", _removed, filePath.toString()));
+
 	std::ostringstream ostr;
 	if (filePath.isFile())
 	{
@@ -99,19 +96,13 @@ void DeviceFilter::enqueue()
 
 		if (isLegelDevice(tags[2])) {
 			for (int i = 0; i < tags.size(); i++) {
-#ifndef _DEBUG
-				::OutputDebugStringA(format("lpdbv->dbcc_name tags %d : %s", i, tags[i]).c_str());
-#endif // !_NDEBUG
-				Debugger::message(format("lpdbv->dbcc_name tags %d : %s", i, tags[i]));
+				dbgview(format("lpdbv->dbcc_name tags %d : %s", i, tags[i]));
 			}
 		}
 	}
 	catch (Poco::RegularExpressionException& e)
 	{
-#ifndef _DEBUG
-		::OutputDebugStringA(format("lpdbv->dbcc_name tags %d : %s", e.code(), e.message()).c_str());
-#endif // !_NDEBUG
-		Debugger::message(format("lpdbv->dbcc_name tags %d : %s", e.code(), e.message()));
+		dbgview(format("lpdbv->dbcc_name tags %d : %s", e.code(), e.displayText()));
 	}
 }
 bool DeviceFilter::isLegelDevice(const std::string& deivice_id)
@@ -119,8 +110,20 @@ bool DeviceFilter::isLegelDevice(const std::string& deivice_id)
 	for (int i = 0; i < _data.size(); i++) {
 		assert(_data[i].isStruct());
 		std::string hardware = _data[i]["hardwareID"];
-		if (isubstr(hardware, deivice_id) != istring::npos)
+		if (isubstr(hardware, deivice_id) != istring::npos) {
+			std::string desc = _data[i]["description"];
+			dbgview(format("description : %s", desc));
 			return true;
+		}
+			
 	}
 	return false;
+}
+
+void DeviceFilter::dbgview(const std::string& message)
+{
+#ifndef _DEBUG
+	::OutputDebugStringA(message.c_str());
+#endif // !_NDEBUG
+	Debugger::message(message);
 }

@@ -19,6 +19,8 @@ namespace Reach {
 		bool isLegelDevice(const std::string& deivice_id);
 
 	private:
+		void dbgview(const std::string & message);
+
 		std::string _enumerate;
 		bool _removed;
 		Poco::Dynamic::Array _data;
