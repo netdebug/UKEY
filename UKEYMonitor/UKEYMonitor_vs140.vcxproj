@@ -27,16 +27,19 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <None Include="devicelist.json" />
     <None Include="UKEYMonitor.properties" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\DeviceEventFilter.cpp" />
+    <ClCompile Include="src\DeviceFilter.cpp" />
     <ClCompile Include="src\USBAssistDetect.cpp" />
     <ClCompile Include="src\UKEYMonitor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
     <ClInclude Include="src\DeviceEventFilter.h" />
+    <ClInclude Include="src\DeviceFilter.h" />
     <ClInclude Include="src\USBAssistDetect.h" />
     <ClInclude Include="src\UKEYMonitor.h" />
   </ItemGroup>
@@ -170,7 +173,8 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y $(ProjectDir)UKEYMonitor.properties $(OutDir)</Command>
+      <Command>xcopy /y $(ProjectDir)UKEYMonitor.properties $(OutDir)
+xcopy /y $(ProjectDir)devicelist.json $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='release_shared|Win32'">
@@ -207,7 +211,8 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y $(ProjectDir)UKEYMonitor.properties $(OutDir)</Command>
+      <Command>xcopy /y $(ProjectDir)UKEYMonitor.properties $(OutDir)
+xcopy /y $(ProjectDir)devicelist.json $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug_static_mt|Win32'">

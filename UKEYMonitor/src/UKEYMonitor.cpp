@@ -45,8 +45,6 @@ public:
 		{
 			Application& app = Application::instance();
 			app.logger().information("busy doing nothing... " + DateTimeFormatter::format(app.uptime()));
-			//std::string service_name = app.name();
-
 		}
 	}
 };

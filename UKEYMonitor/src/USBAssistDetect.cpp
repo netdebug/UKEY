@@ -299,8 +299,12 @@ void USBAssistDetect::ServiceMain(DWORD argc, LPWSTR * argv)
 
 bool USBAssistDetect::hasConsole()
 {
+#ifdef _DEBUG
+	return false;
+#else
 	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
 	return hStdOut != INVALID_HANDLE_VALUE && hStdOut != NULL;
+#endif // _DEBUG
 }
 
 bool USBAssistDetect::isService()
@@ -370,5 +374,3 @@ void USBAssistDetect::handleStartup(const std::string& name, const std::string& 
 	else
 		throw InvalidArgumentException("argument to startup option must be 'auto[matic]' or 'manual'");
 }
-
-MAIN(USBAssistDetect)
