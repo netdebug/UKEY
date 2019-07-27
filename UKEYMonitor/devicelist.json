@@ -1,0 +1,14 @@
+[
+  {
+    "enumerator":"SKF001",
+    "hardwareID":"USB#VID_1D99&PID_0001",
+    "description":"HSIC KShield",
+    "ruleType":"include"
+  },
+  {
+    "enumerator":"SKF002",
+    "hardwareID":"USB#VID_1D99&PID_0001&REV_0101",
+    "description":"HSIC",
+    "ruleType":"include"
+  }
+]
