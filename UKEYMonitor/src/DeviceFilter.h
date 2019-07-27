@@ -17,10 +17,11 @@ namespace Reach {
 	protected:
 		void loadConfigure();
 		void enqueue();
+		
 		bool isLegelDevice(const std::string& deivice_id);
 
 	private:
-		
+		void resetRESTfulService();
 		void dbgview(const std::string & message);
 
 		std::string _description;

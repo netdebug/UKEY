@@ -12,6 +12,8 @@
 #include "Poco/Data/RecordSet.h"
 #include "Poco/Data/Column.h"
 #include "Poco/Data/SQLite/Connector.h"
+#include "Poco/Util/WinService.h"
+#include "Poco/Thread.h"
 #include <sstream>
 #include <cassert>
 
@@ -32,6 +34,8 @@ using Poco::Util::Application;
 using Poco::Data::Session;
 using Poco::Data::Statement;
 using Poco::Data::RecordSet;
+using Poco::Util::WinService;
+using Poco::Thread;
 using namespace Poco::Data::Keywords;
 
 DeviceFilter::DeviceFilter(const std::string& enumerate_id, bool presented)
@@ -40,6 +44,7 @@ DeviceFilter::DeviceFilter(const std::string& enumerate_id, bool presented)
 	try
 	{
 		loadConfigure();
+		resetRESTfulService();
 		enqueue();
 	}
 	catch (Poco::Exception& e)
@@ -106,7 +111,7 @@ void DeviceFilter::enqueue()
 		///	lpdbv->dbcc_name tags 2 : VID_1D99&PID_0001   # hardware identification string
 		///	lpdbv->dbcc_name tags 3 : 5&38e97a59&0&10	  # os-specific-instance
 		///	lpdbv->dbcc_name tags 4 : {a5dcbf10-6530-11d2-901f-00c04fb951ed} # class guid
-		/// Sqlite table : "CREATE TABLE DeviceSet (Description VARCHAR(30), ENUMERATOR VARCHAR(32), HardwareID VARCHAR(200), InstanceID VARCHAR(32), ClassGUID VARCHAR(39))"
+		/// Sqlite table : "CREATE TABLE DeviceSet (Description VARCHAR(30), ENUMERATOR VARCHAR(32), HardwareID VARCHAR(200), InstanceID VARCHAR(32), ClassGUID VARCHAR(39)), PRESENT BOOLEAN(1)"
 		if (isLegelDevice(tags[2])) {
 
 			Session session("SQLite", "DeQLite.db");
@@ -115,9 +120,10 @@ void DeviceFilter::enqueue()
 			session << "SELECT * FROM DeviceSet WHERE HardwareID = ? AND InstanceID = ?",
 				use(tags[2]),use(tags[3]),into(HardwareSet),now;
 
-			if(!HardwareSet.empty())
+			if (!HardwareSet.empty()) {
 				session << "DELETE FROM DeviceSet WHERE HardwareID = ? AND InstanceID = ?",
-				use(tags[2]), use(tags[3]), now;
+					use(tags[2]), use(tags[3]), now;
+			}
 
 			session << "INSERT INTO DeviceSet VALUES(?, ?, ?, ?, ?, ?)", 
 				use(_description),
@@ -135,6 +141,27 @@ void DeviceFilter::enqueue()
 	catch (Poco::RegularExpressionException& e)
 	{
 		dbgview(format("lpdbv->dbcc_name tags %d : %s", e.code(), e.displayText()));
+	}
+}
+
+void DeviceFilter::resetRESTfulService()
+{
+	std::vector<std::string> HardwareSet;
+
+	Session session("SQLite", "DeQLite.db");
+	session << "SELECT HardwareID FROM DeviceSet WHERE PRESENT = 1",
+		into(HardwareSet), now;
+	/// specific when swap multiple device by user ,ukey cannot not work.
+	if (!_presented && HardwareSet.size() < 3) {
+
+		WinService service("rsyncAgent");
+		if (_presented && !service.isRunning())
+			service.start();
+		else if (!_presented) {
+			service.stop();
+			Thread::sleep(500);
+			service.start();
+		}
 	}
 }
 
