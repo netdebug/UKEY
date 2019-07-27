@@ -7,6 +7,11 @@
 #include "Poco/StreamCopier.h"
 #include "Poco/JSON/Parser.h"
 #include "Poco/Util/Application.h"
+#include "Poco/Data/SessionFactory.h"
+#include "Poco/Data/Session.h"
+#include "Poco/Data/RecordSet.h"
+#include "Poco/Data/Column.h"
+#include "Poco/Data/SQLite/Connector.h"
 #include <sstream>
 #include <cassert>
 
@@ -24,10 +29,13 @@ using Poco::StreamCopier;
 using Poco::JSON::Parser;
 using Poco::RegularExpression;
 using Poco::Util::Application;
+using Poco::Data::Session;
+using Poco::Data::Statement;
+using Poco::Data::RecordSet;
+using namespace Poco::Data::Keywords;
 
-
-DeviceFilter::DeviceFilter(const std::string& enumerate_id, bool removed)
-	:_enumerate(enumerate_id), _removed(removed)
+DeviceFilter::DeviceFilter(const std::string& enumerate_id, bool presented)
+	:_enumerate(enumerate_id), _presented(presented)
 {
 	try
 	{
@@ -46,17 +54,21 @@ DeviceFilter::~DeviceFilter()
 
 }
 
+std::string DeviceFilter::current()
+{
+	Application& app = Application::instance();
+	Path appPath(app.commandPath());
+	std::string fullname = appPath.getFileName();
+	return Poco::replace(app.commandPath(), fullname, std::string(""));
+}
+
 void DeviceFilter::loadConfigure()
 {
 	Application& app = Application::instance();
 	std::string configuration = app.config().getString("application.devices.configfile");
 
-	Path appPath(app.commandPath());
-	std::string fullname = appPath.getFileName();
-	std::string dir = Poco::replace(app.commandPath(), fullname, std::string(""));
-
-	Path filePath(dir, configuration);
-	dbgview(format("removed :%b configuration filePath : %s", _removed, filePath.toString()));
+	Path filePath(current(), configuration);
+	dbgview(format("presented :%b configuration filePath : %s", _presented, filePath.toString()));
 
 	std::ostringstream ostr;
 	if (filePath.isFile())
@@ -74,6 +86,7 @@ void DeviceFilter::loadConfigure()
 	Poco::JSON::Array::Ptr arr = result.extract<Poco::JSON::Array::Ptr>();
 	_data = *arr;
 }
+
 void DeviceFilter::enqueue()
 {
 	std::string pattern("\\?\\\\(\\S+)#(\\S+)#(\\S+)#(\\S+)");
@@ -93,11 +106,30 @@ void DeviceFilter::enqueue()
 		///	lpdbv->dbcc_name tags 2 : VID_1D99&PID_0001   # hardware identification string
 		///	lpdbv->dbcc_name tags 3 : 5&38e97a59&0&10	  # os-specific-instance
 		///	lpdbv->dbcc_name tags 4 : {a5dcbf10-6530-11d2-901f-00c04fb951ed} # class guid
-
+		/// Sqlite table : "CREATE TABLE DeviceSet (Description VARCHAR(30), ENUMERATOR VARCHAR(32), HardwareID VARCHAR(200), InstanceID VARCHAR(32), ClassGUID VARCHAR(39))"
 		if (isLegelDevice(tags[2])) {
-			for (int i = 0; i < tags.size(); i++) {
-				dbgview(format("lpdbv->dbcc_name tags %d : %s", i, tags[i]));
-			}
+
+			Session session("SQLite", "DeQLite.db");
+		
+			std::vector<std::string> HardwareSet;
+			session << "SELECT * FROM DeviceSet WHERE HardwareID = ? AND InstanceID = ?",
+				use(tags[2]),use(tags[3]),into(HardwareSet),now;
+
+			if(!HardwareSet.empty())
+				session << "DELETE FROM DeviceSet WHERE HardwareID = ? AND InstanceID = ?",
+				use(tags[2]), use(tags[3]), now;
+
+			session << "INSERT INTO DeviceSet VALUES(?, ?, ?, ?, ?, ?)", 
+				use(_description),
+				use(tags[1]),
+				use(tags[2]),
+				use(tags[3]),
+				use(tags[4]),
+				use(_presented),
+				now;
+
+				dbgview(format("Update SQLite ->\n Description : %s\n  enumerator : %s\n HardwareID : %s\n InstanceID : %s\n   ClassGUID : %s\n",
+					_description, tags[1], tags[2], tags[3], tags[4]));
 		}
 	}
 	catch (Poco::RegularExpressionException& e)
@@ -105,14 +137,15 @@ void DeviceFilter::enqueue()
 		dbgview(format("lpdbv->dbcc_name tags %d : %s", e.code(), e.displayText()));
 	}
 }
+
 bool DeviceFilter::isLegelDevice(const std::string& deivice_id)
 {
 	for (int i = 0; i < _data.size(); i++) {
 		assert(_data[i].isStruct());
 		std::string hardware = _data[i]["hardwareID"];
 		if (isubstr(hardware, deivice_id) != istring::npos) {
-			std::string desc = _data[i]["description"];
-			dbgview(format("description : %s", desc));
+			_description = _data[i]["description"].convert<std::string>();
+			dbgview(format("description : %s", _description));
 			return true;
 		}
 			

@@ -4,7 +4,6 @@
 #include "Poco/Util/Application.h"
 #include "Poco/Event.h"
 #include "Poco/NamedEvent.h"
-#include "DeviceEventFilter.h"
 
 namespace Reach {
 
@@ -72,7 +71,6 @@ namespace Reach {
 		std::string _displayName;
 		std::string _description;
 		std::string _startup;
-		DeviceEventFilter _filter;
 
 		static Poco::Event           _terminated;
 		static Poco::NamedEvent      _terminate;

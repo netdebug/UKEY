@@ -7,8 +7,26 @@
   },
   {
     "enumerator":"SKF002",
+    "hardwareID":"USB#VID_5448&PID_0004&REV_0300",
+    "description":"NMGCA",
+    "ruleType":"include"
+  },
+  {
+    "enumerator":"SKF002",
     "hardwareID":"USB#VID_1D99&PID_0001&REV_0101",
     "description":"HSIC",
+    "ruleType":"include"
+  },
+  {
+    "enumerator":"SKF002",
+    "hardwareID":"USB#VID_6588&PID_1514&REV_0000",
+    "description":"LGCA",
+    "ruleType":"include"
+  },
+  {
+    "enumerator":"SKF002",
+    "hardwareID":"USB#VID_096E&PID_0401&REV_7102",
+    "description":"BJFT",
     "ruleType":"include"
   }
 ]

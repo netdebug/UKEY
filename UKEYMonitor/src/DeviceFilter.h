@@ -12,6 +12,7 @@ namespace Reach {
 	public:
 		DeviceFilter(const std::string& enumerate_id, bool removed);
 		~DeviceFilter();
+		std::string current();
 
 	protected:
 		void loadConfigure();
@@ -19,10 +20,13 @@ namespace Reach {
 		bool isLegelDevice(const std::string& deivice_id);
 
 	private:
+		
 		void dbgview(const std::string & message);
 
+		std::string _description;
 		std::string _enumerate;
-		bool _removed;
+		bool _presented;
 		Poco::Dynamic::Array _data;
+		void SQLitePath();
 	};
 }

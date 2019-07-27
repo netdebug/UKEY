@@ -229,12 +229,12 @@ DWORD USBAssistDetect::ServiceControlHandler(DWORD control, DWORD eventType, LPV
 	case SERVICE_CONTROL_SHUTDOWN:
 		terminate();
 		_serviceStatus.dwCurrentState = SERVICE_STOP_PENDING;
-		DeviceEventFilter::unregisterNotification();
+		DeviceEventFilter::default().unregisterNotification();
 		break;
 	case SERVICE_CONTROL_INTERROGATE:
 		break;
 	case SERVICE_CONTROL_DEVICEEVENT:
-		DeviceEventFilter::emit(eventType, eventData);
+		DeviceEventFilter::default().emit(eventType, eventData);
 		break;
 	}
 	SetServiceStatus(_serviceStatusHandle, &_serviceStatus);
@@ -253,7 +253,7 @@ void USBAssistDetect::ServiceMain(DWORD argc, LPWSTR * argv)
 	if (!_serviceStatusHandle)
 		throw SystemException("cannot register service control handler");
 
-	DeviceEventFilter::registerNotification(_serviceStatusHandle);
+	DeviceEventFilter::default().registerNotification(_serviceStatusHandle);
 
 	_serviceStatus.dwServiceType = SERVICE_WIN32;
 	_serviceStatus.dwCurrentState = SERVICE_START_PENDING;

@@ -10,12 +10,16 @@ namespace Reach {
 		DeviceEventFilter();
 		~DeviceEventFilter();
 
-		static void registerNotification(HANDLE hRecipient);
-		static void unregisterNotification();
-		static void emit(DWORD eventType, LPVOID eventData);
+		void registerNotification(HANDLE hRecipient);
+		void unregisterNotification();
+		void emit(DWORD eventType, LPVOID eventData);
+
+		static DeviceEventFilter& default();
 	private:
+		void SQLitePath();
 
 		static GUID _Guid;
-		static HDEVNOTIFY _notify;
+		HDEVNOTIFY _notify;
+		std::string _DeQLite;
 	};
 } //namespace Reach
