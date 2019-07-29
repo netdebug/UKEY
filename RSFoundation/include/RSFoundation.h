@@ -41,6 +41,7 @@ namespace Reach {
 
 		//证书信息和有效性验证
 		std::string RS_GetCertInfo(const std::string& base64, int type);
+		
 		std::string RS_GetCertInfoEx(const std::string & base64, const std::string & oid);
 		std::string RS_VerifyIdentity(const std::string& base64, const std::string& authNo);
 
@@ -82,6 +83,12 @@ namespace Reach {
 	protected:
 		std::string KeyEncryptData(std::string& paintText, std::string& base64);
 		std::string KeyDecryptData(std::string& uid, std::string& encRsKey);
+	private:
+		std::string GetCertVersion(const std::string& base64);
+		std::string GetCertOwnerID(const std::string& base64);
+		std::string GetCertVaildTime(const std::string& base64);
+		std::string toLegelID(const std::string& text, const std::string& pattern);
+		std::string toLocalTime(const std::string& time);
 	};
 }
 

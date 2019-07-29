@@ -7,6 +7,7 @@
 #include "Poco/Net/NameValueCollection.h"
 #include "Poco/Util/Application.h"
 #include "Poco/Base64Decoder.h"
+#include "Poco/StreamCopier.h"
 #include "UDevice.h"
 #include "JSONStringify.h"
 #include "GMCrypto.h"
@@ -22,6 +23,7 @@ namespace Reach {
 	using Poco::Util::Application;
 	using Reach::UDevice;
 	using Poco::Base64Decoder;
+	using Poco::StreamCopier;
 	using Reach::JSONStringify;
 	
 
@@ -60,7 +62,7 @@ namespace Reach {
 
 			std::istringstream istr(_decrypt_data);
 			Base64Decoder decoder(istr);
-			decoder >> _text;
+			StreamCopier::copyToString(decoder, _text);
 
 			return *this;
 		}
