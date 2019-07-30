@@ -44,6 +44,13 @@ namespace Reach {
 		}
 		operator std::string()
 		{
+			if (_line.empty()) {
+				int error = SOF_GetLastError();
+				JSONStringify data("unsuccessful", error);
+				data.addNullObject();
+				return data;
+			}
+
 			JSONStringify data;
 			data.addObject("userlist", _line);
 			return data;
