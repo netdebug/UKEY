@@ -153,8 +153,11 @@ void DeviceFilter::resetRESTfulService()
 		into(HardwareSet), now;
 	/// specific when swap multiple device by user ,ukey cannot not work.
 	if (!_presented && HardwareSet.size() < 3) {
-
+#ifdef _DEBUG
+		WinService service("rsyncAgentd");
+#else
 		WinService service("rsyncAgent");
+#endif // _DEBUG
 		if (_presented && !service.isRunning())
 			service.start();
 		else if (!_presented) {
