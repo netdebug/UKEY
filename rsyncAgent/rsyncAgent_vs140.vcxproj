@@ -35,6 +35,7 @@
     <ClInclude Include="src\BufferRequestHandler.h" />
     <ClInclude Include="src\CertLoginRequestHandler.h" />
     <ClInclude Include="src\ChangePassWdRequestHandler.h" />
+    <ClInclude Include="src\Command.h" />
     <ClInclude Include="src\ConfigParametersRequestHandler.h" />
     <ClInclude Include="src\DecryptFileRequestHandler.h" />
     <ClInclude Include="src\EchoBodyRequestHandler.h" />
@@ -59,8 +60,11 @@
     <ClInclude Include="src\KeySignByP1RequestHandler.h" />
     <ClInclude Include="src\KeySignByP7RequestHandler.h" />
     <ClInclude Include="src\RedirectRequestHandler.h" />
+    <ClInclude Include="src\RequestHandleException.h" />
     <ClInclude Include="src\RequestHandlerFactory.h" />
+    <ClInclude Include="src\RESTfulRequestHandler.h" />
     <ClInclude Include="src\rsyncAgent.h" />
+    <ClInclude Include="src\SOFErrorCode.h" />
     <ClInclude Include="src\SoFProvider.h" />
     <ClInclude Include="src\StrategyCollection.h" />
     <ClInclude Include="src\UDevice.h" />
@@ -71,6 +75,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\JSONStringify.cpp" />
+    <ClCompile Include="src\RequestHandleException.cpp" />
     <ClCompile Include="src\RequestHandlerFactory.cpp" />
     <ClCompile Include="src\rsyncAgent.cpp" />
     <ClCompile Include="src\StrategyCollection.cpp" />

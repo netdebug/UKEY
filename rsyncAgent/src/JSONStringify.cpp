@@ -42,6 +42,21 @@ JSONStringify::~JSONStringify()
 
 }
 
+JSONStringify::JSONStringify(const JSONStringify& other)
+	:code(other.code), message(other.message), result(other.result)
+{
+
+}
+
+JSONStringify& JSONStringify::operator = (const JSONStringify& other)
+{
+	code = other.code;
+	message = other.message;
+	result = other.result;
+
+	return *this;
+}
+
 void JSONStringify::format()
 {
 	std::stringstream _;
@@ -103,6 +118,23 @@ JSONStringify& JSONStringify::addObjectItem(const std::string& k, int v)
 	result.set("data", t);
 
 	return *this;
+}
+
+void JSONStringify::clear()
+{
+	result.clear();
+}
+
+bool JSONStringify::empty()
+{
+	return (result.size() == 0);
+}
+
+std::string JSONStringify::toString()
+{
+	std::ostringstream out;
+	result.stringify(out);
+	return out.str();
 }
 
 JSONStringify::operator std::string()

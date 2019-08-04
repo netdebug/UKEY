@@ -143,6 +143,18 @@
     <ClInclude Include="src\extOpenDeviceRequestHandler.h">
       <Filter>Header Files\RequestHandler\sof class</Filter>
     </ClInclude>
+    <ClInclude Include="src\RequestHandleException.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SOFErrorCode.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Command.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\RESTfulRequestHandler.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\rsyncAgent.cpp">
@@ -159,6 +171,9 @@
     </ClCompile>
     <ClCompile Include="src\UDevice.cpp">
       <Filter>Header Files\RequestHandler\rs device</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RequestHandleException.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

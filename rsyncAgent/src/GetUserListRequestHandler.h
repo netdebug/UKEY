@@ -1,24 +1,16 @@
 #pragma once
 
-#include "Poco/Net/HTTPRequestHandler.h"
-#include "Poco/Net/HTTPServerResponse.h"
-#include "Poco/Net/HTTPServerRequest.h"
-#include "Poco/Net/HTMLForm.h"
-#include "Poco/Net/NameValueCollection.h"
-#include "Poco/Util/Application.h"
 #include "UDevice.h"
 #include "JSONStringify.h"
 #include "GMCrypto.h"
 #include "SoFProvider.h"
+#include "SOFErrorCode.h"
+#include "Command.h"
+#include "RESTfulRequestHandler.h"
+#include "RequestHandleException.h"
 
 namespace Reach {
 
-	using Poco::Net::HTTPRequestHandler;
-	using Poco::Net::HTTPServerRequest;
-	using Poco::Net::HTTPServerResponse;
-	using Poco::Net::HTMLForm;
-	using Poco::Net::NameValueCollection;
-	using Poco::Util::Application;
 	using Reach::UDevice;
 	using Reach::JSONStringify;
 
@@ -32,48 +24,39 @@ namespace Reach {
 	///			}
 	///		}
 
+
 	class GetUserList
 	{
 	public:
-		GetUserList(){}
-		GetUserList& execute()
+		GetUserList& execute(JSONStringify& result)
 		{
 			UDevice::default();
 			_line = SOF_GetUserList();
-			return *this;
-		}
-		operator std::string()
-		{
-			if (_line.empty()) {
-				int error = SOF_GetLastError();
-				JSONStringify data("unsuccessful", error);
-				data.addNullObject();
-				return data;
-			}
 
-			JSONStringify data;
-			data.addObject("userlist", _line);
-			return data;
+			if (_line.empty())
+				throw RequestHandleException(SAR_FAIL);
+			else
+				result.addObject("userlist", _line);
+
+			return *this;
 		}
 	private:
 		std::string _line;
 	};
 
-	class GetUserListRequestHandler : public HTTPRequestHandler
+	class GetUserListRequestHandler : public RESTfulRequestHandler
 	{
 	public:
 		void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
 		{
-			Application& app = Application::instance();
-			app.logger().information("GetUserListRequestHandler Request from " + request.clientAddress().toString());
-			response.set("Access-Control-Allow-Origin", "*");
-			response.set("Access-Control-Allow-Methods", "GET, POST, HEAD");
+			poco_information_f1(Application::instance().logger(), "Request from %s", request.clientAddress().toString());
 
-			std::string data;
-			GetUserList command;
-			data += command.execute();
+			RESTfulRequestHandler::handleCORS(request, response);
 
-			return response.sendBuffer(data.data(), data.length());
+			Command<GetUserList> command;
+			command.execute();
+
+			return response.sendBuffer(command().data(), command().length());
 		}
 	};
 }
