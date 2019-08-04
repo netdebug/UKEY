@@ -9,15 +9,20 @@ namespace Reach {
 
 	using Reach::JSONStringify;
 
-	template<typename TRS>
 	class Command
 	{
 	public:
+		Command()
+		{
+
+		}
+
 		Command& execute()
 		{
 			try
 			{
-				rs.execute(response);
+				this->run();
+				toJSON();
 				/// 业务逻辑不允许 response 为空
 				if (response.empty()) {
 					int error = SOF_GetLastError();
@@ -26,10 +31,15 @@ namespace Reach {
 			}
 			catch (Poco::Exception& e) {
 				///统一错误解析处理
-				response = JSONStringify("unsuccessful", e.code());
+				response = JSONStringify(e.message(), e.code());
 				response.addNullObject();
 			}
 			return *this;
+		}
+
+		void add(const std::string& name, const std::string& value)
+		{
+			colletion.add(name, value);
 		}
 
 		std::string operator ()()
@@ -37,8 +47,18 @@ namespace Reach {
 			return response.toString();
 		}
 
+		virtual void run() = 0;
+	protected:
+		void toJSON()
+		{
+			typedef NameValueCollection::ConstIterator Iter;
+			for (Iter it = colletion.begin(); it != colletion.end(); it++) {
+				Debugger::message(format("object item <%s>:<%s> ", it->first, it->second));
+				response.addObject(it->first, it->second);
+			}
+		}
 	private:
 		JSONStringify response;
-		TRS rs;
+		NameValueCollection colletion;
 	};
 }

@@ -1,81 +1,65 @@
 #pragma once
 
-#include "Poco/Net/HTTPRequestHandler.h"
-#include "Poco/Net/HTTPServerResponse.h"
-#include "Poco/Net/HTTPServerRequest.h"
-#include "Poco/Net/HTMLForm.h"
-#include "Poco/Net/NameValueCollection.h"
-#include "Poco/Util/Application.h"
 #include "UDevice.h"
 #include "JSONStringify.h"
 #include "GMCrypto.h"
 #include "SoFProvider.h"
+#include "SOFErrorCode.h"
+#include "Command.h"
+#include "RESTfulRequestHandler.h"
+#include "RequestHandleException.h"
 
 namespace Reach {
 
-	using Poco::Net::HTTPRequestHandler;
-	using Poco::Net::HTTPServerRequest;
-	using Poco::Net::HTTPServerResponse;
-	using Poco::Net::HTMLForm;
-	using Poco::Net::NameValueCollection;
-	using Poco::Util::Application;
 	using Reach::UDevice;
 	using Reach::JSONStringify;
 
 	///RS_CertLogin
-	class CertLogin
+	class CertLogin : public Command
 	{
 	public:
 		CertLogin(const std::string& uid, const std::string& password)
 			:_uid(uid), _pwd(password)
 		{}
-		CertLogin& execute()
+		void run()
 		{
 			UDevice::default();
 
 			if (_uid.empty() || _pwd.empty())
-				throw Poco::InvalidArgumentException("Argument Invalid!", 0x34);
+				throw RequestHandleException("无效的参数", 0x0A000006);
 
 			int retryCount = SOF_GetPinRetryCount(_uid);
 			if (retryCount <= 0)
-				throw Poco::LogicException("UKEY have been locked! containerId is", _uid, 0x33);
+				throw RequestHandleException("PIN被锁死", _uid, 0x0A000025);
 
 			if (!SOF_Login(_uid, _pwd))
-				throw Poco::LogicException("UKEY Login failed! containerId is", _uid, 0x35);
-
-			return *this;
+				throw Poco::LogicException("用户没有登录", _uid, 0x0A00002D);
 		}
 
-		operator std::string()
-		{
-			JSONStringify data;
-			data.addObject("containerId", _uid);
-			return data;
-		}
 	private:
 		std::string _uid, _pwd;
 	};
 
-	class CertLoginRequestHandler : public HTTPRequestHandler
+	class CertLoginRequestHandler : public RESTfulRequestHandler
 	{
 	public:
 		void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
 		{
-			Application& app = Application::instance();
-			app.logger().information("CertLoginRequestHandler Request from " + request.clientAddress().toString());
-			response.set("Access-Control-Allow-Origin", "*");
-			response.set("Access-Control-Allow-Methods", "GET, POST, HEAD");
+			poco_information_f1(Application::instance().logger(), "Request from %s", request.clientAddress().toString());
 
-			std::string data;
+			RESTfulRequestHandler::handleCORS(request, response);
+
 			HTMLForm form(request, request.stream());
 			if (!form.empty()) {
 				std::string uid(form.get("containerId", ""));
 				std::string pwd(form.get("password", ""));
 				CertLogin command(uid, pwd);
-				data += command.execute();
+				command.execute();
+
+				return response.sendBuffer(command().data(), command().length());
 			}
 
-			return response.sendBuffer(data.data(), data.length());
+			return response.sendBuffer("", 0);
 		}
 	};
 }

@@ -25,20 +25,17 @@ namespace Reach {
 	///		}
 
 
-	class GetUserList
+	class GetUserList : public Command
 	{
 	public:
-		GetUserList& execute(JSONStringify& result)
+		void run()
 		{
 			UDevice::default();
 			_line = SOF_GetUserList();
-
 			if (_line.empty())
 				throw RequestHandleException(SAR_FAIL);
-			else
-				result.addObject("userlist", _line);
 
-			return *this;
+			add("userlist" ,_line);
 		}
 	private:
 		std::string _line;
@@ -53,7 +50,7 @@ namespace Reach {
 
 			RESTfulRequestHandler::handleCORS(request, response);
 
-			Command<GetUserList> command;
+			GetUserList command;
 			command.execute();
 
 			return response.sendBuffer(command().data(), command().length());
