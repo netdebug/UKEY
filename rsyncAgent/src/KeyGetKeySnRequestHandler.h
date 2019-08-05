@@ -1,67 +1,57 @@
 #pragma once
 
-#include "Poco/Net/HTTPRequestHandler.h"
-#include "Poco/Net/HTTPServerResponse.h"
-#include "Poco/Net/HTTPServerRequest.h"
+#include "SoFProvider.h"
+#include "SOFErrorCode.h"
+#include "Command.h"
+#include "RESTfulRequestHandler.h"
+#include "RequestHandleException.h"
+#include "Poco/Util/Application.h"
 
 namespace Reach {
 
-	using Poco::Net::HTTPRequestHandler;
-	using Poco::Net::HTTPServerRequest;
-	using Poco::Net::HTTPServerResponse;
-
+	using Poco::Util::Application;
 	///RS_KeyGetKeySn
-	class KeyGetKeySn
+	class KeyGetKeySn : public Command
 	{
 	public:
 		KeyGetKeySn(const std::string& uid)
 			:_uid(uid)
 		{}
-		KeyGetKeySn& execute()
+		void run()
 		{
 			UDevice::default();
 
 			_SNkey = SOF_GetDeviceInfo(_uid, SGD_DEVICE_SERIAL_NUMBER);
 
-			if (_SNkey.empty())
-			{
-				int error = SOF_GetLastError();
-				throw Poco::LogicException("SOF_GetDeviceInfo Not Get UKEY SN", error);
+			if (_SNkey.empty()) {
+				throw RequestHandleException("SOF_GetDeviceInfo failed!", SOF_GetLastError());
 			}
 
-			return *this;
+			add("containerId", _uid);
+			add("keySn", _SNkey);
 		}
 
-		operator std::string()
-		{
-			JSONStringify data;
-			data.addObject("containerId", _uid);
-			data.addObject("keySn", _SNkey);
-			return data;
-		}
 	private:
 		std::string _uid;
 		std::string _SNkey;
 	};
 
-	class KeyGetKeySnRequestHandler : public HTTPRequestHandler
+	class KeyGetKeySnRequestHandler : public RESTfulRequestHandler
 	{
 	public:
 		void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
 		{
-			Application& app = Application::instance();
-			app.logger().information("KeyGetKeySnRequestHandler Request from " + request.clientAddress().toString());
-			response.set("Access-Control-Allow-Origin", "*");
-			response.set("Access-Control-Allow-Methods", "GET, POST, HEAD");
+			poco_information_f1(Application::instance().logger(), "Request from %s", request.clientAddress().toString());
 
-			std::string data;
+			RESTfulRequestHandler::handleCORS(request, response);
+
 			HTMLForm form(request, request.stream());
-			if (!form.empty()) {
-				std::string uid(form.get("containerId", ""));
-				KeyGetKeySn command(uid);
-				data += command.execute();
-			}
-			return response.sendBuffer(data.data(), data.length());
+			std::string uid(form.get("containerId", ""));
+
+			KeyGetKeySn command(uid);
+			command.execute();
+
+			return response.sendBuffer(command().data(), command().length());
 		}
 	};
 }

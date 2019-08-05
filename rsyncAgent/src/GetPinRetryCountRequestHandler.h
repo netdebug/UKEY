@@ -1,59 +1,53 @@
 #pragma once
 
-#include "Poco/Net/HTTPRequestHandler.h"
-#include "Poco/Net/HTTPServerResponse.h"
-#include "Poco/Net/HTTPServerRequest.h"
+#include "UDevice.h"
+#include "SoFProvider.h"
+#include "SOFErrorCode.h"
+#include "Command.h"
+#include "RESTfulRequestHandler.h"
+#include "RequestHandleException.h"
+#include "Poco/Util/Application.h"
 
 namespace Reach {
 
-	using Poco::Net::HTTPRequestHandler;
-	using Poco::Net::HTTPServerRequest;
-	using Poco::Net::HTTPServerResponse;
+	using Poco::Util::Application;
 
 	///RS_GetPinRetryCount
-	class GetPinRetryCount
+	class GetPinRetryCount : public Command
 	{
 	public:
 		GetPinRetryCount(const std::string& uid)
 			:_uid(uid)
 		{}
-		GetPinRetryCount& execute()
+
+		void run()
 		{
 			UDevice::default();
-
 			_retryCount = SOF_GetPinRetryCount(_uid);
 
-			return *this;
+			add("retryCount", _retryCount);
 		}
 
-		operator std::string()
-		{
-			JSONStringify data;
-			data.addObject("retryCount", _retryCount);
-			return data;
-		}
 	private:
 		int _retryCount;
 		std::string _uid;
 	};
-	class GetPinRetryCountRequestHandler : public HTTPRequestHandler
+	class GetPinRetryCountRequestHandler : public RESTfulRequestHandler
 	{
 	public:
 		void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
 		{
-			Application& app = Application::instance();
-			app.logger().information("GetPinRetryCountRequestHandler Request from " + request.clientAddress().toString());
-			response.set("Access-Control-Allow-Origin", "*");
-			response.set("Access-Control-Allow-Methods", "GET, POST, HEAD");
+			poco_information_f1(Application::instance().logger(), "Request from %s", request.clientAddress().toString());
 
-			std::string data;
+			RESTfulRequestHandler::handleCORS(request, response);
+
 			HTMLForm form(request, request.stream());
-			if (!form.empty()) {
-				std::string uid(form.get("containerId", ""));
-				GetPinRetryCount command(uid);
-				data += command.execute();
-			}
-			return response.sendBuffer(data.data(), data.length());
+			std::string uid(form.get("containerId", ""));
+
+			GetPinRetryCount command(uid);
+			command.execute();
+
+			return response.sendBuffer(command().data(), command().length());
 		}
 	};
 }

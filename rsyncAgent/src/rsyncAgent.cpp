@@ -89,8 +89,7 @@ int rsyncAgent::main(const ArgVec& args)
 		ServerSocket svs(port);
 		HTTPServer srv(new RequestHandlerFactory, svs, new HTTPServerParams);
 		srv.start();
-		Application& app = Application::instance();
-		app.logger().information("HTTPServer Listen from " + svs.address().toString());
+		poco_information_f1(Application::instance().logger(), "HTTPServer Listen from %s", svs.address().toString());
 		waitForTerminationRequest();
 		srv.stop();
 

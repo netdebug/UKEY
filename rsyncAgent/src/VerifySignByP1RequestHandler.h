@@ -1,69 +1,58 @@
 #pragma once
 
-#include "Poco/Net/HTTPRequestHandler.h"
-#include "Poco/Net/HTTPServerResponse.h"
-#include "Poco/Net/HTTPServerRequest.h"
+#include "UDevice.h"
+#include "SoFProvider.h"
+#include "SOFErrorCode.h"
+#include "Command.h"
+#include "RESTfulRequestHandler.h"
+#include "RequestHandleException.h"
+#include "Poco/Util/Application.h"
 
 namespace Reach {
 
-	using Poco::Net::HTTPRequestHandler;
-	using Poco::Net::HTTPServerRequest;
-	using Poco::Net::HTTPServerResponse;
-
+	using Poco::Util::Application;
 	///RS_VerifySignByP1
-	class VerifySignByP1
+	class VerifySignByP1 : public Command
 	{
 	public:
 		VerifySignByP1(const std::string& base64, const std::string& msg, const std::string& signature)
-			:_base64(base64),_msg(msg),_signature(signature)
+			:_base64(base64), _msg(msg), _signature(signature)
 		{}
-		VerifySignByP1& execute()
+
+		void run()
 		{
 			UDevice::default();
-
 			_val = SOF_VerifySignedData(_base64, _msg, _signature);
-			return *this;
-		}
-
-		operator std::string()
-		{
 			if (!_val) {
-				int error = SOF_GetLastError();
-				JSONStringify data("unsuccessful", error);
-				data.addNullObject();
-				return data;
+				throw RequestHandleException("SOF_VerifySignedData failed!", SOF_GetLastError());
 			}
-
-			JSONStringify data;
-			data.addNullObject();
-			return data;
 		}
+
 	private:
 		bool _val;
 		std::string _base64;
 		std::string _msg;
 		std::string _signature;
 	};
-	class VerifySignByP1RequestHandler : public HTTPRequestHandler
+
+	class VerifySignByP1RequestHandler : public RESTfulRequestHandler
 	{
 	public:
 		void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
 		{
-			Application& app = Application::instance();
-			app.logger().information("VerifySignByP1RequestHandler Request from " + request.clientAddress().toString());
-			response.set("Access-Control-Allow-Origin", "*");
-			response.set("Access-Control-Allow-Methods", "GET, POST, HEAD");
+			poco_information_f1(Application::instance().logger(), "Request from %s", request.clientAddress().toString());
 
-			std::string data;
+			RESTfulRequestHandler::handleCORS(request, response);
+
 			HTMLForm form(request, request.stream());
-			if (!form.empty()) {
-				std::string base64(form.get("certBase64", ""));
-				std::string msg(form.get("msg", ""));
-				std::string signature(form.get("signdMsg", ""));
-				VerifySignByP1 command(base64,msg, signature);
-				data += command.execute();
-			}
-			return response.sendBuffer(data.data(), data.length());
+			std::string base64(form.get("certBase64", ""));
+			std::string msg(form.get("msg", ""));
+			std::string signature(form.get("signdMsg", ""));
+
+			VerifySignByP1 command(base64, msg, signature);
+			command.execute();
+
+			return response.sendBuffer(command().data(), command().length());
 		}
 	};
 }

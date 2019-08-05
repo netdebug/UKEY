@@ -1,23 +1,25 @@
 #pragma once
 
-#include "Poco/Net/HTTPRequestHandler.h"
-#include "Poco/Net/HTTPServerResponse.h"
-#include "Poco/Net/HTTPServerRequest.h"
+#include "UDevice.h"
+#include "SoFProvider.h"
+#include "SOFErrorCode.h"
+#include "Command.h"
+#include "RESTfulRequestHandler.h"
+#include "RequestHandleException.h"
+#include "Poco/Util/Application.h"
 
 namespace Reach {
 
-	using Poco::Net::HTTPRequestHandler;
-	using Poco::Net::HTTPServerRequest;
-	using Poco::Net::HTTPServerResponse;
-
+	using Poco::Util::Application;
 	///RS_VerifySignByP7
-	class VerifySignByP7
+	class VerifySignByP7 : public Command
 	{
 	public:
 		VerifySignByP7(const std::string& textual, const std::string& signature, int mode)
-			:_textual(textual),_signature(signature), _mode(mode), _verify(false)
+			:_textual(textual), _signature(signature), _mode(mode), _verify(false)
 		{}
-		VerifySignByP7& execute()
+
+		void run()
 		{
 			UDevice::default();
 			/////1 = Detached mode ,textual must be cleared!
@@ -25,22 +27,11 @@ namespace Reach {
 				_textual.clear();
 
 			_verify = SOF_VerifySignedMessage(_signature, _textual);
-			return *this;
-		}
-
-		operator std::string()
-		{
 			if (!_verify) {
-				int error = SOF_GetLastError();
-				JSONStringify data("unsuccessful", error);
-				data.addNullObject();
-				return data;
+				throw RequestHandleException("SOF_VerifySignedMessage failed!", SOF_GetLastError());
 			}
-
-			JSONStringify data;
-			data.addNullObject();
-			return data;
 		}
+
 	private:
 		int _mode;///Attached = 0, Detached = 1
 		bool _verify;
@@ -48,26 +39,24 @@ namespace Reach {
 		std::string _signature;
 	};
 
-	class VerifySignByP7RequestHandler : public HTTPRequestHandler
+	class VerifySignByP7RequestHandler : public RESTfulRequestHandler
 	{
 	public:
 		void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
 		{
-			Application& app = Application::instance();
-			app.logger().information("VerifySignByP7RequestHandler Request from " + request.clientAddress().toString());
-			response.set("Access-Control-Allow-Origin", "*");
-			response.set("Access-Control-Allow-Methods", "GET, POST, HEAD");
+			poco_information_f1(Application::instance().logger(), "Request from %s", request.clientAddress().toString());
 
-			std::string data;
+			RESTfulRequestHandler::handleCORS(request, response);
+
 			HTMLForm form(request, request.stream());
-			if (!form.empty()) {
-				std::string textual(form.get("msg", ""));
-				std::string signature(form.get("signdMsg", ""));
-				Var mode(form.get("flag", ""));
-				VerifySignByP7 command(textual, signature, mode);
-				data += command.execute();
-			}
-			return response.sendBuffer(data.data(), data.length());
+			std::string textual(form.get("msg", ""));
+			std::string signature(form.get("signdMsg", ""));
+			Var mode(form.get("flag", ""));
+
+			VerifySignByP7 command(textual, signature, mode);
+			command.execute();
+
+			return response.sendBuffer(command().data(), command().length());
 		}
 	};
 }

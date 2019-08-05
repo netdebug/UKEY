@@ -6,14 +6,14 @@
 [Setup]
 AppName={cm:MyAppName}
 AppId={{62DA7343-2512-4713-8976-73C42F9D63EA}
-AppVerName={cm:MyAppVerName,1.1.36.0008}
+AppVerName={cm:MyAppVerName,1.1.36.0011}
 WizardStyle=modern
 DefaultDirName={pf}\{cm:MyAppName}
 DefaultGroupName={cm:MyAppName}
 UninstallDisplayIcon={app}\MyProg.exe
 VersionInfoDescription=testSuite
 VersionInfoProductName=testSuite
-VersionInfoVersion=1.1.36.0008
+VersionInfoVersion=1.1.36.0011
 OutputBaseFilename=testSuite
 OutputDir=.\output
 ; Uncomment the following line to disable the "Select Setup Language"
@@ -69,9 +69,11 @@ Source: ".\release\SKF_Library\003\lgu3073_p1514_gm_x64.dll"; DestDir: "{sys}\SK
 Source: ".\release\SKF_Library\004\gm3k_for_bjca.dll"; DestDir: "{sys}\SKF_Library\004\";
 Source: ".\release\SKF_Library\004\gm3k_for_bjca_x64.dll"; DestDir: "{sys}\SKF_Library\004\";
 
+Source: "..\bin\RSFoundation.dll"; DestDir: "{app}"; 
 Source: "..\bin\testSuite.exe"; DestDir: "{app}";
 Source: "..\bin\rsyncAgent.exe"; DestDir: "{app}";
 Source: "..\bin\rsyncAgent.properties"; DestDir: "{app}";
+Source: "..\bin\Language.ini"; DestDir: "{app}";
 
 Source: "..\bin\UKEYMonitor.exe"; DestDir: "{app}";
 Source: "..\bin\UKEYMonitor.properties"; DestDir: "{app}";

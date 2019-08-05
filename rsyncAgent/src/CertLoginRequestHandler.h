@@ -1,21 +1,21 @@
 #pragma once
 
 #include "UDevice.h"
-#include "JSONStringify.h"
-#include "GMCrypto.h"
 #include "SoFProvider.h"
 #include "SOFErrorCode.h"
 #include "Command.h"
 #include "RESTfulRequestHandler.h"
 #include "RequestHandleException.h"
+#include "Poco/Util/Application.h"
 
 namespace Reach {
 
 	using Reach::UDevice;
 	using Reach::JSONStringify;
+	using Poco::Util::Application;
 
 	///RS_CertLogin
-	class CertLogin : public Command
+	class CertLogin :public Command
 	{
 	public:
 		CertLogin(const std::string& uid, const std::string& password)
@@ -26,14 +26,16 @@ namespace Reach {
 			UDevice::default();
 
 			if (_uid.empty() || _pwd.empty())
-				throw RequestHandleException("无效的参数", 0x0A000006);
+				throw RequestHandleException(SAR_INVALIDPARAMERR);
 
 			int retryCount = SOF_GetPinRetryCount(_uid);
 			if (retryCount <= 0)
-				throw RequestHandleException("PIN被锁死", _uid, 0x0A000025);
+				throw RequestHandleException(_uid, SOF_GetLastError());
 
 			if (!SOF_Login(_uid, _pwd))
-				throw Poco::LogicException("用户没有登录", _uid, 0x0A00002D);
+				throw RequestHandleException(_uid, SOF_GetLastError());
+
+			add("containerId", _uid);
 		}
 
 	private:
@@ -50,16 +52,13 @@ namespace Reach {
 			RESTfulRequestHandler::handleCORS(request, response);
 
 			HTMLForm form(request, request.stream());
-			if (!form.empty()) {
-				std::string uid(form.get("containerId", ""));
-				std::string pwd(form.get("password", ""));
-				CertLogin command(uid, pwd);
-				command.execute();
 
-				return response.sendBuffer(command().data(), command().length());
-			}
+			std::string uid(form.get("containerId", ""));
+			std::string pwd(form.get("password", ""));
+			CertLogin command(uid, pwd);
+			command.execute();
 
-			return response.sendBuffer("", 0);
+			return response.sendBuffer(command().data(), command().length());
 		}
 	};
 }

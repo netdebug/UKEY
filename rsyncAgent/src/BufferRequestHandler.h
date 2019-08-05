@@ -42,8 +42,11 @@ namespace Reach {
 		void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
 		{
 			Poco::Data::SQLite::Connector::registerConnector();
-
+#ifdef _DEBUG
+			Session session("SQLite", "C:\\Windows\\SysWOW64\\DeQLite.db");
+#else
 			Session session("SQLite", "DeQLite.db");
+#endif // _DEBUG
 			typedef Poco::Tuple <std::string, std::string, std::string> DeviceInfo;
 			typedef std::vector<DeviceInfo> DeviceInfoSet;
 			typedef DeviceInfoSet::const_iterator Iter;

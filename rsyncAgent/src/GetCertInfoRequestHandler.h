@@ -1,15 +1,14 @@
 #pragma once
 
-#include "Poco/Net/HTTPRequestHandler.h"
-#include "Poco/Net/HTTPServerResponse.h"
-#include "Poco/Net/HTTPServerRequest.h"
-#include "Poco/Net/HTMLForm.h"
-#include "Poco/Net/NameValueCollection.h"
-#include "Poco/Util/Application.h"
 #include "UDevice.h"
-#include "JSONStringify.h"
-#include "GMCrypto.h"
 #include "SoFProvider.h"
+#include "SOFErrorCode.h"
+#include "Command.h"
+#include "GMCrypto.h"
+#include "RESTfulRequestHandler.h"
+#include "RequestHandleException.h"
+#include "Poco/Util/Application.h"
+
 #include "Poco/RegularExpression.h"
 #include "Poco/Timezone.h"
 #include "Poco/Debugger.h"
@@ -17,15 +16,8 @@
 
 namespace Reach {
 
-	using Poco::Net::HTTPRequestHandler;
-	using Poco::Net::HTTPServerRequest;
-	using Poco::Net::HTTPServerResponse;
-	using Poco::RegularExpression;
-	using Poco::Net::HTMLForm;
-	using Poco::Net::NameValueCollection;
 	using Poco::Util::Application;
-	using Reach::UDevice;
-	using Reach::JSONStringify;
+	using Poco::RegularExpression;
 	using Poco::Timezone;
 	using Poco::DateTime;
 	using Poco::DateTimeFormat;
@@ -34,13 +26,14 @@ namespace Reach {
 	using Poco::Debugger;
 	using Poco::format;
 	///RS_GetCertInfo
-	class GetCertInfo
+	class GetCertInfo : public Command
 	{
 	public:
 		GetCertInfo(const std::string& base64, int type)
 			:_base64(base64), _type(type)
 		{}
-		GetCertInfo& execute()
+
+		void run()
 		{
 			if (SGD_CERT_VERSION == _type) {
 				_item = GetCertVersion(_base64);
@@ -56,8 +49,10 @@ namespace Reach {
 			{
 				_item = SOF_GetCertInfo(_base64, _type);
 			}
-			return *this;
+
+			add("info", _item);
 		}
+	protected:
 		std::string GetCertVersion(const std::string& base64)
 		{
 			std::string item;
@@ -111,7 +106,7 @@ namespace Reach {
 			RegularExpression re(pattern, options);
 			RegularExpression::Match mtch;
 			if (!re.match(time, mtch))
-				throw Poco::RegularExpressionException(100);
+				throw Poco::RegularExpressionException("RegularExpressionException", SAR_FAIL);
 			///
 			/// Match 1:	210314155959	     0	    12
 			/// Group 1:	2103	     0	     4
@@ -165,7 +160,7 @@ namespace Reach {
 			RegularExpression::Match mtch;
 
 			if (!re.match(text, mtch))
-				throw Poco::LogicException("RS_KeyDecryptData uid Exception!", 0x40);
+				throw Poco::LogicException("RS_KeyDecryptData uid Exception!", SAR_FAIL);
 
 			std::vector<std::string> tags;
 			re.split(text, tags, options);
@@ -173,37 +168,29 @@ namespace Reach {
 			return id;
 		}
 		///base64 \/×ªÒå×Ö·û
-		operator std::string()
-		{
-			JSONStringify data;
-			data.addObject("info", _item);
-			return data;
-		}
 	private:
 		std::string _item;
 		std::string _base64;
 		int _type;
 	};
 
-	class GetCertInfoRequestHandler : public HTTPRequestHandler
+	class GetCertInfoRequestHandler : public RESTfulRequestHandler
 	{
 	public:
 		void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
 		{
-			Application& app = Application::instance();
-			app.logger().information("GetCertInfoRequestHandler Request from " + request.clientAddress().toString());
-			response.set("Access-Control-Allow-Origin", "*");
-			response.set("Access-Control-Allow-Methods", "GET, POST, HEAD");
+			poco_information_f1(Application::instance().logger(), "Request from %s", request.clientAddress().toString());
 
-			std::string data;
+			RESTfulRequestHandler::handleCORS(request, response);
+
 			HTMLForm form(request, request.stream());
-			if (!form.empty()) {
-				std::string base64(form.get("certBase64", ""));
-				Var type(form.get("type", ""));
-				GetCertInfo command(base64, type);
-				data += command.execute();
-			}
-			return response.sendBuffer(data.data(), data.length());
+			std::string base64(form.get("certBase64", ""));
+			Var type(form.get("type", ""));
+
+			GetCertInfo command(base64, type);
+			command.execute();
+
+			return response.sendBuffer(command().data(), command().length());
 		}
 	};
 }

@@ -1,60 +1,41 @@
 #pragma once
 
-#include "Poco/Net/HTTPRequestHandler.h"
-#include "Poco/Net/HTTPServerResponse.h"
-#include "Poco/Net/HTTPServerRequest.h"
-#include "Poco/Net/HTMLForm.h"
-#include "Poco/Net/NameValueCollection.h"
-#include "Poco/Util/Application.h"
 #include "UDevice.h"
-#include "JSONStringify.h"
-#include "GMCrypto.h"
 #include "SoFProvider.h"
+#include "SOFErrorCode.h"
+#include "Command.h"
+#include "RESTfulRequestHandler.h"
+#include "RequestHandleException.h"
+#include "Poco/Util/Application.h"
 
 namespace Reach {
 
-	using Poco::Net::HTTPRequestHandler;
-	using Poco::Net::HTTPServerRequest;
-	using Poco::Net::HTTPServerResponse;
-	using Poco::Net::HTMLForm;
-	using Poco::Net::NameValueCollection;
 	using Poco::Util::Application;
-	using Reach::UDevice;
-	using Reach::JSONStringify;
 
 	///RS_VerifyIdentity
-	class VerifyIdentity
+	class VerifyIdentity : public Command
 	{
 	public:
-		VerifyIdentity()
-		{}
-		VerifyIdentity& execute()
+		void run()
 		{
-			return *this;
-		}
-	
-		operator std::string()
-		{
-			return "";
+			add("data", "RS_VerifyIdentity Not Implmented!");
 		}
 	};
-	class VerifyIdentityRequestHandler : public HTTPRequestHandler
+	class VerifyIdentityRequestHandler : public RESTfulRequestHandler
 	{
 	public:
 		void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
 		{
-			Application& app = Application::instance();
-			app.logger().information("VerifyIdentityRequestHandler Request from " + request.clientAddress().toString());
-			response.set("Access-Control-Allow-Origin", "*");
-			response.set("Access-Control-Allow-Methods", "GET, POST, HEAD");
+			poco_information_f1(Application::instance().logger(), "Request from %s", request.clientAddress().toString());
 
-			std::string data;
+			RESTfulRequestHandler::handleCORS(request, response);
+
 			HTMLForm form(request, request.stream());
-			if (!form.empty()) {
-				VerifyIdentity command;
-				data += command.execute();
-			}
-			return response.sendBuffer(data.data(), data.length());
+
+			VerifyIdentity command;
+			command.execute();
+
+			return response.sendBuffer(command().data(), command().length());
 		}
 	};
 }

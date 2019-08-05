@@ -27,6 +27,9 @@
     <None Include="rsyncAgent.properties">
       <Filter>Configuration Files</Filter>
     </None>
+    <None Include="Language.ini">
+      <Filter>Configuration Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\rsyncAgent.h">
@@ -89,9 +92,6 @@
     <ClInclude Include="src\GetCertInfoRequestHandler.h">
       <Filter>Header Files\RequestHandler\rs class</Filter>
     </ClInclude>
-    <ClInclude Include="src\GetCertInfoExRequestHandler.h">
-      <Filter>Header Files\RequestHandler\rs class</Filter>
-    </ClInclude>
     <ClInclude Include="src\GetCertBase64StringRequestHandler.h">
       <Filter>Header Files\RequestHandler\rs class</Filter>
     </ClInclude>
@@ -144,22 +144,22 @@
       <Filter>Header Files\RequestHandler\sof class</Filter>
     </ClInclude>
     <ClInclude Include="src\RequestHandleException.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SOFErrorCode.h">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files\RequestHandler</Filter>
     </ClInclude>
     <ClInclude Include="src\Command.h">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files\RequestHandler</Filter>
     </ClInclude>
     <ClInclude Include="src\RESTfulRequestHandler.h">
+      <Filter>Header Files\RequestHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SOFErrorCode.h">
+      <Filter>Header Files\RequestHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="src\translater.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\rsyncAgent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\RequestHandlerFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -173,6 +173,12 @@
       <Filter>Header Files\RequestHandler\rs device</Filter>
     </ClCompile>
     <ClCompile Include="src\RequestHandleException.cpp">
+      <Filter>Header Files\RequestHandler</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rsyncAgent.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\translater.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

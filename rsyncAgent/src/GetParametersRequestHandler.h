@@ -1,55 +1,45 @@
 #pragma once
 
-#include "Poco/Net/HTTPRequestHandler.h"
-#include "Poco/Net/HTTPServerResponse.h"
-#include "Poco/Net/HTTPServerRequest.h"
-#include "Poco/Net/HTMLForm.h"
-#include "Poco/Net/NameValueCollection.h"
+#include "UDevice.h"
+#include "SoFProvider.h"
+#include "SOFErrorCode.h"
+#include "Command.h"
+#include "RESTfulRequestHandler.h"
+#include "RequestHandleException.h"
 #include "Poco/Util/Application.h"
 
 namespace Reach {
 
-	using Poco::Net::HTTPRequestHandler;
-	using Poco::Net::HTTPServerRequest;
-	using Poco::Net::HTTPServerResponse;
-	using Poco::Net::HTMLForm;
-	using Poco::Net::NameValueCollection;
 	using Poco::Util::Application;
 
 	///RS_GetParameters
-	class GetParameters
+	class GetParameters : public Command
 	{
 	public:
-		GetParameters(const std::string& cmd){}
-		GetParameters& execute()
+		GetParameters(const std::string& cmd) {}
+
+		void run()
 		{
-			return *this;
-		}
-		operator std::string()
-		{
-			return "GetParameters Not Implmented!";
+			add("data", "GetParameters Not Implmented!");
 		}
 	};
 
-	class GetParametersRequestHandler : public HTTPRequestHandler
+	class GetParametersRequestHandler : public RESTfulRequestHandler
 	{
 	public:
 		void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
 		{
-			Application& app = Application::instance();
-			app.logger().information("GetParameters Request from " + request.clientAddress().toString());
-			response.set("Access-Control-Allow-Origin", "*");
-			response.set("Access-Control-Allow-Methods", "GET, POST, HEAD");
+			poco_information_f1(Application::instance().logger(), "Request from %s", request.clientAddress().toString());
 
-			std::string data;
+			RESTfulRequestHandler::handleCORS(request, response);
+
 			HTMLForm form(request, request.stream());
-			if (!form.empty()) {
-				std::string cmd = form.get("cmd", "");
-				GetParameters command(cmd);
-				data += command.execute();
-				return response.sendBuffer(data.data(), data.length());
-			}
-			return response.sendBuffer(data.data(), data.length());
+			std::string cmd = form.get("cmd", "");
+
+			GetParameters command(cmd);
+			command.execute();
+
+			return response.sendBuffer(command().data(), command().length());
 		}
 	};
 }

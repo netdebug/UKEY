@@ -1,44 +1,36 @@
 #pragma once
 
-#include "Poco/Net/HTTPRequestHandler.h"
-#include "Poco/Net/HTTPServerResponse.h"
-#include "Poco/Net/HTTPServerRequest.h"
+#include "UDevice.h"
+#include "SoFProvider.h"
+#include "SOFErrorCode.h"
+#include "Command.h"
+#include "RESTfulRequestHandler.h"
+#include "RequestHandleException.h"
+#include "Poco/Util/Application.h"
 
 namespace Reach {
 
-	using Poco::Net::HTTPRequestHandler;
-	using Poco::Net::HTTPServerRequest;
-	using Poco::Net::HTTPServerResponse;
-
+	using Poco::Util::Application;
 	///RS_KeySignByP7
-	class KeySignByP7
+	class KeySignByP7 : public Command
 	{
 	public:
 		KeySignByP7(const std::string& textual, int mode, const std::string& uid)
-			:_textual(textual), _mode(mode),_uid(uid)
+			:_textual(textual), _mode(mode), _uid(uid)
 		{}
-		KeySignByP7& execute()
+
+		void run()
 		{
 			UDevice::default();
 
 			_signature = SOF_SignMessage(_mode, _uid, _textual);
-			return *this;
-		}
-
-		operator std::string()
-		{
-			if (_signature.empty())
-			{
-				int error = SOF_GetLastError();
-				JSONStringify data("unsuccessful", error);
-				data.addNullObject();
-				return data;
+			if (_signature.empty()) {
+				throw RequestHandleException("SOF_SignMessage failed!", SOF_GetLastError());
 			}
 
-			JSONStringify data;
-			data.addObject("signdMsg", _signature);
-			return data;
+			add("signdMsg", _signature);
 		}
+
 	private:
 		std::string _textual;
 		short _mode;///Attached = 0, Detached =1
@@ -46,26 +38,24 @@ namespace Reach {
 		std::string _signature;
 	};
 
-	class KeySignByP7RequestHandler : public HTTPRequestHandler
+	class KeySignByP7RequestHandler : public RESTfulRequestHandler
 	{
 	public:
 		void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
 		{
-			Application& app = Application::instance();
-			app.logger().information("KeySignByP7RequestHandler Request from " + request.clientAddress().toString());
-			response.set("Access-Control-Allow-Origin", "*");
-			response.set("Access-Control-Allow-Methods", "GET, POST, HEAD");
+			poco_information_f1(Application::instance().logger(), "Request from %s", request.clientAddress().toString());
 
-			std::string data;
+			RESTfulRequestHandler::handleCORS(request, response);
+
 			HTMLForm form(request, request.stream());
-			if (!form.empty()) {
-				std::string textual(form.get("msg", ""));
-				std::string uid(form.get("containerId", ""));
-				Var mode(form.get("flag", ""));
-				KeySignByP7 command(textual,mode,uid);
-				data += command.execute();
-			}
-			return response.sendBuffer(data.data(), data.length());
+			std::string textual(form.get("msg", ""));
+			std::string uid(form.get("containerId", ""));
+			Var mode(form.get("flag", ""));
+
+			KeySignByP7 command(textual, mode, uid);
+			command.execute();
+
+			return response.sendBuffer(command().data(), command().length());
 		}
 	};
 }

@@ -1,57 +1,55 @@
 #pragma once
 
-#include "Poco/Net/HTTPRequestHandler.h"
-#include "Poco/Net/HTTPServerResponse.h"
-#include "Poco/Net/HTTPServerRequest.h"
-#include "Poco/Net/HTMLForm.h"
-#include "Poco/Net/NameValueCollection.h"
-#include "Poco/Util/Application.h"
 #include "UDevice.h"
-#include "JSONStringify.h"
-#include "GMCrypto.h"
 #include "SoFProvider.h"
+#include "SOFErrorCode.h"
+#include "Command.h"
+#include "RESTfulRequestHandler.h"
+#include "RequestHandleException.h"
+#include "Poco/Util/Application.h"
 #include "Poco/Dynamic/Var.h"
 
 namespace Reach {
 
-	using Poco::Net::HTTPRequestHandler;
-	using Poco::Net::HTTPServerRequest;
-	using Poco::Net::HTTPServerResponse;
-	using Poco::Net::HTMLForm;
-	using Poco::Net::NameValueCollection;
 	using Poco::Util::Application;
 	using Poco::Dynamic::Var;
-	using Reach::UDevice;
-	using Reach::JSONStringify;
 
 	///RS_GetCertBase64String
-	class GetCertBase64String
+	class GetCertBase64String : public Command
 	{
 	public:
-		GetCertBase64String(short ctype, const std::string& uid) 
-			:_type(ctype),_uid(uid)
+		GetCertBase64String(short ctype, const std::string& uid)
+			:_type(ctype), _uid(uid)
 		{}
-		GetCertBase64String& execute()
+
+		void run()
 		{
 			UDevice::default();
 
 			enum certType { sign = 1, crypto };
 
-			if (certType::sign == _type) {
-				_content = SOF_ExportUserCert(_uid);
-			}
-			else if (certType::crypto == _type) {
-				_content = SOF_ExportExChangeUserCert(_uid);
+			std::string _content;
+
+			switch (_type){
+
+				case certType::sign:
+					_content = SOF_ExportUserCert(_uid);
+					break;
+				case certType::crypto:
+					_content = SOF_ExportExChangeUserCert(_uid);
+					break;
+				default:
+					throw Poco::RangeException("Range < 3", SAR_FAIL);
 			}
 
-			return *this;
+			if (_content.empty())
+				throw RequestHandleException(SOF_GetLastError());
+
+			add("certBase64", _content);
 		}
-		operator std::string()
-		{
-			JSONStringify data;
-			data.addObject("certBase64", _content);
-			return data;
-		}
+	protected:
+
+
 	private:
 		std::string _content;
 		short _type;
@@ -59,25 +57,23 @@ namespace Reach {
 	};
 
 
-	class GetCertBase64StringRequestHandler : public HTTPRequestHandler
+	class GetCertBase64StringRequestHandler : public RESTfulRequestHandler
 	{
 	public:
 		void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
 		{
-			Application& app = Application::instance();
-			app.logger().information("GetCertBase64StringRequestHandler Request from " + request.clientAddress().toString());
-			response.set("Access-Control-Allow-Origin", "*");
-			response.set("Access-Control-Allow-Methods", "GET, POST, HEAD");
+			poco_information_f1(Application::instance().logger(), "Request from %s", request.clientAddress().toString());
 
-			std::string data;
+			RESTfulRequestHandler::handleCORS(request, response);
+
 			HTMLForm form(request, request.stream());
-			if (!form.empty()) {
-				Var type(form.get("certType", ""));
-				std::string uid(form.get("containerId", ""));
-				GetCertBase64String command(type, uid);
-				data += command.execute();
-			}
-			return response.sendBuffer(data.data(), data.length());
+			Var type(form.get("certType", ""));
+			std::string uid(form.get("containerId", ""));
+
+			GetCertBase64String command(type, uid);
+			command.execute();
+
+			return response.sendBuffer(command().data(), command().length());
 		}
 	};
 }

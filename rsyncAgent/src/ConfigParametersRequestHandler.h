@@ -1,60 +1,46 @@
 #pragma once
 
-#include "Poco/Net/HTTPRequestHandler.h"
-#include "Poco/Net/HTTPServerResponse.h"
-#include "Poco/Net/HTTPServerRequest.h"
-#include "Poco/Net/HTMLForm.h"
-#include "Poco/Net/NameValueCollection.h"
+#include "Command.h"
+#include "RESTfulRequestHandler.h"
 #include "Poco/Util/Application.h"
 
 namespace Reach {
 
-	using Poco::Net::HTTPRequestHandler;
-	using Poco::Net::HTTPServerRequest;
-	using Poco::Net::HTTPServerResponse;
-	using Poco::Net::HTMLForm;
-	using Poco::Net::NameValueCollection;
 	using Poco::Util::Application;
 
 	///RS_ConfigParameters
-	class ConfigParameters
+	class ConfigParameters : public Command
 	{
 	public:
 		ConfigParameters(const std::string& cmd, const std::string& val)
+			:_cmd(cmd), _val(val)
 		{
 		}
 
-		ConfigParameters& execute()
+		void run()
 		{
-			return *this;
+			add("data", "RS_ConfigParameters Not Implmented!");
 		}
-
-		operator std::string()
-		{
-			return "RS_ConfigParameters Not Implmented!";
-		}
+	private:
+		std::string _cmd;
+		std::string _val;
 	};
 
-	class ConfigParametersRequestHandler : public HTTPRequestHandler
+	class ConfigParametersRequestHandler : public RESTfulRequestHandler
 	{
 	public:
 		void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
 		{
-			Application& app = Application::instance();
-			app.logger().information("ConfigParametersRequestHandler Request from " + request.clientAddress().toString());
-			response.set("Access-Control-Allow-Origin", "*");
-			response.set("Access-Control-Allow-Methods", "GET, POST, HEAD");
+			poco_information_f1(Application::instance().logger(), "Request from %s", request.clientAddress().toString());
+			RESTfulRequestHandler::handleCORS(request, response);
 
-			std::string data;
 			HTMLForm form(request, request.stream());
-			if (!form.empty()) {
-				std::string cmd = form.get("cmd", "");
-				std::string value = form.get("val", "");
-				ConfigParameters command(cmd, value);
-				data += command.execute();
-				return response.sendBuffer(data.data(), data.length());
-			}
-			return response.sendBuffer(data.data(), data.length());
+			std::string cmd = form.get("cmd", "");
+			std::string value = form.get("val", "");
+			ConfigParameters command(cmd, value);
+			command.execute();
+
+			return response.sendBuffer(command().data(), command().length());
 		}
 	};
 }

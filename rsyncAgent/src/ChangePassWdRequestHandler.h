@@ -1,68 +1,61 @@
 #pragma once
 
-#include "Poco/Net/HTTPRequestHandler.h"
-#include "Poco/Net/HTTPServerResponse.h"
-#include "Poco/Net/HTTPServerRequest.h"
+#include "UDevice.h"
+#include "SoFProvider.h"
+#include "SOFErrorCode.h"
+#include "Command.h"
+#include "RESTfulRequestHandler.h"
+#include "RequestHandleException.h"
+#include "Poco/Util/Application.h"
 
 namespace Reach {
 
-	using Poco::Net::HTTPRequestHandler;
-	using Poco::Net::HTTPServerRequest;
-	using Poco::Net::HTTPServerResponse;
+	using Reach::UDevice;
+	using Reach::JSONStringify;
+	using Poco::Util::Application;
 
 	///RS_ChangePassWd
-	class ChangePassWd
+	class ChangePassWd :public Command
 	{
 	public:
 		ChangePassWd(const std::string& uid, const std::string& oldCode, const std::string& newCode)
-			:_uid(uid),_oldCode(oldCode),_newCode(newCode)
+			:_uid(uid), _oldCode(oldCode), _newCode(newCode)
 		{}
-		ChangePassWd& execute()
+		void run()
 		{
 			UDevice::default();
 
 			if (!SOF_ChangePassWd(_uid, _oldCode, _newCode))
 			{
 				int error = SOF_GetLastError();
-				throw Poco::LogicException("SOF_ChangePassWd failed", error);
+				throw RequestHandleException("SOF_ChangePassWd failed", error);
 			}
-
-			return *this;
 		}
 
-		operator std::string()
-		{
-			JSONStringify data;
-			return data;
-		}
 	private:
 		std::string _uid;
 		std::string _oldCode;
 		std::string _newCode;
 	};
 
-	class ChangePassWdRequestHandler : public HTTPRequestHandler
+	class ChangePassWdRequestHandler : public RESTfulRequestHandler
 	{
 	public:
 		void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
 		{
-			Application& app = Application::instance();
-			app.logger().information("ChangePassWdRequestHandler Request from " + request.clientAddress().toString());
+			poco_information_f1(Application::instance().logger(), "Request from %s", request.clientAddress().toString());
 
-			response.set("Access-Control-Allow-Origin", "*");
-			response.set("Access-Control-Allow-Methods", "GET, POST, HEAD");
+			RESTfulRequestHandler::handleCORS(request, response);
 
-			std::string data;
 			HTMLForm form(request, request.stream());
-			if (!form.empty()) {
-				std::string uid(form.get("containerId", ""));
-				std::string oldCode(form.get("oldCode", ""));
-				std::string newCode(form.get("newCode", ""));
-				ChangePassWd command(uid, oldCode, newCode);
-				data += command.execute();
-			}
+			std::string uid(form.get("containerId", ""));
+			std::string oldCode(form.get("oldCode", ""));
+			std::string newCode(form.get("newCode", ""));
 
-			return response.sendBuffer(data.data(), data.length());
+			ChangePassWd command(uid, oldCode, newCode);
+			command.execute();
+
+			return response.sendBuffer(command().data(), command().length());
 		}
 	};
 }

@@ -27,6 +27,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Language.ini" />
     <None Include="rsyncAgent.properties" />
   </ItemGroup>
   <ItemGroup>
@@ -44,7 +45,6 @@
     <ClInclude Include="src\extCloseDeviceRequestHandler.h" />
     <ClInclude Include="src\extOpenDeviceRequestHandler.h" />
     <ClInclude Include="src\GetCertBase64StringRequestHandler.h" />
-    <ClInclude Include="src\GetCertInfoExRequestHandler.h" />
     <ClInclude Include="src\GetCertInfoRequestHandler.h" />
     <ClInclude Include="src\GetParametersRequestHandler.h" />
     <ClInclude Include="src\GetPinRetryCountRequestHandler.h" />
@@ -67,6 +67,7 @@
     <ClInclude Include="src\SOFErrorCode.h" />
     <ClInclude Include="src\SoFProvider.h" />
     <ClInclude Include="src\StrategyCollection.h" />
+    <ClInclude Include="src\translater.h" />
     <ClInclude Include="src\UDevice.h" />
     <ClInclude Include="src\VerifyDigitalSignByP1RequestHandler.h" />
     <ClInclude Include="src\VerifyIdentityRequestHandler.h" />
@@ -79,6 +80,7 @@
     <ClCompile Include="src\RequestHandlerFactory.cpp" />
     <ClCompile Include="src\rsyncAgent.cpp" />
     <ClCompile Include="src\StrategyCollection.cpp" />
+    <ClCompile Include="src\translater.cpp" />
     <ClCompile Include="src\UDevice.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -197,6 +199,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
+      <DisableSpecificWarnings>4800</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <AdditionalDependencies>PocoFoundationd.lib;PocoJSONd.lib;PocoNetd.lib;PocoUtild.lib;PocoDatad.lib;PocoDataSQLited.lib;SoFProviderd.lib;Iphlpapi.lib;msi.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -211,7 +214,8 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y $(ProjectDir)rsyncAgent.properties $(OutDir)</Command>
+      <Command>xcopy /y $(ProjectDir)rsyncAgent.properties $(OutDir)
+xcopy /y $(ProjectDir)Language.ini $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='release_shared|Win32'">
@@ -248,7 +252,8 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y $(ProjectDir)rsyncAgent.properties $(OutDir)</Command>
+      <Command>xcopy /y $(ProjectDir)rsyncAgent.properties $(OutDir)
+xcopy /y $(ProjectDir)Language.ini $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug_static_mt|Win32'">

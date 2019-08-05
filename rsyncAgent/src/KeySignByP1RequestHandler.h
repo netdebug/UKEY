@@ -1,65 +1,58 @@
 #pragma once
 
-#include "Poco/Net/HTTPRequestHandler.h"
-#include "Poco/Net/HTTPServerResponse.h"
-#include "Poco/Net/HTTPServerRequest.h"
+#include "UDevice.h"
+#include "SoFProvider.h"
+#include "SOFErrorCode.h"
+#include "Command.h"
+#include "RESTfulRequestHandler.h"
+#include "RequestHandleException.h"
+#include "Poco/Util/Application.h"
 
 namespace Reach {
 
-	using Poco::Net::HTTPRequestHandler;
-	using Poco::Net::HTTPServerRequest;
-	using Poco::Net::HTTPServerResponse;
-
+	using Poco::Util::Application;
 	///RS_KeySignByP1
-	class KeySignByP1
+	class KeySignByP1 : public Command
 	{
 	public:
 		KeySignByP1(const std::string& uid, const std::string& msg)
-			:_uid(uid),_msg(msg)
+			:_uid(uid), _msg(msg)
 		{}
-		KeySignByP1& execute()
+
+		void run()
 		{
 			UDevice::default();
 
 			_signature = SOF_SignData(_uid, _msg);
 			if (_signature.empty()) {
-				int error = SOF_GetLastError();
-				throw Poco::LogicException("SOF_SignData failed!", error);
+				throw RequestHandleException("SOF_SignData failed!", SOF_GetLastError());
 			}
 
-			return *this;
+			add("signdMsg", _signature);
 		}
 
-		operator std::string()
-		{
-			JSONStringify data;
-			data.addObject("signdMsg", _signature);
-			return data;
-		}
 	private:
 		std::string _signature;
 		std::string _uid;
 		std::string _msg;
 	};
-	class KeySignByP1RequestHandler : public HTTPRequestHandler
+	class KeySignByP1RequestHandler : public RESTfulRequestHandler
 	{
 	public:
 		void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
 		{
-			Application& app = Application::instance();
-			app.logger().information("KeySignByP1RequestHandler Request from " + request.clientAddress().toString());
-			response.set("Access-Control-Allow-Origin", "*");
-			response.set("Access-Control-Allow-Methods", "GET, POST, HEAD");
+			poco_information_f1(Application::instance().logger(), "Request from %s", request.clientAddress().toString());
 
-			std::string data;
+			RESTfulRequestHandler::handleCORS(request, response);
+
 			HTMLForm form(request, request.stream());
-			if (!form.empty()) {
-				std::string uid(form.get("containerId", ""));
-				std::string msg(form.get("asn1Msg", ""));
-				KeySignByP1 command(uid,msg);
-				data += command.execute();
-			}
-			return response.sendBuffer(data.data(), data.length());
+			std::string uid(form.get("containerId", ""));
+			std::string msg(form.get("asn1Msg", ""));
+
+			KeySignByP1 command(uid, msg);
+			command.execute();
+
+			return response.sendBuffer(command().data(), command().length());
 		}
 	};
 }

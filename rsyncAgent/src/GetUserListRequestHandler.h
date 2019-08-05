@@ -1,18 +1,18 @@
 #pragma once
 
 #include "UDevice.h"
-#include "JSONStringify.h"
-#include "GMCrypto.h"
 #include "SoFProvider.h"
 #include "SOFErrorCode.h"
 #include "Command.h"
 #include "RESTfulRequestHandler.h"
 #include "RequestHandleException.h"
+#include "Poco/Util/Application.h"
 
 namespace Reach {
 
 	using Reach::UDevice;
 	using Reach::JSONStringify;
+	using Poco::Util::Application;
 
 	///RS_GetUserList
 	///example
@@ -33,7 +33,7 @@ namespace Reach {
 			UDevice::default();
 			_line = SOF_GetUserList();
 			if (_line.empty())
-				throw RequestHandleException(SAR_FAIL);
+				throw RequestHandleException(SOF_GetLastError());
 
 			add("userlist" ,_line);
 		}

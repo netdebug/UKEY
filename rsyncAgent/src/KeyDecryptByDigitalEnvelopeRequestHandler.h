@@ -1,43 +1,33 @@
 #pragma once
 
-#include "Poco/Net/HTTPRequestHandler.h"
-#include "Poco/Net/HTTPServerResponse.h"
-#include "Poco/Net/HTTPServerRequest.h"
-#include "Poco/Net/HTMLForm.h"
-#include "Poco/Net/NameValueCollection.h"
+#include "UDevice.h"
+#include "SoFProvider.h"
+#include "SOFErrorCode.h"
+#include "Command.h"
+#include "RESTfulRequestHandler.h"
+#include "RequestHandleException.h"
 #include "Poco/Util/Application.h"
 #include "Poco/File.h"
-#include "UDevice.h"
-#include "JSONStringify.h"
-#include "GMCrypto.h"
-#include "SoFProvider.h"
 
 namespace Reach {
 
-	using Poco::Net::HTTPRequestHandler;
-	using Poco::Net::HTTPServerRequest;
-	using Poco::Net::HTTPServerResponse;
-	using Poco::Net::HTMLForm;
-	using Poco::Net::NameValueCollection;
 	using Poco::Util::Application;
 	using Poco::File;
-	using Reach::UDevice;
-	using Reach::JSONStringify;
 
 	///RS_KeyDecryptByDigitalEnvelope
-	class KeyDecryptByDigitalEnvelope
+	class KeyDecryptByDigitalEnvelope : public Command
 	{
 	public:
 		KeyDecryptByDigitalEnvelope(std::string& uid, std::string& EncryptFile, std::string& OutDir, std::string& cryptogrphic)
-			:_uid(uid),_cryptogrphic(cryptogrphic),_encrypt(EncryptFile), _decrypt_directory(OutDir),
+			:_uid(uid), _cryptogrphic(cryptogrphic), _encrypt(EncryptFile), _decrypt_directory(OutDir),
 			_decrypted(false)
 		{
 			File fi(_encrypt);
 			if (!fi.exists())
-				throw Poco::FileExistsException("Encrypt File was not existd!", 0x40);
-
+				throw Poco::FileNotFoundException(fi.path(), SAR_FAIL);
 		}
-		KeyDecryptByDigitalEnvelope& execute()
+
+		void run()
 		{
 			UDevice::default();
 
@@ -48,7 +38,7 @@ namespace Reach {
 			RegularExpression::Match mtch;
 
 			if (!re.match(_cryptogrphic, mtch))
-				throw Poco::LogicException("RS_KeyDecryptData enRsKey Exception!", 0x40);
+				throw Poco::LogicException("RS_KeyDecryptData enRsKey Exception!", SAR_FAIL);
 
 			std::vector<std::string> tags;
 			re.split(_cryptogrphic, tags, options);
@@ -59,32 +49,19 @@ namespace Reach {
 			std::string content = SOF_ExportExChangeUserCert(_uid);
 
 			if (content != cert)
-				throw Poco::LogicException("certificate error");
+				throw Poco::LogicException("certificate error", SAR_FAIL);
 
 			///Asymmetric_key algorithm by private cert
 			///_cryptogrphic = asymmetric_key_algorithm(_cert,_random_digital);
 			_random_digital = SOF_AsDecrypt(_uid, encrypt);
-			if (!_random_digital.empty()) {
-				///Symmetric-key algorithm by _random_digital
-				///_encrypt_data = symmetric-key_algorithm(_random_digital,_source_data);
-				_decrypted = SOF_DecryptFile(_random_digital, _encrypt, _decrypt_directory);
-			}
+			if (_random_digital.empty())
+				throw RequestHandleException(SOF_GetLastError());
 
-			return *this;
-		}
-
-		operator std::string()
-		{
-			if (_random_digital.empty() || !_decrypted) {
-				int error = SOF_GetLastError();
-				JSONStringify data("unsuccessful", error);
-				data.addNullObject();
-				return data;
-			}
-
-			JSONStringify data;
-			data.addNullObject();
-			return data;
+			///Symmetric-key algorithm by _random_digital
+			///_encrypt_data = symmetric-key_algorithm(_random_digital,_source_data);
+			_decrypted = SOF_DecryptFile(_random_digital, _encrypt, _decrypt_directory);
+			if (!_decrypted)
+				throw RequestHandleException(SOF_GetLastError());
 		}
 	private:
 		std::string _uid;
@@ -97,27 +74,25 @@ namespace Reach {
 		bool _decrypted;
 	};
 
-	class KeyDecryptByDigitalEnvelopeRequestHandler : public HTTPRequestHandler
+	class KeyDecryptByDigitalEnvelopeRequestHandler : public RESTfulRequestHandler
 	{
 	public:
 		void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
 		{
-			Application& app = Application::instance();
-			app.logger().information("VerifyIdentityRequestHandler Request from " + request.clientAddress().toString());
-			response.set("Access-Control-Allow-Origin", "*");
-			response.set("Access-Control-Allow-Methods", "GET, POST, HEAD");
+			poco_information_f1(Application::instance().logger(), "Request from %s", request.clientAddress().toString());
 
-			std::string data;
+			RESTfulRequestHandler::handleCORS(request, response);
+
 			HTMLForm form(request, request.stream());
-			if (!form.empty()) {
-				std::string uid(form.get("containerId", ""));
-				std::string cryptogrphic(form.get("encRsKeyPath", ""));
-				std::string EncryptFile(form.get("encFilePath", ""));
-				std::string OutDir(form.get("dncDirectory", ""));
-				KeyDecryptByDigitalEnvelope command(uid, EncryptFile, OutDir, cryptogrphic);
-				data += command.execute();
-			}
-			return response.sendBuffer(data.data(), data.length());
+			std::string uid(form.get("containerId", ""));
+			std::string cryptogrphic(form.get("encRsKeyPath", ""));
+			std::string EncryptFile(form.get("encFilePath", ""));
+			std::string OutDir(form.get("dncDirectory", ""));
+
+			KeyDecryptByDigitalEnvelope command(uid, EncryptFile, OutDir, cryptogrphic);
+			command.execute();
+
+			return response.sendBuffer(command().data(), command().length());
 		}
 	};
 }
