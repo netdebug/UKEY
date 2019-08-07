@@ -18,12 +18,12 @@
 #define Data_Connector_INCLUDED
 
 
-#include "Data.h"
-#include "SessionImpl.h"
+#include "Reach/Data/Data.h"
+#include "Reach/Data/SessionImpl.h"
 #include "Poco/AutoPtr.h"
 
 
-namespace Poco {
+namespace Reach {
 namespace Data {
 
 
@@ -50,7 +50,7 @@ public:
 };
 
 
-} } // namespace Poco::Data
+} } // namespace Poco::Reach
 
 
 #endif // Data_Connector_INCLUDED

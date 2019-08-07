@@ -18,14 +18,14 @@
 #define Data_SessionImpl_INCLUDED
 
 
-#include "Data.h"
+#include "Reach/Data/Data.h"
 #include "Poco/RefCountedObject.h"
 #include "Poco/String.h"
 #include "Poco/Format.h"
 #include "Poco/Any.h"
 
 
-namespace Poco {
+namespace Reach {
 namespace Data {
 
 
@@ -56,7 +56,7 @@ public:
 	virtual ~SessionImpl();
 		/// Destroys the SessionImpl.
 
-	virtual StatementImpl* createStatementImpl() = 0;
+	//virtual StatementImpl* createStatementImpl() = 0;
 		/// Creates a StatementImpl.
 
 	virtual void open(const std::string& connectionString = "") = 0;
@@ -205,7 +205,7 @@ inline std::size_t SessionImpl::getLoginTimeout() const
 inline std::string SessionImpl::uri(const std::string& connector,
 	const std::string& connectionString)
 {
-	return format("%s:///%s", connector, connectionString);
+	return Poco::format("%s:///%s", connector, connectionString);
 }
 
 
@@ -215,7 +215,7 @@ inline std::string SessionImpl::uri() const
 }
 
 
-} } // namespace Poco::Data
+} } // namespace Poco::Reach
 
 
 #endif // Data_SessionImpl_INCLUDED

@@ -1,5 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="debug_shared|Win32">
       <Configuration>debug_shared</Configuration>
@@ -10,39 +10,23 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="src\Connector.cpp" />
-    <ClCompile Include="src\DataException.cpp" />
-    <ClCompile Include="src\Session.cpp" />
-    <ClCompile Include="src\SessionFactory.cpp" />
-    <ClCompile Include="src\SessionImpl.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="include\Reach\Data\AbstractSessionImpl.h" />
-    <ClInclude Include="include\Reach\Data\Connector.h" />
-    <ClInclude Include="include\Reach\Data\Data.h" />
-    <ClInclude Include="include\Reach\Data\DataException.h" />
-    <ClInclude Include="include\Reach\Data\Session.h" />
-    <ClInclude Include="include\Reach\Data\SessionFactory.h" />
-    <ClInclude Include="include\Reach\Data\SessionImpl.h" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectName>Data</ProjectName>
-    <ProjectGuid>{240E83C3-368D-11DB-9FBC-00123FC423B5}</ProjectGuid>
-    <RootNamespace>Data</RootNamespace>
+    <ProjectName>TestSuite</ProjectName>
+    <ProjectGuid>{1813A463-E349-4FEA-8A8E-4A41E41C0DC7}</ProjectGuid>
+    <RootNamespace>TestSuite</RootNamespace>
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release_shared|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug_shared|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings" />
@@ -54,25 +38,25 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <_ProjectFileVersion>14.0.25420.1</_ProjectFileVersion>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='debug_shared|Win32'">rsyncDatad</TargetName>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='release_shared|Win32'">rsyncData</TargetName>
+    <_ProjectFileVersion>14.0.23107.0</_ProjectFileVersion>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='debug_shared|Win32'">TestSuited</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='release_shared|Win32'">TestSuite</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug_shared|Win32'">
-    <OutDir>bin\</OutDir>
-    <IntDir>obj\Data\$(Configuration)\</IntDir>
+    <OutDir>..\bin\</OutDir>
+    <IntDir>obj\TestSuite\$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release_shared|Win32'">
-    <OutDir>bin\</OutDir>
-    <IntDir>obj\Data\$(Configuration)\</IntDir>
+    <OutDir>..\..\bin\</OutDir>
+    <IntDir>obj\TestSuite\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug_shared|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include\poco\Foundation\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;Data_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\include\poco\Foundation\include;..\include;..\..\include\poco\CppUnit\include;..\..\include\poco\CppUnit\WinTestRunner\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;WINVER=0x0600;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -87,13 +71,13 @@
       <CompileAs>Default</CompileAs>
     </ClCompile>
     <Link>
-      <OutputFile>$(OutDir)rsyncDatad.dll</OutputFile>
+      <AdditionalDependencies>CppUnitd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)\TestSuited.exe</OutputFile>
+      <AdditionalLibraryDirectories>..\..\lib;..\..\lib\libpoco;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>..\bin\rsyncDatad.pdb</ProgramDatabaseFile>
-      <AdditionalLibraryDirectories>..\lib;..\lib\libpoco;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ProgramDatabaseFile>bin\TestSuited.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
-      <ImportLibrary>..\lib\rsyncDatad.lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
@@ -104,8 +88,8 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
-      <AdditionalIncludeDirectories>..\include\poco\Foundation\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;Data_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\include\poco\Foundation\include;..\include;..\..\include\poco\CppUnit\include;..\..\include\poco\CppUnit\WinTestRunner\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;WINVER=0x0600;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
@@ -118,17 +102,29 @@
       <CompileAs>Default</CompileAs>
     </ClCompile>
     <Link>
-      <OutputFile>$(OutDir)rsyncData.dll</OutputFile>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalDependencies>CppUnit.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)\TestSuite.exe</OutputFile>
+      <AdditionalLibraryDirectories>..\..\lib;..\..\lib\libpoco;;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\lib;..\lib\libpoco;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <ImportLibrary>..\lib\rsyncData.lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Connector.h" />
+    <ClInclude Include="src\DataTest.h" />
+    <ClInclude Include="src\DataTestSuite.h" />
+    <ClInclude Include="src\SessionImpl.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Connector.cpp" />
+    <ClCompile Include="src\DataTest.cpp" />
+    <ClCompile Include="src\DataTestSuite.cpp" />
+    <ClCompile Include="src\Driver.cpp" />
+    <ClCompile Include="src\SessionImpl.cpp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
 </Project>

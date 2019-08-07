@@ -12,11 +12,11 @@
 //
 
 
-#include "SessionImpl.h"
+#include "Reach/Data/SessionImpl.h"
 #include "Poco/Exception.h"
 
 
-namespace Poco {
+namespace Reach {
 namespace Data {
 
 
@@ -49,4 +49,4 @@ void SessionImpl::setConnectionString(const std::string& connectionString)
 }
 
 
-} } // namespace Poco::Data
+} } // namespace Reach::Data

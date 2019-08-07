@@ -12,14 +12,14 @@
 //
 
 
-#include "Session.h"
-#include "SessionFactory.h"
+#include "Reach/Data/Session.h"
+#include "Reach/Data/SessionFactory.h"
 #include "Poco/String.h"
 #include "Poco/URI.h"
 #include <algorithm>
 
 
-namespace Poco {
+namespace Reach {
 namespace Data {
 
 
@@ -75,4 +75,4 @@ void Session::swap(Session& other)
 }
 
 
-} } // namespace Poco::Data
+} } // namespace Reach::Data

@@ -12,12 +12,12 @@
 //
 
 
-#include "SessionFactory.h"
+#include "Reach/Data/SessionFactory.h"
 #include "Poco/URI.h"
 #include "Poco/String.h"
 
 
-namespace Poco {
+namespace Reach {
 namespace Data {
 
 
@@ -77,7 +77,7 @@ Session SessionFactory::create(const std::string& key,
 Session SessionFactory::create(const std::string& uri,
 	std::size_t timeout)
 {
-	URI u(uri);
+	Poco::URI u(uri);
 	poco_assert (!u.getPath().empty());
 	return create(u.getScheme(), u.getPath().substr(1), timeout);
 }
@@ -90,4 +90,4 @@ SessionFactory::SessionInfo::SessionInfo(Connector* pSI):
 }
 
 
-} } // namespace Poco::Data
+} } // namespace Reach::Data

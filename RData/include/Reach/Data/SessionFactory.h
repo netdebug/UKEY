@@ -18,16 +18,16 @@
 #define Data_SessionFactory_INCLUDED
 
 
-#include "Data.h"
-#include "Connector.h"
-#include "Session.h"
+#include "Reach/Data/Data.h"
+#include "Reach/Data/Connector.h"
+#include "Reach/Data/Session.h"
 #include "Poco/Mutex.h"
 #include "Poco/SharedPtr.h"
 #include "Poco/String.h"
 #include <map>
 
 
-namespace Poco {
+namespace Reach {
 namespace Data {
 
 
@@ -93,7 +93,7 @@ private:
 };
 
 
-} } // namespace Poco::Data
+} } // namespace Poco::Reach
 
 
 #endif // Data_SessionFactory_INCLUDED

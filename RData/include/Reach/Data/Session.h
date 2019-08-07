@@ -18,8 +18,8 @@
 #define Data_Session_INCLUDED
 
 
-#include "Data.h"
-#include "SessionImpl.h"
+#include "Reach/Data/Data.h"
+#include "Reach/Data/SessionImpl.h"
 //#include "Poco/Data/Statement.h"
 //#include "Poco/Data/StatementCreator.h"
 //#include "Poco/Data/Binding.h"
@@ -28,7 +28,7 @@
 #include <algorithm>
 
 
-namespace Poco {
+namespace Reach {
 namespace Data {
 
 
@@ -476,14 +476,14 @@ inline void swap(Session& s1, Session& s2)
 }
 
 
-} } // namespace Poco::Data
+} } // namespace Poco::Reach
 
 
 namespace std
 {
 	template<>
-	inline void swap<Poco::Data::Session>(Poco::Data::Session& s1, 
-		Poco::Data::Session& s2)
+	inline void swap<Reach::Data::Session>(Reach::Data::Session& s1,
+		Reach::Data::Session& s2)
 		/// Full template specalization of std:::swap for Session
 	{
 		s1.swap(s2);

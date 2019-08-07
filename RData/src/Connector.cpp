@@ -12,10 +12,10 @@
 //
 
 
-#include "Connector.h"
+#include "Reach/Data/Connector.h"
 
 
-namespace Poco {
+namespace Reach {
 namespace Data {
 
 
@@ -29,4 +29,4 @@ Connector::~Connector()
 }
 
 
-} } // namespace Poco::Data
+} } // namespace Reach::Data
