@@ -46,7 +46,6 @@ class GmSM4Crypto;
 
 RSFoundation::RSFoundation()
 {
-
 }
 
 
@@ -71,7 +70,7 @@ std::string RSFoundation::RS_GetParameters(const std::string& cmd)
 std::string RSFoundation::RS_GetUserList()
 {
 	UDevice::default();
-
+	
 	/* example
 	{
 		"code":"0000",
@@ -82,6 +81,7 @@ std::string RSFoundation::RS_GetUserList()
 	}
 	*/
 	std::string line = SOF_GetUserList();
+
 	JSONStringify data;
 	data.addObject("userlist", line);
 	return data;
@@ -135,7 +135,6 @@ std::string RSFoundation::RS_GetCertBase64String(short ctype, const std::string&
 	*/
 	case certType::crypto:
 	{
-		certContent = "";
 		certContent = SOF_ExportExChangeUserCert(uid);
 	}
 	break;
@@ -235,38 +234,47 @@ std::string RSFoundation::GetCertVaildTime(const std::string& base64)
 {
 	std::string item;
 	item = SOF_GetCertInfo(base64, SGD_CERT_VALID_TIME);
-	return item;
 	/// 190313160000Z - 210314155959Z
-	/*
 	int options = 0;
 	std::string pattern("(\\S+)-(\\S+)");
-	RegularExpression re(pattern, options);
-	RegularExpression::Match mtch;
-	if (!re.match(item, mtch))
-		throw Poco::LogicException("GetCertVaildTime Exception!", 0x40);
-
-	std::vector<std::string> tags;
-	re.split(item, tags, options);
-
-	std::string vaild_start = tags[1];
-	std::string vaild_end = tags[2];
-
-	Debugger::message(format("vaild_start : %s, vaild_start :%s", vaild_start, vaild_end));
-	/// UTC to LocalTime +0800
 	std::string vaildtime;
-	vaildtime.append(toLocalTime(vaild_start));
-	vaildtime.append("-");
-	vaildtime.append(toLocalTime(vaild_end));
+
+	try {
+
+		RegularExpression re(pattern, options);
+		RegularExpression::Match mtch;
+		if (!re.match(item, mtch))
+			throw Poco::LogicException("GetCertVaildTime Exception!", 0x40);
+
+		std::vector<std::string> tags;
+		re.split(item, tags, options);
+
+		std::string vaild_start = tags[1];
+		std::string vaild_end = tags[2];
+		Debugger::message(format("vaild_start : %s, vaild_start :%s", vaild_start, vaild_end));
+		/// UTC to LocalTime +0800
+		
+		vaildtime.append(toLocalTime(vaild_start));
+		vaildtime.append(" - ");
+		vaildtime.append(toLocalTime(vaild_end));
+
+		Debugger::message(format("vaildtime : %s", vaildtime));
+	}
+	catch (Poco::Exception&)
+	{
+	}
 	
-	Debugger::message(format("vaildtime : %s", vaildtime));
 	return vaildtime;
-	*/
+
 }
+
+#include "Poco/NumberParser.h"
+using Poco::NumberParser;
 
 std::string RSFoundation::toLocalTime(const std::string& time)
 {
 	int options = 0;
-	std::string pattern("^([1-9]\\d{3})([1-9]\\d{1})([1-9]\\d{1})([1-9]\\d{1})([1-9]\\d{1})");
+	std::string pattern("^([0-9]\\d{1})([0-9]\\d{1})([0-9]\\d{1})([0-9]\\d{1})([0-9]\\d{1})([0-9]\\d{1})Z");
 	RegularExpression re(pattern, options);
 	RegularExpression::Match mtch;
 	if (!re.match(time, mtch))
@@ -281,7 +289,11 @@ std::string RSFoundation::toLocalTime(const std::string& time)
 	///
 	std::vector<std::string> tags;
 	re.split(time, tags, options);
-	std::string fmt = format("%s-%s-%s %s:%s:%s", tags[1], tags[2], tags[3], tags[4], tags[5]);
+
+	std::string prefix;
+	int oct = std::stod(tags[1]);
+	oct > 49 ? prefix = "19" : prefix = "20";
+	std::string fmt = format("%s%s-%s-%s %s:%s", prefix, tags[1], tags[2], tags[3], tags[4], tags[5], tags[6]);
 
 	Debugger::message(format("Timezone utcOffset: %d, tzd:: % d, name : %s", Timezone::utcOffset(), Timezone::tzd(), Timezone::name()));
 	Debugger::message(time);
@@ -306,7 +318,7 @@ std::string RSFoundation::GetCertOwnerID(const std::string& base64)
 
 	item = toLegelID(item, pattern);
 	/// erase 0 if is id card
-	if (item.at(0) == '0')
+	if (!item.empty() && item.at(0) == '0')
 		item = item.replace(0, 1, "");
 
 	return item;
@@ -320,16 +332,24 @@ std::string RSFoundation::toLegelID(const std::string& text, const std::string& 
 	/// Ê®ÎåÎ»£º^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}[0-9Xx]$
 	//std::string pattern("@(\\d+)@");
 	int options = 0;
+	std::string id;
 
-	RegularExpression re(pattern, options);
-	RegularExpression::Match mtch;
+	try {
+		RegularExpression re(pattern, options);
+		RegularExpression::Match mtch;
 
-	if (!re.match(text, mtch))
-		throw Poco::LogicException("RS_KeyDecryptData uid Exception!", 0x40);
+		if (!re.match(text, mtch))
+			throw Poco::LogicException("RS_KeyDecryptData uid Exception!", 0x40);
 
-	std::vector<std::string> tags;
-	re.split(text, tags, options);
-	std::string id = tags[1];
+		std::vector<std::string> tags;
+		re.split(text, tags, options);
+		std::string id = tags[1];
+	}
+	catch (Poco::Exception&)
+	{
+
+	}
+	
 	return id;
 }
 
@@ -355,7 +375,6 @@ std::string RSFoundation::RS_VerifyIdentity(const std::string& base64, const std
 std::string RSFoundation::RS_CertLogin(const std::string& uid, const std::string& password)
 {
 	UDevice::default();
-
 	if (uid.empty() || password.empty())
 		throw Poco::InvalidArgumentException("Argument Invalid!", 0x34);
 
@@ -363,7 +382,9 @@ std::string RSFoundation::RS_CertLogin(const std::string& uid, const std::string
 	if (retryCount <= 0)
 		throw Poco::LogicException("UKEY have been locked! containerId is", uid, 0x33);
 
-	if (!SOF_Login(uid, password))
+
+	bool ok = SOF_Login(uid, password);
+	if (!ok)
 		throw Poco::LogicException("UKEY Login failed! containerId is", uid, 0x35);
 
 	JSONStringify data;

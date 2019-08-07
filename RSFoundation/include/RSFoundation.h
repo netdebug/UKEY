@@ -16,6 +16,9 @@
 
 //#include "Poco/Foundation.h"
 //#include "Poco/SharedLibrary.h"
+#include "Poco/AutoPtr.h"
+#include "Poco/FileChannel.h"
+
 #include <string>
 
 #if defined(RSFoundation_EXPORTS)
@@ -25,6 +28,9 @@
 #endif
 
 namespace Reach {
+
+	using Poco::AutoPtr;
+	using Poco::FileChannel;
 
 	class RSFoundation_API RSFoundation
 	{
@@ -89,6 +95,8 @@ namespace Reach {
 		std::string GetCertVaildTime(const std::string& base64);
 		std::string toLegelID(const std::string& text, const std::string& pattern);
 		std::string toLocalTime(const std::string& time);
+
+		AutoPtr<FileChannel> pChannel;
 	};
 }
 
