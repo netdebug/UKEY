@@ -270,6 +270,7 @@ std::string RSFoundation::GetCertVaildTime(const std::string& base64)
 
 #include "Poco/NumberParser.h"
 using Poco::NumberParser;
+using Poco::LocalDateTime;
 
 std::string RSFoundation::toLocalTime(const std::string& time)
 {
@@ -293,13 +294,18 @@ std::string RSFoundation::toLocalTime(const std::string& time)
 	std::string prefix;
 	int oct = std::stod(tags[1]);
 	oct > 49 ? prefix = "19" : prefix = "20";
-	std::string fmt = format("%s%s-%s-%s %s:%s", prefix, tags[1], tags[2], tags[3], tags[4], tags[5], tags[6]);
+	std::string fmt = format("%s%s-%s-%s %s:%s:%s", prefix, tags[1], tags[2], tags[3], tags[4], tags[5], tags[6]);
 
-	Debugger::message(format("Timezone utcOffset: %d, tzd:: % d, name : %s", Timezone::utcOffset(), Timezone::tzd(), Timezone::name()));
+	Debugger::message(
+		format("Timezone utcOffset: %d, tzd:: %d, name : %s, dst : %d, dstName : %s, standardName : %s", 
+		Timezone::utcOffset(), Timezone::tzd(), Timezone::name(),
+		Timezone::dst(), Timezone::dstName(), Timezone::standardName()
+		));
 	Debugger::message(time);
 	int tzd = Timezone::tzd();
 	DateTime dt = DateTimeParser::parse(DateTimeFormat::SORTABLE_FORMAT, fmt, tzd);
-	std::string localtime = DateTimeFormatter::format(dt, DateTimeFormat::SORTABLE_FORMAT, Timezone::utcOffset());
+	LocalDateTime lt(dt);
+	std::string localtime = DateTimeFormatter::format(lt, DateTimeFormat::SORTABLE_FORMAT);
 	Debugger::message(localtime);
 	return localtime;
 }
