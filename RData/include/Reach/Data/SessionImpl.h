@@ -56,7 +56,7 @@ public:
 	virtual ~SessionImpl();
 		/// Destroys the SessionImpl.
 
-	//virtual StatementImpl* createStatementImpl() = 0;
+	virtual StatementImpl* createStatementImpl() = 0;
 		/// Creates a StatementImpl.
 
 	virtual void open(const std::string& connectionString = "") = 0;

@@ -24,8 +24,8 @@ namespace Data {
 
 
 Session::Session(Poco::AutoPtr<SessionImpl> pImpl):
-	_pImpl(pImpl)
-	//_statementCreator(pImpl)
+	_pImpl(pImpl),
+	_statementCreator(pImpl)
 {
 	poco_check_ptr (pImpl.get());
 }
@@ -48,8 +48,8 @@ Session::Session(const std::string& connection,
 }
 
 
-Session::Session(const Session& other):	_pImpl(other._pImpl)
-	//_statementCreator(other._pImpl)
+Session::Session(const Session& other):	_pImpl(other._pImpl),
+	_statementCreator(other._pImpl)
 {
 }
 
@@ -70,7 +70,7 @@ Session& Session::operator = (const Session& other)
 void Session::swap(Session& other)
 {
 	using std::swap;
-	//swap(_statementCreator, other._statementCreator);
+	swap(_statementCreator, other._statementCreator);
 	swap(_pImpl, other._pImpl);
 }
 

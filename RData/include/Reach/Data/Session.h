@@ -20,9 +20,8 @@
 
 #include "Reach/Data/Data.h"
 #include "Reach/Data/SessionImpl.h"
-//#include "Poco/Data/Statement.h"
-//#include "Poco/Data/StatementCreator.h"
-//#include "Poco/Data/Binding.h"
+#include "Reach/Data/Statement.h"
+#include "Reach/Data/StatementCreator.h"
 #include "Poco/AutoPtr.h"
 #include "Poco/Any.h"
 #include <algorithm>
@@ -184,14 +183,14 @@ public:
 	void swap(Session& other);
 		/// Swaps the session with another one.
 
-	//template <typename T>
-	//Statement operator << (const T& t)
+	template <typename T>
+	Statement operator << (const T& t)
 		/// Creates a Statement with the given data as SQLContent
-	//{
-	//	return _statementCreator << t;
-	//}
+	{
+		return _statementCreator << t;
+	}
 
-	//StatementImpl* createStatementImpl();
+	StatementImpl* createStatementImpl();
 		/// Creates a StatementImpl.
 
 	void open(const std::string& connect = "");
@@ -306,17 +305,17 @@ private:
 	Session();
 
 	Poco::AutoPtr<SessionImpl> _pImpl;
-	//StatementCreator           _statementCreator;
+	StatementCreator           _statementCreator;
 };
 
 
 //
 // inlines
 //
-//inline StatementImpl* Session::createStatementImpl()
-//{
-//	return _pImpl->createStatementImpl();
-//}
+inline StatementImpl* Session::createStatementImpl()
+{
+	return _pImpl->createStatementImpl();
+}
 
 
 inline void Session::open(const std::string& connect)
@@ -476,7 +475,7 @@ inline void swap(Session& s1, Session& s2)
 }
 
 
-} } // namespace Poco::Reach
+} } // namespace Reach::Data
 
 
 namespace std
