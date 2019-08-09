@@ -310,16 +310,17 @@ std::string RSFoundation::toLocalTime(const std::string& time)
 	return localtime;
 }
 
+using Poco::format;
 std::string RSFoundation::GetCertOwnerID(const std::string& base64)
 {
 	std::string item;
-	std::string pattern("(\\d+)");
+	std::string pattern("(\\d+[A-z]?)");
 	std::string special_oid("1.2.156.10260.4.1.1");
 	item = SOF_GetCertInfoByOid(base64, special_oid);
 	if (item.empty()) {
 	
 		item = SOF_GetCertInfo(base64, SGD_CERT_SUBJECT_CN);
-		pattern = "@(\\d+)@";
+		pattern = format("@%s@", pattern);
 	}
 
 	item = toLegelID(item, pattern);
@@ -349,7 +350,7 @@ std::string RSFoundation::toLegelID(const std::string& text, const std::string& 
 
 		std::vector<std::string> tags;
 		re.split(text, tags, options);
-		std::string id = tags[1];
+		id = tags[1];
 	}
 	catch (Poco::Exception&)
 	{
