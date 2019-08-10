@@ -44,8 +44,8 @@ DeviceFilter::DeviceFilter(const std::string& enumerate_id, bool presented)
 	try
 	{
 		loadConfigure();
-		resetRESTfulService();
 		enqueue();
+		resetRESTfulService();
 	}
 	catch (Poco::Exception& e)
 	{
