@@ -11,9 +11,11 @@
 #include "UDevice.h"
 #include "GMCrypto.h"
 #include "SoFProvider.h"
+#include "ErrorCode.h"
 #include "Poco/Exception.h"
 #include "Poco/SingletonHolder.h"
 #include "Poco/RegularExpression.h"
+#include "RequestHandleException.h"
 #include "StrategyCollection.h"
 #include <map>
 
@@ -139,8 +141,9 @@ void UDevice::spiltEntries()
 	RegularExpression re(pattern, options);
 	RegularExpression::Match mtch;
 
-	if (!re.match(entries, mtch))
-		throw Poco::LogicException("RS_KeyDecryptData uid Exception!", 0x40);
+	if (!re.match(entries, mtch)) {
+		throw Poco::LogicException(RAR_UNIQUEIDUNCORRECT);
+	}
 
 	std::vector<std::string> tags;
 	re.split(entries, tags, options);
@@ -152,11 +155,8 @@ void UDevice::open()
 {
 	if (bOpened) return;
 
-	if (success != SOF_OpenDevice())
-	{
-		int error = SOF_GetLastError();
-		ls.warning() << "UDevice::open() failed!" << error << std::endl;
-		throw Poco::LogicException("UDevice open failed!", error);
+	if (success != SOF_OpenDevice()) {
+		throw Poco::LogicException(RAR_OPENDEVICEFAILED);
 	}
 	/// Do not change the call order.
 	entries = SOF_GetUserList();

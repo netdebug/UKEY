@@ -20,8 +20,7 @@ namespace Reach {
 	public:
 		Command& execute()
 		{
-			try
-			{
+			try{
 				this->run();
 				toJSON();
 				/// 业务逻辑不允许 response 为空
@@ -32,24 +31,10 @@ namespace Reach {
 			}
 			catch (RequestHandleException& e) {
 				///统一错误解析处理
-				Debugger::message(format("RequestHandleException : <%s>:<%d>", e.displayText(),e.code()));
-				translater& trans = translater::default();
-
-				int error = SOF_GetLastError();
-				std::string detail = trans.tr("SOFError", error);
-				std::string message = trans.tr("error", e.code());
-
-				response = JSONStringify(message, e.code());
-				response.addObject("info", detail);
+				sendErrorResponse(e.className() ,e.code());
 			}
-			catch (Poco::Exception& e)
-			{
-				Debugger::message(format("RequestHandleException : <%s>:<%d>", e.displayText(), e.code()));
-
-				translater& trans = translater::default();
-				std::string message = trans.tr("error", RAR_UNKNOWNERR);
-				JSONStringify(message, e.code());
-				response.addObjectItem("info", e.message());
+			catch (Poco::Exception& e) {
+				sendErrorResponse(e.className(), RAR_UNKNOWNERR);
 			}
 
 			return *this;
@@ -63,6 +48,26 @@ namespace Reach {
 		void add(const std::string& name, int value)
 		{
 			colletion.add(name, std::to_string(value));
+		}
+
+		void sendErrorResponse(const std::string& msg, int code)
+		{
+			Debugger::message(format("%s : <%s>:<%d>", msg, msg, code));
+			translater& trans = translater::default();
+			std::string message, detail;
+
+			try 
+			{
+				message = trans.tr("error", code);
+				detail  = trans.tr("SOFError", SOF_GetLastError());
+			}
+			catch (Poco::NotFoundException&)
+			{
+				message = trans.tr("error", RAR_UNKNOWNERR);
+			}
+
+			response = JSONStringify(message, code);
+			response.addObject("info", detail);
 		}
 
 		std::string operator ()()
