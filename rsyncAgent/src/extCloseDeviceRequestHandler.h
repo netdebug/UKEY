@@ -1,67 +1,41 @@
 #pragma once
 
-#include "Poco/Net/HTTPRequestHandler.h"
-#include "Poco/Net/HTTPServerResponse.h"
-#include "Poco/Net/HTTPServerRequest.h"
-#include "Poco/Net/HTMLForm.h"
-#include "Poco/Net/NameValueCollection.h"
+#include "RESTfulRequestHandler.h"
+#include "RequestHandleException.h"
 #include "Poco/Util/Application.h"
-#include "JSONStringify.h"
-#include "GMCrypto.h"
 #include "SoFProvider.h"
+#include "SOFErrorCode.h"
+#include "ErrorCode.h"
 
 namespace Reach {
 
-	using Poco::Net::HTTPRequestHandler;
-	using Poco::Net::HTTPServerRequest;
-	using Poco::Net::HTTPServerResponse;
-	using Poco::Net::HTMLForm;
-	using Poco::Net::NameValueCollection;
-	using Poco::Util::Application;
-	using Reach::JSONStringify;
-
-	class CloseDevice
+	class CloseDevice : public Command
 	{
 	public:
-		CloseDevice(){}
-		CloseDevice& execute()
+		void run()
 		{
 			_status = SOF_CloseDevice();
-			return *this;
-		}
-		operator std::string()
-		{
-			if (_status != 0 ) {
-				int error = SOF_GetLastError();
-				JSONStringify data("unsuccessful", error);
-				data.addNullObject();
-				return data;
-			}
-
-			JSONStringify data("successful", _status);
-			data.addNullObject();
-			return data;
+			if(_status != SAR_OK)
+				throw RequestHandleException(RAR_UNKNOWNERR);
 		}
 	private:
 		std::string _line;
 		int _status;
 	};
 
-	class extCloseDeviceRequestHandler : public HTTPRequestHandler
+	class extCloseDeviceRequestHandler : public RESTfulRequestHandler
 	{
 	public:
 		void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
 		{
-			Application& app = Application::instance();
-			app.logger().information("extCloseDeviceRequestHandler Request from " + request.clientAddress().toString());
-			response.set("Access-Control-Allow-Origin", "*");
-			response.set("Access-Control-Allow-Methods", "GET, POST, HEAD");
+			poco_information_f1(Application::instance().logger(), "Request from %s", request.clientAddress().toString());
 
-			std::string data;
+			RESTfulRequestHandler::handleCORS(request, response);
+
 			CloseDevice command;
-			data += command.execute();
+			command.execute();
 
-			return response.sendBuffer(data.data(), data.length());
+			return response.sendBuffer(command().data(), command().length());
 		}
 	};
 }

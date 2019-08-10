@@ -2,7 +2,7 @@
 
 #include "UDevice.h"
 #include "SoFProvider.h"
-#include "SOFErrorCode.h"
+#include "ErrorCode.h"
 #include "Command.h"
 #include "RESTfulRequestHandler.h"
 #include "RequestHandleException.h"
@@ -26,14 +26,14 @@ namespace Reach {
 			UDevice::default();
 
 			if (_uid.empty() || _pwd.empty())
-				throw RequestHandleException(SAR_INVALIDPARAMERR);
+				throw RequestHandleException(RAR_UNKNOWNERR);
 
 			int retryCount = SOF_GetPinRetryCount(_uid);
 			if (retryCount <= 0)
-				throw RequestHandleException(_uid, SOF_GetLastError());
+				throw RequestHandleException(_uid, RAR_UNKNOWNERR);
 
 			if (!SOF_Login(_uid, _pwd))
-				throw RequestHandleException(_uid, SOF_GetLastError());
+				throw RequestHandleException(_uid, RAR_UNKNOWNERR);
 
 			add("containerId", _uid);
 		}

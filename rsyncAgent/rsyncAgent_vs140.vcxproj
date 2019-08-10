@@ -42,6 +42,7 @@
     <ClInclude Include="src\EchoBodyRequestHandler.h" />
     <ClInclude Include="src\EchoHeaderRequestHandler.h" />
     <ClInclude Include="src\EncryptFileRequestHandler.h" />
+    <ClInclude Include="src\ErrorCode.h" />
     <ClInclude Include="src\extCloseDeviceRequestHandler.h" />
     <ClInclude Include="src\extOpenDeviceRequestHandler.h" />
     <ClInclude Include="src\GetCertBase64StringRequestHandler.h" />
@@ -69,6 +70,7 @@
     <ClInclude Include="src\StrategyCollection.h" />
     <ClInclude Include="src\translater.h" />
     <ClInclude Include="src\UDevice.h" />
+    <ClInclude Include="src\Utility.h" />
     <ClInclude Include="src\VerifyDigitalSignByP1RequestHandler.h" />
     <ClInclude Include="src\VerifyIdentityRequestHandler.h" />
     <ClInclude Include="src\VerifySignByP1RequestHandler.h" />
@@ -82,6 +84,7 @@
     <ClCompile Include="src\StrategyCollection.cpp" />
     <ClCompile Include="src\translater.cpp" />
     <ClCompile Include="src\UDevice.cpp" />
+    <ClCompile Include="src\Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="rsyncAgent.rc" />

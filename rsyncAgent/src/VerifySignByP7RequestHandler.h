@@ -28,7 +28,7 @@ namespace Reach {
 
 			_verify = SOF_VerifySignedMessage(_signature, _textual);
 			if (!_verify) {
-				throw RequestHandleException("SOF_VerifySignedMessage failed!", SOF_GetLastError());
+				throw RequestHandleException("SOF_VerifySignedMessage failed!", RAR_UNKNOWNERR);
 			}
 		}
 

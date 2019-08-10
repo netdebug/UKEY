@@ -2,7 +2,7 @@
 
 #include "UDevice.h"
 #include "SoFProvider.h"
-#include "SOFErrorCode.h"
+#include "ErrorCode.h"
 #include "Command.h"
 #include "RESTfulRequestHandler.h"
 #include "RequestHandleException.h"
@@ -24,7 +24,7 @@ namespace Reach {
 		{
 			File fi(_encrypt);
 			if (!fi.exists())
-				throw Poco::FileNotFoundException(fi.path(), SAR_FAIL);
+				throw Poco::FileNotFoundException(fi.path(), RAR_UNKNOWNERR);
 		}
 
 		void run()
@@ -38,7 +38,7 @@ namespace Reach {
 			RegularExpression::Match mtch;
 
 			if (!re.match(_cryptogrphic, mtch))
-				throw Poco::LogicException("RS_KeyDecryptData enRsKey Exception!", SAR_FAIL);
+				throw RequestHandleException("RS_KeyDecryptData enRsKey Exception!", RAR_ERRDECRYPTFILEFORMAT);
 
 			std::vector<std::string> tags;
 			re.split(_cryptogrphic, tags, options);
@@ -49,19 +49,19 @@ namespace Reach {
 			std::string content = SOF_ExportExChangeUserCert(_uid);
 
 			if (content != cert)
-				throw Poco::LogicException("certificate error", SAR_FAIL);
+				throw RequestHandleException("certificate error", RAR_ERRDECRYPTCERT);
 
 			///Asymmetric_key algorithm by private cert
 			///_cryptogrphic = asymmetric_key_algorithm(_cert,_random_digital);
 			_random_digital = SOF_AsDecrypt(_uid, encrypt);
 			if (_random_digital.empty())
-				throw RequestHandleException(SOF_GetLastError());
+				throw Poco::LogicException(SOF_GetLastError());
 
 			///Symmetric-key algorithm by _random_digital
 			///_encrypt_data = symmetric-key_algorithm(_random_digital,_source_data);
 			_decrypted = SOF_DecryptFile(_random_digital, _encrypt, _decrypt_directory);
 			if (!_decrypted)
-				throw RequestHandleException(SOF_GetLastError());
+				throw RequestHandleException(RAR_UNKNOWNERR);
 		}
 	private:
 		std::string _uid;

@@ -2,7 +2,7 @@
 
 #include "UDevice.h"
 #include "SoFProvider.h"
-#include "SOFErrorCode.h"
+#include "ErrorCode.h"
 #include "Command.h"
 #include "RESTfulRequestHandler.h"
 #include "RequestHandleException.h"
@@ -27,8 +27,7 @@ namespace Reach {
 
 			if (!SOF_ChangePassWd(_uid, _oldCode, _newCode))
 			{
-				int error = SOF_GetLastError();
-				throw RequestHandleException("SOF_ChangePassWd failed", error);
+				throw RequestHandleException("SOF_ChangePassWd failed", RAR_UNKNOWNERR);
 			}
 		}
 

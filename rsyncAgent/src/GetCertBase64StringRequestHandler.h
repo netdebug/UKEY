@@ -39,11 +39,11 @@ namespace Reach {
 					_content = SOF_ExportExChangeUserCert(_uid);
 					break;
 				default:
-					throw Poco::RangeException("Range < 3", SAR_FAIL);
+					throw RequestHandleException(RAR_ERRORCERTTYPE);
 			}
 
 			if (_content.empty())
-				throw RequestHandleException(SOF_GetLastError());
+				throw RequestHandleException(RAR_NOBASE64CERT);
 
 			add("certBase64", _content);
 		}
