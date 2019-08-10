@@ -34,5 +34,11 @@
     "hardwareID": "USB#VID_096E&PID_0309&REV_3108",
     "description": "FJCA",
     "ruleType": "include"
+  },
+  {
+    "enumerator": "FJCA",
+    "hardwareID": "USB#VID_5448&PID_0003&REV_0310",
+    "description": "FJCA",
+    "ruleType": "include"
   }
 ]
