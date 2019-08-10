@@ -26,13 +26,12 @@ namespace Reach {
 		{
 			UDevice::default();
 
-			assert(!_paintext.empty() && !_base64.empty());
 			if (_paintext.empty())
-				throw Poco::InvalidArgumentException("_paintext InvalidArgumentException", SAR_FAIL);
+				throw RequestHandleException(RAR_ERRNODECRYPT);
 
 			_encrypt_data = SOF_AsEncrypt(_base64, _paintext);
 			if (_encrypt_data.empty()) {
-				throw RequestHandleException("SOF_AsEncrypt failed!", SOF_GetLastError());
+				throw RequestHandleException(RAR_ENCYPTFAILED);
 			}
 
 			_encrypt_data.append("@@@");

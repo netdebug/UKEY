@@ -25,7 +25,7 @@ namespace Reach {
 
 			_signature = SOF_SignMessage(_mode, _uid, _textual);
 			if (_signature.empty()) {
-				throw RequestHandleException("SOF_SignMessage failed!", SOF_GetLastError());
+				throw RequestHandleException("SOF_SignMessage failed!", RAR_UNKNOWNERR);
 			}
 
 			add("signdMsg", _signature);

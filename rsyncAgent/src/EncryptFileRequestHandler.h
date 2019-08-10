@@ -2,7 +2,7 @@
 
 #include "UDevice.h"
 #include "SoFProvider.h"
-#include "SOFErrorCode.h"
+#include "ErrorCode.h"
 #include "Command.h"
 #include "RESTfulRequestHandler.h"
 #include "RequestHandleException.h"
@@ -24,7 +24,7 @@ namespace Reach {
 		{
 			File fi(_source);
 			if (!fi.exists())
-				throw Poco::FileExistsException("Source File Not Exists!", _source);
+				throw RequestHandleException(RAR_UNKNOWNERR);
 		}
 		void run()
 		{
@@ -32,12 +32,12 @@ namespace Reach {
 
 			_random_digital = SOF_GenRandom(UDevice::default().random());
 			if (_random_digital.empty()) {
-				throw RequestHandleException("SOF_GenRandom", SOF_GetLastError());
+				throw RequestHandleException(RAR_UNKNOWNERR);
 			}
 
 			_encrypted = SOF_EncryptFile(_random_digital, _source, _encrypt);
 			if (!_encrypted) {
-				throw RequestHandleException("SOF_EncryptFile failed!", SOF_GetLastError());
+				throw RequestHandleException(RAR_UNKNOWNERR);
 			}
 
 			add("symKey", _random_digital);

@@ -2,6 +2,7 @@
 #include "Poco/SingletonHolder.h"
 #include "Poco/Util/Application.h"
 #include "Poco/NumberFormatter.h"
+#include "Utility.h"
 #include <cassert>
 
 using namespace Reach;
@@ -13,8 +14,8 @@ translater::translater()
 {
 	Application& app = Application::instance();
 	std::string ini = app.config().getString("Language.IniFile", "Language.ini");
-
-	_pConfig = new IniFileConfiguration(ini);
+	
+	_pConfig = new IniFileConfiguration(Utility::config(ini));
 }
 
 translater::~translater()

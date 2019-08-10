@@ -2,7 +2,7 @@
 
 #include "UDevice.h"
 #include "SoFProvider.h"
-#include "SOFErrorCode.h"
+#include "ErrorCode.h"
 #include "Command.h"
 #include "RESTfulRequestHandler.h"
 #include "RequestHandleException.h"
@@ -22,14 +22,14 @@ namespace Reach {
 		{
 			assert(!_decrypt_directory.empty());
 			if (_encrypt.empty())
-				throw RequestHandleException(SAR_FILEERR);
+				throw RequestHandleException(RAR_UNKNOWNERR);
 		}
 		void run()
 		{
 			UDevice::default();
 			_decrypted = SOF_DecryptFile(_kv, _encrypt, _decrypt_directory);
 			if (!_decrypted)
-				throw RequestHandleException(SAR_UNKNOWNERR);
+				throw RequestHandleException(RAR_UNKNOWNERR);
 		}
 
 	private:

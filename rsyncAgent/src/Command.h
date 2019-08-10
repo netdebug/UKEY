@@ -3,7 +3,7 @@
 #include "Poco/Net/NameValueCollection.h"
 #include "Poco/Debugger.h"
 #include "JSONStringify.h"
-#include "SOFErrorCode.h"
+#include "ErrorCode.h"
 #include "SoFProvider.h"
 #include "RequestHandleException.h"
 #include "translater.h"
@@ -27,22 +27,29 @@ namespace Reach {
 				/// 业务逻辑不允许 response 为空
 				if (response.empty()) {
 					int error = SOF_GetLastError();
-					throw RequestHandleException(error);
+					throw RequestHandleException(RAR_UNKNOWNERR);
 				}
 			}
 			catch (RequestHandleException& e) {
 				///统一错误解析处理
 				Debugger::message(format("RequestHandleException : <%s>:<%d>", e.displayText(),e.code()));
-
 				translater& trans = translater::default();
+
+				int error = SOF_GetLastError();
+				std::string detail = trans.tr("SOFError", error);
 				std::string message = trans.tr("error", e.code());
+
 				response = JSONStringify(message, e.code());
-				response.addNullObject();
+				response.addObject("info", detail);
 			}
 			catch (Poco::Exception& e)
 			{
-				response = JSONStringify(e.message(), e.code());
-				response.addNullObject();
+				Debugger::message(format("RequestHandleException : <%s>:<%d>", e.displayText(), e.code()));
+
+				translater& trans = translater::default();
+				std::string message = trans.tr("error", RAR_UNKNOWNERR);
+				JSONStringify(message, e.code());
+				response.addObjectItem("info", e.message());
 			}
 
 			return *this;

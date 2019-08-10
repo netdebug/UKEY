@@ -2,7 +2,7 @@
 
 #include "UDevice.h"
 #include "SoFProvider.h"
-#include "SOFErrorCode.h"
+#include "ErrorCode.h"
 #include "Command.h"
 #include "RESTfulRequestHandler.h"
 #include "RequestHandleException.h"
@@ -33,7 +33,7 @@ namespace Reach {
 			UDevice::default();
 			_line = SOF_GetUserList();
 			if (_line.empty())
-				throw RequestHandleException(SOF_GetLastError());
+				throw RequestHandleException(RAR_NOUNIQUEID);
 
 			add("userlist" ,_line);
 		}

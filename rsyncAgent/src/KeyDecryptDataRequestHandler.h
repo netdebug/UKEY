@@ -35,7 +35,7 @@ namespace Reach {
 			RegularExpression::Match mtch;
 
 			if (!re.match(_encrypt_data, mtch))
-				throw Poco::LogicException("RS_KeyDecryptData enRsKey Exception!", SAR_FAIL);
+				throw RequestHandleException("KeyDecryptData enRsKey Exception!", RAR_ERRDECRYPTFILEFORMAT);
 
 			std::vector<std::string> tags;
 			re.split(_encrypt_data, tags, options);
@@ -46,9 +46,11 @@ namespace Reach {
 			std::string content = SOF_ExportExChangeUserCert(_uid);
 
 			if (content != cert)
-				throw Poco::LogicException("certificate error", SAR_FAIL);
+				throw RequestHandleException("certificate error", RAR_ERRDECRYPTCERT);
 
 			_decrypt_data = SOF_AsDecrypt(_uid, encrypt);
+			if (_decrypt_data.empty())
+				throw RequestHandleException(RAR_DECRYPTFAILED);
 
 			std::istringstream istr(_decrypt_data);
 

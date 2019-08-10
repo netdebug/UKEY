@@ -23,11 +23,11 @@ namespace Reach {
 			_encrypted(false), _random_digital(""), _cryptogrphic("")
 		{
 			if (_cert.empty())
-				throw Poco::FileNotFoundException(_cert, SAR_FAIL);
+				throw RequestHandleException(_cert, RAR_ERRENCRYPTBASE64CERT);
 
 			File fi(_source);
 			if (!fi.exists())
-				throw Poco::FileNotFoundException(fi.path(), SAR_FAIL);
+				throw RequestHandleException(fi.path(), RAR_ERRNOENCRYPT);
 
 		}
 
@@ -40,13 +40,13 @@ namespace Reach {
 			_random_digital = SOF_GenRandom(UDevice::default().random());
 			_encrypted = SOF_EncryptFile(_random_digital, _source, _encrypt);
 			if (!_encrypted)
-				throw RequestHandleException("SOF_EncryptFile failed!", SOF_GetLastError());
+				throw Poco::LogicException("SOF_EncryptFile failed!", SOF_GetLastError());
 
 			///Asymmetric_key algorithm by public cert
 			///_cryptogrphic = asymmetric_key_algorithm(_cert,_random_digital);
 			_cryptogrphic = SOF_AsEncrypt(_cert, _random_digital);
 			if (_cryptogrphic.empty()) {
-				throw RequestHandleException("SOF_AsEncrypt failed!", SOF_GetLastError());
+				throw RequestHandleException("SOF_AsEncrypt failed!", RAR_ENCYPTFAILED);
 			}
 
 			_cryptogrphic.append("@@@");

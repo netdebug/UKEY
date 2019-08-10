@@ -24,7 +24,7 @@ namespace Reach {
 			_SNkey = SOF_GetDeviceInfo(_uid, SGD_DEVICE_SERIAL_NUMBER);
 
 			if (_SNkey.empty()) {
-				throw RequestHandleException("SOF_GetDeviceInfo failed!", SOF_GetLastError());
+				throw RequestHandleException("SOF_GetDeviceInfo failed!", RAR_UNKNOWNERR);
 			}
 
 			add("containerId", _uid);
