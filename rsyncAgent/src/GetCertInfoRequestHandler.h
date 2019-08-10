@@ -13,6 +13,8 @@
 #include "Poco/Timezone.h"
 #include "Poco/Debugger.h"
 #include "Poco/String.h"
+#include "Poco/NumberParser.h"
+using Poco::NumberParser;
 
 namespace Reach {
 
@@ -72,42 +74,47 @@ namespace Reach {
 		{
 			std::string item;
 			item = SOF_GetCertInfo(base64, SGD_CERT_VALID_TIME);
-			return item;
 			/// 190313160000Z - 210314155959Z
-			/*
 			int options = 0;
 			std::string pattern("(\\S+)-(\\S+)");
-			RegularExpression re(pattern, options);
-			RegularExpression::Match mtch;
-			if (!re.match(item, mtch))
-				throw Poco::LogicException("GetCertVaildTime Exception!", 0x40);
-
-			std::vector<std::string> tags;
-			re.split(item, tags, options);
-
-			std::string vaild_start = tags[1];
-			std::string vaild_end = tags[2];
-
-			Debugger::message(format("vaild_start : %s, vaild_start :%s", vaild_start, vaild_end));
-			/// UTC to LocalTime +0800
 			std::string vaildtime;
-			vaildtime.append(toLocalTime(vaild_start));
-			vaildtime.append("-");
-			vaildtime.append(toLocalTime(vaild_end));
 
-			Debugger::message(format("vaildtime : %s", vaildtime));
+			try {
+
+				RegularExpression re(pattern, options);
+				RegularExpression::Match mtch;
+				if (!re.match(item, mtch))
+					throw Poco::LogicException("GetCertVaildTime Exception!", 0x40);
+
+				std::vector<std::string> tags;
+				re.split(item, tags, options);
+
+				std::string vaild_start = tags[1];
+				std::string vaild_end = tags[2];
+				Debugger::message(format("vaild_start : %s, vaild_start :%s", vaild_start, vaild_end));
+				/// UTC to LocalTime +0800
+
+				vaildtime.append(toLocalTime(vaild_start));
+				vaildtime.append(" - ");
+				vaildtime.append(toLocalTime(vaild_end));
+
+				Debugger::message(format("vaildtime : %s", vaildtime));
+			}
+			catch (Poco::Exception&)
+			{
+			}
+
 			return vaildtime;
-			*/
 		}
 
 		std::string toLocalTime(const std::string& time)
 		{
 			int options = 0;
-			std::string pattern("^([1-9]\\d{3})([1-9]\\d{1})([1-9]\\d{1})([1-9]\\d{1})([1-9]\\d{1})");
+			std::string pattern("^([0-9]\\d{1})([0-9]\\d{1})([0-9]\\d{1})([0-9]\\d{1})([0-9]\\d{1})([0-9]\\d{1})Z");
 			RegularExpression re(pattern, options);
 			RegularExpression::Match mtch;
 			if (!re.match(time, mtch))
-				throw Poco::RegularExpressionException("RegularExpressionException", SAR_FAIL);
+				throw Poco::RegularExpressionException(100);
 			///
 			/// Match 1:	210314155959	     0	    12
 			/// Group 1:	2103	     0	     4
@@ -118,7 +125,11 @@ namespace Reach {
 			///
 			std::vector<std::string> tags;
 			re.split(time, tags, options);
-			std::string fmt = format("%s-%s-%s %s:%s:%s", tags[1], tags[2], tags[3], tags[4], tags[5]);
+
+			std::string prefix;
+			int oct = std::stod(tags[1]);
+			oct > 49 ? prefix = "19" : prefix = "20";
+			std::string fmt = format("%s%s-%s-%s %s:%s", prefix, tags[1], tags[2], tags[3], tags[4], tags[5], tags[6]);
 
 			Debugger::message(format("Timezone utcOffset: %d, tzd:: % d, name : %s", Timezone::utcOffset(), Timezone::tzd(), Timezone::name()));
 			Debugger::message(time);
@@ -132,18 +143,18 @@ namespace Reach {
 		std::string GetCertOwnerID(const std::string& base64)
 		{
 			std::string item;
-			std::string pattern("(\\d+)");
+			std::string pattern("(\\d+[A-z]?)");
 			std::string special_oid("1.2.156.10260.4.1.1");
 			item = SOF_GetCertInfoByOid(base64, special_oid);
 			if (item.empty()) {
 
 				item = SOF_GetCertInfo(base64, SGD_CERT_SUBJECT_CN);
-				pattern = "@(\\d+)@";
+				pattern = format("@%s@", pattern);
 			}
 
 			item = toLegelID(item, pattern);
 			/// erase 0 if is id card
-			if (item.at(0) == '0')
+			if (!item.empty() && item.at(0) == '0')
 				item = item.replace(0, 1, "");
 
 			return item;
@@ -155,18 +166,26 @@ namespace Reach {
 			/// CN = 041@0330602197108300018@测试个人一@00000001
 			/// 十八位：^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$
 			/// 十五位：^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}[0-9Xx]$
-			//std::string pattern("@(\\d+)@");
+			///RegularExpression pattern("@(\\d+)@");
 			int options = 0;
+			std::string id;
 
-			RegularExpression re(pattern, options);
-			RegularExpression::Match mtch;
+			try {
+				RegularExpression re(pattern, options);
+				RegularExpression::Match mtch;
 
-			if (!re.match(text, mtch))
-				throw Poco::LogicException("RS_KeyDecryptData uid Exception!", SAR_FAIL);
+				if (!re.match(text, mtch))
+					throw Poco::LogicException("RS_KeyDecryptData uid Exception!", 0x40);
 
-			std::vector<std::string> tags;
-			re.split(text, tags, options);
-			std::string id = tags[1];
+				std::vector<std::string> tags;
+				re.split(text, tags, options);
+				id = tags[1];
+			}
+			catch (Poco::Exception&)
+			{
+
+			}
+
 			return id;
 		}
 		///base64 \/转义字符
