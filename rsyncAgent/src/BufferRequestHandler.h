@@ -14,12 +14,13 @@
 #include "Poco/Data/Column.h"
 #include "Poco/Data/SQLite/Connector.h"
 #include "Poco/Debugger.h"
+#include "Poco/Logger.h"
+#include "Poco/Util/Application.h"
+#include "RESTfulRequestHandler.h"
+
 
 namespace Reach {
 
-	using Poco::Net::HTTPRequestHandler;
-	using Poco::Net::HTTPServerRequest;
-	using Poco::Net::HTTPServerResponse;
 	using Poco::JSONOptions;
 	using Poco::JSON::Object;
 	using Poco::JSON::Query;
@@ -32,27 +33,34 @@ namespace Reach {
 	using Poco::Data::RecordSet;
 	using Poco::Data::Column;
 	using Poco::Data::Row;
+
 	using Poco::Debugger;
+	using Poco::Util::Application;
+	using Poco::Data::SessionFactory;
 	using Poco::format;
 	using namespace Poco::Data::Keywords;
 
-	class BufferRequestHandler : public HTTPRequestHandler
+	class BufferRequestHandler : public RESTfulRequestHandler
 	{
+		typedef Poco::Tuple <std::string, std::string, std::string> DeviceInfo;
+		typedef std::vector<DeviceInfo> DeviceInfoSet;
+		typedef DeviceInfoSet::const_iterator Iter;
+
 	public:
 		void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
 		{
+			poco_information_f1(Application::instance().logger(), "Request from %s", request.clientAddress().toString());
+
+			RESTfulRequestHandler::handleCORS(request, response);
+
 			Poco::Data::SQLite::Connector::registerConnector();
 #ifdef _DEBUG
 			Session session("SQLite", "C:\\Windows\\SysWOW64\\DeQLite.db");
 #else
 			Session session("SQLite", "DeQLite.db");
 #endif // _DEBUG
-			typedef Poco::Tuple <std::string, std::string, std::string> DeviceInfo;
-			typedef std::vector<DeviceInfo> DeviceInfoSet;
-			typedef DeviceInfoSet::const_iterator Iter;
+			
 			DeviceInfoSet devices;
-			/// Sqlite table : "CREATE TABLE DeviceSet (Description VARCHAR(30), ENUMERATOR VARCHAR(32), HardwareID VARCHAR(200), InstanceID VARCHAR(32), ClassGUID VARCHAR(39))"
-			//RecordSet rset(session, "SELECT Description, HardwareID, InstanceID FROM DeviceSet WHERE PRESENT = 1");
 			session << "SELECT Description, HardwareID, InstanceID FROM DeviceSet WHERE PRESENT = 1", into(devices), now;
 
 			std::string data;
@@ -70,11 +78,9 @@ namespace Reach {
 			data = out.str();
 
 			dbgview(format("DeviceSet tags %s\n", data));
-
-			response.set("Access-Control-Allow-Origin", "*");
-			response.set("Access-Control-Allow-Methods", "GET, POST, HEAD");
 			response.sendBuffer(data.data(), data.length());
 		}
+
 		void dbgview(const std::string& message)
 		{
 #ifndef _DEBUG
