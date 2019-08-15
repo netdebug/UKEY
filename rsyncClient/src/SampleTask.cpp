@@ -10,6 +10,10 @@
 #include <sstream>
 #include "UKeyDevice.h"
 
+#include "BridgePDFReader.h"
+#include "BridgeKG_HARD_EXT.h"
+#include "BridgeWindowsLiveLogin.h"
+
 using Poco::Net::HTTPRequest;
 using Poco::Net::HTTPResponse;
 using Poco::Net::HTTPClientSession;
@@ -21,8 +25,9 @@ using namespace Reach;
 
 
 SampleTask::SampleTask(std::string& host, short port)
-	: Task("SampleTask"), session(host, port)
+	: Task("SampleTask"), session(host, port), _serialNumber("")
 {
+	session.reset();
 }
 
 void SampleTask::runTask()
@@ -33,12 +38,26 @@ void SampleTask::runTask()
 	{
 		app.logger().trace("busy doing nothing... " + DateTimeFormatter::format(app.uptime()));
 
-		if (IsUSBKeyPresent()) {
-			//addin.SetPublicParam("VirtualKeyNumber", keysn, "");
-			getUserList();
-			getKeySN();
-			sendKeySNByActiveX();
+		try
+		{
+			if (IsUSBKeyPresent()) {
+				{
+					BridgeKG_HARD_EXT ext;
+					ext.WebConnectDev();
+					ext.WebGetKeyDefineInfo();
+					std::string _serialNumber = ext.WebGetSerial();
+					ext.WebDisconnectDev();
+				}
+				getUserList();
+				getKeySN();
+				sendKeySNByActiveX();
+			}
 		}
+		catch (Poco::Exception& e)
+		{
+			app.logger().trace("%s : %s code=%d", std::string(e.className()), e.message(), e.code());
+		}
+
 	}
 }
 
@@ -68,8 +87,9 @@ void SampleTask::getUserList()
 	Parser json;
 	Var result = json.parse(receive);
 	DynamicStruct ds = *result.extract<Object::Ptr>();
-	_userlist = ds["data"]["userlist"].toString();
 
+	assert(!ds["data"]["userlist"]);
+	std::string _userlist = ds["data"]["userlist"].toString();
 	_ukey = new UKeyDevice(_userlist);
 
 	poco_trace_f2(app.logger(), "getUserList < %s : %s >\n", _ukey->containerName(), _ukey->certificateName());
@@ -85,20 +105,23 @@ void SampleTask::getKeySN()
 	request.setContentLength((int)body.length());
 	session.sendRequest(request) << body;
 
-	session.sendRequest(request);
 	std::istream& receive = session.receiveResponse(response);
+	std::ostringstream ostr;
+	StreamCopier::copyStream(receive, ostr);
 
 	Parser json;
-	Var result = json.parse(receive);
+	Var result = json.parse(ostr.str());
 	DynamicStruct ds = *result.extract<Object::Ptr>();
 
-	poco_trace_f1(app.logger(), "getKeySN : %s\n" , ds["data"]["keySn"].toString());
+	_serialNumber = ds["data"]["keySn"].toString();
+	poco_trace_f1(app.logger(), "getKeySN : %s\n", ds["data"]["keySn"].toString());
 }
 
 void SampleTask::sendKeySNByActiveX()
 {
-	Application& app = Application::instance();
-	poco_trace(app.logger(), "sendKeySNByActiveX : \n");
+	/// set("VirtualKeyNumber","_serialNumber");)
+	BridgePDFReader reader;
+	reader.set("VirtualKeyNumber", _serialNumber);
 }
 
 bool SampleTask::IsUSBKeyPresent()
@@ -107,12 +130,14 @@ bool SampleTask::IsUSBKeyPresent()
 
 	HTTPResponse response;
 	HTTPRequest request(HTTPRequest::HTTP_GET, "/buffer");
-
 	session.sendRequest(request);
+
 	std::istream& receive = session.receiveResponse(response);
+	std::ostringstream ostr;
+	StreamCopier::copyStream(receive, ostr);
 
 	Parser json;
-	Var result = json.parse(receive);
+	Var result = json.parse(ostr.str());
 	Array da = *result.extract<Array::Ptr>();
 	poco_trace_f1(app.logger(), "IsUSBKeyPresent response content : %s\n", result.toString());
 

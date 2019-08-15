@@ -2,6 +2,7 @@
 #include "Certificate.h"
 #include "Container.h"
 #include "Poco/RegularExpression.h"
+#include <cassert>
 
 using namespace Reach;
 using Poco::RegularExpression;
@@ -9,6 +10,7 @@ using Poco::RegularExpression;
 UKeyDevice::UKeyDevice(const std::string entries)
 	:_entries(entries)
 {
+	assert(!_entries.empty());
 	extract();
 }
 
