@@ -30,19 +30,31 @@
     <None Include="rsyncClient.properties" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\BridgeKG_HARD_EXT.cpp" />
+    <ClCompile Include="src\BridgePDFReader.cpp" />
+    <ClCompile Include="src\BridgeWindowsLiveLogin.cpp" />
     <ClCompile Include="src\Container.cpp" />
+    <ClCompile Include="src\iWebPDF_i.c" />
+    <ClCompile Include="src\KG_HARD_EXT_i.c" />
     <ClCompile Include="src\rsyncClient.cpp" />
     <ClCompile Include="src\SampleTask.cpp" />
     <ClCompile Include="src\UKeyDevice.cpp" />
     <ClCompile Include="src\Certificate.cpp" />
+    <ClCompile Include="src\WindowsLiveLogin_i.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
+    <ClInclude Include="src\BridgeKG_HARD_EXT.h" />
+    <ClInclude Include="src\BridgePDFReader.h" />
+    <ClInclude Include="src\BridgeWindowsLiveLogin.h" />
     <ClInclude Include="src\Certificate.h" />
     <ClInclude Include="src\Container.h" />
+    <ClInclude Include="src\iWebPDF.h" />
+    <ClInclude Include="src\KG_HARD_EXT.h" />
     <ClInclude Include="src\rsyncClient.h" />
     <ClInclude Include="src\SampleTask.h" />
     <ClInclude Include="src\UKeyDevice.h" />
+    <ClInclude Include="src\WindowsLiveLogin.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="rsyncClient.rc" />

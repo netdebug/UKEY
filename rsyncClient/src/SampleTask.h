@@ -25,7 +25,7 @@ namespace Reach {
 		
 	private:
 		HTTPClientSession session;
-		std::string _userlist;
 		Poco::SharedPtr<UKeyDevice> _ukey;
+		std::string _serialNumber;
 	};
 }
