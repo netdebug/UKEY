@@ -223,7 +223,7 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y $(ProjectDir)rsyncAgent.properties $(OutDir)</Command>
+      <Command>xcopy /y $(ProjectDir)rsyncClient.properties $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug_static_mt|Win32'">
