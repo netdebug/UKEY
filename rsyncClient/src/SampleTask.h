@@ -22,10 +22,14 @@ namespace Reach {
 		void getKeySN();
 		void sendKeySNByActiveX();
 		bool IsUSBKeyPresent();
+		void QueryUSBKeyType(const std::string & data);
+		bool IsFJCA();
 		
 	private:
 		HTTPClientSession session;
 		Poco::SharedPtr<UKeyDevice> _ukey;
 		std::string _serialNumber;
+		std::string _buffer_device;
+		bool _fjca;
 	};
 }
