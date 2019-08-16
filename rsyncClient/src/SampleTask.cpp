@@ -25,7 +25,7 @@ using namespace Reach;
 
 
 SampleTask::SampleTask(std::string& host, short port)
-	: Task("SampleTask"), session(host, port), _serialNumber("")
+	: Task("SampleTask"), session(host, port), _serialNumber(""), _fjca(false)
 {
 	session.reset();
 }
@@ -41,17 +41,10 @@ void SampleTask::runTask()
 		try
 		{
 			if (IsUSBKeyPresent()) {
-				{
-					BridgeKG_HARD_EXT ext;
-					ext.WebConnectDev();
-					ext.WebGetKeyDefineInfo();
-					std::string _serialNumber = ext.WebGetSerial();
-					ext.WebDisconnectDev();
-				}
-				getUserList();
-				getKeySN();
+
 				sendKeySNByActiveX();
 			}
+
 		}
 		catch (Poco::Exception& e)
 		{
@@ -88,7 +81,6 @@ void SampleTask::getUserList()
 	Var result = json.parse(receive);
 	DynamicStruct ds = *result.extract<Object::Ptr>();
 
-	assert(!ds["data"]["userlist"]);
 	std::string _userlist = ds["data"]["userlist"].toString();
 	_ukey = new UKeyDevice(_userlist);
 
@@ -119,9 +111,26 @@ void SampleTask::getKeySN()
 
 void SampleTask::sendKeySNByActiveX()
 {
-	/// set("VirtualKeyNumber","_serialNumber");)
+	Application& app = Application::instance();
+
+	if (IsFJCA())
+	{
+		BridgeKG_HARD_EXT ext;
+		ext.WebConnectDev();
+		_serialNumber = ext.WebGetSerial();
+		ext.WebDisconnectDev();
+	}
+	else
+	{
+		getUserList();
+		getKeySN();
+	}
+
+
 	BridgePDFReader reader;
 	reader.set("VirtualKeyNumber", _serialNumber);
+
+	poco_trace_f1(app.logger(), "sendKeySNByActiveX VirtualKeyNumber content : %s\n", _serialNumber);
 }
 
 bool SampleTask::IsUSBKeyPresent()
@@ -136,10 +145,37 @@ bool SampleTask::IsUSBKeyPresent()
 	std::ostringstream ostr;
 	StreamCopier::copyStream(receive, ostr);
 
+	QueryUSBKeyType(ostr.str());
+
 	Parser json;
 	Var result = json.parse(ostr.str());
 	Array da = *result.extract<Array::Ptr>();
+
 	poco_trace_f1(app.logger(), "IsUSBKeyPresent response content : %s\n", result.toString());
 
 	return da.size() > 0;
+}
+
+void SampleTask::QueryUSBKeyType(const std::string& data)
+{
+	Application& app = Application::instance();
+
+	Parser json;
+	Var result = json.parse(data);
+	Array da = *result.extract<Array::Ptr>();
+
+	for (int i = 0; i < da.size(); i++) {
+		assert(da.isObject(i));
+		DynamicStruct ds = *da.getObject(i);
+		assert(ds.contains("Description"));
+		if (ds["Description"] == "FJCA") {
+			_fjca = true; break;
+		}
+	}
+
+	poco_trace_f1(app.logger(), "QueryUSBKeyType FJCA : %b", _fjca);
+}
+bool SampleTask::IsFJCA()
+{
+	return _fjca;
 }
