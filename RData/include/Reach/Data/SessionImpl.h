@@ -14,8 +14,8 @@
 //
 
 
-#ifndef Data_SessionImpl_INCLUDED
-#define Data_SessionImpl_INCLUDED
+#ifndef RData_SessionImpl_INCLUDED
+#define RData_SessionImpl_INCLUDED
 
 
 #include "Reach/Data/Data.h"
@@ -56,9 +56,6 @@ public:
 	virtual ~SessionImpl();
 		/// Destroys the SessionImpl.
 
-	virtual StatementImpl* createStatementImpl() = 0;
-		/// Creates a StatementImpl.
-
 	virtual void open(const std::string& connectionString = "") = 0;
 		/// Opens the session using the supplied string.
 		/// Can also be used with default empty string to reconnect 
@@ -88,37 +85,30 @@ public:
 	void reconnect();
 		/// Closes the connection and opens it again.
 
-	virtual void begin() = 0;
-		/// Starts a transaction.
-
-	virtual void commit() = 0;
-		/// Commits and ends a transaction.
-
-	virtual void rollback() = 0;
-		/// Aborts a transaction.
-
-	virtual bool canTransact() = 0;
-		/// Returns true if session has transaction capabilities.
-
-	virtual bool isTransaction() = 0;
-		/// Returns true iff a transaction is a transaction is in progress, false otherwise.
-
-	virtual void setTransactionIsolation(Poco::UInt32) = 0;
-		/// Sets the transaction isolation level.
-
-	virtual Poco::UInt32 getTransactionIsolation() = 0;
-		/// Returns the transaction isolation level.
-
-	virtual bool hasTransactionIsolation(Poco::UInt32) = 0;
-		/// Returns true iff the transaction isolation level corresponding
-		/// to the supplied bitmask is supported.
-
-	virtual bool isTransactionIsolation(Poco::UInt32) = 0;
-		/// Returns true iff the transaction isolation level corresponds
-		/// to the supplied bitmask.
-
 	virtual const std::string& connectorName() const = 0;
 		/// Returns the name of the connector.
+
+	virtual bool login(const std::string& passwd) = 0;
+
+	virtual bool changePW(const std::string& oldCode, const std::string& newCode) = 0;
+
+	virtual std::string getUserList() = 0;
+
+	virtual std::string getCertBase64String(short ctype) = 0;
+
+	virtual int getPinRetryCount() = 0;
+
+	virtual std::string getCertInfo(const std::string& base64, int type) = 0;
+
+	virtual std::string getSerialNumber() = 0;
+
+	virtual std::string encryptData(const std::string& paintText, const std::string& base64) = 0;///只允许加密证书加密
+
+	virtual std::string decryptData(const std::string& encryptBuffer) = 0;
+
+	virtual std::string signByP1(const std::string& message) = 0;
+
+	virtual bool verifySignByP1(const std::string& base64, const std::string& msg, const std::string& signature) = 0;
 
 	const std::string& connectionString() const;
 		/// Returns the connection string.
@@ -128,42 +118,6 @@ public:
 
 	std::string uri() const;
 		/// Returns the URI for this session.
-
-	virtual void setFeature(const std::string& name, bool state) = 0;
-		/// Set the state of a feature.
-		///
-		/// Features are a generic extension mechanism for session implementations.
-		/// and are defined by the underlying SessionImpl instance.
-		///
-		/// Throws a NotSupportedException if the requested feature is
-		/// not supported by the underlying implementation.
-	
-	virtual bool getFeature(const std::string& name) = 0;
-		/// Look up the state of a feature.
-		///
-		/// Features are a generic extension mechanism for session implementations.
-		/// and are defined by the underlying SessionImpl instance.
-		///
-		/// Throws a NotSupportedException if the requested feature is
-		/// not supported by the underlying implementation.
-
-	virtual void setProperty(const std::string& name, const Poco::Any& value) = 0;
-		/// Set the value of a property.
-		///
-		/// Properties are a generic extension mechanism for session implementations.
-		/// and are defined by the underlying SessionImpl instance.
-		///
-		/// Throws a NotSupportedException if the requested property is
-		/// not supported by the underlying implementation.
-
-	virtual Poco::Any getProperty(const std::string& name) = 0;
-		/// Look up the value of a property.
-		///
-		/// Properties are a generic extension mechanism for session implementations.
-		/// and are defined by the underlying SessionImpl instance.
-		///
-		/// Throws a NotSupportedException if the requested property is
-		/// not supported by the underlying implementation.
 
 protected:
 	void setConnectionString(const std::string& connectionString);
@@ -218,4 +172,4 @@ inline std::string SessionImpl::uri() const
 } } // namespace Poco::Reach
 
 
-#endif // Data_SessionImpl_INCLUDED
+#endif // RData_SessionImpl_INCLUDED

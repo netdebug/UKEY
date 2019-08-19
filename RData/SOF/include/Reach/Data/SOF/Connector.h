@@ -14,8 +14,8 @@
 //
 
 
-#ifndef Data_SOF_Connector_INCLUDED
-#define Data_SOF_Connector_INCLUDED
+#ifndef RData_SOF_Connector_INCLUDED
+#define RData_SOF_Connector_INCLUDED
 
 
 #include "Reach/Data/SOF/SOF.h"
@@ -52,15 +52,6 @@ public:
 
 	static void unregisterConnector();
 		/// Unregisters the Connector under the Keyword Connector::KEY at the Poco::Data::SessionFactory.
-
-	static void enableSharedCache(bool flag = true);
-		/// Enables or disables SQlite shared cache mode
-		/// (see http://www.sqlite.org/sharedcache.html for a discussion).
-
-	static void enableSoftHeapLimit(int limit);
-		/// Sets a soft upper limit to the amount of memory allocated
-		/// by SOF. For more information, please see the SOF
-		/// sqlite_soft_heap_limit() function (http://www.sqlite.org/c3ref/soft_heap_limit.html).
 };
 
 

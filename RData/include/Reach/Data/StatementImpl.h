@@ -54,13 +54,6 @@ public:
 		ST_RESET
 	};
 
-	static const std::string DEQUE;
-	static const std::string VECTOR;
-	static const std::string LIST;
-	static const std::string UNKNOWN;
-
-	static const int USE_CURRENT_DATA_SET = -1;
-
 	StatementImpl(SessionImpl& rSession);
 		/// Creates the StatementImpl.
 
@@ -73,7 +66,6 @@ public:
 	{
 		_ostr << t;
 	}
-
 
 	std::string toString() const;
 		/// Create a string version of the SQL statement.
@@ -92,7 +84,7 @@ public:
 		/// Resets the statement, so that we can reuse all bindings and re-execute again.
 
 	State getState() const;
-	/// Returns the state of the Statement.
+		/// Returns the state of the Statement.
 		
 protected:
 
@@ -100,11 +92,12 @@ protected:
 		/// Rteurns session associated with this statement.
 
 private:
-	void compile();
-	/// Compiles the statement.
+	void prepareFunc();
+		/// Compiles the statement.
 
-	void bind();
-	/// Binds the statement, if not yet bound.
+	void formatSQL(std::vector<Poco::Any>& arguments);
+		/// Formats the SQL string by filling in placeholders with values from supplied vector.
+
 
 	StatementImpl(const StatementImpl& stmt);
 	StatementImpl& operator = (const StatementImpl& stmt);
@@ -123,10 +116,12 @@ private:
 // inlines
 //
 
+
 inline std::string StatementImpl::toString() const
 {
 	return _ostr.str();
 }
+
 
 inline StatementImpl::State StatementImpl::getState() const
 {

@@ -16,9 +16,6 @@
     <ClCompile Include="src\Session.cpp" />
     <ClCompile Include="src\SessionFactory.cpp" />
     <ClCompile Include="src\SessionImpl.cpp" />
-    <ClCompile Include="src\Statement.cpp" />
-    <ClCompile Include="src\StatementCreator.cpp" />
-    <ClCompile Include="src\StatementImpl.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Reach\Data\AbstractSessionImpl.h" />
@@ -28,9 +25,6 @@
     <ClInclude Include="include\Reach\Data\Session.h" />
     <ClInclude Include="include\Reach\Data\SessionFactory.h" />
     <ClInclude Include="include\Reach\Data\SessionImpl.h" />
-    <ClInclude Include="include\Reach\Data\Statement.h" />
-    <ClInclude Include="include\Reach\Data\StatementCreator.h" />
-    <ClInclude Include="include\Reach\Data\StatementImpl.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectName>Data</ProjectName>
@@ -96,7 +90,7 @@
       <OutputFile>$(OutDir)rsyncDatad.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>..\bin\rsyncDatad.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>bin\rsyncDatad.pdb</ProgramDatabaseFile>
       <AdditionalLibraryDirectories>..\lib;..\lib\libpoco;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SubSystem>Console</SubSystem>
       <ImportLibrary>..\lib\rsyncDatad.lib</ImportLibrary>

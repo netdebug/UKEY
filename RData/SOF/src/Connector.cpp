@@ -58,17 +58,4 @@ void Connector::unregisterConnector()
 	Reach::Data::SessionFactory::instance().remove(KEY);
 }
 
-
-void Connector::enableSharedCache(bool flag)
-{
-	//sqlite3_enable_shared_cache(flag ? 1 : 0)
-}
-
-
-void Connector::enableSoftHeapLimit(int limit)
-{
-	//sqlite3_soft_heap_limit(limit);
-}
-
-
 } } } // namespace Poco::Data::SOF

@@ -14,8 +14,8 @@
 //
 
 
-#ifndef Data_Connector_INCLUDED
-#define Data_Connector_INCLUDED
+#ifndef RData_Connector_INCLUDED
+#define RData_Connector_INCLUDED
 
 
 #include "Reach/Data/Data.h"

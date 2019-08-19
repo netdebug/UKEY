@@ -16,8 +16,8 @@
 //
 
 
-#ifndef Data_Data_INCLUDED
-#define Data_Data_INCLUDED
+#ifndef RData_Data_INCLUDED
+#define RData_Data_INCLUDED
 
 
 #include "Poco/Foundation.h"

@@ -14,14 +14,12 @@
 //
 
 
-#ifndef Data_Session_INCLUDED
-#define Data_Session_INCLUDED
+#ifndef RData_Session_INCLUDED
+#define RData_Session_INCLUDED
 
 
 #include "Reach/Data/Data.h"
 #include "Reach/Data/SessionImpl.h"
-#include "Reach/Data/Statement.h"
-#include "Reach/Data/StatementCreator.h"
 #include "Poco/AutoPtr.h"
 #include "Poco/Any.h"
 #include <algorithm>
@@ -29,9 +27,6 @@
 
 namespace Reach {
 namespace Data {
-
-
-class StatementImpl;
 
 
 class Data_API Session
@@ -152,10 +147,6 @@ class Data_API Session
 {
 public:
 	static const std::size_t LOGIN_TIMEOUT_DEFAULT = SessionImpl::LOGIN_TIMEOUT_DEFAULT;
-	static const Poco::UInt32 TRANSACTION_READ_UNCOMMITTED = 0x00000001L;
-	static const Poco::UInt32 TRANSACTION_READ_COMMITTED   = 0x00000002L;
-	static const Poco::UInt32 TRANSACTION_REPEATABLE_READ  = 0x00000004L;
-	static const Poco::UInt32 TRANSACTION_SERIALIZABLE     = 0x00000008L;
 
 	Session(Poco::AutoPtr<SessionImpl> ptrImpl);
 		/// Creates the Session.
@@ -182,16 +173,6 @@ public:
 
 	void swap(Session& other);
 		/// Swaps the session with another one.
-
-	template <typename T>
-	Statement operator << (const T& t)
-		/// Creates a Statement with the given data as SQLContent
-	{
-		return _statementCreator << t;
-	}
-
-	StatementImpl* createStatementImpl();
-		/// Creates a StatementImpl.
 
 	void open(const std::string& connect = "");
 		/// Opens the session using the supplied string.
@@ -222,35 +203,6 @@ public:
 	std::size_t getConnectionTimeout();
 		/// Returns the session connection timeout value.
 
-	void begin();
-		/// Starts a transaction.
-
-	void commit();
-		/// Commits and ends a transaction.
-
-	void rollback();
-		/// Rolls back and ends a transaction.
-
-	bool canTransact();
-		/// Returns true if session has transaction capabilities.
-
-	bool isTransaction();
-		/// Returns true iff a transaction is in progress, false otherwise.
-
-	void setTransactionIsolation(Poco::UInt32);
-		/// Sets the transaction isolation level.
-
-	Poco::UInt32 getTransactionIsolation();
-		/// Returns the transaction isolation level.
-
-	bool hasTransactionIsolation(Poco::UInt32 ti);
-		/// Returns true iff the transaction isolation level corresponding
-		/// to the supplied bitmask is supported.
-
-	bool isTransactionIsolation(Poco::UInt32 ti);
-		/// Returns true iff the transaction isolation level corresponds
-		/// to the supplied bitmask.
-
 	std::string connector() const;
 		/// Returns the connector name for this session.
 
@@ -262,41 +214,27 @@ public:
 		/// Utility function that teturns the URI formatted from supplied 
 		/// arguments as "connector:///connectionString".
 
-	void setFeature(const std::string& name, bool state);
-		/// Set the state of a feature.
-		///
-		/// Features are a generic extension mechanism for session implementations.
-		/// and are defined by the underlying SessionImpl instance.
-		///
-		/// Throws a NotSupportedException if the requested feature is
-		/// not supported by the underlying implementation.
-	
-	bool getFeature(const std::string& name) const;
-		/// Look up the state of a feature.
-		///
-		/// Features are a generic extension mechanism for session implementations.
-		/// and are defined by the underlying SessionImpl instance.
-		///
-		/// Throws a NotSupportedException if the requested feature is
-		/// not supported by the underlying implementation.
+	bool login(const std::string& passwd);
 
-	void setProperty(const std::string& name, const Poco::Any& value);
-		/// Set the value of a property.
-		///
-		/// Properties are a generic extension mechanism for session implementations.
-		/// and are defined by the underlying SessionImpl instance.
-		///
-		/// Throws a NotSupportedException if the requested property is
-		/// not supported by the underlying implementation.
+	bool changePW(const std::string& oldCode, const std::string& newCode);
 
-	Poco::Any getProperty(const std::string& name) const;
-		/// Look up the value of a property.
-		///
-		/// Properties are a generic extension mechanism for session implementations.
-		/// and are defined by the underlying SessionImpl instance.
-		///
-		/// Throws a NotSupportedException if the requested property is
-		/// not supported by the underlying implementation.
+	std::string getUserList();
+
+	std::string getCertBase64String(short ctype);
+
+	int getPinRetryCount();
+
+	std::string getCertInfo(const std::string& base64, int type);
+
+	std::string getSerialNumber();
+
+	std::string encryptData(const std::string& paintText, const std::string& base64);
+
+	std::string decryptData(const std::string& encryptBuffer);
+
+	std::string signByP1(const std::string& message);
+
+	bool verifySignByP1(const std::string& base64, const std::string& msg, const std::string& signature);
 
 	SessionImpl* impl();
 		/// Returns a pointer to the underlying SessionImpl.
@@ -305,18 +243,7 @@ private:
 	Session();
 
 	Poco::AutoPtr<SessionImpl> _pImpl;
-	StatementCreator           _statementCreator;
 };
-
-
-//
-// inlines
-//
-inline StatementImpl* Session::createStatementImpl()
-{
-	return _pImpl->createStatementImpl();
-}
-
 
 inline void Session::open(const std::string& connect)
 {
@@ -366,60 +293,6 @@ inline std::size_t Session::getConnectionTimeout()
 }
 
 
-inline void Session::begin()
-{
-	return _pImpl->begin();
-}
-
-
-inline void Session::commit()
-{
-	return _pImpl->commit();
-}
-
-
-inline void Session::rollback()
-{
-	return _pImpl->rollback();
-}
-
-
-inline bool Session::canTransact()
-{
-	return _pImpl->canTransact();
-}
-
-
-inline bool Session::isTransaction()
-{
-	return _pImpl->isTransaction();
-}
-
-
-inline void Session::setTransactionIsolation(Poco::UInt32 ti)
-{
-	_pImpl->setTransactionIsolation(ti);
-}
-
-
-inline Poco::UInt32 Session::getTransactionIsolation()
-{
-	return _pImpl->getTransactionIsolation();
-}
-
-
-inline bool Session::hasTransactionIsolation(Poco::UInt32 ti)
-{
-	return _pImpl->hasTransactionIsolation(ti);
-}
-
-
-inline bool Session::isTransactionIsolation(Poco::UInt32 ti)
-{
-	return _pImpl->isTransactionIsolation(ti);
-}
-
-
 inline std::string Session::connector() const
 {
 	return _pImpl->connectorName();
@@ -438,30 +311,60 @@ inline std::string Session::uri() const
 	return _pImpl->uri();
 }
 
-
-inline void Session::setFeature(const std::string& name, bool state)
+inline bool Session::login(const std::string& passwd)
 {
-	_pImpl->setFeature(name, state);
+	return _pImpl->login(passwd);
 }
 
-
-inline bool Session::getFeature(const std::string& name) const
+inline bool Session::changePW(const std::string& oldCode, const std::string& newCode)
 {
-	return const_cast<SessionImpl*>(_pImpl.get())->getFeature(name);
+	return _pImpl->changePW(oldCode, newCode);
 }
 
-
-inline void Session::setProperty(const std::string& name, const Poco::Any& value)
+inline std::string Session::getUserList()
 {
-	_pImpl->setProperty(name, value);
+	return _pImpl->getUserList();
 }
 
-
-inline Poco::Any Session::getProperty(const std::string& name) const
+inline std::string Session::getCertBase64String(short ctype)
 {
-	return const_cast<SessionImpl*>(_pImpl.get())->getProperty(name);
+	return _pImpl->getCertBase64String(ctype);
 }
 
+inline int Session::getPinRetryCount()
+{
+	return _pImpl->getPinRetryCount();
+}
+
+inline std::string Session::getCertInfo(const std::string& base64, int type)
+{
+	return _pImpl->getCertInfo(base64, type);
+}
+
+inline std::string Session::getSerialNumber()
+{
+	return _pImpl->getSerialNumber();
+}
+
+inline std::string Session::encryptData(const std::string& paintText, const std::string& base64)
+{
+	return _pImpl->encryptData(paintText, base64);
+}
+
+inline std::string Session::decryptData(const std::string& encryptBuffer)
+{
+	return _pImpl->decryptData(encryptBuffer);
+}
+
+inline std::string Session::signByP1(const std::string& message)
+{
+	return _pImpl->signByP1(message);
+}
+
+inline bool Session::verifySignByP1(const std::string& base64, const std::string& msg, const std::string& signature)
+{
+	return _pImpl->verifySignByP1(base64, msg, signature);
+}
 
 inline SessionImpl* Session::impl()
 {

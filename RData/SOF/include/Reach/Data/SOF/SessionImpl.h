@@ -14,23 +14,16 @@
 //
 
 
-#ifndef Data_SOF_SessionImpl_INCLUDED
-#define Data_SOF_SessionImpl_INCLUDED
+#ifndef RData_SOF_SessionImpl_INCLUDED
+#define RData_SOF_SessionImpl_INCLUDED
 
 
 #include "Reach/Data/SOF/SOF.h"
 #include "Reach/Data/SOF/Connector.h"
-//#include "Reach/Data/SOF/Binder.h"
 #include "Reach/Data/AbstractSessionImpl.h"
 #include "Poco/SharedPtr.h"
 #include "Poco/Mutex.h"
-
-
-extern "C"
-{
-	typedef struct sqlite3 sqlite3;
-}
-
+#include "UDevice.h"
 
 namespace Reach {
 namespace Data {
@@ -47,9 +40,6 @@ public:
 
 	~SessionImpl();
 		/// Destroys the SessionImpl.
-
-	Reach::Data::StatementImpl* createStatementImpl();
-		/// Returns an SOF StatementImpl.
 
 	void open(const std::string& connect = "");
 		/// Opens a connection to the Database.
@@ -79,43 +69,30 @@ public:
 		/// Returns the session connection timeout value.
 		/// Timeout value is in seconds.
 
-	void begin();
-		/// Starts a transaction.
-
-	void commit();
-		/// Commits and ends a transaction.
-
-	void rollback();
-		/// Aborts a transaction.
-
-	bool canTransact();
-		/// Returns true if session has transaction capabilities.
-
-	bool isTransaction();
-		/// Returns true iff a transaction is a transaction is in progress, false otherwise.
-
-	void setTransactionIsolation(Poco::UInt32 ti);
-		/// Sets the transaction isolation level.
-
-	Poco::UInt32 getTransactionIsolation();
-		/// Returns the transaction isolation level.
-
-	bool hasTransactionIsolation(Poco::UInt32 ti);
-		/// Returns true iff the transaction isolation level corresponding
-		/// to the supplied bitmask is supported.
-
-	bool isTransactionIsolation(Poco::UInt32 ti);
-		/// Returns true iff the transaction isolation level corresponds
-		/// to the supplied bitmask.
-
-	void autoCommit(const std::string&, bool val);
-		/// Sets autocommit property for the session.
-
-	bool isAutoCommit(const std::string& name="");
-		/// Returns autocommit property value.
-
 	const std::string& connectorName() const;
 		/// Returns the name of the connector.
+
+	bool login(const std::string& passwd);
+
+	bool changePW(const std::string& oldCode, const std::string& newCode);
+
+	std::string getUserList();
+
+	std::string getCertBase64String(short ctype);
+
+	int getPinRetryCount();
+
+	std::string getCertInfo(const std::string& base64, int type);
+
+	std::string getSerialNumber();
+
+	std::string encryptData(const std::string& paintText, const std::string& base64);///只允许加密证书加密
+
+	std::string decryptData(const std::string& encryptBuffer);
+
+	std::string signByP1(const std::string& message);
+
+	bool verifySignByP1(const std::string& base64, const std::string& msg, const std::string& signature);
 
 protected:
 	void setConnectionTimeout(const std::string& prop, const Poco::Any& value);
@@ -123,32 +100,14 @@ protected:
 
 private:
 	std::string _connector;
-	sqlite3*    _pDB;
 	bool        _connected;
 	bool        _isTransaction;
 	int         _timeout;
+
+	std::string _ContainerString;//uid
 	Poco::Mutex _mutex;
 
-	static const std::string DEFERRED_BEGIN_TRANSACTION;
-	static const std::string COMMIT_TRANSACTION;
-	static const std::string ABORT_TRANSACTION;
 };
-
-
-//
-// inlines
-//
-inline bool SessionImpl::canTransact()
-{
-	return true;
-}
-
-
-inline 	bool SessionImpl::isTransaction()
-{
-	return _isTransaction;
-}
-
 
 inline const std::string& SessionImpl::connectorName() const
 {

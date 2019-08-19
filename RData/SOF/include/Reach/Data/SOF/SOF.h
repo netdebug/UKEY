@@ -54,7 +54,7 @@
 //
 #if defined(_MSC_VER)
 	#if !defined(POCO_NO_AUTOMATIC_LIBS) && !defined(SOF_EXPORTS)
-		#pragma comment(lib, "PocoDataSOF" POCO_LIB_SUFFIX)
+		#pragma comment(lib, "rsyncSOF" POCO_LIB_SUFFIX)
 	#endif
 #endif
 

@@ -14,8 +14,8 @@
 //
 
 
-#ifndef Data_SessionFactory_INCLUDED
-#define Data_SessionFactory_INCLUDED
+#ifndef RData_SessionFactory_INCLUDED
+#define RData_SessionFactory_INCLUDED
 
 
 #include "Reach/Data/Data.h"
@@ -96,4 +96,4 @@ private:
 } } // namespace Poco::Reach
 
 
-#endif // Data_SessionFactory_INCLUDED
+#endif // RData_SessionFactory_INCLUDED

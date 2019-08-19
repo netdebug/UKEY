@@ -14,8 +14,8 @@
 //
 
 
-#ifndef Data_DataException_INCLUDED
-#define Data_DataException_INCLUDED
+#ifndef RData_DataException_INCLUDED
+#define RData_DataException_INCLUDED
 
 
 #include "Reach/Data/Data.h"

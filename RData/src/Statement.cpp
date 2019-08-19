@@ -91,7 +91,7 @@ std::size_t Statement::execute(bool reset)
 	{
 		if (_arguments.size()) 
 		{
-			//_pImpl->formatSQL(_arguments);
+			_pImpl->formatSQL(_arguments);
 			_arguments.clear();
 		}
 

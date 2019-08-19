@@ -14,8 +14,8 @@
 //
 
 
-#ifndef Data_AbstractSessionImpl_INCLUDED
-#define Data_AbstractSessionImpl_INCLUDED
+#ifndef RData_AbstractSessionImpl_INCLUDED
+#define RData_AbstractSessionImpl_INCLUDED
 
 
 #include "Reach/Data/Data.h"
