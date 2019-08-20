@@ -23,7 +23,6 @@
 #include "Reach/Data/AbstractSessionImpl.h"
 #include "Poco/SharedPtr.h"
 #include "Poco/Mutex.h"
-#include "UDevice.h"
 
 namespace Reach {
 namespace Data {
@@ -34,7 +33,7 @@ class SOF_API SessionImpl: public Reach::Data::AbstractSessionImpl<SessionImpl>
 	/// Implements SessionImpl interface.
 {
 public:
-	SessionImpl(const std::string& fileName,
+	SessionImpl(const std::string& connectionString,
 		std::size_t loginTimeout = LOGIN_TIMEOUT_DEFAULT);
 		/// Creates the SessionImpl. Opens a connection to the database.
 
@@ -72,6 +71,8 @@ public:
 	const std::string& connectorName() const;
 		/// Returns the name of the connector.
 
+	const std::string& contianerName() const;
+
 	bool login(const std::string& passwd);
 
 	bool changePW(const std::string& oldCode, const std::string& newCode);
@@ -87,8 +88,10 @@ public:
 	std::string getSerialNumber();
 
 	std::string encryptData(const std::string& paintText, const std::string& base64);///只允许加密证书加密
+	/// 非对称加密
 
 	std::string decryptData(const std::string& encryptBuffer);
+	/// 非对称解密
 
 	std::string signByP1(const std::string& message);
 
@@ -97,17 +100,25 @@ public:
 protected:
 	void setConnectionTimeout(const std::string& prop, const Poco::Any& value);
 	Poco::Any getConnectionTimeout(const std::string& prop);
+	void selectMode();
 
 private:
 	std::string _connector;
 	bool        _connected;
-	bool        _isTransaction;
 	int         _timeout;
-
-	std::string _ContainerString;//uid
+	int			_random_size;
+	int			_current_encrypt_algorithm;
+	int			_current_signed_algorithm;
+	std::string _connectionString;
+	std::string _containerString;//uid
 	Poco::Mutex _mutex;
 
 };
+
+inline const std::string& SessionImpl::contianerName() const
+{
+	return _containerString;
+}
 
 inline const std::string& SessionImpl::connectorName() const
 {

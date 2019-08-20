@@ -206,6 +206,9 @@ public:
 	std::string connector() const;
 		/// Returns the connector name for this session.
 
+	std::string contianer() const;
+		/// Returns the contianer name for this session.
+
 	std::string uri() const;
 		/// Returns the URI for this session.
 
@@ -298,6 +301,10 @@ inline std::string Session::connector() const
 	return _pImpl->connectorName();
 }
 
+inline std::string Session::contianer() const
+{
+	return _pImpl->contianerName();
+}
 
 inline std::string Session::uri(const std::string& connector,
 	const std::string& connectionString)

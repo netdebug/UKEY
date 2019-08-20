@@ -16,13 +16,42 @@
 
 #include "Reach/Data/SOF/Utility.h"
 #include "Reach/Data/SOF/SOFException.h"
+#include "Reach/Data/SOF/translater.h"
 #include "Poco/NumberFormatter.h"
+#include "Poco/NumberParser.h"
 #include "Poco/String.h"
 #include "Poco/Any.h"
 #include "Poco/Exception.h"
+#include "Poco/Mutex.h"
+#include "Poco/RegularExpression.h"
+#include "Poco/Debugger.h"
+
+#include "Poco/LocalDateTime.h"
+#include "Poco/DateTimeFormatter.h"
+#include "Poco/DateTimeParser.h"
+#include "Poco/DateTimeFormat.h"
+#include "Poco/DateTime.h"
+#include "Poco/Timezone.h"
+#include "Poco/Util/Application.h"
+#include "Poco/Path.h"
 #include "GMCrypto.h"
 #include "SoFProvider.h"
+#include "SOFErrorCode.h"
+#include "Poco/Mutex.h"
+#include "Poco/Tuple.h"
 
+using Poco::RegularExpression;
+using Poco::Timezone;
+using Poco::DateTime;
+using Poco::DateTimeFormat;
+using Poco::DateTimeParser;
+using Poco::DateTimeFormatter;
+using Poco::LocalDateTime;
+using Poco::Debugger;
+using Poco::format;
+using Poco::replace;
+using Poco::Util::Application;
+using Poco::Path;
 
 
 #ifndef SOF_OPEN_URI
@@ -34,33 +63,9 @@ namespace Reach {
 namespace Data {
 namespace SOF {
 
-
-const int Utility::THREAD_MODE_SINGLE = 0;
-const int Utility::THREAD_MODE_MULTI = 1;
-const int Utility::THREAD_MODE_SERIAL = 2;
-int Utility::_threadMode = THREAD_MODE_SINGLE;
-
-const int Utility::OPERATION_INSERT = 1;
-const int Utility::OPERATION_DELETE = 2;
-const int Utility::OPERATION_UPDATE = 3;
-
-const std::string Utility::SOF_DATE_FORMAT = "%Y-%m-%d";
-const std::string Utility::SOF_TIME_FORMAT = "%H:%M:%S";
 //Utility::TypeMap Utility::_types;
 Poco::Mutex Utility::_mutex;
-
-
-Utility::SOFMutex::SOFMutex(sqlite3* pDB)//: _pMutex(sqlite3_db_mutex(pDB))
-{
-	//sqlite3_mutex_enter(_pMutex);
-}
-
-
-Utility::SOFMutex::~SOFMutex()
-{
-	//sqlite3_mutex_leave(_pMutex);
-}
-
+int Utility::_random_size = 0;
 
 Utility::Utility()
 {
@@ -128,40 +133,29 @@ Utility::Utility()
 	*/
 }
 
+std::string Utility::config(const std::string& name)
+{
+	Application& app = Application::instance();
 
-std::string Utility::lastError(sqlite3* pDB)
+	std::string appName = Path(app.commandPath()).getFileName();
+	std::string fullpath = replace(app.commandPath(), appName, std::string(""));
+
+	Path filePath(fullpath, name);
+
+	return filePath.toString();
+}
+
+std::string Utility::lastError(const std::string& containerName)
 {
 	std::string errStr;
-	SOFMutex m(pDB);
-	/*const char* pErr = sqlite3_errmsg(pDB);
-	if (pErr) errStr = pErr;*/
+	Poco::Mutex::ScopedLock lock(_mutex); ;
+	int rc = SOF_GetLastError();
+	errStr = translater::default().tr("SOFError", rc);
 	return errStr;
 }
 
 
-//MetaColumn::ColumnDataType Utility::getColumnType(sqlite3_stmt* pStmt, std::size_t pos)
-//{
-//	poco_assert_dbg (pStmt);
-//
-//	// Ensure statics are initialized
-//	{
-//		Poco::Mutex::ScopedLock lock(_mutex);
-//		static Utility u;
-//	}
-//
-//	const char* pc = sqlite3_column_decltype(pStmt, (int) pos);
-//	std::string sqliteType = pc ? pc : "";
-//	Poco::toUpperInPlace(sqliteType);
-//	sqliteType = sqliteType.substr(0, sqliteType.find_first_of(" ("));
-//
-//	TypeMap::const_iterator it = _types.find(Poco::trimInPlace(sqliteType));
-//	if (_types.end() == it)	throw Poco::NotFoundException();
-//
-//	return it->second;
-//}
-
-
-void Utility::throwException(sqlite3* pDB, int rc, const std::string& addErrMsg)
+void Utility::throwException(const std::string& containerName, int rc, const std::string& addErrMsg)
 {
 	/*
 	switch (rc)
@@ -234,113 +228,220 @@ void Utility::throwException(sqlite3* pDB, int rc, const std::string& addErrMsg)
 	*/
 }
 
-
-bool Utility::fileToMemory(sqlite3* pInMemory, const std::string& fileName)
+std::string Utility::GetCertVersion(const std::string& base64)
 {
-	/*
-	int rc;
-	sqlite3* pFile;
-	sqlite3_backup* pBackup;
+	std::string item;
+	item = SOF_GetCertInfo(base64, SGD_CERT_VERSION);
 
-	rc = sqlite3_open_v2(fileName.c_str(), &pFile, SOF_OPEN_READONLY | SOF_OPEN_URI, NULL);
-	if(rc == SOF_OK )
+	///GB-T 20518-2006 信息安全技术 公钥基础设施 数字证书格式
+
+	std::map<std::string, std::string> versions;
+	versions["0"] = "V1";
+	versions["1"] = "V2";
+	versions["2"] = "V3";
+
+	return versions[item];
+}
+
+
+std::string Utility::GetCertVaildTime(const std::string& base64)
+{
+	std::string item;
+	item = SOF_GetCertInfo(base64, SGD_CERT_VALID_TIME);
+	/// 190313160000Z - 210314155959Z
+	int options = 0;
+	std::string pattern("(\\S+)-(\\S+)");
+	std::string vaildtime;
+
+	try {
+
+		RegularExpression re(pattern, options);
+		RegularExpression::Match mtch;
+		if (!re.match(item, mtch))
+			throw Poco::LogicException("GetCertVaildTime Exception!", 0x40);
+
+		std::vector<std::string> tags;
+		re.split(item, tags, options);
+
+		std::string vaild_start = tags[1];
+		std::string vaild_end = tags[2];
+		Debugger::message(format("vaild_start : %s, vaild_start :%s", vaild_start, vaild_end));
+		/// UTC to LocalTime +0800
+
+		vaildtime.append(toLocalTime(vaild_start));
+		vaildtime.append(" - ");
+		vaildtime.append(toLocalTime(vaild_end));
+
+		Debugger::message(format("vaildtime : %s", vaildtime));
+	}
+	catch (Poco::Exception&)
 	{
-		pBackup = sqlite3_backup_init(pInMemory, "main", pFile, "main");
-		if( pBackup )
-		{
-			sqlite3_backup_step(pBackup, -1);
-			sqlite3_backup_finish(pBackup);
-		}
-		rc = sqlite3_errcode(pFile);
 	}
 
-	sqlite3_close(pFile);
-	return SOF_OK == rc;
-	*/
-	return false;
+	return vaildtime;
 }
 
-
-bool Utility::memoryToFile(const std::string& fileName, sqlite3* pInMemory)
+std::string Utility::toLocalTime(const std::string& time)
 {
-	/*
-	int rc;
-	sqlite3* pFile;
-	sqlite3_backup* pBackup;
+	int options = 0;
+	std::string pattern("^([0-9]\\d{1})([0-9]\\d{1})([0-9]\\d{1})([0-9]\\d{1})([0-9]\\d{1})([0-9]\\d{1})Z");
+	RegularExpression re(pattern, options);
+	RegularExpression::Match mtch;
+	if (!re.match(time, mtch))
+		throw Poco::RegularExpressionException(100);
+	///
+	/// Match 1:	210314155959	     0	    12
+	/// Group 1:	2103	     0	     4
+	/// Group 2:	14	     4	     2
+	/// Group 3:	15	     6	     2
+	/// Group 4:	59	     8	     2
+	/// Group 5:	59	    10	     2
+	///
+	std::vector<std::string> tags;
+	re.split(time, tags, options);
 
-	rc = sqlite3_open_v2(fileName.c_str(), &pFile, SOF_OPEN_READWRITE | SOF_OPEN_CREATE | SOF_OPEN_URI, NULL);
-	if(rc == SOF_OK )
-	{
-		pBackup = sqlite3_backup_init(pFile, "main", pInMemory, "main");
-		if( pBackup )
-		{
-			sqlite3_backup_step(pBackup, -1);
-			sqlite3_backup_finish(pBackup);
-		}
-		rc = sqlite3_errcode(pFile);
+	std::string prefix;
+	int oct = std::stod(tags[1]);
+	oct > 49 ? prefix = "19" : prefix = "20";
+	std::string fmt = format("%s%s-%s-%s %s:%s", prefix, tags[1], tags[2], tags[3], tags[4], tags[5], tags[6]);
+
+	Debugger::message(format("Timezone utcOffset: %d, tzd:: % d, name : %s", Timezone::utcOffset(), Timezone::tzd(), Timezone::name()));
+	Debugger::message(time);
+	int tzd = Timezone::tzd();
+	DateTime dt = DateTimeParser::parse(DateTimeFormat::SORTABLE_FORMAT, fmt, tzd);
+	LocalDateTime lt(dt);
+	std::string localtime = DateTimeFormatter::format(lt, DateTimeFormat::SORTABLE_FORMAT);
+	Debugger::message(localtime);
+	return localtime;
+}
+std::string Utility::GetCertOwnerID(const std::string& base64)
+{
+	std::string item;
+	std::string pattern("(\\d+[A-z]?)");
+	std::string special_oid("1.2.156.10260.4.1.1");
+	item = SOF_GetCertInfoByOid(base64, special_oid);
+	if (item.empty()) {
+
+		item = SOF_GetCertInfo(base64, SGD_CERT_SUBJECT_CN);
+		pattern = format("@%s@", pattern);
 	}
 
-	sqlite3_close(pFile);
-	return SOF_OK == rc;
-	*/
-	return false;
+	item = toLegelID(item, pattern);
+	/// erase 0 if is id card
+	if (!item.empty() && item.at(0) == '0')
+		item = item.replace(0, 1, "");
+
+	return item;
 }
 
-
-bool Utility::isThreadSafe()
+std::string Utility::toLegelID(const std::string& text, const std::string& pattern)
 {
-	return false;
-	//return 0 != sqlite3_threadsafe();
-}
+	/// SGD_CERT_SUBJECT_CN identify card (330602197108300018)
+	/// CN = 041@0330602197108300018@测试个人一@00000001
+	/// 十八位：^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$
+	/// 十五位：^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}[0-9Xx]$
+	///RegularExpression pattern("@(\\d+)@");
+	int options = 0;
+	std::string id;
 
+	try {
+		RegularExpression re(pattern, options);
+		RegularExpression::Match mtch;
 
-int Utility::getThreadMode()
-{
-	return _threadMode;
-}
+		if (!re.match(text, mtch))
+			throw Poco::LogicException("RS_KeyDecryptData uid Exception!", 0x40);
 
-
-bool Utility::setThreadMode(int mode)
-{
-#if (SOF_THREADSAFE != 0)
-	if (SOF_OK == sqlite3_shutdown())
-	{
-		if (SOF_OK == sqlite3_config(mode))
-		{
-			_threadMode = mode;
-			if (SOF_OK == sqlite3_initialize())
-				return true;
-		}
-		sqlite3_initialize();
+		std::vector<std::string> tags;
+		re.split(text, tags, options);
+		id = tags[1];
 	}
-#endif
-	return false;
+	catch (Poco::Exception&)
+	{
+
+	}
+
+	return id;
 }
 
 
-void* Utility::eventHookRegister(sqlite3* pDB, UpdateCallbackType callbackFn, void* pParam)
+
+void Utility::selectEncryptMethod(const std::string& containerString)
 {
-	/*
-	typedef void(*pF)(void*, int, const char*, const char*, sqlite3_int64);
-	return sqlite3_update_hook(pDB, reinterpret_cast<pF>(callbackFn), pParam);
-	*/
-	return 0;
+	std::vector<std::string> methods;
+	methods = SOF_GetDeviceCapability(containerString, 0);
+
+	typedef Poco::Tuple<std::string, int, int> TupleType;
+	typedef std::vector<TupleType> vTupleType;
+
+	TupleType priority1("SGD_SM1_ECB", SGD_SM1_ECB, 16);
+	TupleType priority2("SGD_SM1_CBC", SGD_SM1_CBC, 32);
+	TupleType priority3("SGD_SM4_ECB", SGD_SM4_ECB, 16);
+	TupleType priority4("SGD_SM4_CBC", SGD_SM4_CBC, 32);
+
+	if (std::find(methods.begin(), methods.end(), priority1.get<0>()) != methods.end()) {
+		SOF_SetEncryptMethod(priority1.get<1>());
+		_random_size = priority1.get<2>();
+	}
+	else if (std::find(methods.begin(), methods.end(), priority2.get<0>()) != methods.end()) {
+		SOF_SetEncryptMethod(priority2.get<1>());
+		_random_size = priority2.get<2>();
+	}
+	else if (std::find(methods.begin(), methods.end(), priority3.get<0>()) != methods.end()) {
+		SOF_SetEncryptMethod(priority3.get<1>());
+		_random_size = priority3.get<2>();
+	}
+	else if (std::find(methods.begin(), methods.end(), priority4.get<0>()) != methods.end()) {
+		SOF_SetEncryptMethod(priority4.get<1>());
+		_random_size = priority4.get<2>();
+	}
 }
 
-
-void* Utility::eventHookRegister(sqlite3* pDB, CommitCallbackType callbackFn, void* pParam)
+void Utility::spiltEntries(const std::string& entries, std::string& containerString, std::string& userString)
 {
-	// return sqlite3_commit_hook(pDB, callbackFn, pParam);
-	return 0;
+	std::string pattern("(\\S+)\\|\\|(\\S+)[&&&]*");
+	int options = 0;
+
+	RegularExpression re(pattern, options);
+	RegularExpression::Match mtch;
+
+	if (!re.match(entries, mtch)) {
+		throw Poco::LogicException();
+	}
+
+	std::vector<std::string> tags;
+	re.split(entries, tags, options);
+	userString = tags[1];
+	containerString = tags[2];
 }
 
-
-void* Utility::eventHookRegister(sqlite3* pDB, RollbackCallbackType callbackFn, void* pParam)
+int Utility::GetRandomSize()
 {
-	// return sqlite3_rollback_hook(pDB, callbackFn, pParam);
-	return 0;
+	return _random_size;
 }
 
+void Utility::selectSignMethod(const std::string& containerString)
+{
+	/// index from zero		1 - RSA Container Type
+	/// (0 =>1)				2 - SM Container Type
+	Poco::Tuple<std::string, std::string, int> dummy;
+	dummy.set<0>("1");
+	dummy.set<1>("RSA");
+	dummy.set<2>(SGD_SHA1_RSA);
+
+	Poco::Tuple<std::string, std::string, int> dummy2;
+	dummy2.set<0>("2");
+	dummy2.set<1>("SM2");
+	dummy2.set<2>(SGD_SM3_SM2);
+
+	std::string type = SOF_GetDeviceInfo(containerString, SGD_DEVICE_SUPPORT_ALG);
+
+	if (dummy.get<0>() == type) {
+		SOF_SetSignMethod(dummy.get<2>());
+	}
+	else if (dummy2.get<0>() == type) {
+		SOF_SetSignMethod(dummy2.get<2>());
+	}
+}
 
 // NOTE: Utility::dbHandle() has been moved to SessionImpl.cpp,
 // as a workaround for a failing AnyCast with Clang.

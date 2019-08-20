@@ -20,7 +20,7 @@ namespace Reach {
 namespace Data {
 
 
-SessionImpl::SessionImpl(const std::string& connectionString, std::size_t timeout): 
+SessionImpl::SessionImpl(const std::string& connectionString, std::size_t timeout):
 	_connectionString(connectionString),
 	_loginTimeout(timeout)
 {

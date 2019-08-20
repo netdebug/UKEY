@@ -15,6 +15,8 @@
 #include "Reach/Data/SOF/SessionImpl.h"
 #include "Reach/Data/SOF/SOFException.h"
 #include "Reach/Data/Session.h"
+#include "Reach/Data/SOF/Utility.h"
+#include "GMCrypto.h"
 #include "Poco/Stopwatch.h"
 #include "Poco/String.h"
 #include "Poco/Mutex.h"
@@ -22,9 +24,10 @@
 #include "Reach/Data/DataException.h"
 #include "SoFProvider.h"
 #include "SOFErrorCode.h"
-
 #include <cstdlib>
-
+#include <sstream>
+#include "Poco/StreamCopier.h"
+#include "Poco/Base64Decoder.h"
 
 #ifndef SOF_OPEN_URI
 #define SOF_OPEN_URI 0
@@ -36,14 +39,17 @@ namespace Data {
 namespace SOF {
 
 
-SessionImpl::SessionImpl(const std::string& fileName, std::size_t loginTimeout):
-	Reach::Data::AbstractSessionImpl<SessionImpl>(fileName, loginTimeout),
+SessionImpl::SessionImpl(const std::string& connectionString, std::size_t loginTimeout):
+	Reach::Data::AbstractSessionImpl<SessionImpl>(connectionString, loginTimeout),
 	_connector(Connector::KEY),
 	_connected(false),
-	_isTransaction(false)
+	_random_size(0),
+	_connectionString(connectionString)
 {
 	open();
+	selectMode();
 	setConnectionTimeout(loginTimeout);
+
 	addProperty("connectionTimeout", &SessionImpl::setConnectionTimeout, &SessionImpl::getConnectionTimeout);
 }
 
@@ -119,6 +125,14 @@ void SessionImpl::setConnectionTimeout(std::size_t timeout)
 	_timeout = tout;
 }
 
+void SessionImpl::selectMode()
+{
+	std::string userString;
+	Utility::spiltEntries(getUserList(), _containerString, userString);
+	Utility::selectEncryptMethod(_containerString);
+	Utility::selectSignMethod(_containerString);
+	_random_size = Utility::GetRandomSize();
+}
 
 void SessionImpl::setConnectionTimeout(const std::string& prop, const Poco::Any& value)
 {
@@ -133,58 +147,122 @@ Poco::Any SessionImpl::getConnectionTimeout(const std::string& prop)
 
 bool SessionImpl::login(const std::string& passwd)
 {
-	return false;
+	return SOF_Login(_containerString, passwd);
 }
 
 bool SessionImpl::changePW(const std::string& oldCode, const std::string& newCode)
 {
-	return false;
+	return SOF_ChangePassWd(_containerString, oldCode, newCode);
 }
 
 std::string SessionImpl::getUserList()
 {
-	return "";
+	return SOF_GetUserList();
 }
 
 std::string SessionImpl::getCertBase64String(short ctype)
 {
-	return "";
+	enum certType { sign = 1, crypto };
+
+	std::string _content;
+
+	switch (ctype) {
+
+	case certType::sign:
+		_content = SOF_ExportUserCert(_containerString);
+		break;
+	case certType::crypto:
+		_content = SOF_ExportExChangeUserCert(_containerString);
+		break;
+	default:
+		throw Poco::NotImplementedException();
+	}
+
+	if (_content.empty())
+		throw Reach::Data::DataException();
+
+	return _content;
 }
 
 int SessionImpl::getPinRetryCount()
 {
-	return 0;
+	return SOF_GetPinRetryCount(_containerString);
 }
 
 std::string SessionImpl::getCertInfo(const std::string& base64, int type)
 {
-	return "";
+	std::string item;
+
+	if (SGD_CERT_VERSION == type) {
+		item = Utility::GetCertVersion(base64);
+	}
+	else if (SGD_CERT_VALID_TIME == type) {
+		item = Utility::GetCertVaildTime(base64);
+	}
+	else if (SGD_OID_IDENTIFY_NUMBER == type) {
+		/// only support user id card
+		item = Utility::GetCertOwnerID(base64);
+	}
+	else
+	{
+		item = SOF_GetCertInfo(base64, type);
+	}
+
+	return item;
 }
 
 std::string SessionImpl::getSerialNumber()
 {
-	return "";
+	std::string serialNumber;
+	
+	serialNumber = SOF_GetDeviceInfo(_containerString, SGD_DEVICE_SERIAL_NUMBER);
+
+	if (serialNumber.empty()) {
+		Poco::DataException(Utility::lastError(_containerString));
+	}
+
+	return serialNumber;
 }
 
 std::string SessionImpl::encryptData(const std::string& paintText, const std::string& base64)
 {
 	///只允许加密证书加密
-	return "";
+	std::string encryptData;
+
+	encryptData = SOF_AsEncrypt(base64, paintText);
+
+	if (encryptData.empty()) {
+		throw Poco::DataException(Utility::lastError(_containerString));
+		//throw RequestHandleException(RAR_ENCYPTFAILED);
+	}
+
+	return encryptData;
 }
 
 std::string SessionImpl::decryptData(const std::string& encryptBuffer)
 {
-	return "";
+	std::string decryptBuffer = SOF_AsDecrypt(_containerString, encryptBuffer);
+
+	if (decryptBuffer.empty())
+		throw  Poco::DataException(Utility::lastError(_containerString));
+
+	std::string text;
+	std::istringstream istr(decryptBuffer);
+
+	Poco::Base64Decoder decoder(istr);
+	Poco::StreamCopier::copyToString(decoder, text);
+
+	return text;
 }
 
 std::string SessionImpl::signByP1(const std::string& message)
 {
-	return "";
+	return SOF_SignData(_containerString, message);
 }
 
 bool SessionImpl::verifySignByP1(const std::string& base64, const std::string& msg, const std::string& signature)
 {
-	return false;
+	return SOF_VerifySignedData(base64, msg, signature);
 }
 
 } } } // namespace Reach::Data::SOF

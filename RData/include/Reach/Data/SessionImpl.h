@@ -87,6 +87,7 @@ public:
 
 	virtual const std::string& connectorName() const = 0;
 		/// Returns the name of the connector.
+	virtual const std::string& contianerName() const = 0;
 
 	virtual bool login(const std::string& passwd) = 0;
 
