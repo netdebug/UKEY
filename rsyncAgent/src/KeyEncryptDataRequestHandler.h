@@ -24,15 +24,13 @@ namespace Reach {
 		{}
 		void run()
 		{
-			UDevice::default();
+			//UDevice::default();
+			Reach::Data::Session session("SOF", "REST");
 
 			if (_paintext.empty())
 				throw RequestHandleException(RAR_ERRNODECRYPT);
 
-			_encrypt_data = SOF_AsEncrypt(_base64, _paintext);
-			if (_encrypt_data.empty()) {
-				throw RequestHandleException(RAR_ENCYPTFAILED);
-			}
+			_encrypt_data = session.encryptData(_paintext, _base64);
 
 			_encrypt_data.append("@@@");
 			_encrypt_data.append(_base64);

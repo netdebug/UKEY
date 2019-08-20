@@ -21,9 +21,13 @@ namespace Reach {
 
 		void run()
 		{
-			UDevice::default();
+			Reach::Data::Session session("SOF", "REST");
 
-			_signature = SOF_SignData(_uid, _msg);
+			if (_uid != session.contianer())
+				throw RequestHandleException(RAR_UNIQUEIDUNCORRECT);
+
+			_signature = session.signByP1(_msg);
+
 			if (_signature.empty()) {
 				throw RequestHandleException("SOF_SignData failed!", RAR_UNKNOWNERR);
 			}

@@ -8,6 +8,7 @@
 #include "RequestHandleException.h"
 #include "Poco/Util/Application.h"
 #include "Poco/Dynamic/Var.h"
+#include "Reach/Data/Session.h"
 
 namespace Reach {
 
@@ -24,26 +25,12 @@ namespace Reach {
 
 		void run()
 		{
-			UDevice::default();
+			Reach::Data::Session session("SOF", "REST");
 
-			enum certType { sign = 1, crypto };
+			if (_uid != session.contianer())
+				throw RequestHandleException(RAR_UNIQUEIDUNCORRECT);
 
-			std::string _content;
-
-			switch (_type){
-
-				case certType::sign:
-					_content = SOF_ExportUserCert(_uid);
-					break;
-				case certType::crypto:
-					_content = SOF_ExportExChangeUserCert(_uid);
-					break;
-				default:
-					throw RequestHandleException(RAR_ERRORCERTTYPE);
-			}
-
-			if (_content.empty())
-				throw RequestHandleException(RAR_NOBASE64CERT);
+			_content = session.getCertBase64String(_type);
 
 			add("certBase64", _content);
 		}

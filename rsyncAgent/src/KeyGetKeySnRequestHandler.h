@@ -19,14 +19,13 @@ namespace Reach {
 		{}
 		void run()
 		{
-			UDevice::default();
+			Reach::Data::Session session("SOF", "REST");
 
-			_SNkey = SOF_GetDeviceInfo(_uid, SGD_DEVICE_SERIAL_NUMBER);
+			if (_uid != session.contianer())
+				throw RequestHandleException(RAR_UNIQUEIDUNCORRECT);
 
-			if (_SNkey.empty()) {
-				throw RequestHandleException("SOF_GetDeviceInfo failed!", RAR_UNKNOWNERR);
-			}
-
+			_SNkey = session.getSerialNumber();
+		
 			add("containerId", _uid);
 			add("keySn", _SNkey);
 		}

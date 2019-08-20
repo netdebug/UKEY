@@ -17,7 +17,8 @@
 #include "Poco/Logger.h"
 #include "Poco/Util/Application.h"
 #include "RESTfulRequestHandler.h"
-
+#include "Reach/Data/Session.h"
+#include "Reach/Data/SOF/Connector.h"
 
 namespace Reach {
 
@@ -54,6 +55,12 @@ namespace Reach {
 			RESTfulRequestHandler::handleCORS(request, response);
 
 			Poco::Data::SQLite::Connector::registerConnector();
+			Reach::Data::SOF::Connector::registerConnector();
+
+			Reach::Data::Session tty("SOF", "REST");
+			
+			poco_information_f3(Application::instance().logger(), "connector: %s, uri: %s, contianer:%s" , tty.connector(), tty.uri(), tty.contianer());
+			
 #ifdef _DEBUG
 			Session session("SQLite", "C:\\Windows\\SysWOW64\\DeQLite.db");
 #else

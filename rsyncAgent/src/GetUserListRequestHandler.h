@@ -7,6 +7,7 @@
 #include "RESTfulRequestHandler.h"
 #include "RequestHandleException.h"
 #include "Poco/Util/Application.h"
+#include "Reach/Data/Session.h"
 
 namespace Reach {
 
@@ -30,8 +31,9 @@ namespace Reach {
 	public:
 		void run()
 		{
-			UDevice::default();
-			_line = SOF_GetUserList();
+			Reach::Data::Session session("SOF", "REST");
+			_line = session.getUserList();
+
 			if (_line.empty())
 				throw RequestHandleException(RAR_NOUNIQUEID);
 

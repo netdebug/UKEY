@@ -23,9 +23,13 @@ namespace Reach {
 		{}
 		void run()
 		{
-			UDevice::default();
+			//UDevice::default();
+			Reach::Data::Session session("SOF", "REST");
+			//if (!SOF_ChangePassWd(_uid, _oldCode, _newCode))
+			if (_uid != session.contianer())
+				throw RequestHandleException(RAR_UNIQUEIDUNCORRECT);
 
-			if (!SOF_ChangePassWd(_uid, _oldCode, _newCode))
+			if(!session.changePW(_oldCode, _newCode))
 			{
 				throw RequestHandleException("SOF_ChangePassWd failed", RAR_UNKNOWNERR);
 			}

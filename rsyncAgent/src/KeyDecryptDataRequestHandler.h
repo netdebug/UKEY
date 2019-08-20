@@ -26,7 +26,8 @@ namespace Reach {
 		{}
 		void run()
 		{
-			UDevice::default();
+			//UDevice::default();
+			Reach::Data::Session session("SOF", "REST");
 
 			std::string pattern("(\\S+)@@@(\\S+)");
 			int options = 0;
@@ -43,12 +44,14 @@ namespace Reach {
 			std::string& cert = tags[2];
 
 			assert(tags.size() > 2);
-			std::string content = SOF_ExportExChangeUserCert(_uid);
+			//std::string content = SOF_ExportExChangeUserCert(_uid);
+			enum certType { sign = 1, crypto };
+			std::string content = session.getCertBase64String(certType::crypto);
 
 			if (content != cert)
 				throw RequestHandleException("certificate error", RAR_ERRDECRYPTCERT);
 
-			_decrypt_data = SOF_AsDecrypt(_uid, encrypt);
+			_decrypt_data = session.decryptData(encrypt);
 			if (_decrypt_data.empty())
 				throw RequestHandleException(RAR_DECRYPTFAILED);
 

@@ -7,13 +7,14 @@
 #include "RESTfulRequestHandler.h"
 #include "RequestHandleException.h"
 #include "Poco/Util/Application.h"
+#include "Reach/Data/Session.h"
+
 
 namespace Reach {
 
 	using Reach::UDevice;
 	using Reach::JSONStringify;
 	using Poco::Util::Application;
-
 	///RS_CertLogin
 	class CertLogin :public Command
 	{
@@ -22,17 +23,20 @@ namespace Reach {
 			:_uid(uid), _pwd(password)
 		{}
 		void run()
-		{
-			UDevice::default();
+		{	
+			Reach::Data::Session session("SOF", "REST");
 
 			if (_uid.empty() || _pwd.empty())
 				throw RequestHandleException(RAR_UNKNOWNERR);
 
-			int retryCount = SOF_GetPinRetryCount(_uid);
+			if(_uid != session.contianer())
+				throw RequestHandleException(RAR_UNIQUEIDUNCORRECT);
+
+			int retryCount = session.getPinRetryCount();
 			if (retryCount <= 0)
 				throw RequestHandleException(_uid, RAR_UNKNOWNERR);
 
-			if (!SOF_Login(_uid, _pwd))
+			if (!session.login(_pwd))
 				throw RequestHandleException(_uid, RAR_UNKNOWNERR);
 
 			add("containerId", _uid);
