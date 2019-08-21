@@ -100,9 +100,10 @@ public:
 protected:
 	void setConnectionTimeout(const std::string& prop, const Poco::Any& value);
 	Poco::Any getConnectionTimeout(const std::string& prop);
-	void selectMode();
 
 private:
+	enum certType { sign = 1, crypto };
+
 	std::string _connector;
 	bool        _connected;
 	int         _timeout;
