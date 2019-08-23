@@ -1,0 +1,71 @@
+﻿// RSyncControl.idl: ActiveX 控件项目的类型库源。
+
+// 此文件将由 MIDL 编译器工具处理以
+// 生成类型库(RSyncControl.tlb)，该类型库将成为
+// RSyncControl.ocx。
+
+#include <olectl.h>
+#include <idispids.h>
+
+[ 
+	uuid(a8de96ca-374b-497d-aa5f-3c0309c8a9f0), 
+	version(2.0),
+	control 
+]
+library RSyncControlLib	// RS_CertSafeLib
+{
+	importlib(STDOLE_TLB);
+
+	//  CRSyncControlCtrl 的主调度接口
+	[ 
+		uuid(db403885-f81d-41d2-80d7-40365097d60c)
+	]
+	dispinterface _DRSyncControl	// _DRS_CertSafe	uuid(7A58AA86-D40D-4611-9DA1-DFCEAE95315A)
+	{
+		properties:
+		methods:
+
+			[id(DISPID_ABOUTBOX)] void AboutBox();
+			[id(21)] BSTR RS_GetUserList(void);
+			[id(22)] BSTR RS_GetCertBase64String(BSTR containerId, SHORT certType);
+			[id(23)] BSTR RS_CertLogin(BSTR containerId, BSTR password);
+			[id(24)] BSTR RS_GetPinRetryCount(BSTR containerId);
+			[id(25)] BSTR RS_ChangePassWd(BSTR containerId, BSTR oldCdoe, BSTR newCode);
+			[id(26)] BSTR RS_KeyGetKeySn(BSTR containerId);
+			[id(27)] BSTR RS_KeySignByP1(BSTR msg, BSTR containerId);
+			[id(28)] BSTR RS_VerifySignByP1(BSTR certBase64, BSTR msg, BSTR signdMsg);
+			[id(29)] BSTR RS_KeyEncryptData(BSTR rsKey, BSTR certBase64);
+			[id(30)] BSTR RS_KeyDecryptData(BSTR encRsKey, BSTR containerId);
+			[id(31)] BSTR RS_GetCertInfo(BSTR certBase64, BSTR type);
+	};
+
+	//  CRSyncControlCtrl 的事件调度接口
+
+	[ 
+		uuid(b1c93fb3-0485-4837-9aaf-af8f96a2c0d2)
+	]
+	dispinterface _DRSyncControlEvents	// _DRS_CertSafeEvents	uuid(EECD3FF1-DED8-44B3-877C-99D056D5449D)
+	{
+		properties:
+			//  事件接口没有任何属性
+
+		methods:
+			[id(1)] void RS_CloudSealAuthEvent(BSTR authResult, BSTR transid, BSTR token, BSTR msg);
+			[id(2)] void RS_CloudGetSignResultEvent(BSTR signResult,BSTR signdMsg, BSTR transid,BSTR signdCert,BSTR msg);
+			[id(3)] void RS_CloudLoginAuthEvent(BSTR authResult, BSTR transid, BSTR token, BSTR mobile, BSTR userName, BSTR userID, BSTR msg);
+			[id(4)] void RS_CloudEncAuthEvent(BSTR authResult, BSTR transid, BSTR token,BSTR msg);
+			[id(5)] void RS_CloudDevAuthEvent(BSTR authResult, BSTR transid, BSTR token, BSTR msg);
+			[id(6)] void RS_CloudGetCertAuthEvent(BSTR authResult, BSTR transid, BSTR token, BSTR msg);
+	};
+
+	//  CRSyncControlCtrl 的类信息
+	[
+		uuid(a0b23721-9350-4b4d-b581-65add1a77a5e)
+	]
+	coclass RSyncControl	// RS_CertSafe	uuid(F84C8F57-5A05-4D8C-826D-29589C7A121C)
+	{
+		[default] dispinterface _DRSyncControl;
+		[default, source] dispinterface _DRSyncControlEvents;
+	};
+
+};
