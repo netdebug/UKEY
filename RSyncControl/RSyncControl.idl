@@ -37,6 +37,8 @@ library RSyncControlLib	// RS_CertSafeLib
 			[id(29)] BSTR RS_KeyEncryptData(BSTR rsKey, BSTR certBase64);
 			[id(30)] BSTR RS_KeyDecryptData(BSTR encRsKey, BSTR containerId);
 			[id(31)] BSTR RS_GetCertInfo(BSTR certBase64, BSTR type);
+			[id(32)] BSTR RS_KeySignByP7(BSTR msg, BSTR flag, BSTR containerId);
+			[id(33)] BSTR RS_VerifySignByP7(BSTR msg, BSTR signdMsg, BSTR flag);
 	};
 
 	//  CRSyncControlCtrl 的事件调度接口

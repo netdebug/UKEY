@@ -44,6 +44,8 @@ protected:
 	BSTR RS_KeyGetKeySn(BSTR containerId);
 	BSTR RS_KeySignByP1(BSTR msg, BSTR containerId);
 	BSTR RS_VerifySignByP1(BSTR certBase64, BSTR msg, BSTR signdMsg);
+	BSTR RS_KeySignByP7(BSTR msg, BSTR flag, BSTR containerId);
+	BSTR RS_VerifySignByP7(BSTR msg, BSTR signdMsg, BSTR flag);
 	BSTR RS_KeyEncryptData(BSTR rsKey, BSTR certBase64);
 	BSTR RS_KeyDecryptData(BSTR encRsKey, BSTR containerId);
 	BSTR RS_GetCertInfo(BSTR certBase64, BSTR type);
@@ -65,6 +67,8 @@ public:
 		dispid_KeyEncryptData,
 		dispid_KeyDecryptData,
 		dispid_GetCertInfo,
+		dispid_KeySignByP7,
+		dispid_VerifySignByP7
 	};
 };
 

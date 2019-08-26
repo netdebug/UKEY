@@ -36,6 +36,8 @@ BEGIN_DISPATCH_MAP(CRSyncControlCtrl, COleControl)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyEncryptData", dispid_KeyEncryptData, RS_KeyEncryptData, VT_BSTR, VTS_BSTR VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyDecryptData", dispid_KeyDecryptData, RS_KeyDecryptData, VT_BSTR, VTS_BSTR VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_GetCertInfo", dispid_GetCertInfo, RS_GetCertInfo, VT_BSTR, VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeySignByP7", dispid_KeySignByP7, RS_KeySignByP7, VT_BSTR, VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_VerifySignByP7", dispid_VerifySignByP7, RS_VerifySignByP7, VT_BSTR, VTS_BSTR VTS_BSTR)
 END_DISPATCH_MAP()
 
 // 事件映射
@@ -257,6 +259,35 @@ BSTR CRSyncControlCtrl::RS_VerifySignByP1(BSTR certBase64, BSTR msg, BSTR signdM
 	std::string signature = _com_util::ConvertBSTRToString(signdMsg);
 	std::string body(Poco::format("certBase64=%s&msg=%s&signdMsg=%s", cert, text, signature));
 	Utility::request("/RS_VerifySignByP1", body);
+
+	std::string result = Utility::response();
+	std::wstring bstr = Utility::convert(result);
+
+	return _bstr_t(bstr.data());
+}
+
+BSTR CRSyncControlCtrl::RS_KeySignByP7(BSTR msg, BSTR flag, BSTR containerId)
+{
+	std::string id = _com_util::ConvertBSTRToString(containerId);
+	std::string message = _com_util::ConvertBSTRToString(msg);
+	std::string mode = _com_util::ConvertBSTRToString(flag);
+	std::string body(Poco::format("containerId=%s&msg=%s&flag=%s", id, message, mode));
+	Utility::request("/RS_KeySignByP7", body);
+
+	std::string result = Utility::response();
+	std::wstring bstr = Utility::convert(result);
+
+	return _bstr_t(bstr.data());
+}
+
+BSTR CRSyncControlCtrl::RS_VerifySignByP7(BSTR msg, BSTR signdMsg, BSTR flag)
+{
+	std::string message = _com_util::ConvertBSTRToString(msg);
+	std::string signedMessage = _com_util::ConvertBSTRToString(signdMsg);
+	std::string mode = _com_util::ConvertBSTRToString(flag);
+
+	std::string body(Poco::format("msg=%s&signdMsg=%s&flag=%s", message, signedMessage, mode));
+	Utility::request("/RS_VerifySignByP7", body);
 
 	std::string result = Utility::response();
 	std::wstring bstr = Utility::convert(result);

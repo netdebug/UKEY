@@ -221,6 +221,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Cathelp.cpp" />
     <ClCompile Include="RSyncControl.cpp" />
     <ClCompile Include="RSyncControlCtrl.cpp" />
     <ClCompile Include="RSyncControlPropPage.cpp" />
@@ -233,6 +234,7 @@
     <ClCompile Include="Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Cathelp.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="RSyncControl.h" />
     <ClInclude Include="RSyncControlCtrl.h" />

@@ -30,6 +30,9 @@
     <ClCompile Include="Utility.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Cathelp.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RSyncControl.h">
@@ -51,6 +54,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Utility.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Cathelp.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
