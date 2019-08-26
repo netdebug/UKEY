@@ -19,6 +19,9 @@ public:
 };
 
 extern const GUID CDECL _tlid;
+extern const GUID CDECL _RSyncControlCtrl;
 extern const WORD _wVerMajor;
 extern const WORD _wVerMinor;
+extern void RegisterControlsSafely();
+extern void UnRegisterControlsSafely();
 
