@@ -6,14 +6,14 @@
 [Setup]
 AppName={cm:MyAppName}
 AppId=62DA7343-2512-4713-8976-73C42F9D63EA
-AppVerName={cm:MyAppVerName,1.0.33.0003}
+AppVerName={cm:MyAppVerName,1.1.35.0005}
 WizardStyle=modern
 DefaultDirName={pf}\{cm:MyAppName}
 DefaultGroupName={cm:MyAppName}
 UninstallDisplayIcon={app}\MyProg.exe
 VersionInfoDescription=testSuite
 VersionInfoProductName=testSuite
-VersionInfoVersion=1.0.33.0003
+VersionInfoVersion=1.1.35.0005
 OutputBaseFilename=testSuite
 OutputDir=.\output
 ; Uncomment the following line to disable the "Select Setup Language"
@@ -73,12 +73,18 @@ Source: "..\bin\TestSuite.exe"; DestDir: "{app}";
 Source: "..\bin\rsyncAgent.exe"; DestDir: "{app}";
 Source: "..\bin\rsyncAgent.properties"; DestDir: "{app}";
 
+Source: "..\bin\UKEYMonitor.exe"; DestDir: "{app}";
+Source: "..\bin\UKEYMonitor.properties"; DestDir: "{app}";
+Source: "..\bin\devicelist.json"; DestDir: "{app}";
+
 Source: "..\bin\CppUnit.dll"; DestDir: "{app}"   
 Source: "..\bin\PocoFoundation.dll"; DestDir: "{app}"     
 Source: "..\bin\PocoJSON.dll"; DestDir: "{app}";
 Source: "..\bin\PocoNet.dll"; DestDir: "{app}";
 Source: "..\bin\PocoXML.dll"; DestDir: "{app}";
 Source: "..\bin\PocoUtil.dll"; DestDir: "{app}";
+Source: "..\bin\PocoData.dll"; DestDir: "{app}";
+Source: "..\bin\PocoDataSQLite.dll"; DestDir: "{app}";
 
 Source: "..\bin\SoFProvider.dll"; DestDir: "{app}"; 
 Source: ".\release\config.ini"; DestDir: "{app}";
@@ -86,7 +92,6 @@ Source: ".\release\config.ini"; DestDir: "{app}";
 [Icons]
 Name: "{group}\{cm:MyAppName}"; Filename: "{app}\TestSuite.exe"
 Name: "{group}\{cm:UninstallProgram,{cm:MyAppName}}"; Filename: "{uninstallexe}"
-Name: "{userdesktop}\HTTPServer";Filename: "{app}\rsyncAgent.EXE"; WorkingDir: "{app}"
 
 [Tasks]
 ; The following task doesn't do anything and is only meant to show [CustomMessages] usage
@@ -96,5 +101,12 @@ Name: mytask; Description: "{cm:MyDescription}"
 ;Filename: "{app}\Drive\HSIC DriverSetup.exe";
 ;Filename: "{app}\Drive\ePass3000SimpChinese-With-PrvDll_silent.exe";
 ;Filename: "{app}\Drive\HTSetup_NMCA.exe";
+Filename: "{app}\UKEYMonitor.exe"; Parameters: "/registerService" ; Flags: runascurrentuser
+Filename: "{app}\rsyncAgent.exe"; Parameters: "/registerService" ; Flags: runascurrentuser
+
+[UninstallRun]
+Filename: "{app}\UKEYMonitor.exe"; Parameters: "/unregisterService" ; Flags: runascurrentuser
+Filename: "{app}\rsyncAgent.exe"; Parameters: "/unregisterService" ; Flags: runascurrentuser
+
 [UninstallDelete]
 Type:filesandordirs; Name:"{app}\testTarget"
