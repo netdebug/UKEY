@@ -10,6 +10,7 @@
 //
 
 #include "rsyncAgent.h"
+#include "AdaptiveRecevier.h"
 #include "Poco/Util/Application.h"
 #include "Poco/Util/Option.h"
 #include "Poco/Util/OptionSet.h"
@@ -19,6 +20,7 @@
 #include "Poco/Net/HTTPServer.h"
 #include "Poco/Net/HTTPServerParams.h"
 #include "RequestHandlerFactory.h"
+#include <sstream>
 
 using namespace Reach;
 
@@ -80,11 +82,12 @@ void rsyncAgent::displayHelp()
 	helpFormatter.format(std::cout);
 }
 
-#include <sstream>
 int rsyncAgent::main(const ArgVec& args)
 {
 	if (!_helpRequested)
 	{
+		TaskManager tm;
+		tm.start(new AdaptiveRecevier);
 		unsigned short port = (unsigned short)config().getInt("HTTPFormServer.port", 9980);
 		ServerSocket svs(port);
 		HTTPServer srv(new RequestHandlerFactory, svs, new HTTPServerParams);
@@ -92,7 +95,8 @@ int rsyncAgent::main(const ArgVec& args)
 		poco_information_f1(Application::instance().logger(), "HTTPServer Listen from %s", svs.address().toString());
 		waitForTerminationRequest();
 		srv.stop();
-
+		tm.cancelAll();
+		tm.joinAll();
 	}
 	return Application::EXIT_OK;
 }

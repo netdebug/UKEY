@@ -21,7 +21,8 @@ namespace Reach {
 
 		void run()
 		{
-			Reach::Data::Session session("SOF", "REST");
+			//Reach::Data::Session session("SOF", "REST");
+			Reach::Data::Session session(getEngine(), "REST");
 			_val = session.verifySignByP1(_base64, _msg, _signature);
 			
 			if (!_val) {

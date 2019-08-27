@@ -27,7 +27,8 @@ namespace Reach {
 		void run()
 		{
 			//UDevice::default();
-			Reach::Data::Session session("SOF", "REST");
+			//Reach::Data::Session session("SOF", "REST");
+			Reach::Data::Session session(getEngine(), "REST");
 
 			std::string pattern("(\\S+)@@@(\\S+)");
 			int options = 0;

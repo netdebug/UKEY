@@ -39,7 +39,9 @@ namespace Reach {
 
 		void run()
 		{
-			Reach::Data::Session session("SOF", "REST");
+			/// FJCA SOF all use this
+			//Reach::Data::Session session("SOF", "REST");
+			Reach::Data::Session session(getEngine(), "REST");
 
 			_item = session.getCertInfo(_base64, _type);
 

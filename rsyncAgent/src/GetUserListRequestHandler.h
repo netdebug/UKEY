@@ -31,7 +31,8 @@ namespace Reach {
 	public:
 		void run()
 		{
-			Reach::Data::Session session("SOF", "REST");
+			//Reach::Data::Session session("SOF", "REST");
+			Reach::Data::Session session(getEngine(), "REST");
 			_line = session.getUserList();
 
 			if (_line.empty())

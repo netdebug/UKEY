@@ -25,7 +25,8 @@ namespace Reach {
 		void run()
 		{
 			//UDevice::default();
-			Reach::Data::Session session("SOF", "REST");
+			//Reach::Data::Session session("SOF", "REST");
+			Reach::Data::Session session(getEngine(), "REST");
 
 			if (_paintext.empty())
 				throw RequestHandleException(RAR_ERRNODECRYPT);

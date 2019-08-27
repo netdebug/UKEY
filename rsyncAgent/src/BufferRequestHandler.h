@@ -3,50 +3,16 @@
 #include "Poco/Net/HTTPRequestHandler.h"
 #include "Poco/Net/HTTPServerResponse.h"
 #include "Poco/Net/HTTPServerRequest.h"
-#include "Poco/JSON/Object.h"
-#include "Poco/JSON/Query.h"
-#include "Poco/Dynamic/Var.h"
-#include "Poco/NumberFormatter.h"
-#include "Poco/DynamicStruct.h"
-#include "Poco/Data/SessionFactory.h"
-#include "Poco/Data/Session.h"
-#include "Poco/Data/RecordSet.h"
-#include "Poco/Data/Column.h"
-#include "Poco/Data/SQLite/Connector.h"
-#include "Poco/Debugger.h"
 #include "Poco/Logger.h"
 #include "Poco/Util/Application.h"
 #include "RESTfulRequestHandler.h"
-#include "Reach/Data/Session.h"
-#include "Reach/Data/SOF/Connector.h"
 
 namespace Reach {
 
-	using Poco::JSONOptions;
-	using Poco::JSON::Object;
-	using Poco::JSON::Query;
-	using Poco::JSON::Array;
-	using Poco::Dynamic::Var;
-	using Poco::NumberFormatter;
-	using Poco::DynamicStruct;
-	using Poco::Data::Session;
-	using Poco::Data::Statement;
-	using Poco::Data::RecordSet;
-	using Poco::Data::Column;
-	using Poco::Data::Row;
-
-	using Poco::Debugger;
 	using Poco::Util::Application;
-	using Poco::Data::SessionFactory;
-	using Poco::format;
-	using namespace Poco::Data::Keywords;
 
 	class BufferRequestHandler : public RESTfulRequestHandler
 	{
-		typedef Poco::Tuple <std::string, std::string, std::string> DeviceInfo;
-		typedef std::vector<DeviceInfo> DeviceInfoSet;
-		typedef DeviceInfoSet::const_iterator Iter;
-
 	public:
 		void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
 		{
@@ -54,13 +20,19 @@ namespace Reach {
 
 			RESTfulRequestHandler::handleCORS(request, response);
 
+			/*
 			Poco::Data::SQLite::Connector::registerConnector();
 			Reach::Data::SOF::Connector::registerConnector();
+			Reach::Data::FJCA::Connector::registerConnector();
 
 			Reach::Data::Session tty("SOF", "REST");
+			poco_information_f3(Application::instance().logger(), "connector: %s, uri: %s, contianer:%s", tty.connector(), tty.uri(), tty.contianer());
+
 			
-			poco_information_f3(Application::instance().logger(), "connector: %s, uri: %s, contianer:%s" , tty.connector(), tty.uri(), tty.contianer());
-			
+			Reach::Data::Session tty1("FJCA", "REST");
+			poco_information_f3(Application::instance().logger(), "connector: %s, uri: %s, contianer:%s" , tty1.connector(), tty1.uri(), tty1.contianer());
+		
+
 #ifdef _DEBUG
 			Session session("SQLite", "C:\\Windows\\SysWOW64\\DeQLite.db");
 #else
@@ -85,15 +57,10 @@ namespace Reach {
 			data = out.str();
 
 			dbgview(format("DeviceSet tags %s\n", data));
-			response.sendBuffer(data.data(), data.length());
-		}
+			*/
 
-		void dbgview(const std::string& message)
-		{
-#ifndef _DEBUG
-			::OutputDebugStringA(message.c_str());
-#endif // !_NDEBUG
-			Debugger::message(message);
+			std::string data("buffer request is deprecate!");
+			response.sendBuffer(data.data(), data.length());
 		}
 	};
 }

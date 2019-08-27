@@ -24,7 +24,8 @@ namespace Reach {
 		{}
 		void run()
 		{	
-			Reach::Data::Session session("SOF", "REST");
+			//Reach::Data::Session session("SOF", "REST");
+			Reach::Data::Session session(getEngine(), "REST");
 
 			if (_uid.empty() || _pwd.empty())
 				throw RequestHandleException(RAR_UNKNOWNERR);

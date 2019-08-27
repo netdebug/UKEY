@@ -25,7 +25,8 @@ namespace Reach {
 
 		void run()
 		{
-			Reach::Data::Session session("SOF", "REST");
+			//Reach::Data::Session session("SOF", "REST");
+			Reach::Data::Session session(getEngine(), "REST");
 
 			if (_uid != session.contianer())
 				throw RequestHandleException(RAR_UNIQUEIDUNCORRECT);

@@ -2,6 +2,7 @@
 
 #include "Poco/Net/NameValueCollection.h"
 #include "Poco/Debugger.h"
+#include "Poco/String.h"
 #include "JSONStringify.h"
 #include "ErrorCode.h"
 #include "SoFProvider.h"
@@ -13,6 +14,7 @@ namespace Reach {
 
 	using Reach::JSONStringify;
 	using Poco::Debugger;
+	using Poco::format;
 	using Poco::Net::NameValueCollection;
 	
 	class Command
@@ -38,6 +40,12 @@ namespace Reach {
 			}
 
 			return *this;
+		}
+
+		std::string getEngine()
+		{
+			Application& app = Application::instance();
+			return app.config().getString("engine.mode", "SOF");
 		}
 
 		void add(const std::string& name, const std::string& value)

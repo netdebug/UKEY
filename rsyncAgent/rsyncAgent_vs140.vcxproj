@@ -32,6 +32,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
+    <ClInclude Include="src\AdaptiveRecevier.h" />
     <ClInclude Include="src\AuthRequestHandler.h" />
     <ClInclude Include="src\BufferRequestHandler.h" />
     <ClInclude Include="src\CertLoginRequestHandler.h" />
@@ -77,6 +78,7 @@
     <ClInclude Include="src\VerifySignByP7RequestHandler.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\AdaptiveRecevier.cpp" />
     <ClCompile Include="src\JSONStringify.cpp" />
     <ClCompile Include="src\RequestHandleException.cpp" />
     <ClCompile Include="src\RequestHandlerFactory.cpp" />
@@ -188,7 +190,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug_shared|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\RData\include;..\RData\SOF\include;..\include\poco\Data\include;..\include\poco\Data\SQLite\include;..\include\poco\JSON\include;..\include\poco\Foundation\include;..\include\poco\Net\include;..\include\poco\Util\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\RData\include;..\RData\SOF\include;..\RData\FJCA\include;..\include\poco\Data\include;..\include\poco\Data\SQLite\include;..\include\poco\JSON\include;..\include\poco\Foundation\include;..\include\poco\Net\include;..\include\poco\Util\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>true</MinimalRebuild>
@@ -205,7 +207,7 @@
       <DisableSpecificWarnings>4800</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>PocoFoundationd.lib;PocoJSONd.lib;PocoNetd.lib;PocoUtild.lib;PocoDatad.lib;PocoDataSQLited.lib;SoFProviderd.lib;rsyncDatad.lib;Iphlpapi.lib;msi.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PocoFoundationd.lib;PocoJSONd.lib;PocoNetd.lib;PocoUtild.lib;PocoDatad.lib;PocoDataSQLited.lib;SOFProviderd.lib;rsyncDatad.lib;Iphlpapi.lib;msi.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\bin\rsyncAgentd.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -228,7 +230,7 @@ xcopy /y $(ProjectDir)Language.ini $(OutDir)</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
-      <AdditionalIncludeDirectories>..\include\poco\Data\include;..\include\poco\Data\SQLite\include;..\include\poco\JSON\include;..\include\poco\Foundation\include;..\include\poco\Net\include;..\include\poco\Util\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\RData\include;..\RData\FJCA\include;..\RData\SOF\include;..\include\poco\Data\include;..\include\poco\Data\SQLite\include;..\include\poco\JSON\include;..\include\poco\Foundation\include;..\include\poco\Net\include;..\include\poco\Util\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -242,7 +244,7 @@ xcopy /y $(ProjectDir)Language.ini $(OutDir)</Command>
       <CompileAs>Default</CompileAs>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>PocoFoundation.lib;PocoJSON.lib;PocoUtil.lib;PocoNet.lib;PocoData.lib;PocoDataSQLite.lib;SoFProvider.lib;ws2_32.lib;iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PocoFoundation.lib;PocoJSON.lib;PocoUtil.lib;PocoNet.lib;PocoData.lib;PocoDataSQLite.lib;rsyncData.lib;SoFProvider.lib;ws2_32.lib;iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\bin\rsyncAgent.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>false</GenerateDebugInformation>
