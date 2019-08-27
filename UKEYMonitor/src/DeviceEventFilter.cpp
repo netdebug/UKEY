@@ -42,7 +42,7 @@ DeviceEventFilter::DeviceEventFilter()
 	session << "DROP TABLE IF EXISTS DeviceSet", now;
 
 	session << "CREATE TABLE DeviceSet (Description VARCHAR(30), ENUMERATOR VARCHAR(32), HardwareID VARCHAR(200),\
-		InstanceID VARCHAR(32), ClassGUID VARCHAR(39), PRESENT BOOLEAN(1))", now;
+		InstanceID VARCHAR(32), ClassGUID VARCHAR(39), ENGINE VARCHAR(32), PRESENT BOOLEAN(1))", now;
 }
 
 DeviceEventFilter::~DeviceEventFilter()

@@ -14,6 +14,7 @@
 #include "Poco/Data/SQLite/Connector.h"
 #include "Poco/Util/WinService.h"
 #include "Poco/Thread.h"
+#include "Poco/NamedEvent.h"
 #include <sstream>
 #include <cassert>
 
@@ -36,7 +37,10 @@ using Poco::Data::Statement;
 using Poco::Data::RecordSet;
 using Poco::Util::WinService;
 using Poco::Thread;
+using Poco::NamedEvent;
 using namespace Poco::Data::Keywords;
+
+static NamedEvent DeviceChangedEvent("DeviceChangedEvent");
 
 DeviceFilter::DeviceFilter(const std::string& enumerate_id, bool presented)
 	:_enumerate(enumerate_id), _presented(presented)
@@ -114,34 +118,53 @@ void DeviceFilter::enqueue()
 		/// Sqlite table : "CREATE TABLE DeviceSet (Description VARCHAR(30), ENUMERATOR VARCHAR(32), HardwareID VARCHAR(200), InstanceID VARCHAR(32), ClassGUID VARCHAR(39)), PRESENT BOOLEAN(1)"
 		if (isLegelDevice(tags[2])) {
 
-			Session session("SQLite", "DeQLite.db");
-		
-			std::vector<std::string> HardwareSet;
-			session << "SELECT * FROM DeviceSet WHERE HardwareID = ? AND InstanceID = ?",
-				use(tags[2]),use(tags[3]),into(HardwareSet),now;
-
-			if (!HardwareSet.empty()) {
-				session << "DELETE FROM DeviceSet WHERE HardwareID = ? AND InstanceID = ?",
-					use(tags[2]), use(tags[3]), now;
-			}
-
-			session << "INSERT INTO DeviceSet VALUES(?, ?, ?, ?, ?, ?)", 
-				use(_description),
-				use(tags[1]),
-				use(tags[2]),
-				use(tags[3]),
-				use(tags[4]),
-				use(_presented),
-				now;
-
-				dbgview(format("Update SQLite ->\n Description : %s\n  enumerator : %s\n HardwareID : %s\n InstanceID : %s\n   ClassGUID : %s\n",
-					_description, tags[1], tags[2], tags[3], tags[4]));
+			DeviceInfoType info(_description, tags[1], tags[2], tags[3], tags[4], _engine);
+			updateDeviceStatus(info, _presented);
+			
+			DeviceChangedEvent.set();
+			dbgview("UKEYMonitor DeviceChangedEvent set");
+			dbgview(format("Update SQLite ->\n Description : %s\n  enumerator : %s\n HardwareID : %s\n InstanceID : %s\n   ClassGUID : %s\n",
+				_description, tags[1], tags[2], tags[3], tags[4]));
 		}
 	}
 	catch (Poco::RegularExpressionException& e)
 	{
 		dbgview(format("lpdbv->dbcc_name tags %d : %s", e.code(), e.displayText()));
 	}
+}
+
+void DeviceFilter::updateDeviceStatus(const DeviceInfoType& info, bool present)
+{
+	std::string description(info.get<description>());
+	std::string enumerator(info.get<enumerator>());
+	std::string hardware(info.get<hardware_id>());
+	std::string instance(info.get<instance_id>());
+	std::string classGuid(info.get<class_guid>());
+	std::string engine(info.get<engine_mode>());
+
+	std::vector<std::string> HardwareSet;
+
+	Session session("SQLite", "DeQLite.db");
+	session << "SELECT * FROM DeviceSet WHERE HardwareID = ? AND InstanceID = ?",
+		use(hardware),
+		use(instance),
+		into(HardwareSet), 
+		now;
+
+	if (!HardwareSet.empty()) {
+		session << "DELETE FROM DeviceSet WHERE HardwareID = ? AND InstanceID = ?",
+			use(hardware), use(instance), now;
+	}
+
+	session << "INSERT INTO DeviceSet VALUES(?, ?, ?, ?, ?, ?,?)",
+		use(description), //_description
+		use(enumerator), //tags[1] 
+		use(hardware), //tags[2]
+		use(instance), //tags[3]
+		use(classGuid), //tags[4]
+		use(engine),	// engine_mode
+		use(present),  // _presented
+		now;
 }
 
 void DeviceFilter::resetRESTfulService()
@@ -175,7 +198,8 @@ bool DeviceFilter::isLegelDevice(const std::string& deivice_id)
 		std::string hardware = _data[i]["hardwareID"];
 		if (isubstr(hardware, deivice_id) != istring::npos) {
 			_description = _data[i]["description"].convert<std::string>();
-			dbgview(format("description : %s", _description));
+			_engine = _data[i]["engine"].convert<std::string>();
+			dbgview(format("description : %s , engine: %s", _description, _engine));
 			return true;
 		}
 			
