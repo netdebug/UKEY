@@ -164,9 +164,10 @@ std::string SessionImpl::getCertBase64String(short ctype)
 	assert(sign <= ctype && ctype <= crypto);
 	std::string content;
 	Poco::Buffer<char> c(4096);
-	FJCA_ExportUserCert(ctype, c.begin(), c.capacity());
+	c.clear();
+	bool ret = FJCA_ExportUserCert(ctype, c.begin(), c.capacity());
 
-	if (c.empty())
+	if (!ret || c.empty())
 		throw Reach::Data::DataException();
 
 	content.append(c.begin(), c.size());
@@ -175,8 +176,7 @@ std::string SessionImpl::getCertBase64String(short ctype)
 
 int SessionImpl::getPinRetryCount()
 {
-	throw Poco::NotImplementedException("FJCA getPinRetryCount");
-	return 0;
+	return 1;
 }
 
 std::string SessionImpl::getCertInfo(const std::string& base64, int type)
@@ -208,6 +208,7 @@ std::string SessionImpl::getSerialNumber()
 	std::string content = getCertBase64String(sign);
 
 	Poco::Buffer<char> num(40);
+	num.clear();
 	bool ret = FJCA_GetKeySerial(const_cast<char*>(content.c_str()), num.begin(), num.capacity());
 	//serialNumber = SOF_GetDeviceInfo(_containerString, SGD_DEVICE_SERIAL_NUMBER);
 	//@000@0012bit
@@ -225,7 +226,7 @@ std::string SessionImpl::encryptData(const std::string& paintText, const std::st
 {
 	///只允许加密证书加密
 	std::string encryptData;
-	Poco::Buffer<char> buffer(4096);
+	Poco::Buffer<char> buffer(4096); buffer.clear();
 
 	bool ret = FJCA_EncryptByPubkey(const_cast<char*>(base64.c_str()), const_cast<char*>(paintText.c_str()), buffer.begin(), buffer.capacity());
 
@@ -240,7 +241,7 @@ std::string SessionImpl::encryptData(const std::string& paintText, const std::st
 std::string SessionImpl::decryptData(const std::string& encrypt)
 {
 	std::string decryptBuffer;
-	Poco::Buffer<char> buffer(4096);
+	Poco::Buffer<char> buffer(4096); buffer.clear();
 
 	bool ret = FJCA_DecryptDataByPrivateKey(const_cast<char*>(encrypt.c_str()), buffer.begin(), buffer.capacity());
 	if (!ret || buffer.empty())
@@ -259,7 +260,7 @@ std::string SessionImpl::decryptData(const std::string& encrypt)
 std::string SessionImpl::signByP1(const std::string& message)
 {
 	std::string signature;
-	Poco::Buffer<char> val(4096);
+	Poco::Buffer<char> val(4096); val.clear();
 	if (FJCA_SignData(const_cast<char*>(message.c_str()), val.begin(), val.capacity())) {
 		throw Poco::DataException(Utility::lastError(_containerString));
 	}
