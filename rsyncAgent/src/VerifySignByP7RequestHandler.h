@@ -22,8 +22,8 @@ namespace Reach {
 		void run()
 		{
 			UDevice::default();
-			/////1 = Detached mode ,textual must be cleared!
-			if (_mode)
+			/////1 = Attached mode ,textual must be cleared!
+			if (!_mode)
 				_textual.clear();
 
 			_verify = SOF_VerifySignedMessage(_signature, _textual);
