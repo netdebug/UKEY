@@ -164,6 +164,9 @@
     <ClInclude Include="src\Utility.h">
       <Filter>Core\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\VerifySignByP7ExtRequestHandler.h">
+      <Filter>RequestHandler</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\RequestHandlerFactory.cpp">
