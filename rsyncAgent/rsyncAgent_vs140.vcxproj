@@ -74,6 +74,7 @@
     <ClInclude Include="src\VerifyDigitalSignByP1RequestHandler.h" />
     <ClInclude Include="src\VerifyIdentityRequestHandler.h" />
     <ClInclude Include="src\VerifySignByP1RequestHandler.h" />
+    <ClInclude Include="src\VerifySignByP7ExtRequestHandler.h" />
     <ClInclude Include="src\VerifySignByP7RequestHandler.h" />
   </ItemGroup>
   <ItemGroup>

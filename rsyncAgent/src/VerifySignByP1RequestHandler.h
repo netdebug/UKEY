@@ -21,7 +21,7 @@ namespace Reach {
 
 		void run()
 		{
-			UDevice::default();
+			//UDevice::default();
 			_val = SOF_VerifySignedData(_base64, _msg, _signature);
 			if (!_val) {
 				throw RequestHandleException("SOF_VerifySignedData failed!", RAR_UNKNOWNERR);

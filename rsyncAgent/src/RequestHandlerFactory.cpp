@@ -23,6 +23,7 @@
 #include "VerifyDigitalSignByP1RequestHandler.h"
 #include "KeySignByP7RequestHandler.h"
 #include "VerifySignByP7RequestHandler.h"
+#include "VerifySignByP7ExtRequestHandler.h"
 #include "EncryptFileRequestHandler.h"
 #include "DecryptFileRequestHandler.h"
 #include "KeyEncryptDataRequestHandler.h"
@@ -84,6 +85,8 @@ HTTPRequestHandler * Reach::RequestHandlerFactory::createRequestHandler(const HT
 		return new KeySignByP7RequestHandler;
 	else if (request.getURI() == "/RS_VerifySignByP7")
 		return new VerifySignByP7RequestHandler;
+	else if (request.getURI() == "/RS_VerifySignByP7Ext")
+		return new VerifySignByP7ExtRequestHandler;
 	else if (request.getURI() == "/RS_EncryptFile")
 		return new EncryptFileRequestHandler;
 	else if (request.getURI() == "/RS_DecryptFile")

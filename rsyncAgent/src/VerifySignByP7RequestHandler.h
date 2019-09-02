@@ -7,6 +7,9 @@
 #include "RESTfulRequestHandler.h"
 #include "RequestHandleException.h"
 #include "Poco/Util/Application.h"
+#include "VerifySignByP7ExtRequestHandler.h"
+#include "Poco/JSON/Parser.h"
+#include "Poco/Dynamic/Struct.h"
 
 namespace Reach {
 
@@ -21,7 +24,7 @@ namespace Reach {
 
 		void run()
 		{
-			UDevice::default();
+			//UDevice::default();
 			/////1 = Attached mode ,textual must be cleared!
 			if (!_mode)
 				_textual.clear();
@@ -55,8 +58,24 @@ namespace Reach {
 
 			VerifySignByP7 command(textual, signature, mode);
 			command.execute();
+			
+			std::string result = command();
+			if (!test(result))
+			{
+				VerifySignByP7Ext command(textual, signature, mode);
+				command.execute();
+				result = command();
+			}
 
-			return response.sendBuffer(command().data(), command().length());
+			return response.sendBuffer(result.data(), result.length());
+		}
+	private:
+		bool test(const std::string& data)
+		{
+			Poco::JSON::Parser C;
+			Poco::Dynamic::Var D = C.parse(data);
+			Poco::DynamicStruct result = *D.extract<Object::Ptr>();
+			return (result["code"] == "0000");
 		}
 	};
 }
