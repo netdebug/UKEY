@@ -75,4 +75,10 @@ std::string SOF_GetInfoFromSignedMessage(std::string SignedMessage, short type);
 std::string SOF_GetCertInfoByOid(std::string Base64EncodeCert, std::string oid);
 
 std::vector <std::string> SOF_GetDeviceCapability(std::string containerName, int type);
+
+std::string SOF_GetDeviceList();
+
+int SOF_OpenDevice(std::string name, int Type);
+
+int SOF_CloseDevice(std::string name, int Type);
 #endif
