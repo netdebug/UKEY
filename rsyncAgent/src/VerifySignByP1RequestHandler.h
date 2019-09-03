@@ -7,6 +7,7 @@
 #include "RESTfulRequestHandler.h"
 #include "RequestHandleException.h"
 #include "Poco/Util/Application.h"
+#include "VerifySignByP1ExtRequestHandler.h"
 
 namespace Reach {
 
@@ -16,13 +17,13 @@ namespace Reach {
 	{
 	public:
 		VerifySignByP1(const std::string& base64, const std::string& msg, const std::string& signature)
-			:_base64(base64), _msg(msg), _signature(signature)
+			:_cert(base64), _msg(msg), _signature(signature)
 		{}
 
 		void run()
 		{
 			//UDevice::default();
-			_val = SOF_VerifySignedData(_base64, _msg, _signature);
+			_val = SOF_VerifySignedData(_cert, _msg, _signature);
 			if (!_val) {
 				throw RequestHandleException("SOF_VerifySignedData failed!", RAR_UNKNOWNERR);
 			}
@@ -30,7 +31,7 @@ namespace Reach {
 
 	private:
 		bool _val;
-		std::string _base64;
+		std::string _cert;
 		std::string _msg;
 		std::string _signature;
 	};
@@ -52,7 +53,15 @@ namespace Reach {
 			VerifySignByP1 command(base64, msg, signature);
 			command.execute();
 
-			return response.sendBuffer(command().data(), command().length());
+			std::string result = command();
+			if (!Utility::result(result))
+			{
+				VerifySignByP1Ext command(base64, msg, signature);
+				command.execute();
+				result = command();
+			}
+			
+			return response.sendBuffer(result.data(), result.length());
 		}
 	};
 }

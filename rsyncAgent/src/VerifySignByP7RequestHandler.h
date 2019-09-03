@@ -60,7 +60,7 @@ namespace Reach {
 			command.execute();
 			
 			std::string result = command();
-			if (!test(result))
+			if (!Utility::result(result))
 			{
 				VerifySignByP7Ext command(textual, signature, mode);
 				command.execute();
@@ -68,14 +68,6 @@ namespace Reach {
 			}
 
 			return response.sendBuffer(result.data(), result.length());
-		}
-	private:
-		bool test(const std::string& data)
-		{
-			Poco::JSON::Parser C;
-			Poco::Dynamic::Var D = C.parse(data);
-			Poco::DynamicStruct result = *D.extract<Object::Ptr>();
-			return (result["code"] == "0000");
 		}
 	};
 }

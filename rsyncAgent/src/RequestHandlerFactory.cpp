@@ -19,6 +19,7 @@
 #include "KeyGetKeySnRequestHandler.h"
 #include "KeySignByP1RequestHandler.h"
 #include "VerifySignByP1RequestHandler.h"
+#include "VerifySignByP1ExtRequestHandler.h"
 #include "KeyDigitalSignByP1RequestHandler.h"
 #include "VerifyDigitalSignByP1RequestHandler.h"
 #include "KeySignByP7RequestHandler.h"
@@ -77,6 +78,8 @@ HTTPRequestHandler * Reach::RequestHandlerFactory::createRequestHandler(const HT
 		return new KeySignByP1RequestHandler;
 	else if (request.getURI() == "/RS_VerifySignByP1")
 		return new VerifySignByP1RequestHandler;
+	else if (request.getURI() == "/RS_VerifySignByP1Ext")
+		return new VerifySignByP1ExtRequestHandler;
 	else if (request.getURI() == "/RS_KeyDigitalSignByP1")
 		return new KeyDigitalSignByP1RequestHandler;
 	else if (request.getURI() == "/RS_VerifyDigitalSignByP1")
