@@ -10,7 +10,9 @@ namespace Reach {
 		static std::string config(const std::string& name);
 		static std::string timestamp();
 		static std::string UniqueTransOrder();
-		static bool result(const std::string & json);
+		static bool resultFormLocal(const std::string & json);
+		static bool resultFormNet(const std::string & json);
+		static bool result(const std::string& json, const std::string& key);
 		static bool testJSON(const std::string & buffer);
 		static std::string cat(const std::string& delim, std::size_t pos, const std::string& str);
 	private:

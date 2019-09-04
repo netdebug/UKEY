@@ -54,14 +54,25 @@ std::string Utility::UniqueTransOrder()
 	return TRANSID;
 }
 
-bool Utility::result(const std::string& json)
+bool Utility::resultFormLocal(const std::string& json)
+{
+	return result(json, "code");
+}
+
+bool Utility::resultFormNet(const std::string& json)
+{
+	return result(json, "RESULTCODE");
+}
+
+bool Utility::result(const std::string& json, const std::string& key)
 {
 	Parser C;
 	Var v = C.parse(json);
 	Object::Ptr object = v.extract<Object::Ptr>();
 	DynamicStruct ds = *object;
 
-	return (ds["RESULTCODE"] == "0000");
+	assert(ds.contains(key));
+	return (ds[key] == "0000");
 }
 
 bool Utility::testJSON(const std::string& buffer)

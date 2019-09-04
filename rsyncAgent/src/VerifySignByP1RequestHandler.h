@@ -54,7 +54,7 @@ namespace Reach {
 			command.execute();
 
 			std::string result = command();
-			if (!Utility::result(result))
+			if (!Utility::resultFormLocal(result))
 			{
 				VerifySignByP1Ext command(base64, msg, signature);
 				command.execute();

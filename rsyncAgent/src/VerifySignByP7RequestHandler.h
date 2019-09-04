@@ -60,7 +60,7 @@ namespace Reach {
 			command.execute();
 			
 			std::string result = command();
-			if (!Utility::result(result))
+			if (!Utility::resultFormLocal(result))
 			{
 				VerifySignByP7Ext command(textual, signature, mode);
 				command.execute();

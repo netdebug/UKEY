@@ -54,7 +54,7 @@ namespace Reach {
 			std::ostringstream ostr;
 			StreamCopier::copyStream(receive, ostr);
 
-			_verify = Utility::result(ostr.str());
+			_verify = Utility::resultFormNet(ostr.str());
 
 			if (!_verify) {
 				throw RequestHandleException("VerifySignByP7Ext failed!", RAR_UNKNOWNERR);
@@ -64,9 +64,11 @@ namespace Reach {
 		void generator()
 		{
 			/// Note: TIMESTAMP is NOT Equual to TRANSID's
+			/// BIZ.PK7VERIFY   1
+			/// BIZ.PK7ATTVERIFY   0
 			std::string fmt(
 				"{\n"
-				"	\"BIZCODE\" : \"BIZ.PK7VERIFY\",\n"
+				"	\"BIZCODE\" : \"%s\",\n"
 				"	\"DATA\" : {\n"
 				"					\"msg\" : \"%s\",\n"
 				"					\"signedMsg\" : \"%s\"\n"
@@ -77,7 +79,9 @@ namespace Reach {
 				"		\"UNIT\" : \"RSYZ\"\n"
 				"}");
 
-			format(_buffer, fmt, _msg, _signature, Utility::timestamp(), Utility::UniqueTransOrder());
+			std::string bizCode;
+			_mode ? (bizCode = "BIZ.PK7VERIFY") : (bizCode = "BIZ.PK7ATTVERIFY");
+			format(_buffer, fmt, bizCode,_msg, _signature, Utility::timestamp(), Utility::UniqueTransOrder());
 
 			assert(Utility::testJSON(_buffer));
 			poco_information_f1(Application::instance().logger(), "VerifySignByP7Ext JSON: %s", _buffer);

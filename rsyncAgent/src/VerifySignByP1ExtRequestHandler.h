@@ -49,7 +49,7 @@ namespace Reach {
 			std::ostringstream ostr;
 			StreamCopier::copyStream(receive, ostr);
 
-			_verify = Utility::result(ostr.str());
+			_verify = Utility::resultFormNet(ostr.str());
 
 			if (!_verify) {
 				throw RequestHandleException("VerifySignByP1Ext failed!", RAR_UNKNOWNERR);
