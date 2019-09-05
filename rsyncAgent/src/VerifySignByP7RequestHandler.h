@@ -25,7 +25,7 @@ namespace Reach {
 		void run()
 		{
 			//UDevice::default();
-			/////1 = Attached mode ,textual must be cleared!
+			/////1 = Detached mode ,textual must be cleared!
 			if (!_mode)
 				_textual.clear();
 
@@ -55,6 +55,14 @@ namespace Reach {
 			std::string textual(form.get("msg", ""));
 			std::string signature(form.get("signdMsg", ""));
 			Var mode(form.get("flag", ""));
+
+			if (mode && textual.empty())
+			{
+				std::string message("message must not be emtpy!");
+				JSONStringify reject(message, RAR_ERRNOENCRYPT);
+				reject.addObject("info", message);
+				return response.sendBuffer(reject.toString().data(), reject.toString().length());
+			}
 
 			VerifySignByP7 command(textual, signature, mode);
 			command.execute();
