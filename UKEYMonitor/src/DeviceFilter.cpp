@@ -49,7 +49,7 @@ DeviceFilter::DeviceFilter(const std::string& enumerate_id, bool presented)
 	{
 		loadConfigure();
 		enqueue();
-		resetRESTfulService();
+		//resetRESTfulService();
 	}
 	catch (Poco::Exception& e)
 	{
@@ -120,7 +120,7 @@ void DeviceFilter::enqueue()
 
 			DeviceInfoType info(_description, tags[1], tags[2], tags[3], tags[4], _engine);
 			updateDeviceStatus(info, _presented);
-			
+
 			DeviceChangedEvent.set();
 			dbgview("UKEYMonitor DeviceChangedEvent set");
 			dbgview(format("Update SQLite ->\n Description : %s\n  enumerator : %s\n HardwareID : %s\n InstanceID : %s\n   ClassGUID : %s\n",
@@ -148,7 +148,7 @@ void DeviceFilter::updateDeviceStatus(const DeviceInfoType& info, bool present)
 	session << "SELECT * FROM DeviceSet WHERE HardwareID = ? AND InstanceID = ?",
 		use(hardware),
 		use(instance),
-		into(HardwareSet), 
+		into(HardwareSet),
 		now;
 
 	if (!HardwareSet.empty()) {
@@ -172,23 +172,47 @@ void DeviceFilter::resetRESTfulService()
 	std::vector<std::string> HardwareSet;
 
 	Session session("SQLite", "DeQLite.db");
-	session << "SELECT HardwareID FROM DeviceSet WHERE PRESENT = 1",
+	session << "SELECT HardwareID, ENGINE FROM DeviceSet WHERE PRESENT = 1",
 		into(HardwareSet), now;
 	/// specific when swap multiple device by user ,ukey cannot not work.
 	if (!_presented && HardwareSet.size() < 3) {
+
+		for (int i = 0; i < 5; ++i) {
+			Thread::sleep(2000);
 #ifdef _DEBUG
-		WinService service("rsyncAgentd");
+			if (restartService("rsyncAgentd"))
+				break;
 #else
-		WinService service("rsyncAgent");
-#endif // _DEBUG
-		if (_presented && !service.isRunning())
+			if (restartService("rsyncAgent"))
+				break;
+#endif // _DEBUG	
+		}
+	}
+}
+
+bool DeviceFilter::restartService(const std::string& name)
+{
+	WinService service(name);
+
+	try
+	{
+		bool status = service.isRunning();
+
+		if (!status)
 			service.start();
 		else if (!_presented) {
 			service.stop();
 			Thread::sleep(500);
 			service.start();
 		}
+		return true;
 	}
+	catch (Poco::Exception& e)
+	{
+		dbgview(e.message());
+	}
+
+	return false;
 }
 
 bool DeviceFilter::isLegelDevice(const std::string& deivice_id)
@@ -202,7 +226,7 @@ bool DeviceFilter::isLegelDevice(const std::string& deivice_id)
 			dbgview(format("description : %s , engine: %s", _description, _engine));
 			return true;
 		}
-			
+
 	}
 	return false;
 }

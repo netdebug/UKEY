@@ -34,6 +34,7 @@ namespace Reach {
 
 		void updateDeviceStatus(const DeviceInfoType & info, bool present);
 		void resetRESTfulService();
+		bool restartService(const std::string & name);
 		void dbgview(const std::string & message);
 
 		std::string _description;
