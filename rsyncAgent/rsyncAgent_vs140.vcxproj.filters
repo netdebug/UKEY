@@ -7,12 +7,6 @@
     <Filter Include="RequestHandler">
       <UniqueIdentifier>{6b2e64e4-7619-4a67-a2bb-d2dd566cc671}</UniqueIdentifier>
     </Filter>
-    <Filter Include="RequestHandler\Example">
-      <UniqueIdentifier>{ac5efd6c-5cc1-46ba-a70d-a414cd6208aa}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Device">
-      <UniqueIdentifier>{2c58c06a-3fc6-4f01-b241-5db49d3ef74c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core">
       <UniqueIdentifier>{3ca155db-0e19-40be-bdd9-86ba15894de8}</UniqueIdentifier>
     </Filter>
@@ -21,6 +15,15 @@
     </Filter>
     <Filter Include="Core\Source Files">
       <UniqueIdentifier>{0f09eddf-b305-465e-b1cb-f940ee0f9bd7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RequestHandler\Command">
+      <UniqueIdentifier>{2f92ec96-2a20-4d48-841c-a301dae0c6e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RequestHandler\Command\Header Files">
+      <UniqueIdentifier>{0b743703-0d87-48d3-a7ef-55bb91cadcd6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RequestHandler\Command\Source Files">
+      <UniqueIdentifier>{4b61d333-6ecc-4e29-81b2-e837f2d72f4b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -41,160 +44,166 @@
     <ClInclude Include="src\RequestHandlerFactory.h">
       <Filter>Core\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\UDevice.h">
-      <Filter>Device</Filter>
-    </ClInclude>
-    <ClInclude Include="src\StrategyCollection.h">
-      <Filter>Device</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SoFProvider.h">
-      <Filter>Device</Filter>
-    </ClInclude>
-    <ClInclude Include="src\JSONStringify.h">
-      <Filter>Device</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GMCrypto.h">
-      <Filter>Device</Filter>
-    </ClInclude>
-    <ClInclude Include="src\RequestHandleException.h">
-      <Filter>RequestHandler</Filter>
-    </ClInclude>
-    <ClInclude Include="src\RESTfulRequestHandler.h">
-      <Filter>RequestHandler</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SOFErrorCode.h">
-      <Filter>Device</Filter>
-    </ClInclude>
-    <ClInclude Include="src\AuthRequestHandler.h">
-      <Filter>RequestHandler\Example</Filter>
-    </ClInclude>
-    <ClInclude Include="src\EchoBodyRequestHandler.h">
-      <Filter>RequestHandler\Example</Filter>
-    </ClInclude>
-    <ClInclude Include="src\EchoHeaderRequestHandler.h">
-      <Filter>RequestHandler\Example</Filter>
-    </ClInclude>
-    <ClInclude Include="src\RedirectRequestHandler.h">
-      <Filter>RequestHandler\Example</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Command.h">
-      <Filter>RequestHandler</Filter>
-    </ClInclude>
-    <ClInclude Include="src\BufferRequestHandler.h">
-      <Filter>RequestHandler</Filter>
-    </ClInclude>
-    <ClInclude Include="src\CertLoginRequestHandler.h">
-      <Filter>RequestHandler</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ChangePassWdRequestHandler.h">
-      <Filter>RequestHandler</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ConfigParametersRequestHandler.h">
-      <Filter>RequestHandler</Filter>
-    </ClInclude>
-    <ClInclude Include="src\DecryptFileRequestHandler.h">
-      <Filter>RequestHandler</Filter>
-    </ClInclude>
-    <ClInclude Include="src\EncryptFileRequestHandler.h">
-      <Filter>RequestHandler</Filter>
-    </ClInclude>
-    <ClInclude Include="src\extCloseDeviceRequestHandler.h">
-      <Filter>RequestHandler</Filter>
-    </ClInclude>
-    <ClInclude Include="src\extOpenDeviceRequestHandler.h">
-      <Filter>RequestHandler</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GetCertBase64StringRequestHandler.h">
-      <Filter>RequestHandler</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GetCertInfoRequestHandler.h">
-      <Filter>RequestHandler</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GetParametersRequestHandler.h">
-      <Filter>RequestHandler</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GetPinRetryCountRequestHandler.h">
-      <Filter>RequestHandler</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GetUserListRequestHandler.h">
-      <Filter>RequestHandler</Filter>
-    </ClInclude>
-    <ClInclude Include="src\KeyDecryptByDigitalEnvelopeRequestHandler.h">
-      <Filter>RequestHandler</Filter>
-    </ClInclude>
-    <ClInclude Include="src\KeyDecryptDataRequestHandler.h">
-      <Filter>RequestHandler</Filter>
-    </ClInclude>
-    <ClInclude Include="src\KeyDigitalSignByP1RequestHandler.h">
-      <Filter>RequestHandler</Filter>
-    </ClInclude>
-    <ClInclude Include="src\KeyEncryptByDigitalEnvelopeRequestHandler.h">
-      <Filter>RequestHandler</Filter>
-    </ClInclude>
-    <ClInclude Include="src\KeyEncryptDataRequestHandler.h">
-      <Filter>RequestHandler</Filter>
-    </ClInclude>
-    <ClInclude Include="src\KeyGetKeySnRequestHandler.h">
-      <Filter>RequestHandler</Filter>
-    </ClInclude>
-    <ClInclude Include="src\KeySignByP1RequestHandler.h">
-      <Filter>RequestHandler</Filter>
-    </ClInclude>
-    <ClInclude Include="src\KeySignByP7RequestHandler.h">
-      <Filter>RequestHandler</Filter>
-    </ClInclude>
-    <ClInclude Include="src\VerifyDigitalSignByP1RequestHandler.h">
-      <Filter>RequestHandler</Filter>
-    </ClInclude>
-    <ClInclude Include="src\VerifyIdentityRequestHandler.h">
-      <Filter>RequestHandler</Filter>
-    </ClInclude>
-    <ClInclude Include="src\VerifySignByP1RequestHandler.h">
-      <Filter>RequestHandler</Filter>
-    </ClInclude>
-    <ClInclude Include="src\VerifySignByP7RequestHandler.h">
-      <Filter>RequestHandler</Filter>
-    </ClInclude>
-    <ClInclude Include="src\translater.h">
-      <Filter>Core\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ErrorCode.h">
-      <Filter>RequestHandler</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Utility.h">
-      <Filter>Core\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\AdaptiveRecevier.h">
       <Filter>Core\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\Command.h">
+      <Filter>RequestHandler\Command</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\CertLoginRequestHandler.h">
+      <Filter>RequestHandler\Command\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\ChangePassWdRequestHandler.h">
+      <Filter>RequestHandler\Command\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\ConfigParametersRequestHandler.h">
+      <Filter>RequestHandler\Command\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\DecryptFileRequestHandler.h">
+      <Filter>RequestHandler\Command\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\EncryptFileRequestHandler.h">
+      <Filter>RequestHandler\Command\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\GetCertBase64StringRequestHandler.h">
+      <Filter>RequestHandler\Command\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\GetCertInfoRequestHandler.h">
+      <Filter>RequestHandler\Command\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\GetPinRetryCountRequestHandler.h">
+      <Filter>RequestHandler\Command\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\GetUserListRequestHandler.h">
+      <Filter>RequestHandler\Command\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\KeyDecryptByDigitalEnvelopeRequestHandler.h">
+      <Filter>RequestHandler\Command\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\KeyDecryptDataRequestHandler.h">
+      <Filter>RequestHandler\Command\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\KeyDigitalSignByP1RequestHandler.h">
+      <Filter>RequestHandler\Command\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\KeyEncryptByDigitalEnvelopeRequestHandler.h">
+      <Filter>RequestHandler\Command\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\KeyEncryptDataRequestHandler.h">
+      <Filter>RequestHandler\Command\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\KeyGetKeySnRequestHandler.h">
+      <Filter>RequestHandler\Command\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\KeySignByP1RequestHandler.h">
+      <Filter>RequestHandler\Command\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\KeySignByP7RequestHandler.h">
+      <Filter>RequestHandler\Command\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\VerifyDigitalSignByP1RequestHandler.h">
+      <Filter>RequestHandler\Command\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\VerifyIdentityRequestHandler.h">
+      <Filter>RequestHandler\Command\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\VerifySignByP1RequestHandler.h">
+      <Filter>RequestHandler\Command\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\VerifySignByP7RequestHandler.h">
+      <Filter>RequestHandler\Command\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GMCrypto.h">
+      <Filter>Core\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\Utility.h">
+      <Filter>RequestHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\RequestHandleException.h">
+      <Filter>RequestHandler\Command</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\JSONStringify.h">
+      <Filter>RequestHandler\Command</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\translater.h">
+      <Filter>RequestHandler</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\RequestHandlerFactory.cpp">
       <Filter>Core\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\StrategyCollection.cpp">
-      <Filter>Device</Filter>
-    </ClCompile>
-    <ClCompile Include="src\JSONStringify.cpp">
-      <Filter>Device</Filter>
-    </ClCompile>
-    <ClCompile Include="src\UDevice.cpp">
-      <Filter>Device</Filter>
-    </ClCompile>
-    <ClCompile Include="src\translater.cpp">
-      <Filter>Core\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\RequestHandleException.cpp">
-      <Filter>Core\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\rsyncAgent.cpp">
-      <Filter>Core\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Utility.cpp">
       <Filter>Core\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\AdaptiveRecevier.cpp">
       <Filter>Core\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\Command.cpp">
+      <Filter>RequestHandler\Command</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\CertLoginRequestHandler.cpp">
+      <Filter>RequestHandler\Command\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\VerifySignByP7RequestHandler.cpp">
+      <Filter>RequestHandler\Command\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\ChangePassWdRequestHandler.cpp">
+      <Filter>RequestHandler\Command\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\DecryptFileRequestHandler.cpp">
+      <Filter>RequestHandler\Command\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\EncryptFileRequestHandler.cpp">
+      <Filter>RequestHandler\Command\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\GetCertBase64StringRequestHandler.cpp">
+      <Filter>RequestHandler\Command\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\GetCertInfoRequestHandler.cpp">
+      <Filter>RequestHandler\Command\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\GetPinRetryCountRequestHandler.cpp">
+      <Filter>RequestHandler\Command\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\GetUserListRequestHandler.cpp">
+      <Filter>RequestHandler\Command\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\KeyDecryptByDigitalEnvelopeRequestHandler.cpp">
+      <Filter>RequestHandler\Command\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\KeyDecryptDataRequestHandler.cpp">
+      <Filter>RequestHandler\Command\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\KeyEncryptByDigitalEnvelopeRequestHandler.cpp">
+      <Filter>RequestHandler\Command\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\KeyEncryptDataRequestHandler.cpp">
+      <Filter>RequestHandler\Command\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\KeyGetKeySnRequestHandler.cpp">
+      <Filter>RequestHandler\Command\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\KeySignByP1RequestHandler.cpp">
+      <Filter>RequestHandler\Command\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\KeySignByP7RequestHandler.cpp">
+      <Filter>RequestHandler\Command\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\VerifySignByP1RequestHandler.cpp">
+      <Filter>RequestHandler\Command\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\Utility.cpp">
+      <Filter>RequestHandler</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\RequestHandleException.cpp">
+      <Filter>RequestHandler\Command</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\JSONStringify.cpp">
+      <Filter>RequestHandler\Command</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\translater.cpp">
+      <Filter>RequestHandler</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

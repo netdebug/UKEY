@@ -6,31 +6,28 @@
 #include "BufferRequestHandler.h"
 #include "Poco/Net/HTTPRequestHandler.h"
 #include "Poco/Net/HTTPServerRequest.h"
-#include "ConfigParametersRequestHandler.h"
-#include "GetParametersRequestHandler.h"
-#include "GetUserListRequestHandler.h"
-#include "GetCertBase64StringRequestHandler.h"
-#include "GetCertInfoRequestHandler.h"
-#include "GetCertInfoExRequestHandler.h"
-#include "VerifyIdentityRequestHandler.h"
-#include "CertLoginRequestHandler.h"
-#include "ChangePassWdRequestHandler.h"
-#include "GetPinRetryCountRequestHandler.h"
-#include "KeyGetKeySnRequestHandler.h"
-#include "KeySignByP1RequestHandler.h"
-#include "VerifySignByP1RequestHandler.h"
-#include "KeyDigitalSignByP1RequestHandler.h"
-#include "VerifyDigitalSignByP1RequestHandler.h"
-#include "KeySignByP7RequestHandler.h"
-#include "VerifySignByP7RequestHandler.h"
-#include "EncryptFileRequestHandler.h"
-#include "DecryptFileRequestHandler.h"
-#include "KeyEncryptDataRequestHandler.h"
-#include "KeyDecryptDataRequestHandler.h"
-#include "KeyEncryptByDigitalEnvelopeRequestHandler.h"
-#include "KeyDecryptByDigitalEnvelopeRequestHandler.h"
-#include "extOpenDeviceRequestHandler.h"
-#include "extCloseDeviceRequestHandler.h"
+#include "routes/ConfigParametersRequestHandler.h"
+#include "routes/GetParametersRequestHandler.h"
+#include "routes/GetUserListRequestHandler.h"
+#include "routes/GetCertBase64StringRequestHandler.h"
+#include "routes/GetCertInfoRequestHandler.h"
+#include "routes/VerifyIdentityRequestHandler.h"
+#include "routes/CertLoginRequestHandler.h"
+#include "routes/ChangePassWdRequestHandler.h"
+#include "routes/GetPinRetryCountRequestHandler.h"
+#include "routes/KeyGetKeySnRequestHandler.h"
+#include "routes/KeySignByP1RequestHandler.h"
+#include "routes/VerifySignByP1RequestHandler.h"
+#include "routes/KeyDigitalSignByP1RequestHandler.h"
+#include "routes/VerifyDigitalSignByP1RequestHandler.h"
+#include "routes/KeySignByP7RequestHandler.h"
+#include "routes/VerifySignByP7RequestHandler.h"
+#include "routes/EncryptFileRequestHandler.h"
+#include "routes/DecryptFileRequestHandler.h"
+#include "routes/KeyEncryptDataRequestHandler.h"
+#include "routes/KeyDecryptDataRequestHandler.h"
+#include "routes/KeyEncryptByDigitalEnvelopeRequestHandler.h"
+#include "routes/KeyDecryptByDigitalEnvelopeRequestHandler.h"
 
 using namespace Reach;
 
@@ -61,8 +58,6 @@ HTTPRequestHandler * Reach::RequestHandlerFactory::createRequestHandler(const HT
 		return new GetCertBase64StringRequestHandler;
 	else if (request.getURI() == "/RS_GetCertInfo")
 		return new GetCertInfoRequestHandler;
-	else if (request.getURI() == "/RS_GetCertInfoEx")
-		return new GetCertInfoExRequestHandler;
 	else if (request.getURI() == "/RS_VerifyIdentity")
 		return new VerifyIdentityRequestHandler;
 	else if (request.getURI() == "/RS_CertLogin")
@@ -97,10 +92,6 @@ HTTPRequestHandler * Reach::RequestHandlerFactory::createRequestHandler(const HT
 		return new KeyEncryptByDigitalEnvelopeRequestHandler;
 	else if (request.getURI() == "/RS_KeyDecryptByDigitalEnvelope")
 		return new KeyDecryptByDigitalEnvelopeRequestHandler;
-	else if (request.getURI() == "/SOF_OpenDevice")
-		return new extOpenDeviceRequestHandler;
-	else if (request.getURI() == "/SOF_CloseDevice")
-		return new extCloseDeviceRequestHandler;
 
 		return 0;
 }

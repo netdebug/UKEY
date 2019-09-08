@@ -65,10 +65,13 @@ void AdaptiveRecevier::runTask()
 			dbgview(format("engine mode :%s",app.config().getString("engine.mode")));
 		}
 	}
+
+	dbgview("AdaptiveRecevier stop!");
 }
 
 void AdaptiveRecevier::cancel()
 {
+	dbgview("AdaptiveRecevier::cancel()");
 	Task::cancel();
 	_event.set();
 }
