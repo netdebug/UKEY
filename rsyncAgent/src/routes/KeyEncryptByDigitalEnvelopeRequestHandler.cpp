@@ -29,7 +29,7 @@ void KeyEncryptByDigitalEnvelope::run()
 	_random_digital = Utility::SOF_GenRandom(Utility::random());
 	_encrypted = Utility::SOF_EncryptFile(_random_digital, _source, _encrypt);
 	if (!_encrypted)
-		throw Poco::LogicException("SOF_EncryptFile failed!", SOF_GetLastError());
+		throw Poco::LogicException("SOF_EncryptFile failed!", Utility::SOF_GetLastError());
 
 	///Asymmetric_key algorithm by public cert
 	///_cryptogrphic = asymmetric_key_algorithm(_cert,_random_digital);

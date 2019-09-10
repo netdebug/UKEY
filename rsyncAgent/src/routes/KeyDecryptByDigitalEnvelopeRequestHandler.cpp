@@ -49,7 +49,7 @@ void KeyDecryptByDigitalEnvelope::run()
 	///_cryptogrphic = asymmetric_key_algorithm(_cert,_random_digital);
 	_random_digital = Utility::SOF_AsDecrypt(_uid, encrypt);
 	if (_random_digital.empty())
-		throw Poco::LogicException(SOF_GetLastError());
+		throw Poco::LogicException(Utility::SOF_GetLastError());
 
 	///Symmetric-key algorithm by _random_digital
 	///_encrypt_data = symmetric-key_algorithm(_random_digital,_source_data);

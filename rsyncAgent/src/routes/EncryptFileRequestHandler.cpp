@@ -19,7 +19,7 @@ void EncryptFile::run()
 {
 	//UDevice::default();
 
-	_random_digital = Utility::SOF_GenRandom(16/*UDevice::default().random()*/);
+	_random_digital = Utility::SOF_GenRandom(Utility::random());
 	if (_random_digital.empty()) {
 		throw RequestHandleException(RAR_UNKNOWNERR);
 	}
