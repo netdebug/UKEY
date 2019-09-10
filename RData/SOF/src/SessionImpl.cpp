@@ -91,7 +91,7 @@ void SessionImpl::open(const std::string& connect)
 			if (sw.elapsedSeconds() >= tout)
 			{
 				close();
-				//Utility::throwException(_pDB, rc);
+				throw SOFException(rc);
 			}
 			else Poco::Thread::sleep(10);
 		}

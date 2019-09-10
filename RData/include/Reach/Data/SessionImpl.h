@@ -40,7 +40,7 @@ public:
 	static const std::size_t LOGIN_TIMEOUT_INFINITE = 0;
 		/// Infinite connection/login timeout.
 
-	static const std::size_t LOGIN_TIMEOUT_DEFAULT = 60;
+	static const std::size_t LOGIN_TIMEOUT_DEFAULT = 10;
 		/// Default connection/login timeout in seconds.
 
 	static const std::size_t CONNECTION_TIMEOUT_INFINITE = 0;
