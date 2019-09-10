@@ -67,3 +67,8 @@ bool Utility::SOF_VerifySignedMessage(const std::string&, const std::string&)
 	throw Poco::NotImplementedException("SOF_VerifySignedMessage");
 	return false;
 }
+
+int Utility::SOF_GetLastError()
+{
+	return 0xA000001;
+}

@@ -12,6 +12,7 @@ public:
 	void runTask();
 	virtual void cancel();
 private:
+	void CheckDeviceDBEnv();
 	void dbgview(const std::string& message);
 	
 	Poco::NamedEvent _event;

@@ -36,7 +36,7 @@ AdaptiveRecevier::AdaptiveRecevier()
 
 void AdaptiveRecevier::runTask()
 {
-	Application& app = Application::instance();
+	CheckDeviceDBEnv();
 
 	while (!sleep(500))	{
 		dbgview("AdaptiveRecevier running!");
@@ -46,27 +46,33 @@ void AdaptiveRecevier::runTask()
 		if (isCancelled()) return;
 
 		dbgview("UKEYMonitor.DeviceChangedEvent raise!");
-#ifdef _DEBUG
-		Session session("SQLite", "C:\\Windows\\SysWOW64\\DeQLite.db");
-#else
-		Session session("SQLite", "DeQLite.db");
-#endif // _DEBUG
-
-		DeviceInfoSet devices;
-		session << "SELECT ENGINE, HardwareID, InstanceID FROM DeviceSet WHERE PRESENT = 1", into(devices), now;
-
-		std::string data;
-		for (Iter it = devices.begin(); it != devices.end(); it++) {
-			dbgview(format("DeviceSet tags %s:%s&&%s\n", it->get<0>(), it->get<1>(), it->get<2>()));
-		}
-
-		if (devices.size() == 1) {
-			app.config().setString("engine.mode", devices[0].get<0>());
-			dbgview(format("engine mode :%s",app.config().getString("engine.mode")));
-		}
+		CheckDeviceDBEnv();
 	}
 
 	dbgview("AdaptiveRecevier stop!");
+}
+
+void AdaptiveRecevier::CheckDeviceDBEnv()
+{
+#ifdef _DEBUG
+	Session session("SQLite", "C:\\Windows\\SysWOW64\\DeQLite.db");
+#else
+	Session session("SQLite", "DeQLite.db");
+#endif // _DEBUG
+
+	DeviceInfoSet devices;
+	session << "SELECT ENGINE, HardwareID, InstanceID FROM DeviceSet WHERE PRESENT = 1", into(devices), now;
+
+	std::string data;
+	for (Iter it = devices.begin(); it != devices.end(); it++) {
+		dbgview(format("DeviceSet tags %s:%s&&%s\n", it->get<0>(), it->get<1>(), it->get<2>()));
+	}
+
+	if (devices.size() == 1) {
+		Application& app = Application::instance();
+		app.config().setString("engine.mode", devices[0].get<0>());
+		dbgview(format("engine mode :%s", app.config().getString("engine.mode")));
+	}
 }
 
 void AdaptiveRecevier::cancel()

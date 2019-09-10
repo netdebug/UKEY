@@ -16,6 +16,7 @@ namespace Reach {
 		static int SOF_GetPinRetryCount(const std::string &);
 		static std::string SOF_SignMessage(short, std::string&, std::string&);
 		static bool SOF_VerifySignedMessage(const std::string&, const std::string&);
+		static int SOF_GetLastError();
 	private:
 		Utility();
 		Utility(const Utility&);

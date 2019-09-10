@@ -5,7 +5,6 @@
 #include "Poco/String.h"
 #include "JSONStringify.h"
 #include "ErrorCode.h"
-//#include "SoFProvider.h"
 #include "RequestHandleException.h"
 #include "translater.h"
 #include <string>
@@ -23,7 +22,6 @@ namespace Reach {
 		std::string getEngine();
 		void add(const std::string& name, int value);
 		void add(const std::string& name, const std::string& value);
-		int SOF_GetLastError();
 	private:
 		void sendErrorResponse(const std::string& msg, int code);
 		void toJSON();

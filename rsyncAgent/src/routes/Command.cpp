@@ -5,9 +5,9 @@
 #include "Poco/Debugger.h"
 #include "Poco/String.h"
 #include "JSONStringify.h"
-#include "ErrorCode.h"
-//#include "SoFProvider.h"
+#include "Utility.h"
 #include "RequestHandleException.h"
+#include "Reach/Data/DataException.h"
 #include "translater.h"
 #include <string>
 
@@ -33,13 +33,19 @@ Command& Command::execute()
 		toJSON();
 		/// 业务逻辑不允许 response 为空
 		if (response.empty()) {
-			int error = SOF_GetLastError();
+			int error = Utility::SOF_GetLastError();
 			throw RequestHandleException(RAR_UNKNOWNERR);
 		}
 	}
 	catch (RequestHandleException& e) {
 		///统一错误解析处理
 		sendErrorResponse(e.className(), e.code());
+	}
+	catch (Reach::Data::ConnectionFailedException& e) {
+		sendErrorResponse(e.className(), RAR_OPENDEVICEFAILED);
+	}
+	catch (Poco::NotFoundException&e ){
+		sendErrorResponse(e.className(), RAR_NODEVICE);
 	}
 	catch (Poco::Exception& e) {
 		sendErrorResponse(e.className(), RAR_UNKNOWNERR);
@@ -51,7 +57,7 @@ Command& Command::execute()
 std::string  Command::getEngine()
 {
 	Application& app = Application::instance();
-	return app.config().getString("engine.mode", "SOF");
+	return app.config().getString("engine.mode", "");
 }
 
 void  Command::add(const std::string& name, const std::string& value)
@@ -73,7 +79,7 @@ void  Command::sendErrorResponse(const std::string& msg, int code)
 	try
 	{
 		message = trans.tr("error", code);
-		detail = trans.tr("SOFError", SOF_GetLastError());
+		detail = trans.tr("SOFError", Utility::SOF_GetLastError());
 	}
 	catch (Poco::NotFoundException&)
 	{
@@ -96,10 +102,4 @@ void  Command::toJSON()
 		Debugger::message(format("object item <%s>:<%s> ", it->first, it->second));
 		response.addObject(it->first, it->second);
 	}
-}
-
-int Command::SOF_GetLastError()
-{
-	throw Poco::NotImplementedException("SOF_GetLastError");
-	return 0xA0000001;
 }
