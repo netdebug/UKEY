@@ -90,13 +90,12 @@ void SessionImpl::open(const std::string& connect)
 		Poco::Stopwatch sw; sw.start();
 		while (true)
 		{
-			std::string wrong;
-			rc = FJCA_OpenKeyWithPin(wrong.c_str());
-			if (rc == 0) break;
+			rc = FJCA_IsUsbKeyConnected();
+			if (rc) break;
 			if (sw.elapsedSeconds() >= tout)
 			{
 				close();
-				//Utility::throwException(_pDB, rc);
+				throw FJCAException(rc);
 			}
 			else Poco::Thread::sleep(10);
 		}
