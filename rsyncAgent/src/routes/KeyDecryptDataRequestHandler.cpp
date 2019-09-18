@@ -4,6 +4,8 @@
 #include "Poco/Base64Decoder.h"
 #include "Poco/StreamCopier.h"
 #include "Poco/RegularExpression.h"
+#include "Utility.h"
+
 #include <cassert>
 
 using namespace Reach;
@@ -19,7 +21,11 @@ KeyDecryptData::KeyDecryptData(const std::string& uid, const std::string& encryp
 
 void KeyDecryptData::run()
 {
-	Session session(getEngine(), "REST");
+	//Session session(getEngine(), "REST");
+	Session session(Utility::getSession());
+
+	if (_uid != session.contianer())
+		throw RequestHandleException(RAR_UNIQUEIDUNCORRECT);
 
 	std::string pattern("(\\S+)@@@(\\S+)");
 	int options = 0;
@@ -47,10 +53,5 @@ void KeyDecryptData::run()
 	if (_decrypt_data.empty())
 		throw RequestHandleException(RAR_DECRYPTFAILED);
 
-	std::istringstream istr(_decrypt_data);
-
-	Base64Decoder decoder(istr);
-	StreamCopier::copyToString(decoder, _text);
-
-	add("rsKey", _text);
+	add("rsKey", _decrypt_data);
 }

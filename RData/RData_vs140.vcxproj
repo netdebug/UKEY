@@ -14,7 +14,9 @@
     <ClCompile Include="src\Connector.cpp" />
     <ClCompile Include="src\DataException.cpp" />
     <ClCompile Include="src\Session.cpp" />
+    <ClCompile Include="src\SessionContainer.cpp" />
     <ClCompile Include="src\SessionFactory.cpp" />
+    <ClCompile Include="src\SessionHolder.cpp" />
     <ClCompile Include="src\SessionImpl.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -23,7 +25,9 @@
     <ClInclude Include="include\Reach\Data\Data.h" />
     <ClInclude Include="include\Reach\Data\DataException.h" />
     <ClInclude Include="include\Reach\Data\Session.h" />
+    <ClInclude Include="include\Reach\Data\SessionContainer.h" />
     <ClInclude Include="include\Reach\Data\SessionFactory.h" />
+    <ClInclude Include="include\Reach\Data\SessionHolder.h" />
     <ClInclude Include="include\Reach\Data\SessionImpl.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

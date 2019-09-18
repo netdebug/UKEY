@@ -18,10 +18,12 @@
 #include "routes/KeyGetKeySnRequestHandler.h"
 #include "routes/KeySignByP1RequestHandler.h"
 #include "routes/VerifySignByP1RequestHandler.h"
+#include "routes/VerifySignByP1ExtRequestHandler.h"
 #include "routes/KeyDigitalSignByP1RequestHandler.h"
 #include "routes/VerifyDigitalSignByP1RequestHandler.h"
 #include "routes/KeySignByP7RequestHandler.h"
 #include "routes/VerifySignByP7RequestHandler.h"
+#include "routes/VerifySignByP7ExtRequestHandler.h"
 #include "routes/EncryptFileRequestHandler.h"
 #include "routes/DecryptFileRequestHandler.h"
 #include "routes/KeyEncryptDataRequestHandler.h"
@@ -72,6 +74,8 @@ HTTPRequestHandler * Reach::RequestHandlerFactory::createRequestHandler(const HT
 		return new KeySignByP1RequestHandler;
 	else if (request.getURI() == "/RS_VerifySignByP1")
 		return new VerifySignByP1RequestHandler;
+	else if (request.getURI() == "/RS_VerifySignByP1Ext")
+		return new VerifySignByP1ExtRequestHandler;
 	else if (request.getURI() == "/RS_KeyDigitalSignByP1")
 		return new KeyDigitalSignByP1RequestHandler;
 	else if (request.getURI() == "/RS_VerifyDigitalSignByP1")
@@ -80,6 +84,8 @@ HTTPRequestHandler * Reach::RequestHandlerFactory::createRequestHandler(const HT
 		return new KeySignByP7RequestHandler;
 	else if (request.getURI() == "/RS_VerifySignByP7")
 		return new VerifySignByP7RequestHandler;
+	else if (request.getURI() == "/RS_VerifySignByP7Ext")
+		return new VerifySignByP7ExtRequestHandler;
 	else if (request.getURI() == "/RS_EncryptFile")
 		return new EncryptFileRequestHandler;
 	else if (request.getURI() == "/RS_DecryptFile")

@@ -128,6 +128,12 @@
     <ClInclude Include="src\routes\translater.h">
       <Filter>RequestHandler</Filter>
     </ClInclude>
+    <ClInclude Include="src\routes\VerifySignByP1ExtRequestHandler.h">
+      <Filter>RequestHandler\Command\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\VerifySignByP7ExtRequestHandler.h">
+      <Filter>RequestHandler\Command\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\RequestHandlerFactory.cpp">

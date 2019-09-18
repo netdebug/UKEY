@@ -1,6 +1,7 @@
 #include "KeyEncryptDataRequestHandler.h"
 #include "RequestHandleException.h"
 #include "Reach/Data/Session.h"
+#include "Utility.h"
 
 using namespace Reach;
 using Reach::Data::Session;
@@ -14,8 +15,8 @@ void KeyEncryptData::run()
 {
 	//UDevice::default();
 	//Reach::Data::Session session("SOF", "REST");
-	Reach::Data::Session session(getEngine(), "REST");
-
+	//Reach::Data::Session session(getEngine(), "REST");
+	Session session(Utility::getSession());
 	if (_paintext.empty())
 		throw RequestHandleException(RAR_ERRNODECRYPT);
 

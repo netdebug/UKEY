@@ -31,7 +31,6 @@
 #include <sstream>
 #include <string>
 
-
 #ifndef FJCA_OPEN_URI
 #define FJCA_OPEN_URI 0
 #endif
@@ -49,7 +48,7 @@ SessionImpl::SessionImpl(const std::string& connectionString, std::size_t loginT
 	_connected(false),
 	_random_size(0),
 	_connectionString(connectionString),
-	_containerString("fjca||fjca_Container")
+	_containerString("fjca_Container")
 {
 	open();
 	setConnectionTimeout(loginTimeout);
@@ -153,7 +152,7 @@ bool SessionImpl::changePW(const std::string& oldCode, const std::string& newCod
 
 std::string SessionImpl::getUserList()
 {
-	return _containerString;
+	return "fjca||fjca_Container";
 }
 
 
@@ -161,15 +160,12 @@ std::string SessionImpl::getCertBase64String(short ctype)
 {
 	//enum certType { sign = 1, crypto };
 	assert(sign <= ctype && ctype <= crypto);
-	std::string content;
-	Poco::Buffer<char> c(4096);
-	c.clear();
-	bool ret = FJCA_ExportUserCert(ctype, c.begin(), c.capacity());
 
-	if (!ret || c.empty())
-		throw Reach::Data::DataException();
+	char content[4096] = { 0 };
+	bool ret = FJCA_ExportUserCert(ctype, content, 4096);
 
-	content.append(c.begin(), c.size());
+	if (!ret) throw Reach::Data::DataException();
+
 	return content;
 }
 
@@ -202,75 +198,70 @@ std::string SessionImpl::getCertInfo(const std::string& base64, int type)
 
 std::string SessionImpl::getSerialNumber()
 {
-	std::string serialNumber;
-	
 	std::string content = getCertBase64String(sign);
 
-	Poco::Buffer<char> num(40);
-	num.clear();
-	bool ret = FJCA_GetKeySerial(const_cast<char*>(content.c_str()), num.begin(), num.capacity());
+	char num[40] = { 0 };
+
+	bool ret = FJCA_GetCertOID(const_cast<char*>(content.c_str()), num, 40);
 	//serialNumber = SOF_GetDeviceInfo(_containerString, SGD_DEVICE_SERIAL_NUMBER);
 	//@000@0012bit
-	std::string tmp(num.begin(), num.size());
-	if (!ret || tmp.empty()) {
-		Poco::DataException(Utility::lastError(_containerString));
-	}
+	if (!ret) throw Poco::DataException(Utility::lastError(_containerString));
 
+	std::string tmp(num);
 	std::size_t n = tmp.find_last_of('@');
-	serialNumber = tmp.substr(n, 12);
-	return serialNumber;
+	assert(n != std::string::npos);
+	return tmp.substr(n+1, 12);
 }
 
 std::string SessionImpl::encryptData(const std::string& paintText, const std::string& base64)
 {
 	///只允许加密证书加密
-	std::string encryptData;
-	Poco::Buffer<char> buffer(4096); buffer.clear();
+	char encryptData[4096] = { 0 };
 
-	bool ret = FJCA_EncryptByPubkey(const_cast<char*>(base64.c_str()), const_cast<char*>(paintText.c_str()), buffer.begin(), buffer.capacity());
+	bool ret = FJCA_EncryptByPubkey(const_cast<char*>(base64.c_str()), const_cast<char*>(paintText.c_str()), encryptData, 4096);
 
-	if (!ret || buffer.empty()) {
-		throw Poco::DataException(Utility::lastError(_containerString));
-	}
+	if (!ret) throw Poco::DataException(Utility::lastError(_containerString));
 
-	encryptData.append(buffer.begin(), buffer.size());
 	return encryptData;
 }
 
 std::string SessionImpl::decryptData(const std::string& encrypt)
 {
-	std::string decryptBuffer;
-	Poco::Buffer<char> buffer(4096); buffer.clear();
+	char decryptBuffer[4096] = { 0 }; 
 
-	bool ret = FJCA_DecryptDataByPrivateKey(const_cast<char*>(encrypt.c_str()), buffer.begin(), buffer.capacity());
-	if (!ret || buffer.empty())
-		throw  Poco::DataException(Utility::lastError(_containerString));
+	bool ret = FJCA_DecryptDataByPrivateKey(const_cast<char*>(encrypt.c_str()), decryptBuffer, 4096);
 
-	std::string text, tmp;
-	tmp.append(buffer.begin(), buffer.size());
+	if (!ret) throw  Poco::DataException(Utility::lastError(_containerString));
 
-	std::istringstream istr(tmp);
-	Poco::Base64Decoder decoder(istr);
-	Poco::StreamCopier::copyToString(decoder, text);
-
-	return text;
+	return decryptBuffer;
 }
 
 std::string SessionImpl::signByP1(const std::string& message)
 {
-	std::string signature;
-	Poco::Buffer<char> val(4096); val.clear();
-	if (FJCA_SignData(const_cast<char*>(message.c_str()), val.begin(), val.capacity())) {
+	char signature[4096] = { 0 };
+
+	if (!FJCA_SignData(const_cast<char*>(message.c_str()), signature, 4096)) {
 		throw Poco::DataException(Utility::lastError(_containerString));
 	}
 
-	signature.append(val.begin(), val.size());
 	return signature;
 }
 
 bool SessionImpl::verifySignByP1(const std::string& base64, const std::string& msg, const std::string& signature)
 {
 	return FJCA_VerifySign(msg.c_str(),	signature.c_str(), base64.c_str());
+}
+
+std::string SessionImpl::signByP7(const std::string& textual, int mode)
+{
+	throw Poco::NotImplementedException("FJCA signByP7");
+	return "";
+}
+
+bool SessionImpl::verifySignByP7(const std::string& textual, const std::string& signature)
+{
+	throw Poco::NotImplementedException("FJCA verifySignByP7");
+	return false;
 }
 
 } } } // namespace Reach::Data::FJCA

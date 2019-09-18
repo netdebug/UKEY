@@ -4,6 +4,7 @@
 #include "RESTfulRequestHandler.h"
 #include "Poco/Util/Application.h"
 #include "Poco/Dynamic/Var.h"
+#include "VerifySignByP7ExtRequestHandler.h"
 
 using Poco::Util::Application;
 using Poco::Dynamic::Var;
@@ -37,10 +38,26 @@ namespace Reach {
 			std::string signature(form.get("signdMsg", ""));
 			Var mode(form.get("flag", ""));
 
+			if (mode && textual.empty())
+			{
+				std::string message("message must not be emtpy!");
+				JSONStringify reject(message, RAR_ERRNOENCRYPT);
+				reject.addObject("info", message);
+				return response.sendBuffer(reject.toString().data(), reject.toString().length());
+			}
+
 			VerifySignByP7 command(textual, signature, mode);
 			command.execute();
 
-			return response.sendBuffer(command().data(), command().length());
+			std::string result = command();
+			if (!Utility::resultFormLocal(result))
+			{
+				VerifySignByP7Ext command(textual, signature, mode);
+				command.execute();
+				result = command();
+			}
+
+			return response.sendBuffer(result.data(), result.length());
 		}
 	};
 }

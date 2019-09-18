@@ -2,7 +2,7 @@
 #include "RequestHandleException.h"
 #include "ErrorCode.h"
 #include "Reach/Data/Session.h"
-
+#include "Utility.h"
 
 using namespace Reach;
 using Reach::Data::Session;
@@ -15,7 +15,7 @@ ChangePassWd::ChangePassWd(const std::string& uid, const std::string& oldCode, c
 void ChangePassWd::run()
 {
 	//UDevice::default();
-	Session session("SOF", "REST");
+	Session session(Utility::getSession());
 	//if (!SOF_ChangePassWd(_uid, _oldCode, _newCode))
 	if (_uid != session.contianer())
 		throw RequestHandleException(RAR_UNIQUEIDUNCORRECT);

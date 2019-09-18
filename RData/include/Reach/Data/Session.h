@@ -239,6 +239,10 @@ public:
 
 	bool verifySignByP1(const std::string& base64, const std::string& msg, const std::string& signature);
 
+	std::string signByP7(const std::string& textual, int mode);
+
+	bool verifySignByP7(const std::string& textual, const std::string& signature);
+
 	SessionImpl* impl();
 		/// Returns a pointer to the underlying SessionImpl.
 
@@ -371,6 +375,16 @@ inline std::string Session::signByP1(const std::string& message)
 inline bool Session::verifySignByP1(const std::string& base64, const std::string& msg, const std::string& signature)
 {
 	return _pImpl->verifySignByP1(base64, msg, signature);
+}
+
+inline std::string Session::signByP7(const std::string& textual, int mode)
+{
+	return _pImpl->signByP7(textual, mode);
+}
+
+inline bool Session::verifySignByP7(const std::string& textual, const std::string& signature)
+{
+	return _pImpl->verifySignByP7(textual, signature);
 }
 
 inline SessionImpl* Session::impl()

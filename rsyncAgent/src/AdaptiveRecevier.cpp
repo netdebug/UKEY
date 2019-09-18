@@ -12,11 +12,12 @@
 #include <vector>
 #include "Reach/Data/SOF/Connector.h"
 #include "Reach/Data/FJCA/Connector.h"
+#include "routes/Utility.h"
 
 using namespace Reach;
+using Poco::FastMutex;
 using Poco::format;
 using Poco::Debugger;
-using Poco::Data::Session;
 using Poco::Data::SQLite::Connector;
 using Poco::Util::Application;
 using namespace Poco::Data::Keywords;
@@ -55,9 +56,9 @@ void AdaptiveRecevier::runTask()
 void AdaptiveRecevier::CheckDeviceDBEnv()
 {
 #ifdef _DEBUG
-	Session session("SQLite", "C:\\Windows\\SysWOW64\\DeQLite.db");
+	Poco::Data::Session session("SQLite", "C:\\Windows\\SysWOW64\\DeQLite.db");
 #else
-	Session session("SQLite", "DeQLite.db");
+	Poco::Data::Session session("SQLite", "DeQLite.db");
 #endif // _DEBUG
 
 	DeviceInfoSet devices;
@@ -69,14 +70,17 @@ void AdaptiveRecevier::CheckDeviceDBEnv()
 	}
 
 	if (devices.size() == 1) {
+		FastMutex::ScopedLock lock(_mutex);
 		Application& app = Application::instance();
 		app.config().setString("engine.mode", devices[0].get<0>());
 		dbgview(format("engine mode :%s", app.config().getString("engine.mode")));
+		Utility::getSC().add(app.config().getString("engine.mode"), "REST");
 	}
 }
 
 void AdaptiveRecevier::cancel()
 {
+	Utility::getSC().shutdown();
 	dbgview("AdaptiveRecevier::cancel()");
 	Task::cancel();
 	_event.set();

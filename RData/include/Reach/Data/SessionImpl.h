@@ -111,6 +111,10 @@ public:
 
 	virtual bool verifySignByP1(const std::string& base64, const std::string& msg, const std::string& signature) = 0;
 
+	virtual std::string signByP7(const std::string& textual, int mode) = 0;
+
+	virtual bool verifySignByP7(const std::string& textual, const std::string& signature) = 0;
+
 	const std::string& connectionString() const;
 		/// Returns the connection string.
 

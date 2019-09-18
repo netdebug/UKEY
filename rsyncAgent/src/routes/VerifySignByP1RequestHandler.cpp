@@ -1,6 +1,7 @@
 #include "VerifySignByP1RequestHandler.h"
 #include "Reach/Data/Session.h"
 #include "RequestHandleException.h"
+#include "Utility.h"
 
 using namespace Reach;
 using Reach::Data::Session;
@@ -13,7 +14,8 @@ VerifySignByP1::VerifySignByP1(const std::string& base64, const std::string& msg
 void VerifySignByP1::run()
 {
 	//Reach::Data::Session session("SOF", "REST");
-	Session session(getEngine(), "REST");
+	//Session session(getEngine(), "REST");
+	Session session(Utility::getSession());
 	_val = session.verifySignByP1(_base64, _msg, _signature);
 
 	if (!_val) {

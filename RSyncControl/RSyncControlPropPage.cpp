@@ -17,7 +17,7 @@ END_MESSAGE_MAP()
 
 // 初始化类工厂和 guid
 
-IMPLEMENT_OLECREATE_EX(CRSyncControlPropPage, "MFCACTIVEXCONT.RSyncControlPropPage.1",
+IMPLEMENT_OLECREATE_EX(CRSyncControlPropPage, "RSyncControl.RSyncControlPropPage.1",
 	0xfae5a0a2,0x066f,0x4c57,0x8e,0xb3,0x0c,0x04,0x85,0xf8,0xb7,0x77)
 
 // CRSyncControlPropPage::CRSyncControlPropPageFactory::UpdateRegistry -

@@ -3,6 +3,7 @@
 #include "Command.h"
 #include "RESTfulRequestHandler.h"
 #include "Poco/Util/Application.h"
+#include "VerifySignByP1ExtRequestHandler.h"
 
 using Poco::Util::Application;
 

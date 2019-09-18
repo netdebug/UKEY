@@ -17,6 +17,8 @@ namespace Reach {
 		GetCertInfo(const std::string& base64, int type);
 		virtual void run();
 		///base64 \/×ªÒå×Ö·û
+	protected:
+		std::string toLegelID(const std::string& text, const std::string& pattern);
 	private:
 		std::string _item;
 		std::string _base64;

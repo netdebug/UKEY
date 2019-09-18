@@ -97,6 +97,10 @@ public:
 
 	bool verifySignByP1(const std::string& base64, const std::string& msg, const std::string& signature);
 
+	std::string signByP7(const std::string& textual, int mode);
+
+	bool verifySignByP7(const std::string& textual, const std::string& signature);
+
 protected:
 	void setConnectionTimeout(const std::string& prop, const Poco::Any& value);
 	Poco::Any getConnectionTimeout(const std::string& prop);

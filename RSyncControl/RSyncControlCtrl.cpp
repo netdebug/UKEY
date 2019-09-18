@@ -54,7 +54,7 @@ END_PROPPAGEIDS(CRSyncControlCtrl)
 
 // 初始化类工厂和 guid
 
-IMPLEMENT_OLECREATE_EX(CRSyncControlCtrl, "MFCACTIVEXCONTRO.RSyncControlCtrl.1",
+IMPLEMENT_OLECREATE_EX(CRSyncControlCtrl, "RSyncControl.RSyncControlCtrl.1",
 	0xa0b23721,0x9350,0x4b4d,0xb5,0x81,0x65,0xad,0xd1,0xa7,0x7a,0x5e)
 
 // 键入库 ID 和版本

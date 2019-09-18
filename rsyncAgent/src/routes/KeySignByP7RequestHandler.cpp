@@ -4,6 +4,7 @@
 #include "Utility.h"
 
 using namespace Reach;
+using Reach::Data::Session;
 
 KeySignByP7::KeySignByP7(const std::string& textual, int mode, const std::string& uid)
 	:_textual(textual), _mode(mode), _uid(uid)
@@ -13,8 +14,13 @@ KeySignByP7::KeySignByP7(const std::string& textual, int mode, const std::string
 void KeySignByP7::run()
 {
 	//UDevice::default();
+	Session session(Utility::getSession());
 
-	_signature = Utility::SOF_SignMessage(_mode, _uid, _textual);
+	if (_uid != session.contianer())
+		throw RequestHandleException(RAR_UNIQUEIDUNCORRECT);
+
+	_signature = session.signByP7(_textual, _mode);
+
 	if (_signature.empty()) {
 		throw RequestHandleException("SOF_SignMessage failed!", RAR_UNKNOWNERR);
 	}

@@ -265,4 +265,14 @@ bool SessionImpl::verifySignByP1(const std::string& base64, const std::string& m
 	return SOF_VerifySignedData(base64, msg, signature);
 }
 
+std::string SessionImpl::signByP7(const std::string& textual, int mode)
+{
+	return SOF_SignMessage(mode, _containerString, textual);
+}
+
+bool SessionImpl::verifySignByP7(const std::string& textual, const std::string& signature)
+{
+	return SOF_VerifySignedMessage(signature, textual);
+}
+
 } } } // namespace Reach::Data::SOF

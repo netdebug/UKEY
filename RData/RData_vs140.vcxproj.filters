@@ -27,6 +27,12 @@
     <ClCompile Include="src\DataException.cpp">
       <Filter>DataCore\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\SessionContainer.cpp">
+      <Filter>DataCore\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SessionHolder.cpp">
+      <Filter>DataCore\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Reach\Data\AbstractSessionImpl.h">
@@ -48,6 +54,12 @@
       <Filter>DataCore\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Reach\Data\SessionImpl.h">
+      <Filter>DataCore\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Reach\Data\SessionContainer.h">
+      <Filter>DataCore\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Reach\Data\SessionHolder.h">
       <Filter>DataCore\Header Files</Filter>
     </ClInclude>
   </ItemGroup>

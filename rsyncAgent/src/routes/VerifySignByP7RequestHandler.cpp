@@ -12,10 +12,13 @@ void VerifySignByP7::run()
 {
 	//UDevice::default();
 	/////1 = Detached mode ,textual must be cleared!
-	if (_mode)
+
+	if (!_mode)
 		_textual.clear();
 
-	_verify = Utility::SOF_VerifySignedMessage(_signature, _textual);
+	Session session(Utility::getSession());
+
+	_verify = session.verifySignByP7(_textual, _signature);
 	if (!_verify) {
 		throw RequestHandleException("SOF_VerifySignedMessage failed!", RAR_UNKNOWNERR);
 	}

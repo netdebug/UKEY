@@ -1,6 +1,7 @@
 #pragma once
 #include "Poco/Task.h"
 #include "Poco/NamedEvent.h"
+#include "Poco/Mutex.h"
 
 namespace Reach {
 
@@ -16,6 +17,7 @@ private:
 	void dbgview(const std::string& message);
 	
 	Poco::NamedEvent _event;
+	Poco::FastMutex _mutex;
 };
 
 }
