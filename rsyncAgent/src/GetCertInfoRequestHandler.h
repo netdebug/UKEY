@@ -204,11 +204,16 @@ namespace Reach {
 
 			RESTfulRequestHandler::handleCORS(request, response);
 
-			HTMLForm form(request, request.stream());
-			std::string base64(form.get("certBase64", ""));
-			Var type(form.get("type", ""));
+			std::string base64, type;
 
-			GetCertInfo command(base64, type);
+			HTMLForm form(request, request.stream());
+			if (request.getMethod() == "GET")
+				form.read(request.getURI());
+
+			base64 = form.get("certBase64", "");
+			type = form.get("type", "");
+
+			GetCertInfo command(base64, Var(type));
 			command.execute();
 
 			return response.sendBuffer(command().data(), command().length());

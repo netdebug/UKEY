@@ -33,78 +33,84 @@
 #include "KeyDecryptByDigitalEnvelopeRequestHandler.h"
 #include "extOpenDeviceRequestHandler.h"
 #include "extCloseDeviceRequestHandler.h"
+#include "Poco/String.h"
+#include "Poco/URI.h"
 
 using namespace Reach;
 
 using Poco::Net::HTTPRequestHandler;
 using Poco::Net::HTTPServerRequest;
+using Poco::isubstr;
+using Poco::URI;
 
 HTTPRequestHandler * Reach::RequestHandlerFactory::createRequestHandler(const HTTPServerRequest & request)
 {
+	URI uri(request.getURI());
+	poco_information_f1(Application::instance().logger(), "uri from %s", uri.getPath());
 
-	if (request.getURI() == "/echoBody")
+	if (uri.getPath() == "/echoBody")
 		return new EchoBodyRequestHandler;
-	else if (request.getURI() == "/echoHeader")
+	else if (uri.getPath() == "/echoHeader")
 		return new EchoHeaderRequestHandler;
-	else if (request.getURI() == "/redirect")
+	else if (uri.getPath() == "/redirect")
 		return new RedirectRequestHandler();
-	else if (request.getURI() == "/auth")
+	else if (uri.getPath() == "/auth")
 		return new AuthRequestHandler();
-	else if (request.getURI() == "/buffer")
+	else if (uri.getPath() == "/buffer")
 		return new BufferRequestHandler();
-	else if (request.getURI() == "/RS_ConfigParameters")
+	else if (uri.getPath() == "/RS_ConfigParameters")
 		return new ConfigParametersRequestHandler;
-	else if (request.getURI() == "/RS_GetParameters")
+	else if (uri.getPath() == "/RS_GetParameters")
 		return new GetParametersRequestHandler;
-	else if (request.getURI() == "/RS_GetUserList")
+	else if (uri.getPath() == "/RS_GetUserList")
 		return new GetUserListRequestHandler;
-	else if (request.getURI() == "/RS_GetCertBase64String")
+	else if (uri.getPath() == "/RS_GetCertBase64String")
 		return new GetCertBase64StringRequestHandler;
-	else if (request.getURI() == "/RS_GetCertInfo")
+	else if (uri.getPath() == "/RS_GetCertInfo")
 		return new GetCertInfoRequestHandler;
-	else if (request.getURI() == "/RS_GetCertInfoEx")
+	else if (uri.getPath() == "/RS_GetCertInfoEx")
 		return new GetCertInfoExRequestHandler;
-	else if (request.getURI() == "/RS_VerifyIdentity")
+	else if (uri.getPath() == "/RS_VerifyIdentity")
 		return new VerifyIdentityRequestHandler;
-	else if (request.getURI() == "/RS_CertLogin")
+	else if (uri.getPath() == "/RS_CertLogin")
 		return new CertLoginRequestHandler;
-	else if (request.getURI() == "/RS_ChangePassWd")
+	else if (uri.getPath() == "/RS_ChangePassWd")
 		return new ChangePassWdRequestHandler;
-	else if (request.getURI() == "/RS_GetPinRetryCount")
+	else if (uri.getPath() == "/RS_GetPinRetryCount")
 		return new GetPinRetryCountRequestHandler;
-	else if (request.getURI() == "/RS_KeyGetKeySn")
+	else if (uri.getPath() == "/RS_KeyGetKeySn")
 		return new KeyGetKeySnRequestHandler;
-	else if (request.getURI() == "/RS_KeySignByP1")
+	else if (uri.getPath() == "/RS_KeySignByP1")
 		return new KeySignByP1RequestHandler;
-	else if (request.getURI() == "/RS_VerifySignByP1")
+	else if (uri.getPath() == "/RS_VerifySignByP1")
 		return new VerifySignByP1RequestHandler;
-	else if (request.getURI() == "/RS_VerifySignByP1Ext")
+	else if (uri.getPath() == "/RS_VerifySignByP1Ext")
 		return new VerifySignByP1ExtRequestHandler;
-	else if (request.getURI() == "/RS_KeyDigitalSignByP1")
+	else if (uri.getPath() == "/RS_KeyDigitalSignByP1")
 		return new KeyDigitalSignByP1RequestHandler;
-	else if (request.getURI() == "/RS_VerifyDigitalSignByP1")
+	else if (uri.getPath() == "/RS_VerifyDigitalSignByP1")
 		return new VerifyDigitalSignByP1RequestHandler;
-	else if (request.getURI() == "/RS_KeySignByP7")
+	else if (uri.getPath() == "/RS_KeySignByP7")
 		return new KeySignByP7RequestHandler;
-	else if (request.getURI() == "/RS_VerifySignByP7")
+	else if (uri.getPath() == "/RS_VerifySignByP7")
 		return new VerifySignByP7RequestHandler;
-	else if (request.getURI() == "/RS_VerifySignByP7Ext")
+	else if (uri.getPath() == "/RS_VerifySignByP7Ext")
 		return new VerifySignByP7ExtRequestHandler;
-	else if (request.getURI() == "/RS_EncryptFile")
+	else if (uri.getPath() == "/RS_EncryptFile")
 		return new EncryptFileRequestHandler;
-	else if (request.getURI() == "/RS_DecryptFile")
+	else if (uri.getPath() == "/RS_DecryptFile")
 		return new DecryptFileRequestHandler;
-	else if (request.getURI() == "/RS_KeyEncryptData")
+	else if (uri.getPath() == "/RS_KeyEncryptData")
 		return new KeyEncryptDataRequestHandler;
-	else if (request.getURI() == "/RS_KeyDecryptData")
+	else if (uri.getPath() == "/RS_KeyDecryptData")
 		return new KeyDecryptDataRequestHandler;
-	else if (request.getURI() == "/RS_KeyEncryptByDigitalEnvelope")
+	else if (uri.getPath() == "/RS_KeyEncryptByDigitalEnvelope")
 		return new KeyEncryptByDigitalEnvelopeRequestHandler;
-	else if (request.getURI() == "/RS_KeyDecryptByDigitalEnvelope")
+	else if (uri.getPath() == "/RS_KeyDecryptByDigitalEnvelope")
 		return new KeyDecryptByDigitalEnvelopeRequestHandler;
-	else if (request.getURI() == "/SOF_OpenDevice")
+	else if (uri.getPath() == "/SOF_OpenDevice")
 		return new extOpenDeviceRequestHandler;
-	else if (request.getURI() == "/SOF_CloseDevice")
+	else if (uri.getPath() == "/SOF_CloseDevice")
 		return new extCloseDeviceRequestHandler;
 
 		return 0;
