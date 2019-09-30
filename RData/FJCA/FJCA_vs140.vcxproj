@@ -90,11 +90,11 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>..\bin\rsyncFJCAd.pdb</ProgramDatabaseFile>
-      <AdditionalLibraryDirectories>..\..\lib;..\..\lib\libpoco;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\lib;..\..\lib\libpoco;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SubSystem>Console</SubSystem>
       <ImportLibrary>..\lib\rsyncFJCAd.lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalDependencies>SoFProviderd.lib;FJCA_FUN_GT_API.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SoFProviderd.lib;FJCA_FUN_GT_API.lib;StampManageSystem.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='release_shared|Win32'">

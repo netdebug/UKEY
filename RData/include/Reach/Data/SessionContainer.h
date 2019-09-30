@@ -50,6 +50,9 @@ namespace Data {
 		void remove(const std::string& name);
 		/// Removes a Session.
 
+		void clear();
+		/// Removes all sessiones;
+
 		int count() const;
 		/// Returns the number of session in the container.
 
@@ -75,6 +78,11 @@ namespace Data {
 	inline void SessionContainer::remove(const std::string& name)
 	{
 		_sessions.erase(name);
+	}
+
+	inline void SessionContainer::clear()
+	{
+		_sessions.clear();
 	}
 
 	inline int SessionContainer::count() const
