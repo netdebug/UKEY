@@ -55,6 +55,7 @@ void AdaptiveRecevier::runTask()
 
 void AdaptiveRecevier::CheckDeviceDBEnv()
 {
+	Application& app = Application::instance();
 #ifdef _DEBUG
 	Poco::Data::Session session("SQLite", "C:\\Windows\\SysWOW64\\DeQLite.db");
 #else
@@ -69,12 +70,22 @@ void AdaptiveRecevier::CheckDeviceDBEnv()
 		dbgview(format("DeviceSet tags %s:%s&&%s\n", it->get<0>(), it->get<1>(), it->get<2>()));
 	}
 
+	if (devices.empty())
+	{
+		FastMutex::ScopedLock lock(_mutex);
+
+		Utility::getSC().shutdown();
+		Utility::getSC().clear();
+	}
+
 	if (devices.size() == 1) {
 		FastMutex::ScopedLock lock(_mutex);
-		Application& app = Application::instance();
-		app.config().setString("engine.mode", devices[0].get<0>());
-		dbgview(format("engine mode :%s", app.config().getString("engine.mode")));
-		Utility::getSC().add(app.config().getString("engine.mode"), "REST");
+		
+		std::string engine = devices[0].get<0>();
+		app.config().setString("engine.mode", engine);
+
+		dbgview(Poco::format("%s:///%s", engine, std::string("REST")));
+		Utility::getSC().add(engine, "REST");
 	}
 }
 

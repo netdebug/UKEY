@@ -134,6 +134,9 @@
     <ClInclude Include="src\routes\VerifySignByP7ExtRequestHandler.h">
       <Filter>RequestHandler\Command\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\routes\ReadSealDataRequestHandler.h">
+      <Filter>RequestHandler\Command\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\RequestHandlerFactory.cpp">
@@ -210,6 +213,9 @@
     </ClCompile>
     <ClCompile Include="src\routes\translater.cpp">
       <Filter>RequestHandler</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\ReadSealDataRequestHandler.cpp">
+      <Filter>RequestHandler\Command\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -54,6 +54,7 @@
     <ClInclude Include="src\routes\KeyGetKeySnRequestHandler.h" />
     <ClInclude Include="src\routes\KeySignByP1RequestHandler.h" />
     <ClInclude Include="src\routes\KeySignByP7RequestHandler.h" />
+    <ClInclude Include="src\routes\ReadSealDataRequestHandler.h" />
     <ClInclude Include="src\routes\RequestHandleException.h" />
     <ClInclude Include="src\routes\translater.h" />
     <ClInclude Include="src\routes\Utility.h" />
@@ -85,6 +86,7 @@
     <ClCompile Include="src\routes\KeyGetKeySnRequestHandler.cpp" />
     <ClCompile Include="src\routes\KeySignByP1RequestHandler.cpp" />
     <ClCompile Include="src\routes\KeySignByP7RequestHandler.cpp" />
+    <ClCompile Include="src\routes\ReadSealDataRequestHandler.cpp" />
     <ClCompile Include="src\routes\RequestHandleException.cpp" />
     <ClCompile Include="src\routes\translater.cpp" />
     <ClCompile Include="src\routes\Utility.cpp" />
