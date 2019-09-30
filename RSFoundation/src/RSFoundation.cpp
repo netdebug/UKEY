@@ -191,6 +191,64 @@ std::string RSFoundation::RS_GetCertInfo(const std::string& base64, int type)
 	else if (SGD_OID_IDENTIFY_NUMBER == type) {
 		/// only support user id card
 		item = GetCertOwnerID(base64);
+		if (item.empty())
+		{
+			item = SOF_GetCertInfo(base64, 7);
+			int rpos = item.rfind("T=");
+			int lpos = item.find_last_of("\r\n");
+			if (rpos != std::string::npos && lpos != std::string::npos)
+			{
+				item = item.substr(rpos, lpos);
+				item = Poco::replace(item, "T=", "");
+				item = Poco::replace(item, "\r\n", "");
+			}
+			else
+				item.clear();
+		}
+	}
+	else if (SGD_OID_ENTERPRISE_NUMBER == type) {
+
+		std::vector<std::string> eid;
+		eid.push_back("1.2.156.10260.4.1.3");
+		eid.push_back("1.2.156.10260.4.1.4");
+		eid.push_back("1.2.86.11.7.3");
+		eid.push_back("1.2.156.10260.4.1.1");
+
+		for (int i = 0; i < eid.size(); ++i) {
+			std::string str;
+			str = SOF_GetCertInfoByOid(base64, eid[i]);
+			if (!str.empty())
+			{
+				if (eid[i] == "1.2.156.10260.4.1.1") 
+				{
+					size_t pos = str.find_last_of("N");
+					if (pos != std::string::npos)
+						str = Poco::replace(str, "N", "");
+					else
+						break;
+				}
+
+				if (eid[i] == "1.2.86.11.7.3")
+					str = Poco::replace(str, "\u0013\u0012", "");
+				
+				item = str; break;
+			}
+		}
+
+		if (item.empty())
+		{
+			item = SOF_GetCertInfo(base64, 7);
+			int rpos = item.rfind("T=");
+			int lpos = item.find_last_of("\r\n");
+			if (rpos != std::string::npos && lpos != std::string::npos)
+			{
+				item = item.substr(rpos, lpos);
+				item = Poco::replace(item, "T=", "");
+				item = Poco::replace(item, "\r\n", "");
+			}
+			else
+				item.clear();
+		}
 	}
 	else
 	{

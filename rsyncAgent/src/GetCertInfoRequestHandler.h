@@ -8,13 +8,15 @@
 #include "RESTfulRequestHandler.h"
 #include "RequestHandleException.h"
 #include "Poco/Util/Application.h"
-
 #include "Poco/RegularExpression.h"
 #include "Poco/Timezone.h"
 #include "Poco/Debugger.h"
 #include "Poco/String.h"
 #include "Poco/NumberParser.h"
-using Poco::NumberParser;
+#include "Poco/Crypto/X509Certificate.h"
+#include "Poco/SharedPtr.h"
+#include "Poco/String.h"
+#include <cassert>
 
 namespace Reach {
 
@@ -28,85 +30,231 @@ namespace Reach {
 	using Poco::LocalDateTime;
 	using Poco::Debugger;
 	using Poco::format;
+	using Poco::Crypto::X509Certificate;
+	using Poco::NumberParser;
 	///RS_GetCertInfo
 	class GetCertInfo : public Command
 	{
 	public:
 		GetCertInfo(const std::string& base64, int type)
-			:_base64(base64), _type(type)
-		{}
+			:_cer(base64), _type(type)
+		{
+			std::string PEM;
+			std::istringstream istr(_cer);
+			PEM.append("-----BEGIN CERTIFICATE-----\n");
+			PEM.append(cat("\n", 64, _cer));
+			PEM.append("-----END CERTIFICATE-----\n");
+			std::istringstream certStream(PEM);
+			x509ptr = new X509Certificate(certStream);
+
+			std::string text("/CN=\\xE9\\x87\\x91\\xE8\\xB4\\xA2\\xE6\\xB5\\x8B\\xE8\\xAF\\x95KEY32");
+			std::string text1("/CN=\\xE9\\x87\\x91KEY32");
+			decode_utf8(text);
+		}
 
 		void run()
 		{
-			if (SGD_CERT_VERSION == _type) {
-				_item = GetCertVersion(_base64);
-			}
-			else if (SGD_CERT_VALID_TIME == _type) {
-				_item = GetCertVaildTime(_base64);
-			}
-			else if (SGD_OID_IDENTIFY_NUMBER == _type) {
-				/// only support user id card
-				_item = GetCertOwnerID(_base64);
-			}
-			else
-			{
-				_item = SOF_GetCertInfo(_base64, _type);
+			switch (_type) {
+			case 1:
+				_item = Poco::format("V%ld", x509ptr->version());
+				break;
+			case 2:
+				_item = x509ptr->serialNumber();
+				break;
+			case 5:
+				extract(x509ptr->issuerName());break;
+			case 6:
+				x509_validFrom_expiresOn();break;
+			case 7:
+				extract(x509ptr->subjectName());break;		
+			case 33:
+				_item = x509ptr->issuerName(X509Certificate::NID_COMMON_NAME);
+				break;
+			case 34:
+				_item = x509ptr->issuerName(X509Certificate::NID_ORGANIZATION_NAME);
+				break;
+			case 35:
+				_item = x509ptr->issuerName(X509Certificate::NID_ORGANIZATION_UNIT_NAME);
+				break;
+			case 49:
+				_item = x509ptr->subjectName(X509Certificate::NID_COMMON_NAME);
+				break;
+			case 50:
+				_item = x509ptr->subjectName(X509Certificate::NID_ORGANIZATION_NAME);
+				break;
+			case 51:
+				_item = x509ptr->subjectName(X509Certificate::NID_ORGANIZATION_UNIT_NAME);
+				break;
+			case 52:
+				_item = x509ptr->subjectName(X509Certificate::NID_PKCS9_EMAIL_ADDRESS);
+				break;
+			case 53:
+				personal();break;
+			case 54:
+				enterprise();break;
+			default:
+				break;
 			}
 
 			add("info", _item);
 		}
 	protected:
-		std::string GetCertVersion(const std::string& base64)
+		void personal()
 		{
-			std::string item;
-			item = SOF_GetCertInfo(base64, SGD_CERT_VERSION);
-
-			///GB-T 20518-2006 信息安全技术 公钥基础设施 数字证书格式
-
-			std::map<std::string, std::string> versions;
-			versions["0"] = "V1";
-			versions["1"] = "V2";
-			versions["2"] = "V3";
-
-			return versions[item];
+			_item = GetCertOwnerID(_cer);
+			if(_item.empty())extract(x509ptr->subjectName(), "title");
 		}
-		std::string GetCertVaildTime(const std::string& base64)
+		void enterprise()
 		{
-			std::string item;
-			item = SOF_GetCertInfo(base64, SGD_CERT_VALID_TIME);
-			/// 190313160000Z - 210314155959Z
+			std::vector<std::string> eid;
+			eid.push_back("1.2.156.10260.4.1.3");
+			eid.push_back("1.2.156.10260.4.1.4");
+			eid.push_back("1.2.86.11.7.3");
+			eid.push_back("1.2.156.10260.4.1.1");
+
+			for (int i = 0; i < eid.size(); ++i) {
+				std::string str;
+				str = SOF_GetCertInfoByOid(_cer, eid[i]);
+				if (!str.empty())
+				{
+					if (eid[i] == "1.2.156.10260.4.1.1") 
+					{
+						size_t pos = str.find_last_of("N");
+						if (pos != std::string::npos)
+							str = Poco::replace(str, "N","");
+						else
+							break;
+					}
+					
+					if (eid[i] == "1.2.86.11.7.3")
+						str = Poco::replace(str,"\x13\x12", "");
+
+					_item = str; break;
+				}
+			}
+
+			if(_item.empty())extract(x509ptr->subjectName(), "title");
+			
+		}
+		void decode_utf8(const std::string& text)
+		{
+			std::string pattern("(\\\\x[0-F]{2})");
+			
+			std::string::size_type offset = 0;
 			int options = 0;
-			std::string pattern("(\\S+)-(\\S+)");
-			std::string vaildtime;
 
-			try {
-
-				RegularExpression re(pattern, options);
-				RegularExpression::Match mtch;
-				if (!re.match(item, mtch))
-					throw Poco::LogicException("GetCertVaildTime Exception!", 0x40);
-
-				std::vector<std::string> tags;
-				re.split(item, tags, options);
-
-				std::string vaild_start = tags[1];
-				std::string vaild_end = tags[2];
-				Debugger::message(format("vaild_start : %s, vaild_start :%s", vaild_start, vaild_end));
-				/// UTC to LocalTime +0800
-
-				vaildtime.append(toLocalTime(vaild_start));
-				vaildtime.append(" - ");
-				vaildtime.append(toLocalTime(vaild_end));
-
-				Debugger::message(format("vaildtime : %s", vaildtime));
-			}
-			catch (Poco::Exception&)
+			try
 			{
-			}
+				RegularExpression re(pattern, options);
+				RegularExpression::Match mtch = { 0,0 };
 
-			return vaildtime;
+				Poco::Buffer<char> T(64);
+				while (re.match(text, offset, mtch) > 0)
+				{
+					std::string str;
+					unsigned int value = 0;
+					re.extract(text, mtch.offset, str);
+					str = Poco::replace(str, "\\x", "");
+					if (NumberParser::tryParseHex(str, value))
+						T.append((char)value);
+					
+					offset += mtch.length;
+				}
+
+				std::string otc(T.begin(),T.size());
+
+				Debugger::message(format("%s,", otc));
+			}
+			catch (Poco::RegularExpressionException& e)
+			{
+
+			}
+		}
+		void extract(const std::string& text)
+		{
+			std::string pattern("/(\\w+)=(\\w+|.+)");
+			std::string::size_type offset = 0;
+			int options = 0;
+
+			try
+			{		
+				RegularExpression re(pattern, options);
+				RegularExpression::Match mtch = { 0,0 };
+				
+				while (re.match(text, offset, mtch) > 0)
+				{
+					std::string str;
+					re.extract(text, mtch.offset, str);
+					_item += str;
+					offset += mtch.length;
+					_item += "\r\n";
+				}
+			}
+			catch (Poco::RegularExpressionException& e)
+			{
+				_item.clear();
+			}
+			
+			Debugger::message(format("%s", _item));
+		}
+		void extract(const std::string& text, const std::string& tag)
+		{
+			std::string pattern("/(\\w+)=(\\w+|.+)");
+			int options = 0;
+			std::string::size_type offset = 0;
+
+			try 
+			{
+				RegularExpression re(pattern, options);
+				RegularExpression::Match mtch = { 0,0 };
+
+				while (re.match(text, offset, mtch) > 0)
+				{
+					std::vector<std::string> strings;
+					re.split(text, mtch.offset, strings);
+					if (tag == strings[1]) {
+						_item += strings[2]; break;
+					}
+					offset += mtch.length;
+				}
+			}
+			catch (Poco::RegularExpressionException& e)
+			{
+				_item.clear();
+			}
 		}
 
+		void x509_validFrom_expiresOn()
+		{
+			Poco::DateTime from = x509ptr->validFrom();
+			Poco::DateTime expires = x509ptr->expiresOn();
+
+			std::string timestamp = Poco::format("%s - %s",
+				DateTimeFormatter::format(
+					LocalDateTime(from),
+					DateTimeFormat::SORTABLE_FORMAT),
+				DateTimeFormatter::format(
+					LocalDateTime(expires),
+					DateTimeFormat::SORTABLE_FORMAT));
+
+			_item = timestamp;
+		}
+
+		std::string cat(const std::string& delim, std::size_t pos, const std::string& str)
+		{
+			assert(pos < str.length());
+
+			std::string result;
+
+			for (int i = 0; i < str.length(); i++)
+			{
+				result.push_back(str[i]);
+				if (i > 0 && i % pos == 0) result.append(delim);
+			}
+			result.append(delim);
+			return result;
+		}
+		
 		std::string toLocalTime(const std::string& time)
 		{
 			int options = 0;
@@ -191,8 +339,9 @@ namespace Reach {
 		///base64 \/转义字符
 	private:
 		std::string _item;
-		std::string _base64;
+		std::string _cer;
 		int _type;
+		Poco::SharedPtr<Poco::Crypto::X509Certificate> x509ptr;
 	};
 
 	class GetCertInfoRequestHandler : public RESTfulRequestHandler
