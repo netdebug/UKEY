@@ -119,7 +119,8 @@ void RSProviderTest::testRSGetCertInfo()
 
 #define SGD_CERT_VERSION 0x00000001
 #define SGD_CERT_SERIAL 0x00000002
-#define SGD_OID_IDENTIFY_NUMBER 0x01100034
+#define SGD_OID_IDENTIFY_NUMBER 0x00000035
+#define SGD_OID_IDENTIFY_NUMBER_EXT 0x00000036
 
 	Reach::RSFoundation rsf;
 
@@ -135,9 +136,10 @@ void RSProviderTest::testRSGetCertInfo()
 		Object subObject = *test.extract<Object::Ptr>();
 		std::string cert = subObject.get("certBase64");
 
-		ls.trace() << "SGD_CERT_VERSION" << rsf.RS_GetCertInfo(cert, SGD_CERT_VERSION) << std::endl;
-		ls.trace() << "SGD_CERT_SERIAL" << rsf.RS_GetCertInfo(cert, SGD_CERT_SERIAL) << std::endl;
-		ls.trace() << "RS_GetCertInfo:" << rsf.RS_GetCertInfo(cert, SGD_OID_IDENTIFY_NUMBER) << std::endl;
+		//ls.trace() << "SGD_CERT_VERSION" << rsf.RS_GetCertInfo(cert, SGD_CERT_VERSION) << std::endl;
+		//ls.trace() << "SGD_CERT_SERIAL" << rsf.RS_GetCertInfo(cert, SGD_CERT_SERIAL) << std::endl;
+		ls.trace() << "RS_GetCertInfo:SGD_OID_IDENTIFY_NUMBER" << rsf.RS_GetCertInfo(cert, SGD_OID_IDENTIFY_NUMBER) << std::endl;
+		ls.trace() << "RS_GetCertInfo:SGD_OID_IDENTIFY_NUMBER_EXT" << rsf.RS_GetCertInfo(cert, SGD_OID_IDENTIFY_NUMBER_EXT) << std::endl;
 	}
 
 
@@ -153,9 +155,10 @@ void RSProviderTest::testRSGetCertInfo()
 		Object subObject = *test.extract<Object::Ptr>();
 		std::string cert = subObject.get("certBase64");
 
-		ls.trace() << "SGD_CERT_VERSION" << rsf.RS_GetCertInfo(cert, SGD_CERT_VERSION) << std::endl;
-		ls.trace() << "SGD_CERT_SERIAL" << rsf.RS_GetCertInfo(cert, SGD_CERT_SERIAL) << std::endl;
-		ls.trace() << "RS_GetCertInfo:" << rsf.RS_GetCertInfo(cert, SGD_OID_IDENTIFY_NUMBER) << std::endl;
+		//ls.trace() << "SGD_CERT_VERSION" << rsf.RS_GetCertInfo(cert, SGD_CERT_VERSION) << std::endl;
+		//ls.trace() << "SGD_CERT_SERIAL" << rsf.RS_GetCertInfo(cert, SGD_CERT_SERIAL) << std::endl;
+		ls.trace() << "RS_GetCertInfo:SGD_OID_IDENTIFY_NUMBER" << rsf.RS_GetCertInfo(cert, SGD_OID_IDENTIFY_NUMBER) << std::endl;
+		ls.trace() << "RS_GetCertInfo:SGD_OID_IDENTIFY_NUMBER_EXT" << rsf.RS_GetCertInfo(cert, SGD_OID_IDENTIFY_NUMBER_EXT) << std::endl;
 	}
 }
 
@@ -543,12 +546,14 @@ void RSProviderTest::waitforuser()
 
 void RSProviderTest::setUp()
 {
-	uid = "{1B57694E-911E-41D9-8123-971EDD71342C}";
-	pwd = "00000000";
+	/*uid = "{1B57694E-911E-41D9-8123-971EDD71342C}";
+	pwd = "00000000";*/
 	/*uid = "806000119631708";
 	pwd = "111111";*/
 	//uid = "4334801F-55EA-4F16-982C-CFB2AB8B44F7";
 	//pwd = "111111";
+	uid = "C64FB078-28B4-450D-8ACB-68AE249CBA8D";
+	pwd = "111111";
 	AutoPtr<Channel> pChannel = new WindowsColorConsoleChannel;
 	pChannel->setProperty("traceColor", "lightGreen");
 	Logger& root = Poco::Logger::get("LoggerTest");//Logger::root();

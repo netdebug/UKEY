@@ -25,6 +25,7 @@ public:
 	~TestUtil();
 
 	void testCreateCppHeaders();
+	void testGetCertInfoByPocoCrypt();
 
 	void setUp();
 	void tearDown();
