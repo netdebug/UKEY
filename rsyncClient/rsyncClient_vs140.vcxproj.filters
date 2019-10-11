@@ -27,6 +27,9 @@
     <None Include="rsyncClient.properties">
       <Filter>Configuration Files</Filter>
     </None>
+    <None Include="QZSyncTask.json">
+      <Filter>Configuration Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\rsyncClient.h">
@@ -63,6 +66,24 @@
     <ClInclude Include="src\BridgeWindowsLiveLogin.h">
       <Filter>idl\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\QZSyncTask.h">
+      <Filter>Core\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\XSSealProvider.h">
+      <Filter>Core\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SealProvider.h">
+      <Filter>Core\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OESSealProvider.h">
+      <Filter>Core\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KGSealProvider.h">
+      <Filter>Core\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KG_GetKeyInfo_FJRS.h">
+      <Filter>Core\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\rsyncClient.cpp">
@@ -97,6 +118,21 @@
     </ClCompile>
     <ClCompile Include="src\BridgeWindowsLiveLogin.cpp">
       <Filter>idl\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\QZSyncTask.cpp">
+      <Filter>Core\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\XSSealProvider.cpp">
+      <Filter>Core\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SealProvider.cpp">
+      <Filter>Core\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OESSealProvider.cpp">
+      <Filter>Core\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\KGSealProvider.cpp">
+      <Filter>Core\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

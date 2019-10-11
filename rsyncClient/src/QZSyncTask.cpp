@@ -9,16 +9,21 @@
 #include "Poco/Net/HTTPRequest.h"
 #include "Poco/Net/HTTPResponse.h"
 #include "Poco/Net/HTTPClientSession.h"
+#include "Poco/RegularExpression.h"
 #include "Poco/StreamCopier.h"
 #include "Poco/FileStream.h"
 #include "Poco/URI.h"
+//#include "SealProvider.h"
 #include "XSSealProvider.h"
+#include "KGSealProvider.h"
+#include "OESSealProvider.h"
 #include <cassert>
 
 using namespace Reach;
 using namespace Poco::Dynamic;
 using namespace Poco::JSON;
 
+using Poco::format;
 using Poco::DynamicStruct;
 using Poco::DateTimeFormatter;
 using Poco::StreamCopier;
@@ -27,11 +32,13 @@ using Poco::Util::Application;
 using Poco::Net::HTTPRequest;
 using Poco::Net::HTTPResponse;
 using Poco::Net::HTTPClientSession;
+using Poco::RegularExpression;
 using Poco::URI;
 
 QZSyncTask::QZSyncTask()
 	:Task("QZSyncTask"),
-	_config("QZSyncTask.json")
+	_config("QZSyncTask.json"),
+	_x509cert("")
 {
 	loadModel();
 }
@@ -47,7 +54,7 @@ void QZSyncTask::loadModel()
 		Var result = parser.parse(in);
 		assert(result.type() == typeid(Object::Ptr));
 
-		_model = result.extract<Object::Ptr>();
+		_templateJSON = result.extract<Object::Ptr>();
 	}
 	catch (JSONException& e)
 	{
@@ -66,7 +73,7 @@ void QZSyncTask::runTask()
 		if (IsUSBKeyPresent()) {
 			ReadSealInfo();
 			GetKeySN();
-			std::string md5 = MD5(sealinfo, keysn);
+			MD5();
 
 			if (IsNeedSend()) {
 				SendtoKGServer();
@@ -115,6 +122,31 @@ std::string QZSyncTask::submitToKGServer(const std::string& url, const std::stri
 	StreamCopier::copyStream(out, ostr);
 
 	poco_information_f1(app.logger(), "receiveResponse:\n%s", ostr.str());
+
+	return ostr.str();
+}
+
+std::string QZSyncTask::CommonRequest(const std::string& url, const std::string& data, const std::string& method)
+{
+	Application& app = Application::instance();
+	poco_information_f2(app.logger(), "post : %s\n sendRequest:\n%s", url, data);
+
+	URI uri(url);
+
+	HTTPRequest request(method, uri.getPath());
+	request.setContentLength((int)data.length());
+	HTTPClientSession session(uri.getHost(), uri.getPort());
+	session.sendRequest(request) << data;
+	poco_information_f3(app.logger(), "session : %s:[%u] {%s}", uri.getHost(), uri.getPort(), uri.getPath());
+
+	HTTPResponse response;
+	std::istream& out = session.receiveResponse(response);
+	std::ostringstream ostr;
+	StreamCopier::copyStream(out, ostr);
+
+	poco_information_f1(app.logger(), "receiveResponse:\n%s", ostr.str());
+
+	return ostr.str();
 }
 
 bool QZSyncTask::success(const std::string& json)
@@ -131,34 +163,34 @@ bool QZSyncTask::success(const std::string& json)
 
 bool QZSyncTask::ExistRecordOnKGServer()
 {
-	DynamicStruct ds = *_model->getObject("checkKeyInfo");
+	DynamicStruct ds = *_templateJSON->getObject("checkKeyInfo");
 	std::string url = ds["url"];
-	ds["fmt"]["keysn"] = "000006946797";
-	ds["fmt"]["dataMD5"] = "124556789456123";
+	ds["fmt"]["keysn"] = _keysn;
+	ds["fmt"]["dataMD5"] = _md5;
 	std::string data = ds["fmt"].toString();
 
-	std::string result = submitToKGServer(url, data);
+	std::string response = submitToKGServer(url, data);
 
 	Parser parser;
-	Var v = parser.parse(result);
+	Var v = parser.parse(response);
 	assert(v.type() == typeid(Object::Ptr));
 
 	Object::Ptr object = v.extract<Object::Ptr>();
-	DynamicStruct ds = *object;
+	DynamicStruct dds = *object;
 
-	return (ds["code"] == "0" && (std::string(ds["message"]).find(",") != std::string::npos));
+	return (dds["code"] == "0" || dds["code"] == "0");
 }
 
 void QZSyncTask::SendtoKGServer()
 {
-	DynamicStruct ds = *_model->getObject("sendKeySealInfo");
+	DynamicStruct ds = *_templateJSON->getObject("sendKeySealInfo");
 	
-	ds["fmt"]["keysn"] = "000006946797";
-	ds["fmt"]["dataMD5"] = "124556789456123";
-	ds["fmt"]["username"] = "欧阳立123";
-	ds["fmt"]["usercode"] = "ouyangli123";
-	ds["fmt"]["validStart"] = "2019-09-22";
-	ds["fmt"]["validEnd"] = "2019-10-21";
+	ds["fmt"]["keysn"] = _keysn;
+	ds["fmt"]["dataMD5"] = _md5;
+	ds["fmt"]["username"] = _name;
+	ds["fmt"]["usercode"] = _code;
+	ds["fmt"]["validStart"] = _validStart;
+	ds["fmt"]["validEnd"] = _validEnd;
 
 	Var result = ds["fmt"]["seals"];
 	
@@ -181,9 +213,9 @@ void QZSyncTask::SendtoKGServer()
 	
 	std::string url = ds["url"];
 	std::string data = ds["fmt"].toString();
-	std::string result =  submitToKGServer(url, data);
+	std::string response =  submitToKGServer(url, data);
 
-	if (success(result)) {
+	if (success(response)) {
 		UpdateSyncStatus();
 	}
 }
@@ -193,36 +225,93 @@ void QZSyncTask::UpdateSyncStatus()
 
 }
 
-std::string QZSyncTask::MD5(const std::string& sealinfo, const std::string& keysn)
+void QZSyncTask::MD5()
 {
 	std::string data;
-	data.append(keysn);
+	data.append(_keysn);
 	data.append("&&");
-	data.append(sealinfo);
+	data.append(_seal_data);
 
 	Poco::MD5Engine engine;
 	engine.update(data);
-	return Poco::DigestEngine::digestToHex(engine.digest());
+	_md5 = Poco::DigestEngine::digestToHex(engine.digest());
 }
 
 void QZSyncTask::ReadSealInfo()
 {
 	/// 解析签章数据，读取多个base64图片信息，中间&&拼接
 	Application& app = Application::instance();
+	DynamicStruct tds = *_templateJSON;
+	Var d = tds["sendKeySealInfo"]["sealdata"];
+	poco_information_f1(app.logger(), "sealdata object : %s", d.toString());
+	Parser ps;
+	Var result = ps.parse(d);
+	assert(result.type() == typeid(Object::Ptr));
 
-	XSSealProvider provider;
-	std::string result = provider.read();
-	Parser parser;
-	Var v = parser.parse(result);
-	assert(v.type() == typeid(Object::Ptr));
-	Object::Ptr object = v.extract<Object::Ptr>();
-	DynamicStruct ds = *object;
+	Object indata = *result.extract<Object::Ptr>();
+	Object data;
 
-	_seal_data = ds.toString();
+	SealProvider* ptr = new XSSealProvider;
+	providers.push_back(ptr);
+	for (QZSyncTask::SealProviderIter it = providers.begin(); it != providers.end(); it++)
+	{
+		SealProvider* ptr = (*it);
+		ptr->read(&indata, &data);
+		DynamicStruct ds = data;
+		if (!ds.empty()) {
+			_seal_data = ds.toString();
+			_name = (*it)->getProperty("name");
+			_code = (*it)->getProperty("code");
+			_validStart = (*it)->getProperty("validStart");
+			_validEnd = (*it)->getProperty("validEnd");
+			break;
+		}
+	}
 	poco_information_f1(app.logger(), "%s%s", _seal_data);
+}
+
+void QZSyncTask::GetContainerId()
+{
+	std::string receive = CommonRequest("http://localhost:11200/RS_GetUserList", "");
+
+	Parser json;
+	Var result = json.parse(receive);
+	DynamicStruct ds = *result.extract<Object::Ptr>();
+
+	std::string _userlist = ds["data"]["userlist"].toString();
+	std::string pattern("(\\S+)\\|\\|(\\S+)[&&&]*");
+	RegularExpression re(pattern);
+	RegularExpression::Match mtch;
+
+	if (!re.match(_userlist, mtch)) {
+		throw Poco::RegularExpressionException(pattern, _userlist);
+	}
+
+	std::vector<std::string> tags;
+	re.split(_userlist, tags, 0);
+	assert(tags.size() > 1);
+	_cid = tags[2];
 }
 
 void QZSyncTask::GetKeySN()
 {
-	return "pseudo key serial number.";
+	std::string body(format("containerId=%s", _cid));
+	std::string receive = CommonRequest("http://localhost:11200/RS_KeyGetKeySn", body);
+	Parser json;
+	Var result = json.parse(receive);
+	DynamicStruct ds = *result.extract<Object::Ptr>();
+
+	_serialNumber = ds["data"]["keySn"].toString();
 }
+
+void QZSyncTask::GetSignedCert()
+{
+	std::string body(format("containerId=%s&certType=$d", _cid, type_signed_cer));
+	std::string receive = CommonRequest("http://localhost:11200/RS_GetCertBase64String", body);
+	Parser json;
+	Var result = json.parse(receive);
+	DynamicStruct ds = *result.extract<Object::Ptr>();
+
+	_x509cert = ds["data"]["keySn"].toString();
+}
+

@@ -27,6 +27,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <None Include="QZSyncTask.json" />
     <None Include="rsyncClient.properties" />
   </ItemGroup>
   <ItemGroup>
@@ -35,12 +36,17 @@
     <ClCompile Include="src\BridgeWindowsLiveLogin.cpp" />
     <ClCompile Include="src\Container.cpp" />
     <ClCompile Include="src\iWebPDF_i.c" />
+    <ClCompile Include="src\KGSealProvider.cpp" />
     <ClCompile Include="src\KG_HARD_EXT_i.c" />
+    <ClCompile Include="src\OESSealProvider.cpp" />
+    <ClCompile Include="src\QZSyncTask.cpp" />
     <ClCompile Include="src\rsyncClient.cpp" />
     <ClCompile Include="src\SampleTask.cpp" />
+    <ClCompile Include="src\SealProvider.cpp" />
     <ClCompile Include="src\UKeyDevice.cpp" />
     <ClCompile Include="src\Certificate.cpp" />
     <ClCompile Include="src\WindowsLiveLogin_i.c" />
+    <ClCompile Include="src\XSSealProvider.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -50,11 +56,17 @@
     <ClInclude Include="src\Certificate.h" />
     <ClInclude Include="src\Container.h" />
     <ClInclude Include="src\iWebPDF.h" />
+    <ClInclude Include="src\KGSealProvider.h" />
+    <ClInclude Include="src\KG_GetKeyInfo_FJRS.h" />
     <ClInclude Include="src\KG_HARD_EXT.h" />
+    <ClInclude Include="src\OESSealProvider.h" />
+    <ClInclude Include="src\QZSyncTask.h" />
     <ClInclude Include="src\rsyncClient.h" />
     <ClInclude Include="src\SampleTask.h" />
+    <ClInclude Include="src\SealProvider.h" />
     <ClInclude Include="src\UKeyDevice.h" />
     <ClInclude Include="src\WindowsLiveLogin.h" />
+    <ClInclude Include="src\XSSealProvider.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="rsyncClient.rc" />
@@ -158,7 +170,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug_shared|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include\poco\Data\include;..\include\poco\Data\SQLite\include;..\include\poco\JSON\include;..\include\poco\Foundation\include;..\include\poco\Net\include;..\include\poco\Util\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include\poco\Data\include;..\include\poco\Data\SQLite\include;..\include\poco\XML\include;..\include\poco\JSON\include;..\include\poco\Foundation\include;..\include\poco\Net\include;..\include\poco\Util\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>true</MinimalRebuild>
@@ -174,7 +186,7 @@
       <CompileAs>Default</CompileAs>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>PocoFoundationd.lib;PocoJSONd.lib;PocoNetd.lib;PocoUtild.lib;PocoDatad.lib;PocoDataSQLited.lib;SoFProviderd.lib;Iphlpapi.lib;msi.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PocoFoundationd.lib;PocoJSONd.lib;PocoNetd.lib;PocoUtild.lib;PocoDatad.lib;PocoDataSQLited.lib;SoFProviderd.lib;Iphlpapi.lib;msi.lib;ws2_32.lib;TCardCert.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetFileName)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -186,7 +198,8 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y $(ProjectDir)rsyncClient.properties $(OutDir)</Command>
+      <Command>xcopy /y $(ProjectDir)rsyncClient.properties $(OutDir)
+xcopy /y $(ProjectDir)QZSyncTask.json $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='release_shared|Win32'">

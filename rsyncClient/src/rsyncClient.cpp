@@ -15,6 +15,7 @@
 #include "Poco/TaskManager.h"
 #include "rsyncClient.h"
 #include "SampleTask.h"
+#include "QZSyncTask.h"
 
 using namespace Reach;
 
@@ -82,7 +83,8 @@ int rsyncClient::main(const ArgVec& args)
 		short port = (unsigned short)app.config().getUInt("HTTPFormServer.port", 9980);
 
 		TaskManager tm;
-		tm.start(new SampleTask(host, port));
+		//tm.start(new SampleTask(host, port));
+		tm.start(new QZSyncTask);
 		waitForTerminationRequest();
 		tm.cancelAll();
 		tm.joinAll();
