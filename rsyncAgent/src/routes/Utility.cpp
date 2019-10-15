@@ -150,7 +150,7 @@ std::string Utility::UniqueTransOrder()
 	Random rnd(Random::RND_STATE_128);
 	rnd.seed();
 
-	format(TRANSID, "RS%s%u", timestamp(), rnd.next());
+	format(TRANSID, "%s%u", timestamp(), rnd.next());
 
 	return TRANSID;
 }

@@ -100,6 +100,6 @@ void  Command::toJSON()
 	typedef NameValueCollection::ConstIterator Iter;
 	for (Iter it = colletion.begin(); it != colletion.end(); it++) {
 		Debugger::message(format("object item <%s>:<%s> ", it->first, it->second));
-		response.addObject(it->first, it->second);
+		response.addDataItem(it->first, it->second);
 	}
 }

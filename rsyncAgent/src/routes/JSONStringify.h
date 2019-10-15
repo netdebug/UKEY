@@ -36,6 +36,7 @@ namespace Reach {
 		JSONStringify& addObjectItem(const std::string& k, const std::string& v);
 		JSONStringify& addObjectItem(const std::string& k, int v);
 
+		JSONStringify& addDataItem(const std::string& k, const std::string& v);
 		void clear();
 		bool empty();
 		std::string toString();

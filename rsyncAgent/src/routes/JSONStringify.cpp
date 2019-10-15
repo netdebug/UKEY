@@ -90,6 +90,23 @@ JSONStringify& JSONStringify::addNullObject()
 	return *this;
 }
 
+JSONStringify& JSONStringify::addDataItem(const std::string& k, const std::string& v)
+{
+	if (!result.has("data")) {
+		result.set("data", Object(JSONOptions));
+	}
+	//{ d -> o }
+	Query query(result);
+	Object::Ptr d = query.findObject("data");
+	assert(!d.isNull());
+	Object t(JSONOptions);
+	t = std::move(*d);
+	t.set(k, v);
+	result.set("data", t);
+
+	return *this;
+}
+
 JSONStringify& JSONStringify::addObjectItem(const std::string& k, const std::string& v)
 {
 	assert(result.has("data"));
