@@ -25,6 +25,24 @@
     <Filter Include="RequestHandler\Command\Source Files">
       <UniqueIdentifier>{4b61d333-6ecc-4e29-81b2-e837f2d72f4b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="RequestHandler\Clould">
+      <UniqueIdentifier>{5dfda01f-baea-4b5e-81d7-cb070914c671}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RequestHandler\Ukey">
+      <UniqueIdentifier>{3dd8f18b-65b6-44ad-be48-2220efad1247}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RequestHandler\Ukey\Header Files">
+      <UniqueIdentifier>{62d9a2d3-0499-42ed-a76b-407628706376}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RequestHandler\Ukey\Source Files">
+      <UniqueIdentifier>{14ed9b58-5116-455b-aa9c-711559167605}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RequestHandler\Clould\Header Files">
+      <UniqueIdentifier>{670f2fb2-8956-4615-b3c8-902cb116e6ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RequestHandler\Clould\Source Files">
+      <UniqueIdentifier>{5d64b30e-fe16-4a8c-8f36-79a72c25fad3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="rsyncAgent.properties">
@@ -50,69 +68,6 @@
     <ClInclude Include="src\routes\Command.h">
       <Filter>RequestHandler\Command</Filter>
     </ClInclude>
-    <ClInclude Include="src\routes\CertLoginRequestHandler.h">
-      <Filter>RequestHandler\Command\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\routes\ChangePassWdRequestHandler.h">
-      <Filter>RequestHandler\Command\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\routes\ConfigParametersRequestHandler.h">
-      <Filter>RequestHandler\Command\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\routes\DecryptFileRequestHandler.h">
-      <Filter>RequestHandler\Command\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\routes\EncryptFileRequestHandler.h">
-      <Filter>RequestHandler\Command\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\routes\GetCertBase64StringRequestHandler.h">
-      <Filter>RequestHandler\Command\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\routes\GetCertInfoRequestHandler.h">
-      <Filter>RequestHandler\Command\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\routes\GetPinRetryCountRequestHandler.h">
-      <Filter>RequestHandler\Command\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\routes\GetUserListRequestHandler.h">
-      <Filter>RequestHandler\Command\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\routes\KeyDecryptByDigitalEnvelopeRequestHandler.h">
-      <Filter>RequestHandler\Command\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\routes\KeyDecryptDataRequestHandler.h">
-      <Filter>RequestHandler\Command\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\routes\KeyDigitalSignByP1RequestHandler.h">
-      <Filter>RequestHandler\Command\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\routes\KeyEncryptByDigitalEnvelopeRequestHandler.h">
-      <Filter>RequestHandler\Command\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\routes\KeyEncryptDataRequestHandler.h">
-      <Filter>RequestHandler\Command\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\routes\KeyGetKeySnRequestHandler.h">
-      <Filter>RequestHandler\Command\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\routes\KeySignByP1RequestHandler.h">
-      <Filter>RequestHandler\Command\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\routes\KeySignByP7RequestHandler.h">
-      <Filter>RequestHandler\Command\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\routes\VerifyDigitalSignByP1RequestHandler.h">
-      <Filter>RequestHandler\Command\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\routes\VerifyIdentityRequestHandler.h">
-      <Filter>RequestHandler\Command\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\routes\VerifySignByP1RequestHandler.h">
-      <Filter>RequestHandler\Command\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\routes\VerifySignByP7RequestHandler.h">
-      <Filter>RequestHandler\Command\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\GMCrypto.h">
       <Filter>Core\Header Files</Filter>
     </ClInclude>
@@ -128,14 +83,86 @@
     <ClInclude Include="src\routes\translater.h">
       <Filter>RequestHandler</Filter>
     </ClInclude>
+    <ClInclude Include="src\routes\CertLoginRequestHandler.h">
+      <Filter>RequestHandler\Ukey\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\ChangePassWdRequestHandler.h">
+      <Filter>RequestHandler\Ukey\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\DecryptFileRequestHandler.h">
+      <Filter>RequestHandler\Ukey\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\EncryptFileRequestHandler.h">
+      <Filter>RequestHandler\Ukey\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\GetCertBase64StringRequestHandler.h">
+      <Filter>RequestHandler\Ukey\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\GetCertInfoRequestHandler.h">
+      <Filter>RequestHandler\Ukey\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\GetPinRetryCountRequestHandler.h">
+      <Filter>RequestHandler\Ukey\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\GetUserListRequestHandler.h">
+      <Filter>RequestHandler\Ukey\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\KeyDecryptByDigitalEnvelopeRequestHandler.h">
+      <Filter>RequestHandler\Ukey\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\KeyDecryptDataRequestHandler.h">
+      <Filter>RequestHandler\Ukey\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\KeyDigitalSignByP1RequestHandler.h">
+      <Filter>RequestHandler\Ukey\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\KeyEncryptByDigitalEnvelopeRequestHandler.h">
+      <Filter>RequestHandler\Ukey\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\KeyEncryptDataRequestHandler.h">
+      <Filter>RequestHandler\Ukey\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\KeyGetKeySnRequestHandler.h">
+      <Filter>RequestHandler\Ukey\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\KeySignByP1RequestHandler.h">
+      <Filter>RequestHandler\Ukey\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\KeySignByP7RequestHandler.h">
+      <Filter>RequestHandler\Ukey\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\VerifyDigitalSignByP1RequestHandler.h">
+      <Filter>RequestHandler\Ukey\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\VerifyIdentityRequestHandler.h">
+      <Filter>RequestHandler\Ukey\Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="src\routes\VerifySignByP1ExtRequestHandler.h">
-      <Filter>RequestHandler\Command\Header Files</Filter>
+      <Filter>RequestHandler\Ukey\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\VerifySignByP1RequestHandler.h">
+      <Filter>RequestHandler\Ukey\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\routes\VerifySignByP7ExtRequestHandler.h">
-      <Filter>RequestHandler\Command\Header Files</Filter>
+      <Filter>RequestHandler\Ukey\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\routes\ReadSealDataRequestHandler.h">
-      <Filter>RequestHandler\Command\Header Files</Filter>
+    <ClInclude Include="src\routes\VerifySignByP7RequestHandler.h">
+      <Filter>RequestHandler\Ukey\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\ConfigParametersRequestHandler.h">
+      <Filter>RequestHandler\Clould\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\GetParametersRequestHandler.h">
+      <Filter>RequestHandler\Clould\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\CloudAPI\GetTransidRequestHandler.h">
+      <Filter>RequestHandler\Clould\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\CloudAPI\GreateQRCodeRequestHandler.h">
+      <Filter>RequestHandler\Clould\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\CloudAPI\CloudLoginAuthRequestHandler.h">
+      <Filter>RequestHandler\Clould\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -151,57 +178,6 @@
     <ClCompile Include="src\routes\Command.cpp">
       <Filter>RequestHandler\Command</Filter>
     </ClCompile>
-    <ClCompile Include="src\routes\CertLoginRequestHandler.cpp">
-      <Filter>RequestHandler\Command\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\routes\VerifySignByP7RequestHandler.cpp">
-      <Filter>RequestHandler\Command\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\routes\ChangePassWdRequestHandler.cpp">
-      <Filter>RequestHandler\Command\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\routes\DecryptFileRequestHandler.cpp">
-      <Filter>RequestHandler\Command\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\routes\EncryptFileRequestHandler.cpp">
-      <Filter>RequestHandler\Command\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\routes\GetCertBase64StringRequestHandler.cpp">
-      <Filter>RequestHandler\Command\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\routes\GetCertInfoRequestHandler.cpp">
-      <Filter>RequestHandler\Command\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\routes\GetPinRetryCountRequestHandler.cpp">
-      <Filter>RequestHandler\Command\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\routes\GetUserListRequestHandler.cpp">
-      <Filter>RequestHandler\Command\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\routes\KeyDecryptByDigitalEnvelopeRequestHandler.cpp">
-      <Filter>RequestHandler\Command\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\routes\KeyDecryptDataRequestHandler.cpp">
-      <Filter>RequestHandler\Command\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\routes\KeyEncryptByDigitalEnvelopeRequestHandler.cpp">
-      <Filter>RequestHandler\Command\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\routes\KeyEncryptDataRequestHandler.cpp">
-      <Filter>RequestHandler\Command\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\routes\KeyGetKeySnRequestHandler.cpp">
-      <Filter>RequestHandler\Command\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\routes\KeySignByP1RequestHandler.cpp">
-      <Filter>RequestHandler\Command\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\routes\KeySignByP7RequestHandler.cpp">
-      <Filter>RequestHandler\Command\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\routes\VerifySignByP1RequestHandler.cpp">
-      <Filter>RequestHandler\Command\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\routes\Utility.cpp">
       <Filter>RequestHandler</Filter>
     </ClCompile>
@@ -214,8 +190,56 @@
     <ClCompile Include="src\routes\translater.cpp">
       <Filter>RequestHandler</Filter>
     </ClCompile>
-    <ClCompile Include="src\routes\ReadSealDataRequestHandler.cpp">
-      <Filter>RequestHandler\Command\Source Files</Filter>
+    <ClCompile Include="src\routes\CertLoginRequestHandler.cpp">
+      <Filter>RequestHandler\Ukey\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\ChangePassWdRequestHandler.cpp">
+      <Filter>RequestHandler\Ukey\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\DecryptFileRequestHandler.cpp">
+      <Filter>RequestHandler\Ukey\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\EncryptFileRequestHandler.cpp">
+      <Filter>RequestHandler\Ukey\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\GetCertBase64StringRequestHandler.cpp">
+      <Filter>RequestHandler\Ukey\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\GetCertInfoRequestHandler.cpp">
+      <Filter>RequestHandler\Ukey\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\GetPinRetryCountRequestHandler.cpp">
+      <Filter>RequestHandler\Ukey\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\GetUserListRequestHandler.cpp">
+      <Filter>RequestHandler\Ukey\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\KeyDecryptByDigitalEnvelopeRequestHandler.cpp">
+      <Filter>RequestHandler\Ukey\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\KeyDecryptDataRequestHandler.cpp">
+      <Filter>RequestHandler\Ukey\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\KeyEncryptByDigitalEnvelopeRequestHandler.cpp">
+      <Filter>RequestHandler\Ukey\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\KeyEncryptDataRequestHandler.cpp">
+      <Filter>RequestHandler\Ukey\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\KeyGetKeySnRequestHandler.cpp">
+      <Filter>RequestHandler\Ukey\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\KeySignByP7RequestHandler.cpp">
+      <Filter>RequestHandler\Ukey\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\KeySignByP1RequestHandler.cpp">
+      <Filter>RequestHandler\Ukey\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\VerifySignByP1RequestHandler.cpp">
+      <Filter>RequestHandler\Ukey\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\VerifySignByP7RequestHandler.cpp">
+      <Filter>RequestHandler\Ukey\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

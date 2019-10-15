@@ -30,6 +30,9 @@
 #include "routes/KeyDecryptDataRequestHandler.h"
 #include "routes/KeyEncryptByDigitalEnvelopeRequestHandler.h"
 #include "routes/KeyDecryptByDigitalEnvelopeRequestHandler.h"
+#include "routes/CloudAPI/GetTransidRequestHandler.h"
+#include "routes/CloudAPI/GreateQRCodeRequestHandler.h"
+#include "routes/CloudAPI/CloudLoginAuthRequestHandler.h"
 
 using namespace Reach;
 
@@ -98,6 +101,12 @@ HTTPRequestHandler * Reach::RequestHandlerFactory::createRequestHandler(const HT
 		return new KeyEncryptByDigitalEnvelopeRequestHandler;
 	else if (request.getURI() == "/RS_KeyDecryptByDigitalEnvelope")
 		return new KeyDecryptByDigitalEnvelopeRequestHandler;
+	else if (request.getURI() == "/RS_GetTransid")
+		return new GetTransidRequestHandler;
+	else if (request.getURI() == "/RS_GreateQRCode")
+		return new GreateQRCodeRequestHandler;
+	else if (request.getURI() == "/RS_CloudLoginAuth")
+		return new CloudLoginAuthRequestHandler;
 
 		return 0;
 }

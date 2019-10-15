@@ -37,12 +37,16 @@
     <ClInclude Include="src\RequestHandlerFactory.h" />
     <ClInclude Include="src\routes\CertLoginRequestHandler.h" />
     <ClInclude Include="src\routes\ChangePassWdRequestHandler.h" />
+    <ClInclude Include="src\routes\CloudAPI\CloudLoginAuthRequestHandler.h" />
+    <ClInclude Include="src\routes\CloudAPI\GetTransidRequestHandler.h" />
+    <ClInclude Include="src\routes\CloudAPI\GreateQRCodeRequestHandler.h" />
     <ClInclude Include="src\routes\Command.h" />
     <ClInclude Include="src\routes\ConfigParametersRequestHandler.h" />
     <ClInclude Include="src\routes\DecryptFileRequestHandler.h" />
     <ClInclude Include="src\routes\EncryptFileRequestHandler.h" />
     <ClInclude Include="src\routes\GetCertBase64StringRequestHandler.h" />
     <ClInclude Include="src\routes\GetCertInfoRequestHandler.h" />
+    <ClInclude Include="src\routes\GetParametersRequestHandler.h" />
     <ClInclude Include="src\routes\GetPinRetryCountRequestHandler.h" />
     <ClInclude Include="src\routes\GetUserListRequestHandler.h" />
     <ClInclude Include="src\routes\JSONStringify.h" />
@@ -54,7 +58,6 @@
     <ClInclude Include="src\routes\KeyGetKeySnRequestHandler.h" />
     <ClInclude Include="src\routes\KeySignByP1RequestHandler.h" />
     <ClInclude Include="src\routes\KeySignByP7RequestHandler.h" />
-    <ClInclude Include="src\routes\ReadSealDataRequestHandler.h" />
     <ClInclude Include="src\routes\RequestHandleException.h" />
     <ClInclude Include="src\routes\translater.h" />
     <ClInclude Include="src\routes\Utility.h" />
@@ -86,7 +89,6 @@
     <ClCompile Include="src\routes\KeyGetKeySnRequestHandler.cpp" />
     <ClCompile Include="src\routes\KeySignByP1RequestHandler.cpp" />
     <ClCompile Include="src\routes\KeySignByP7RequestHandler.cpp" />
-    <ClCompile Include="src\routes\ReadSealDataRequestHandler.cpp" />
     <ClCompile Include="src\routes\RequestHandleException.cpp" />
     <ClCompile Include="src\routes\translater.cpp" />
     <ClCompile Include="src\routes\Utility.cpp" />
@@ -198,7 +200,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug_shared|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\RData\include;..\RData\SOF\include;..\RData\FJCA\include;..\include\poco\Crypto\include;..\include\poco\Data\include;..\include\poco\Data\SQLite\include;..\include\poco\JSON\include;..\include\poco\Foundation\include;..\include\poco\Net\include;..\include\poco\Util\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../;..\RData\include;..\RData\SOF\include;..\RData\FJCA\include;..\include\poco\Crypto\include;..\include\poco\Data\include;..\include\poco\Data\SQLite\include;..\include\poco\JSON\include;..\include\poco\Foundation\include;..\include\poco\Net\include;..\include\poco\Util\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>true</MinimalRebuild>

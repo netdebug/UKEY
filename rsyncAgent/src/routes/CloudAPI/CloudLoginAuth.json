@@ -1,0 +1,13 @@
+{
+  "head": {
+    "bizCode": "BIZ.CREATEAUTHIDENT",
+    "sysId": "b253fca87f6711e995aa005056a72395",
+    "unit": "RSYZ"
+  },
+  "body": "",
+  "bodyJson": {
+    "action": "",
+    "authCode": "1C597FFF81F9462784C78804A0A389CB",
+    "transid": ""
+  }
+}

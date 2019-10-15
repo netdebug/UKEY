@@ -1,46 +1,44 @@
 #pragma once
 
-#include "Command.h"
-#include "RESTfulRequestHandler.h"
-#include "RequestHandleException.h"
 #include "Poco/Util/Application.h"
+#include "../Command.h"
+#include "../RESTfulRequestHandler.h"
+
 
 namespace Reach {
 
 	using Poco::Util::Application;
 
-	///RS_GetParameters
-	class GetParameters : public Command
+	///RS_GreateQRCode
+	class GreateQRCode : public Command
 	{
 	public:
-		GetParameters(const std::string& cmd)
-			:_cmd(cmd)
-		{}
+		GreateQRCode(const std::string& qrcode, const std::string& path)
+			:_qrcode(qrcode), _path(path)
+		{
+		}
 
 		void run()
 		{
-			Application& app = Application::instance();
-			std::string result = app.config().getString(_cmd);
-
-			add(_cmd, result);
+			throw Poco::NotImplementedException();
 		}
 	private:
-		std::string _cmd;
+		std::string _qrcode;
+		std::string _path;
 	};
 
-	class GetParametersRequestHandler : public RESTfulRequestHandler
+	class GreateQRCodeRequestHandler : public RESTfulRequestHandler
 	{
 	public:
 		void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
 		{
 			poco_information_f1(Application::instance().logger(), "Request from %s", request.clientAddress().toString());
-
 			RESTfulRequestHandler::handleCORS(request, response);
 
 			HTMLForm form(request, request.stream());
-			std::string cmd = form.get("cmd", "");
-
-			GetParameters command(cmd);
+			std::string qrcode = form.get("qrcode", "");
+			std::string path = form.get("path", "");
+			GreateQRCode command(qrcode, path);
 			command.execute();
 
 			return response.sendBuffer(command().data(), command().length());

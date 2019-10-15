@@ -19,7 +19,8 @@ namespace Reach {
 
 		void run()
 		{
-			add("data", "RS_ConfigParameters Not Implmented!");
+			Application& app = Application::instance();
+			app.config().setString(_cmd, _val);
 		}
 	private:
 		std::string _cmd;
