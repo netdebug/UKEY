@@ -4,6 +4,7 @@
 
 
 // CRSyncControlCtrl : 请参阅 RSyncControlCtrl.cpp 了解实现。
+#include <string>
 
 class CRSyncControlCtrl : public COleControl
 {
@@ -41,7 +42,8 @@ protected:
 	BSTR RS_CertLogin(BSTR containerId, BSTR password);
 	BSTR RS_GetPinRetryCount(BSTR containerId);
 	BSTR RS_ChangePassWd(BSTR containerId, BSTR oldCode, BSTR newCode);
-	BSTR RS_KeyGetKeySn(BSTR containerId);
+	BSTR RS_KeyGetKeySnExt(BSTR containerId);
+	BSTR RS_KeyGetKeySn();
 	BSTR RS_KeySignByP1(BSTR msg, BSTR containerId);
 	BSTR RS_VerifySignByP1(BSTR certBase64, BSTR msg, BSTR signdMsg);
 	BSTR RS_KeySignByP7(BSTR msg, BSTR flag, BSTR containerId);
@@ -62,6 +64,7 @@ public:
 		dispid_GetPinRetryCount,
 		dispid_ChangePassWd,
 		dispid_KeyGetKeySn,
+		dispid_KeyGetKeySnExt,
 		dispid_KeySignByP1,
 		dispid_VerifySignByP1,
 		dispid_KeyEncryptData,

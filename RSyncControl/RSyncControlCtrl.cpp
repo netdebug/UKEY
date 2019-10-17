@@ -7,6 +7,11 @@
 #include "afxdialogex.h"
 #include <comutil.h>
 #include "Utility.h"
+#include "Poco/String.h"
+
+using Poco::Net::HTTPRequest;
+using Poco::Net::HTTPResponse;
+using Poco::Net::HTTPClientSession;
 
 using Reach::ActiveX::Utility;
 
@@ -31,13 +36,14 @@ BEGIN_DISPATCH_MAP(CRSyncControlCtrl, COleControl)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CertLogin", dispid_CertLogin, RS_CertLogin, VT_BSTR, VTS_BSTR VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_GetPinRetryCount", dispid_GetPinRetryCount, RS_GetPinRetryCount, VT_BSTR, VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyGetKeySn", dispid_KeyGetKeySn, RS_KeyGetKeySn, VT_BSTR, VTS_NONE)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyGetKeySnExt", dispid_KeyGetKeySnExt, RS_KeyGetKeySnExt, VT_BSTR, VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeySignByP1", dispid_KeySignByP1, RS_KeySignByP1, VT_BSTR, VTS_BSTR VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_VerifySignByP1", dispid_VerifySignByP1, RS_VerifySignByP1, VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyEncryptData", dispid_KeyEncryptData, RS_KeyEncryptData, VT_BSTR, VTS_BSTR VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyDecryptData", dispid_KeyDecryptData, RS_KeyDecryptData, VT_BSTR, VTS_BSTR VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_GetCertInfo", dispid_GetCertInfo, RS_GetCertInfo, VT_BSTR, VTS_BSTR VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeySignByP7", dispid_KeySignByP7, RS_KeySignByP7, VT_BSTR, VTS_BSTR VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_VerifySignByP7", dispid_VerifySignByP7, RS_VerifySignByP7, VT_BSTR, VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeySignByP7", dispid_KeySignByP7, RS_KeySignByP7, VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_VerifySignByP7", dispid_VerifySignByP7, RS_VerifySignByP7, VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
 END_DISPATCH_MAP()
 
 // 事件映射
@@ -54,8 +60,10 @@ END_PROPPAGEIDS(CRSyncControlCtrl)
 
 // 初始化类工厂和 guid
 
+//IMPLEMENT_OLECREATE_EX(CRSyncControlCtrl, "RSyncControl.RSyncControlCtrl.1",
+//	0xa0b23721,0x9350,0x4b4d,0xb5,0x81,0x65,0xad,0xd1,0xa7,0x7a,0x5e)
 IMPLEMENT_OLECREATE_EX(CRSyncControlCtrl, "RSyncControl.RSyncControlCtrl.1",
-	0xa0b23721,0x9350,0x4b4d,0xb5,0x81,0x65,0xad,0xd1,0xa7,0x7a,0x5e)
+	0xF84C8F57,0x5A05,0x4D8C,0x82,0x6D,0x29,0x58,0x9C,0x7A,0x12,0x1C)
 
 // 键入库 ID 和版本
 
@@ -63,8 +71,10 @@ IMPLEMENT_OLETYPELIB(CRSyncControlCtrl, _tlid, _wVerMajor, _wVerMinor)
 
 // 接口 ID
 
-const IID IID_DRSyncControl = {0xdb403885,0xf81d,0x41d2,{0x80,0xd7,0x40,0x36,0x50,0x97,0xd6,0x0c}};
-const IID IID_DRSyncControlEvents = {0xb1c93fb3,0x0485,0x4837,{0x9a,0xaf,0xaf,0x8f,0x96,0xa2,0xc0,0xd2}};
+//onst IID IID_DRSyncControl = { 0xdb403885,0xf81d,0x41d2,{0x80,0xd7,0x40,0x36,0x50,0x97,0xd6,0x0c} };
+const IID IID_DRSyncControl = { 0x7A58AA86,0xD40D,0x4611,{0x9D,0xA1,0xDF,0xCE,0xAE,0x95,0x31,0x5A} };
+//const IID IID_DRSyncControlEvents = { 0xb1c93fb3,0x0485,0x4837,{0x9a,0xaf,0xaf,0x8f,0x96,0xa2,0xc0,0xd2} };
+const IID IID_DRSyncControlEvents = { 0xEECD3FF1,0xDED8,0x44B3,{0x87,0x7C,0x99,0xD0,0x56,0xD5,0x44,0x9D} };
 
 // 控件类型信息
 
@@ -164,24 +174,17 @@ void CRSyncControlCtrl::AboutBox()
 
 BSTR CRSyncControlCtrl::RS_GetUserList()
 {
-	std::string result;
-	Utility::request("/RS_GetUserList");
-	result = Utility::response();
-	std::wstring bstr = Utility::convert(result);
-
-	return _bstr_t(bstr.data());
+	std::string result = Utility::SuperRequest("/RS_GetUserList", "");
+	return _bstr_t(result.data());
 }
 
 BSTR CRSyncControlCtrl::RS_GetCertBase64String(BSTR containerId, SHORT certType)
 {
 	std::string id = _com_util::ConvertBSTRToString(containerId);
-	std::string body(Poco::format("containerId=%s&certType=$d", id, certType));
-	Utility::request("/RS_GetCertBase64String", body);
+	std::string body(Poco::format("containerId=%s&certType=%d", id, (int)certType));
+	std::string result = Utility::SuperRequest("/RS_GetCertBase64String", body);
 
-	std::string result = Utility::response();
-	std::wstring bstr = Utility::convert(result);
-
-	return _bstr_t(bstr.data());
+	return _bstr_t(result.data());
 }
 
 BSTR CRSyncControlCtrl::RS_CertLogin(BSTR containerId, BSTR password)
@@ -190,25 +193,19 @@ BSTR CRSyncControlCtrl::RS_CertLogin(BSTR containerId, BSTR password)
 
 	std::string id = _com_util::ConvertBSTRToString(containerId);
 	std::string word = _com_util::ConvertBSTRToString(password);
-	std::string body(Poco::format("containerId=%s&password=$d", id, word));
-	Utility::request("/RS_CertLogin", body);
+	std::string body(Poco::format("containerId=%s&password=%s", id, word));
+	std::string result = Utility::SuperRequest("/RS_CertLogin", body);
 
-	std::string result = Utility::response();
-	std::wstring bstr = Utility::convert(result);
-
-	return _bstr_t(bstr.data());
+	return _bstr_t(result.data());
 }
 
 BSTR CRSyncControlCtrl::RS_GetPinRetryCount(BSTR containerId)
 {
 	std::string id = _com_util::ConvertBSTRToString(containerId);
 	std::string body(Poco::format("containerId=%s", id));
-	Utility::request("/RS_GetPinRetryCount", body);
+	std::string result = Utility::SuperRequest("/RS_GetPinRetryCount", body);
 
-	std::string result = Utility::response();
-	std::wstring bstr = Utility::convert(result);
-
-	return _bstr_t(bstr.data());
+	return _bstr_t(result.data());
 }
 
 BSTR CRSyncControlCtrl::RS_ChangePassWd(BSTR containerId, BSTR oldCode, BSTR newCode)
@@ -218,24 +215,31 @@ BSTR CRSyncControlCtrl::RS_ChangePassWd(BSTR containerId, BSTR oldCode, BSTR new
 	std::string thenew = _com_util::ConvertBSTRToString(newCode);
 
 	std::string body(Poco::format("containerId=%s&oldCode=%s&newCode=%s", id, theold, thenew));
-	Utility::request("/RS_ChangePassWd", body);
+	std::string result = Utility::SuperRequest("/RS_ChangePassWd", body);
 
-	std::string result = Utility::response();
-	std::wstring bstr = Utility::convert(result);
-
-	return _bstr_t(bstr.data());
+	return _bstr_t(result.data());
 }
 
-BSTR CRSyncControlCtrl::RS_KeyGetKeySn(BSTR containerId)
+BSTR CRSyncControlCtrl::RS_KeyGetKeySnExt(BSTR containerId)
 {
 	std::string id = _com_util::ConvertBSTRToString(containerId);
 	std::string body(Poco::format("containerId=%s", id));
-	Utility::request("/RS_KeyGetKeySn", body);
+	std::string result = Utility::SuperRequest("/RS_KeyGetKeySn", body);
 
-	std::string result = Utility::response();
-	std::wstring bstr = Utility::convert(result);
+	return _bstr_t(result.data());
+}
 
-	return _bstr_t(bstr.data());
+BSTR CRSyncControlCtrl::RS_KeyGetKeySn()
+{
+	std::string result;
+	result = Utility::SuperRequest("/RS_GetUserList","");
+	
+	std::string id = Utility::formatUid(result);
+	
+	std::string body(Poco::format("containerId=%s", id));
+	result = Utility::SuperRequest("/RS_KeyGetKeySn", body);
+
+	return _bstr_t(result.data());
 }
 
 BSTR CRSyncControlCtrl::RS_KeySignByP1(BSTR msg, BSTR containerId)
@@ -244,12 +248,9 @@ BSTR CRSyncControlCtrl::RS_KeySignByP1(BSTR msg, BSTR containerId)
 	std::string id = _com_util::ConvertBSTRToString(containerId);
 	std::string text = _com_util::ConvertBSTRToString(msg);
 	std::string body(Poco::format("containerId=%s&asn1Msg=%s", id, text));
-	Utility::request("/RS_KeySignByP1", body);
+	std::string result = Utility::SuperRequest("/RS_KeySignByP1", body);
 
-	std::string result = Utility::response();
-	std::wstring bstr = Utility::convert(result);
-
-	return _bstr_t(bstr.data());
+	return _bstr_t(result.data());
 }
 
 BSTR CRSyncControlCtrl::RS_VerifySignByP1(BSTR certBase64, BSTR msg, BSTR signdMsg)
@@ -258,12 +259,9 @@ BSTR CRSyncControlCtrl::RS_VerifySignByP1(BSTR certBase64, BSTR msg, BSTR signdM
 	std::string text = _com_util::ConvertBSTRToString(msg);
 	std::string signature = _com_util::ConvertBSTRToString(signdMsg);
 	std::string body(Poco::format("certBase64=%s&msg=%s&signdMsg=%s", cert, text, signature));
-	Utility::request("/RS_VerifySignByP1", body);
+	std::string result = Utility::SuperRequest("/RS_VerifySignByP1", body);
 
-	std::string result = Utility::response();
-	std::wstring bstr = Utility::convert(result);
-
-	return _bstr_t(bstr.data());
+	return _bstr_t(result.data());
 }
 
 BSTR CRSyncControlCtrl::RS_KeySignByP7(BSTR msg, BSTR flag, BSTR containerId)
@@ -272,12 +270,9 @@ BSTR CRSyncControlCtrl::RS_KeySignByP7(BSTR msg, BSTR flag, BSTR containerId)
 	std::string message = _com_util::ConvertBSTRToString(msg);
 	std::string mode = _com_util::ConvertBSTRToString(flag);
 	std::string body(Poco::format("containerId=%s&msg=%s&flag=%s", id, message, mode));
-	Utility::request("/RS_KeySignByP7", body);
+	std::string result = Utility::SuperRequest("/RS_KeySignByP7", body);
 
-	std::string result = Utility::response();
-	std::wstring bstr = Utility::convert(result);
-
-	return _bstr_t(bstr.data());
+	return _bstr_t(result.data());
 }
 
 BSTR CRSyncControlCtrl::RS_VerifySignByP7(BSTR msg, BSTR signdMsg, BSTR flag)
@@ -287,12 +282,9 @@ BSTR CRSyncControlCtrl::RS_VerifySignByP7(BSTR msg, BSTR signdMsg, BSTR flag)
 	std::string mode = _com_util::ConvertBSTRToString(flag);
 
 	std::string body(Poco::format("msg=%s&signdMsg=%s&flag=%s", message, signedMessage, mode));
-	Utility::request("/RS_VerifySignByP7", body);
+	std::string result = Utility::SuperRequest("/RS_VerifySignByP7", body);
 
-	std::string result = Utility::response();
-	std::wstring bstr = Utility::convert(result);
-
-	return _bstr_t(bstr.data());
+	return _bstr_t(result.data());
 }
 
 BSTR CRSyncControlCtrl::RS_KeyEncryptData(BSTR rsKey, BSTR certBase64)
@@ -300,12 +292,9 @@ BSTR CRSyncControlCtrl::RS_KeyEncryptData(BSTR rsKey, BSTR certBase64)
 	std::string cert = _com_util::ConvertBSTRToString(certBase64);
 	std::string rskey = _com_util::ConvertBSTRToString(rsKey);
 	std::string body(Poco::format("certBase64=%s&rsKey=%s", cert, rskey));
-	Utility::request("/RS_KeyEncryptData", body);
+	std::string result = Utility::SuperRequest("/RS_KeyEncryptData", body);
 
-	std::string result = Utility::response();
-	std::wstring bstr = Utility::convert(result);
-
-	return _bstr_t(bstr.data());
+	return _bstr_t(result.data());
 }
 
 BSTR CRSyncControlCtrl::RS_KeyDecryptData(BSTR encRsKey, BSTR containerId)
@@ -313,12 +302,9 @@ BSTR CRSyncControlCtrl::RS_KeyDecryptData(BSTR encRsKey, BSTR containerId)
 	std::string id = _com_util::ConvertBSTRToString(containerId);
 	std::string rskey = _com_util::ConvertBSTRToString(encRsKey);
 	std::string body(Poco::format("containerId=%s&encRsKey=%s", id, rskey));
-	Utility::request("/RS_KeyDecryptData", body);
+	std::string result = Utility::SuperRequest("/RS_KeyDecryptData", body);
 
-	std::string result = Utility::response();
-	std::wstring bstr = Utility::convert(result);
-
-	return _bstr_t(bstr.data());
+	return _bstr_t(result.data());
 }
 
 BSTR CRSyncControlCtrl::RS_GetCertInfo(BSTR certBase64, BSTR type)
@@ -326,9 +312,8 @@ BSTR CRSyncControlCtrl::RS_GetCertInfo(BSTR certBase64, BSTR type)
 	std::string cert = _com_util::ConvertBSTRToString(certBase64);
 	std::string ctype = _com_util::ConvertBSTRToString(type);
 	std::string body(Poco::format("certBase64=%s&type=%s", cert, ctype));
-	Utility::request("/RS_GetCertInfo", body);
+	std::string result = Utility::SuperRequest("/RS_GetCertInfo", body);
 
-	std::string result = Utility::response();
 	std::wstring bstr = Utility::convert(result);
 
 	return _bstr_t(bstr.data());

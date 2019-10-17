@@ -12,6 +12,8 @@ public:
 	static void request(const std::string & url, const std::string & body = "");
 	static std::string response();
 	static std::wstring convert(const std::string& utf8);
+	static std::string formatUid(const std::string& entries);
+	static std::string SuperRequest(const std::string& url, const std::string& body);
 private:
 	Utility();
 	Utility(const Utility&);
