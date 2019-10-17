@@ -8,7 +8,12 @@
 #include <comutil.h>
 #include "Utility.h"
 #include "Poco/String.h"
+#include "Poco/Net/HTMLForm.h"
+#include "Poco/Dynamic/Var.h"
+#include <sstream>
 
+using Poco::Dynamic::Var;
+using Poco::Net::HTMLForm;
 using Poco::Net::HTTPRequest;
 using Poco::Net::HTTPResponse;
 using Poco::Net::HTTPClientSession;
@@ -49,6 +54,12 @@ END_DISPATCH_MAP()
 // 事件映射
 
 BEGIN_EVENT_MAP(CRSyncControlCtrl, COleControl)
+	EVENT_CUSTOM_ID("RS_CloudSealAuthEvent", eventidRS_CloudSealAuthEvent, RS_CloudSealAuthEvent, VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR)
+	EVENT_CUSTOM_ID("RS_CloudGetSignResultEvent", eventidRS_CloudGetSignResultEvent, RS_CloudGetSignResultEvent, VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR)
+	EVENT_CUSTOM_ID("RS_CloudLoginAuthEvent", eventidRS_CloudLoginAuthEvent, RS_CloudLoginAuthEvent, VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR)
+	EVENT_CUSTOM_ID("RS_CloudEncAuthEvent", eventidRS_CloudEncAuthEvent, RS_CloudEncAuthEvent, VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR)
+	EVENT_CUSTOM_ID("RS_CloudDevAuthEvent", eventidRS_CloudDevAuthEvent, RS_CloudDevAuthEvent, VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR)
+	EVENT_CUSTOM_ID("RS_CloudGetCertAuthEvent", eventidRS_CloudGetCertAuthEvent, RS_CloudGetCertAuthEvent, VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR)
 END_EVENT_MAP()
 
 // 属性页
@@ -181,8 +192,14 @@ BSTR CRSyncControlCtrl::RS_GetUserList()
 BSTR CRSyncControlCtrl::RS_GetCertBase64String(BSTR containerId, SHORT certType)
 {
 	std::string id = _com_util::ConvertBSTRToString(containerId);
-	std::string body(Poco::format("containerId=%s&certType=%d", id, (int)certType));
-	std::string result = Utility::SuperRequest("/RS_GetCertBase64String", body);
+	//std::string body(Poco::format("containerId=%s&certType=%d", id, (int)certType));
+	HTMLForm params;
+	params.set("containerId", id);
+	params.set("certType", Var(certType));
+
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_GetCertBase64String", body.str());
 
 	return _bstr_t(result.data());
 }
@@ -193,8 +210,14 @@ BSTR CRSyncControlCtrl::RS_CertLogin(BSTR containerId, BSTR password)
 
 	std::string id = _com_util::ConvertBSTRToString(containerId);
 	std::string word = _com_util::ConvertBSTRToString(password);
-	std::string body(Poco::format("containerId=%s&password=%s", id, word));
-	std::string result = Utility::SuperRequest("/RS_CertLogin", body);
+	//std::string body(Poco::format("containerId=%s&password=%s", id, word));
+	HTMLForm params;
+	params.set("containerId", id);
+	params.set("password", word);
+
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_CertLogin", body.str());
 
 	return _bstr_t(result.data());
 }
@@ -202,8 +225,13 @@ BSTR CRSyncControlCtrl::RS_CertLogin(BSTR containerId, BSTR password)
 BSTR CRSyncControlCtrl::RS_GetPinRetryCount(BSTR containerId)
 {
 	std::string id = _com_util::ConvertBSTRToString(containerId);
-	std::string body(Poco::format("containerId=%s", id));
-	std::string result = Utility::SuperRequest("/RS_GetPinRetryCount", body);
+	//std::string body(Poco::format("containerId=%s", id));
+	HTMLForm params;
+	params.set("containerId", id);
+
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_GetPinRetryCount", body.str());
 
 	return _bstr_t(result.data());
 }
@@ -214,8 +242,15 @@ BSTR CRSyncControlCtrl::RS_ChangePassWd(BSTR containerId, BSTR oldCode, BSTR new
 	std::string theold = _com_util::ConvertBSTRToString(oldCode);
 	std::string thenew = _com_util::ConvertBSTRToString(newCode);
 
-	std::string body(Poco::format("containerId=%s&oldCode=%s&newCode=%s", id, theold, thenew));
-	std::string result = Utility::SuperRequest("/RS_ChangePassWd", body);
+	//std::string body(Poco::format("containerId=%s&oldCode=%s&newCode=%s", id, theold, thenew));
+	HTMLForm params;
+	params.set("containerId", id);
+	params.set("oldCode", theold);
+	params.set("newCode", thenew);
+
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_ChangePassWd", body.str());
 
 	return _bstr_t(result.data());
 }
@@ -223,8 +258,13 @@ BSTR CRSyncControlCtrl::RS_ChangePassWd(BSTR containerId, BSTR oldCode, BSTR new
 BSTR CRSyncControlCtrl::RS_KeyGetKeySnExt(BSTR containerId)
 {
 	std::string id = _com_util::ConvertBSTRToString(containerId);
-	std::string body(Poco::format("containerId=%s", id));
-	std::string result = Utility::SuperRequest("/RS_KeyGetKeySn", body);
+	//std::string body(Poco::format("containerId=%s", id));
+	HTMLForm params;
+	params.set("containerId", id);
+
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_KeyGetKeySn", body.str());
 
 	return _bstr_t(result.data());
 }
@@ -236,8 +276,13 @@ BSTR CRSyncControlCtrl::RS_KeyGetKeySn()
 	
 	std::string id = Utility::formatUid(result);
 	
-	std::string body(Poco::format("containerId=%s", id));
-	result = Utility::SuperRequest("/RS_KeyGetKeySn", body);
+	//std::string body(Poco::format("containerId=%s", id));
+	HTMLForm params;
+	params.set("containerId", id);
+
+	std::ostringstream body;
+	params.write(body);
+	result = Utility::SuperRequest("/RS_KeyGetKeySn", body.str());
 
 	return _bstr_t(result.data());
 }
@@ -247,8 +292,14 @@ BSTR CRSyncControlCtrl::RS_KeySignByP1(BSTR msg, BSTR containerId)
 	/// containerId=806000119631708&asn1Msg=Today+is+nice+day
 	std::string id = _com_util::ConvertBSTRToString(containerId);
 	std::string text = _com_util::ConvertBSTRToString(msg);
-	std::string body(Poco::format("containerId=%s&asn1Msg=%s", id, text));
-	std::string result = Utility::SuperRequest("/RS_KeySignByP1", body);
+	//std::string body(Poco::format("containerId=%s&asn1Msg=%s", id, text));
+	HTMLForm params;
+	params.set("containerId", id);
+	params.set("asn1Msg", text);
+	
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_KeySignByP1", body.str());
 
 	return _bstr_t(result.data());
 }
@@ -258,8 +309,14 @@ BSTR CRSyncControlCtrl::RS_VerifySignByP1(BSTR certBase64, BSTR msg, BSTR signdM
 	std::string cert = _com_util::ConvertBSTRToString(certBase64);
 	std::string text = _com_util::ConvertBSTRToString(msg);
 	std::string signature = _com_util::ConvertBSTRToString(signdMsg);
-	std::string body(Poco::format("certBase64=%s&msg=%s&signdMsg=%s", cert, text, signature));
-	std::string result = Utility::SuperRequest("/RS_VerifySignByP1", body);
+	//std::string body(Poco::format("certBase64=%s&msg=%s&signdMsg=%s", cert, text, signature));
+	HTMLForm params;
+	params.set("certBase64", cert);
+	params.set("msg", text);
+	params.set("signdMsg", signature);
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_VerifySignByP1", body.str());
 
 	return _bstr_t(result.data());
 }
@@ -269,8 +326,14 @@ BSTR CRSyncControlCtrl::RS_KeySignByP7(BSTR msg, BSTR flag, BSTR containerId)
 	std::string id = _com_util::ConvertBSTRToString(containerId);
 	std::string message = _com_util::ConvertBSTRToString(msg);
 	std::string mode = _com_util::ConvertBSTRToString(flag);
-	std::string body(Poco::format("containerId=%s&msg=%s&flag=%s", id, message, mode));
-	std::string result = Utility::SuperRequest("/RS_KeySignByP7", body);
+	//std::string body(Poco::format("containerId=%s&msg=%s&flag=%s", id, message, mode));
+	HTMLForm params;
+	params.set("containerId", id);
+	params.set("msg", message);
+	params.set("flag", mode);
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_KeySignByP7", body.str());
 
 	return _bstr_t(result.data());
 }
@@ -281,8 +344,14 @@ BSTR CRSyncControlCtrl::RS_VerifySignByP7(BSTR msg, BSTR signdMsg, BSTR flag)
 	std::string signedMessage = _com_util::ConvertBSTRToString(signdMsg);
 	std::string mode = _com_util::ConvertBSTRToString(flag);
 
-	std::string body(Poco::format("msg=%s&signdMsg=%s&flag=%s", message, signedMessage, mode));
-	std::string result = Utility::SuperRequest("/RS_VerifySignByP7", body);
+	//std::string body(Poco::format("msg=%s&signdMsg=%s&flag=%s", message, signedMessage, mode));
+	HTMLForm params;
+	params.set("msg", message);
+	params.set("signdMsg", signedMessage);
+	params.set("flag", mode);
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_VerifySignByP7", body.str());
 
 	return _bstr_t(result.data());
 }
@@ -291,8 +360,13 @@ BSTR CRSyncControlCtrl::RS_KeyEncryptData(BSTR rsKey, BSTR certBase64)
 {
 	std::string cert = _com_util::ConvertBSTRToString(certBase64);
 	std::string rskey = _com_util::ConvertBSTRToString(rsKey);
-	std::string body(Poco::format("certBase64=%s&rsKey=%s", cert, rskey));
-	std::string result = Utility::SuperRequest("/RS_KeyEncryptData", body);
+	//std::string body(Poco::format("certBase64=%s&rsKey=%s", cert, rskey));
+	HTMLForm params;
+	params.set("certBase64", cert);
+	params.set("rsKey", rskey);
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_KeyEncryptData", body.str());
 
 	return _bstr_t(result.data());
 }
@@ -301,8 +375,13 @@ BSTR CRSyncControlCtrl::RS_KeyDecryptData(BSTR encRsKey, BSTR containerId)
 {
 	std::string id = _com_util::ConvertBSTRToString(containerId);
 	std::string rskey = _com_util::ConvertBSTRToString(encRsKey);
-	std::string body(Poco::format("containerId=%s&encRsKey=%s", id, rskey));
-	std::string result = Utility::SuperRequest("/RS_KeyDecryptData", body);
+	//std::string body(Poco::format("containerId=%s&encRsKey=%s", id, rskey));
+	HTMLForm params;
+	params.set("containerId", id);
+	params.set("encRsKey", rskey);
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_KeyDecryptData", body.str());
 
 	return _bstr_t(result.data());
 }
@@ -311,8 +390,13 @@ BSTR CRSyncControlCtrl::RS_GetCertInfo(BSTR certBase64, BSTR type)
 {
 	std::string cert = _com_util::ConvertBSTRToString(certBase64);
 	std::string ctype = _com_util::ConvertBSTRToString(type);
-	std::string body(Poco::format("certBase64=%s&type=%s", cert, ctype));
-	std::string result = Utility::SuperRequest("/RS_GetCertInfo", body);
+	//std::string body(Poco::format("certBase64=%s&type=%s", cert, ctype));
+	HTMLForm params;
+	params.set("certBase64", cert);
+	params.set("type", ctype);
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_GetCertInfo", body.str());
 
 	std::wstring bstr = Utility::convert(result);
 

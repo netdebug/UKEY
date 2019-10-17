@@ -52,6 +52,40 @@ protected:
 	BSTR RS_KeyDecryptData(BSTR encRsKey, BSTR containerId);
 	BSTR RS_GetCertInfo(BSTR certBase64, BSTR type);
 
+	//签章授权事件
+	void RS_CloudSealAuthEvent(LPCTSTR authResult, LPCTSTR transid, LPCTSTR token, LPCTSTR msg)
+	{
+		FireEvent(eventidRS_CloudSealAuthEvent, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), authResult, transid, token, msg);
+	}
+
+	//获取签名结果事件
+	void RS_CloudGetSignResultEvent(LPCTSTR signResult, LPCTSTR signdMsg, LPCTSTR transid, LPCTSTR signdCert, LPCTSTR msg)
+	{
+		FireEvent(eventidRS_CloudGetSignResultEvent, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), signResult, signdMsg, transid, signdCert, msg);
+	}
+
+	//登入授权事件
+	void RS_CloudLoginAuthEvent(LPCTSTR authResult, LPCTSTR transid, LPCTSTR token, LPCTSTR mobile, LPCTSTR userName, LPCTSTR userID, LPCTSTR msg)
+	{
+		FireEvent(eventidRS_CloudLoginAuthEvent, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), authResult, transid, token, mobile, userName, userID, msg);
+	}
+
+	//加密授权事件
+	void RS_CloudEncAuthEvent(LPCTSTR authResult, LPCTSTR transid, LPCTSTR token, LPCTSTR msg)
+	{
+		FireEvent(eventidRS_CloudEncAuthEvent, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), authResult, transid, token, msg);
+	}
+
+	//解密授权事件
+	void RS_CloudDevAuthEvent(LPCTSTR authResult, LPCTSTR transid, LPCTSTR token, LPCTSTR msg)
+	{
+		FireEvent(eventidRS_CloudDevAuthEvent, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), authResult, transid, token, msg);
+	}
+	//获取证书授权事件
+	void RS_CloudGetCertAuthEvent(LPCTSTR authResult, LPCTSTR transid, LPCTSTR token, LPCTSTR msg)
+	{
+		FireEvent(eventidRS_CloudGetCertAuthEvent, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), authResult, transid, token, msg);
+	}
 // 事件映射
 	DECLARE_EVENT_MAP()
 
@@ -71,7 +105,14 @@ public:
 		dispid_KeyDecryptData,
 		dispid_GetCertInfo,
 		dispid_KeySignByP7,
-		dispid_VerifySignByP7
+		dispid_VerifySignByP7,
+
+		eventidRS_CloudSealAuthEvent,
+		eventidRS_CloudGetSignResultEvent,
+		eventidRS_CloudLoginAuthEvent,
+		eventidRS_CloudEncAuthEvent,
+		eventidRS_CloudDevAuthEvent,
+		eventidRS_CloudGetCertAuthEvent
 	};
 };
 
