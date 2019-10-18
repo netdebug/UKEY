@@ -44,7 +44,7 @@ void AdaptiveRecevier::runTask()
 
 		_event.wait();
 
-		if (isCancelled()) return;
+		if (isCancelled()) break;
 
 		dbgview("UKEYMonitor.DeviceChangedEvent raise!");
 		CheckDeviceDBEnv();
@@ -55,38 +55,46 @@ void AdaptiveRecevier::runTask()
 
 void AdaptiveRecevier::CheckDeviceDBEnv()
 {
-	Application& app = Application::instance();
+	try
+	{
+		Application& app = Application::instance();
 #ifdef _DEBUG
-	Poco::Data::Session session("SQLite", "C:\\Windows\\SysWOW64\\DeQLite.db");
+		Poco::Data::Session session("SQLite", "C:\\Windows\\SysWOW64\\DeQLite.db");
 #else
-	Poco::Data::Session session("SQLite", "DeQLite.db");
+		Poco::Data::Session session("SQLite", "DeQLite.db");
 #endif // _DEBUG
 
-	DeviceInfoSet devices;
-	session << "SELECT ENGINE, HardwareID, InstanceID FROM DeviceSet WHERE PRESENT = 1", into(devices), now;
+		DeviceInfoSet devices;
+		session << "SELECT ENGINE, HardwareID, InstanceID FROM DeviceSet WHERE PRESENT = 1", into(devices), now;
 
-	std::string data;
-	for (Iter it = devices.begin(); it != devices.end(); it++) {
-		dbgview(format("DeviceSet tags %s:%s&&%s\n", it->get<0>(), it->get<1>(), it->get<2>()));
+		std::string data;
+		for (Iter it = devices.begin(); it != devices.end(); it++) {
+			dbgview(format("DeviceSet tags %s:%s&&%s\n", it->get<0>(), it->get<1>(), it->get<2>()));
+		}
+
+		if (devices.empty())
+		{
+			FastMutex::ScopedLock lock(_mutex);
+
+			Utility::getSC().shutdown();
+			Utility::getSC().clear();
+		}
+
+		if (devices.size() == 1) {
+			FastMutex::ScopedLock lock(_mutex);
+
+			std::string engine = devices[0].get<0>();
+			app.config().setString("engine.mode", engine);
+
+			dbgview(Poco::format("%s:///%s", engine, std::string("REST")));
+			Utility::getSC().add(engine, "REST");
+		}
 	}
-
-	if (devices.empty())
+	catch (Poco::Exception& e)
 	{
-		FastMutex::ScopedLock lock(_mutex);
-
-		Utility::getSC().shutdown();
-		Utility::getSC().clear();
+		dbgview(format("CheckDeviceDBEnv Exception:%s", e.message()));
 	}
 
-	if (devices.size() == 1) {
-		FastMutex::ScopedLock lock(_mutex);
-		
-		std::string engine = devices[0].get<0>();
-		app.config().setString("engine.mode", engine);
-
-		dbgview(Poco::format("%s:///%s", engine, std::string("REST")));
-		Utility::getSC().add(engine, "REST");
-	}
 }
 
 void AdaptiveRecevier::cancel()
