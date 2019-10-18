@@ -10,6 +10,10 @@
 #include "Poco/String.h"
 #include "Poco/Net/HTMLForm.h"
 #include "Poco/Dynamic/Var.h"
+#include "Poco/JSON/Parser.h"
+#include "Poco/JSON/Object.h"
+#include "Poco/DynamicStruct.h"
+#include <cassert>
 #include <sstream>
 
 using Poco::Dynamic::Var;
@@ -17,6 +21,9 @@ using Poco::Net::HTMLForm;
 using Poco::Net::HTTPRequest;
 using Poco::Net::HTTPResponse;
 using Poco::Net::HTTPClientSession;
+using Poco::JSON::Parser;
+using Poco::JSON::Object;
+using Poco::DynamicStruct;
 
 using Reach::ActiveX::Utility;
 
@@ -284,7 +291,19 @@ BSTR CRSyncControlCtrl::RS_KeyGetKeySn()
 	params.write(body);
 	result = Utility::SuperRequest("/RS_KeyGetKeySn", body.str());
 
-	return _bstr_t(result.data());
+	Parser ps;
+	Var res = ps.parse(result);
+	assert(res.type() == typeid(Object::Ptr));
+
+	Object::Ptr object = res.extract<Object::Ptr>();
+	assert(object);
+	Object::Ptr data = object->getObject("data");
+	if(data && data->has("containerId"))
+		data->remove("containerId");
+	object->set("data", data);
+	DynamicStruct ds = *object;
+
+	return _bstr_t(ds.toString().data());
 }
 
 BSTR CRSyncControlCtrl::RS_KeySignByP1(BSTR msg, BSTR containerId)
