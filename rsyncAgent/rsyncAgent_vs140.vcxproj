@@ -27,6 +27,24 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\bin\config\CloudLoginAuth.json" />
+    <None Include="..\bin\config\CloudLogoutAuth.json" />
+    <None Include="..\bin\config\CloudSealAuth.json" />
+    <None Include="..\bin\config\CloudDevryptAuth.json" />
+    <None Include="..\bin\config\CloudDevryptData.json" />
+    <None Include="..\bin\config\CloudDevryptFile.json" />
+    <None Include="..\bin\config\CloudEncryptAuth.json" />
+    <None Include="..\bin\config\CloudEncryptData.json" />
+    <None Include="..\bin\config\CloudEncryptFile.json" />
+    <None Include="..\bin\config\CloudGetAuth.json" />
+    <None Include="..\bin\config\CloudGetCertAuth.json" />
+    <None Include="..\bin\config\CloudGetCertBase64.json" />
+    <None Include="..\bin\config\CloudGetCompanyCert.json" />
+    <None Include="..\bin\config\CloudGetSealList.json" />
+    <None Include="..\bin\config\CloudGetSignResult.json" />
+    <None Include="..\bin\config\CloudLogout.json" />
+    <None Include="..\bin\config\CloudReceiveDevryptResult.json" />
+    <None Include="..\bin\config\CloudSignByP7.json" />
     <None Include="Language.ini" />
     <None Include="rsyncAgent.properties" />
   </ItemGroup>
@@ -37,9 +55,27 @@
     <ClInclude Include="src\RequestHandlerFactory.h" />
     <ClInclude Include="src\routes\CertLoginRequestHandler.h" />
     <ClInclude Include="src\routes\ChangePassWdRequestHandler.h" />
+    <ClInclude Include="src\routes\CloudAPI\CloudCommand.h" />
     <ClInclude Include="src\routes\CloudAPI\CloudLoginAuthRequestHandler.h" />
     <ClInclude Include="src\routes\CloudAPI\GetTransidRequestHandler.h" />
     <ClInclude Include="src\routes\CloudAPI\GreateQRCodeRequestHandler.h" />
+    <ClInclude Include="src\routes\CloudAPI\CloudDevryptAuthRequestHandler.h" />
+    <ClInclude Include="src\routes\CloudAPI\CloudDevryptDataRequestHandler.h" />
+    <ClInclude Include="src\routes\CloudAPI\CloudDevryptFileRequestHandler.h" />
+    <ClInclude Include="src\routes\CloudAPI\CloudEncryptAuthRequestHandler.h" />
+    <ClInclude Include="src\routes\CloudAPI\CloudEncryptDataRequestHandler.h" />
+    <ClInclude Include="src\routes\CloudAPI\CloudEncryptFileRequestHandler.h" />
+    <ClInclude Include="src\routes\CloudAPI\CloudGetAuthRequestHandler.h" />
+    <ClInclude Include="src\routes\CloudAPI\CloudGetCertAuthRequestHandler.h" />
+    <ClInclude Include="src\routes\CloudAPI\CloudGetCertBase64RequestHandler.h" />
+    <ClInclude Include="src\routes\CloudAPI\CloudGetCompanyCertRequestHandler.h" />
+    <ClInclude Include="src\routes\CloudAPI\CloudGetSealListRequestHandler.h" />
+    <ClInclude Include="src\routes\CloudAPI\CloudGetSignResultRequestHandler.h" />
+    <ClInclude Include="src\routes\CloudAPI\CloudLogoutAuthRequestHandler.h" />
+    <ClInclude Include="src\routes\CloudAPI\CloudLogoutRequestHandler.h" />
+    <ClInclude Include="src\routes\CloudAPI\CloudReceiveDevryptResultRequestHandler.h" />
+    <ClInclude Include="src\routes\CloudAPI\CloudSealAuthRequestHandler.h" />
+    <ClInclude Include="src\routes\CloudAPI\CloudSignByP7RequestHandler.h" />
     <ClInclude Include="src\routes\Command.h" />
     <ClInclude Include="src\routes\ConfigParametersRequestHandler.h" />
     <ClInclude Include="src\routes\DecryptFileRequestHandler.h" />
@@ -74,6 +110,7 @@
     <ClCompile Include="src\RequestHandlerFactory.cpp" />
     <ClCompile Include="src\routes\CertLoginRequestHandler.cpp" />
     <ClCompile Include="src\routes\ChangePassWdRequestHandler.cpp" />
+    <ClCompile Include="src\routes\CloudAPI\CloudCommand.cpp" />
     <ClCompile Include="src\routes\Command.cpp" />
     <ClCompile Include="src\routes\DecryptFileRequestHandler.cpp" />
     <ClCompile Include="src\routes\EncryptFileRequestHandler.cpp" />
@@ -200,7 +237,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug_shared|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../;..\RData\include;..\RData\SOF\include;..\RData\FJCA\include;..\include\poco\Crypto\include;..\include\poco\Data\include;..\include\poco\Data\SQLite\include;..\include\poco\JSON\include;..\include\poco\Foundation\include;..\include\poco\Net\include;..\include\poco\Util\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../;..\RData\include;..\RData\SOF\include;..\RData\FJCA\include;..\include\poco\Crypto\include;..\include\poco\Data\include;..\include\poco\Data\SQLite\include;..\include\poco\JSON\include;..\include\poco\Foundation\include;..\include\poco\Net\include;..\include\poco\Util\include;.\include;..\libqrencode\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>true</MinimalRebuild>

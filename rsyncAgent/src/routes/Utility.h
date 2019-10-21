@@ -33,6 +33,7 @@ namespace Reach {
 		static bool result(const std::string& json, const std::string& key);
 		static bool testJSON(const std::string & buffer);
 		static std::string cat(const std::string& delim, std::size_t pos, const std::string& str);
+		static std::string Utility::sendRequest(const std::string& url, const std::string& data);
 	private:
 		Utility();
 		Utility(const Utility&);

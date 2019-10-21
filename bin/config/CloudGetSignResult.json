@@ -1,0 +1,14 @@
+{
+  "head": {
+    "bizCode": "BIZ.GETSIGNRESULTTOKEN",
+    "sysId": "b253fca87f6711e995aa005056a72395",
+    "unit": "RSYZ"
+  },
+  "body": "",
+  "bodyJson": {
+    "action": "",
+    "authCode": "423FD77556E34C9AB1646DF92A7AF502",
+    "token": "",
+    "transid": ""
+  }
+}

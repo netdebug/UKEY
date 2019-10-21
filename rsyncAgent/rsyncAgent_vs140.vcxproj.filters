@@ -43,6 +43,12 @@
     <Filter Include="RequestHandler\Clould\Source Files">
       <UniqueIdentifier>{5d64b30e-fe16-4a8c-8f36-79a72c25fad3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="RequestHandler\Clould\config">
+      <UniqueIdentifier>{b95293dc-604d-46df-bde9-115eac80d38a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RequestHandler\common">
+      <UniqueIdentifier>{bd7dce43-9d4d-4ca6-8317-ba8cae2b5822}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="rsyncAgent.properties">
@@ -50,6 +56,60 @@
     </None>
     <None Include="Language.ini">
       <Filter>Configuration Files</Filter>
+    </None>
+    <None Include="..\bin\config\CloudLogoutAuth.json">
+      <Filter>RequestHandler\Clould\config</Filter>
+    </None>
+    <None Include="..\bin\config\CloudSealAuth.json">
+      <Filter>RequestHandler\Clould\config</Filter>
+    </None>
+    <None Include="..\bin\config\CloudLoginAuth.json">
+      <Filter>RequestHandler\Clould\config</Filter>
+    </None>
+    <None Include="..\bin\config\CloudDevryptAuth.json">
+      <Filter>RequestHandler\Clould\config</Filter>
+    </None>
+    <None Include="..\bin\config\CloudDevryptData.json">
+      <Filter>RequestHandler\Clould\config</Filter>
+    </None>
+    <None Include="..\bin\config\CloudDevryptFile.json">
+      <Filter>RequestHandler\Clould\config</Filter>
+    </None>
+    <None Include="..\bin\config\CloudEncryptAuth.json">
+      <Filter>RequestHandler\Clould\config</Filter>
+    </None>
+    <None Include="..\bin\config\CloudEncryptData.json">
+      <Filter>RequestHandler\Clould\config</Filter>
+    </None>
+    <None Include="..\bin\config\CloudEncryptFile.json">
+      <Filter>RequestHandler\Clould\config</Filter>
+    </None>
+    <None Include="..\bin\config\CloudGetAuth.json">
+      <Filter>RequestHandler\Clould\config</Filter>
+    </None>
+    <None Include="..\bin\config\CloudGetCertAuth.json">
+      <Filter>RequestHandler\Clould\config</Filter>
+    </None>
+    <None Include="..\bin\config\CloudGetCertBase64.json">
+      <Filter>RequestHandler\Clould\config</Filter>
+    </None>
+    <None Include="..\bin\config\CloudGetCompanyCert.json">
+      <Filter>RequestHandler\Clould\config</Filter>
+    </None>
+    <None Include="..\bin\config\CloudGetSealList.json">
+      <Filter>RequestHandler\Clould\config</Filter>
+    </None>
+    <None Include="..\bin\config\CloudGetSignResult.json">
+      <Filter>RequestHandler\Clould\config</Filter>
+    </None>
+    <None Include="..\bin\config\CloudLogout.json">
+      <Filter>RequestHandler\Clould\config</Filter>
+    </None>
+    <None Include="..\bin\config\CloudReceiveDevryptResult.json">
+      <Filter>RequestHandler\Clould\config</Filter>
+    </None>
+    <None Include="..\bin\config\CloudSignByP7.json">
+      <Filter>RequestHandler\Clould\config</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -149,19 +209,73 @@
     <ClInclude Include="src\routes\VerifySignByP7RequestHandler.h">
       <Filter>RequestHandler\Ukey\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\routes\ConfigParametersRequestHandler.h">
+    <ClInclude Include="src\routes\CloudAPI\CloudLoginAuthRequestHandler.h">
       <Filter>RequestHandler\Clould\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\routes\GetParametersRequestHandler.h">
+    <ClInclude Include="src\routes\CloudAPI\CloudCommand.h">
+      <Filter>RequestHandler\Clould</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\CloudAPI\CloudSealAuthRequestHandler.h">
+      <Filter>RequestHandler\Clould\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\CloudAPI\CloudLogoutAuthRequestHandler.h">
       <Filter>RequestHandler\Clould\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\routes\CloudAPI\GetTransidRequestHandler.h">
-      <Filter>RequestHandler\Clould\Header Files</Filter>
+      <Filter>RequestHandler\common</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\GetParametersRequestHandler.h">
+      <Filter>RequestHandler\common</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\ConfigParametersRequestHandler.h">
+      <Filter>RequestHandler\common</Filter>
     </ClInclude>
     <ClInclude Include="src\routes\CloudAPI\GreateQRCodeRequestHandler.h">
+      <Filter>RequestHandler\common</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\CloudAPI\CloudGetAuthRequestHandler.h">
       <Filter>RequestHandler\Clould\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\routes\CloudAPI\CloudLoginAuthRequestHandler.h">
+    <ClInclude Include="src\routes\CloudAPI\CloudGetSealListRequestHandler.h">
+      <Filter>RequestHandler\Clould\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\CloudAPI\CloudSignByP7RequestHandler.h">
+      <Filter>RequestHandler\Clould\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\CloudAPI\CloudGetSignResultRequestHandler.h">
+      <Filter>RequestHandler\Clould\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\CloudAPI\CloudEncryptAuthRequestHandler.h">
+      <Filter>RequestHandler\Clould\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\CloudAPI\CloudEncryptDataRequestHandler.h">
+      <Filter>RequestHandler\Clould\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\CloudAPI\CloudEncryptFileRequestHandler.h">
+      <Filter>RequestHandler\Clould\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\CloudAPI\CloudDevryptAuthRequestHandler.h">
+      <Filter>RequestHandler\Clould\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\CloudAPI\CloudDevryptDataRequestHandler.h">
+      <Filter>RequestHandler\Clould\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\CloudAPI\CloudDevryptFileRequestHandler.h">
+      <Filter>RequestHandler\Clould\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\CloudAPI\CloudReceiveDevryptResultRequestHandler.h">
+      <Filter>RequestHandler\Clould\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\CloudAPI\CloudGetCompanyCertRequestHandler.h">
+      <Filter>RequestHandler\Clould\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\CloudAPI\CloudGetCertAuthRequestHandler.h">
+      <Filter>RequestHandler\Clould\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\CloudAPI\CloudGetCertBase64RequestHandler.h">
+      <Filter>RequestHandler\Clould\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\CloudAPI\CloudLogoutRequestHandler.h">
       <Filter>RequestHandler\Clould\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -240,6 +354,9 @@
     </ClCompile>
     <ClCompile Include="src\routes\VerifySignByP7RequestHandler.cpp">
       <Filter>RequestHandler\Ukey\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\routes\CloudAPI\CloudCommand.cpp">
+      <Filter>RequestHandler\Clould</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

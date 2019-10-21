@@ -5,6 +5,7 @@
 #include "Poco/URI.h"
 #include "Poco/JSON/Parser.h"
 #include "Poco/DynamicStruct.h"
+#include "Poco/JSON/Object.h"
 #include "Poco/FileStream.h"
 #include "../Command.h"
 #include "../RESTfulRequestHandler.h"
@@ -16,19 +17,23 @@ namespace Reach {
 	using Poco::Util::Application;
 	using Poco::URI;
 	using Poco::JSON::Parser;
+	using Poco::JSON::Object;
 	using Poco::DynamicStruct;
 	using Poco::FileInputStream;
 
-	///RS_CloudLoginAuth
-	class CloudLoginAuth : public Command, public CloudCommand
+	///RS_CloudGetSealList
+	class CloudGetSealList : public CloudCommand
 	{
 	public:
-		CloudLoginAuth(const std::string& transid, const std::string& url)
-			:CloudCommand(url),_transid(transid), _action("1")
+		CloudGetSealList(const std::string& token, const std::string& url)
+			:CloudCommand(url), _token(token), _action("")
 		{
 		}
-
-		void run()
+		std::string operator ()()
+		{
+			return _out.str();
+		}
+		void execute()
 		{
 			mixValue();
 			sendRequest();
@@ -36,32 +41,47 @@ namespace Reach {
 			if (!success())
 				throw RequestHandleException(RAR_UNKNOWNERR);
 
-			add("action", _action);
-			add("authIdent", extract("body"));
+			Poco::JSON::Array data;
+
+			int total = 10;
+			for (int i = 0; i < total; i++) {
+				Object seal;
+				seal.set("keySn", extract("keySn"));
+				seal.set("signSn", extract("signSn"));
+
+				data.add(seal);
+			}
+
+			Object result;
+			result.set("code", "0000");
+			result.set("msg", "msg_ok");
+			result.set("data", data);
+
+			result.stringify(_out);
 		}
 	protected:
 		virtual void mixValue()
 		{
 			Application& app = Application::instance();
-			FileInputStream in("F:\\source\\RSTestRunner\\bin\\config\\CloudLoginAuth.json");
+			FileInputStream in("F:\\source\\RSTestRunner\\bin\\config\\CloudGetSealList.json");
 			DynamicStruct ds = *parse(in).extract<Object::Ptr>();
 			ds["bodyJson"]["action"] = _action;
-			ds["bodyJson"]["transid"] = _transid;
-
+			ds["bodyJson"]["token"] = _token;
 			ds["bodyJson"]["authCode"] = app.config().getString("authCode", "");
 			ds["body"] = ds["bodyJson"].toString();
 			ds.erase("bodyJson");
 
 			prepare(ds.toString());
-			poco_information_f1(app.logger(), "CloudLoginAuth mixValue:\n%s", ds.toString());
+			poco_information_f1(app.logger(), "CloudGetSealList mixValue:\n%s", ds.toString());
 		}
 
 	private:
-		std::string _transid;
+		std::string _token;
 		std::string _action;
+		std::ostringstream _out;
 	};
 
-	class CloudLoginAuthRequestHandler : public RESTfulRequestHandler
+	class CloudGetSealListRequestHandler : public RESTfulRequestHandler
 	{
 	public:
 		void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
@@ -71,9 +91,9 @@ namespace Reach {
 			RESTfulRequestHandler::handleCORS(request, response);
 
 			HTMLForm form(request, request.stream());
-			std::string transid = form.get("transid", "");
+			std::string transid = form.get("token", "");
 			std::string url = app.config().getString("rsigncloudTest");
-			CloudLoginAuth command(transid, url);
+			CloudGetSealList command(transid, url);
 			command.execute();
 
 			return response.sendBuffer(command().data(), command().length());

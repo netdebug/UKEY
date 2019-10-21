@@ -11,6 +11,10 @@
 #include "Poco/JSON/Object.h"
 #include "Poco/Dynamic/Struct.h"
 #include "Poco/URI.h"
+#include "Poco/Net/HTTPRequest.h"
+#include "Poco/Net/HTTPResponse.h"
+#include "Poco/Net/HTTPClientSession.h"
+#include "Poco/StreamCopier.h"
 #include <cassert>
 
 using namespace Reach;
@@ -26,6 +30,10 @@ using Poco::Util::Application;
 using Poco::JSON::Parser;
 using Poco::JSON::Object;
 using Poco::DynamicStruct;
+using Poco::Net::HTTPRequest;
+using Poco::Net::HTTPResponse;
+using Poco::Net::HTTPClientSession;
+using Poco::StreamCopier;
 using namespace Poco::Dynamic;
 
 extern std::string SOF_GetCertInfoByOid(std::string Base64EncodeCert, std::string oid);
@@ -206,4 +214,24 @@ std::string Utility::cat(const std::string& delim, std::size_t pos, const std::s
 	return result;
 }
 
+std::string Utility::sendRequest(const std::string& url, const std::string& data)
+{
+	Application& app = Application::instance();
+
+	Poco::URI uri(url);
+
+	HTTPRequest request(HTTPRequest::HTTP_POST, uri.getPath());
+	request.setContentLength((int)data.length());
+	request.setContentType("application/json");
+	HTTPClientSession session(uri.getHost(), uri.getPort());
+	session.sendRequest(request) << data;
+	poco_information_f3(app.logger(), "session : %s:[%u] {%s}", uri.getHost(), uri.getPort(), uri.getPath());
+
+	HTTPResponse response;
+	std::istream& out = session.receiveResponse(response);
+	std::ostringstream ostr;
+	StreamCopier::copyStream(out, ostr);
+
+	return ostr.str();
+}
 

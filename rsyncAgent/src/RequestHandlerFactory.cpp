@@ -33,6 +33,25 @@
 #include "routes/CloudAPI/GetTransidRequestHandler.h"
 #include "routes/CloudAPI/GreateQRCodeRequestHandler.h"
 #include "routes/CloudAPI/CloudLoginAuthRequestHandler.h"
+#include "routes/CloudAPI/CloudDevryptAuthRequestHandler.h"
+#include "routes/CloudAPI/CloudDevryptDataRequestHandler.h"
+#include "routes/CloudAPI/CloudDevryptFileRequestHandler.h"
+#include "routes/CloudAPI/CloudEncryptAuthRequestHandler.h"
+#include "routes/CloudAPI/CloudEncryptDataRequestHandler.h"
+#include "routes/CloudAPI/CloudEncryptFileRequestHandler.h"
+#include "routes/CloudAPI/CloudGetAuthRequestHandler.h"
+#include "routes/CloudAPI/CloudGetCertAuthRequestHandler.h"
+#include "routes/CloudAPI/CloudGetCertBase64RequestHandler.h"
+#include "routes/CloudAPI/CloudGetCompanyCertRequestHandler.h"
+#include "routes/CloudAPI/CloudGetSealListRequestHandler.h"
+#include "routes/CloudAPI/CloudGetSignResultRequestHandler.h"
+#include "routes/CloudAPI/CloudLoginAuthRequestHandler.h"
+#include "routes/CloudAPI/CloudLogoutAuthRequestHandler.h"
+#include "routes/CloudAPI/CloudLogoutRequestHandler.h"
+#include "routes/CloudAPI/CloudReceiveDevryptResultRequestHandler.h"
+#include "routes/CloudAPI/CloudSealAuthRequestHandler.h"
+#include "routes/CloudAPI/CloudSignByP7RequestHandler.h"
+#include "routes/CloudAPI/GetTransidRequestHandler.h"
 
 using namespace Reach;
 
@@ -107,6 +126,40 @@ HTTPRequestHandler * Reach::RequestHandlerFactory::createRequestHandler(const HT
 		return new GreateQRCodeRequestHandler;
 	else if (request.getURI() == "/RS_CloudLoginAuth")
 		return new CloudLoginAuthRequestHandler;
+	else if (request.getURI() == "/RS_CloudDevryptAuth")
+		return new CloudDevryptAuthRequestHandler;
+	else if (request.getURI() == "/RS_CloudDevryptData")
+		return new CloudDevryptDataRequestHandler;
+	else if (request.getURI() == "/RS_CloudDevryptFile")
+		return new CloudDevryptFileRequestHandler;
+	else if (request.getURI() == "/RS_CloudEncryptAuth")
+		return new CloudEncryptAuthRequestHandler;
+	else if (request.getURI() == "/RS_CloudEncryptData")
+		return new CloudEncryptDataRequestHandler;
+	else if (request.getURI() == "/RS_CloudEncryptFile")
+		return new CloudEncryptFileRequestHandler;
+	else if (request.getURI() == "/RS_CloudGetAuth")
+		return new CloudGetAuthRequestHandler;
+	else if (request.getURI() == "/RS_CloudGetCertAuth")
+		return new CloudGetCertAuthRequestHandler;
+	else if (request.getURI() == "/RS_CloudGetCertBase64")
+		return new CloudGetCertBase64RequestHandler;
+	else if (request.getURI() == "/RS_CloudGetCompanyCert")
+		return new CloudGetCompanyCertRequestHandler;
+	else if (request.getURI() == "/RS_CloudGetSealList")
+		return new CloudGetSealListRequestHandler;
+	else if (request.getURI() == "/RS_CloudGetSignResult")
+		return new CloudGetSignResultRequestHandler;
+	else if (request.getURI() == "/RS_CloudLogoutAuth")
+		return new CloudLogoutAuthRequestHandler;
+	else if (request.getURI() == "/RS_CloudLogout")
+		return new CloudLogoutRequestHandler;
+	else if (request.getURI() == "/RS_CloudReceiveDevryptResult")
+		return new CloudReceiveDevryptResultRequestHandler;
+	else if (request.getURI() == "/RS_CloudSealAuth")
+		return new CloudSealAuthRequestHandler;
+	else if (request.getURI() == "/RS_CloudSignByP7")
+		return new CloudSignByP7RequestHandler;
 
 		return 0;
 }

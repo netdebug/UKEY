@@ -4,6 +4,7 @@
 #include "Poco/Net/HTTPClientSession.h"
 #include "Poco/URI.h"
 #include "Poco/JSON/Parser.h"
+#include "Poco/JSON/Object.h"
 #include "Poco/DynamicStruct.h"
 #include "Poco/FileStream.h"
 #include "../Command.h"
@@ -16,15 +17,16 @@ namespace Reach {
 	using Poco::Util::Application;
 	using Poco::URI;
 	using Poco::JSON::Parser;
+	using Poco::JSON::Object;
 	using Poco::DynamicStruct;
 	using Poco::FileInputStream;
 
-	///RS_CloudLoginAuth
-	class CloudLoginAuth : public Command, public CloudCommand
+	///RS_CloudSealAuth
+	class CloudSealAuth : public Command, public CloudCommand
 	{
 	public:
-		CloudLoginAuth(const std::string& transid, const std::string& url)
-			:CloudCommand(url),_transid(transid), _action("1")
+		CloudSealAuth(const std::string& transid, const std::string& url)
+			:CloudCommand(url), _transid(transid), _action("")
 		{
 		}
 
@@ -43,25 +45,39 @@ namespace Reach {
 		virtual void mixValue()
 		{
 			Application& app = Application::instance();
-			FileInputStream in("F:\\source\\RSTestRunner\\bin\\config\\CloudLoginAuth.json");
+			FileInputStream in("F:\\source\\RSTestRunner\\bin\\config\\CloudSealAuth.json");
 			DynamicStruct ds = *parse(in).extract<Object::Ptr>();
+
+			bool authType = Poco::Dynamic::Var(app.config().getString("authType")).convert<bool>();
+
+			if (!authType) {
+				_action = "4";
+				_keysn = "";
+			}
+			else {
+				_action = "5";
+				_keysn = app.config().getString("keySn");
+			}
+				
 			ds["bodyJson"]["action"] = _action;
 			ds["bodyJson"]["transid"] = _transid;
+			ds["bodyJson"]["keySn"] = _keysn;
 
 			ds["bodyJson"]["authCode"] = app.config().getString("authCode", "");
 			ds["body"] = ds["bodyJson"].toString();
 			ds.erase("bodyJson");
 
 			prepare(ds.toString());
-			poco_information_f1(app.logger(), "CloudLoginAuth mixValue:\n%s", ds.toString());
+			poco_information_f1(app.logger(), "CloudSealAuth mixValue:\n%s", ds.toString());
 		}
 
 	private:
 		std::string _transid;
 		std::string _action;
+		std::string _keysn;
 	};
 
-	class CloudLoginAuthRequestHandler : public RESTfulRequestHandler
+	class CloudSealAuthRequestHandler : public RESTfulRequestHandler
 	{
 	public:
 		void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
@@ -73,7 +89,7 @@ namespace Reach {
 			HTMLForm form(request, request.stream());
 			std::string transid = form.get("transid", "");
 			std::string url = app.config().getString("rsigncloudTest");
-			CloudLoginAuth command(transid, url);
+			CloudSealAuth command(transid, url);
 			command.execute();
 
 			return response.sendBuffer(command().data(), command().length());

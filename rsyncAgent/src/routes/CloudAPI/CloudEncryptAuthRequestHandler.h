@@ -5,6 +5,7 @@
 #include "Poco/URI.h"
 #include "Poco/JSON/Parser.h"
 #include "Poco/DynamicStruct.h"
+#include "Poco/JSON/Object.h"
 #include "Poco/FileStream.h"
 #include "../Command.h"
 #include "../RESTfulRequestHandler.h"
@@ -16,15 +17,18 @@ namespace Reach {
 	using Poco::Util::Application;
 	using Poco::URI;
 	using Poco::JSON::Parser;
+	using Poco::JSON::Object;
 	using Poco::DynamicStruct;
 	using Poco::FileInputStream;
 
-	///RS_CloudLoginAuth
-	class CloudLoginAuth : public Command, public CloudCommand
+	///RS_CloudEncryptAuth
+	class CloudEncryptAuth : public Command, public CloudCommand
 	{
 	public:
-		CloudLoginAuth(const std::string& transid, const std::string& url)
-			:CloudCommand(url),_transid(transid), _action("1")
+		CloudEncryptAuth(const std::string& transid, const std::string& url) :
+			CloudCommand(url),
+			_transid(transid),
+			_action("2")
 		{
 		}
 
@@ -43,25 +47,25 @@ namespace Reach {
 		virtual void mixValue()
 		{
 			Application& app = Application::instance();
-			FileInputStream in("F:\\source\\RSTestRunner\\bin\\config\\CloudLoginAuth.json");
+			FileInputStream in("F:\\source\\RSTestRunner\\bin\\config\\CloudEncryptAuth.json");
 			DynamicStruct ds = *parse(in).extract<Object::Ptr>();
 			ds["bodyJson"]["action"] = _action;
 			ds["bodyJson"]["transid"] = _transid;
-
 			ds["bodyJson"]["authCode"] = app.config().getString("authCode", "");
 			ds["body"] = ds["bodyJson"].toString();
 			ds.erase("bodyJson");
 
 			prepare(ds.toString());
-			poco_information_f1(app.logger(), "CloudLoginAuth mixValue:\n%s", ds.toString());
+			poco_information_f1(app.logger(), "CloudEncryptAuth mixValue:\n%s", ds.toString());
 		}
 
 	private:
 		std::string _transid;
 		std::string _action;
+		std::string _msg;
 	};
 
-	class CloudLoginAuthRequestHandler : public RESTfulRequestHandler
+	class CloudEncryptAuthRequestHandler : public RESTfulRequestHandler
 	{
 	public:
 		void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
@@ -73,7 +77,7 @@ namespace Reach {
 			HTMLForm form(request, request.stream());
 			std::string transid = form.get("transid", "");
 			std::string url = app.config().getString("rsigncloudTest");
-			CloudLoginAuth command(transid, url);
+			CloudEncryptAuth command(transid, url);
 			command.execute();
 
 			return response.sendBuffer(command().data(), command().length());

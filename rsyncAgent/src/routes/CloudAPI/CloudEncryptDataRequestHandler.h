@@ -5,6 +5,7 @@
 #include "Poco/URI.h"
 #include "Poco/JSON/Parser.h"
 #include "Poco/DynamicStruct.h"
+#include "Poco/JSON/Object.h"
 #include "Poco/FileStream.h"
 #include "../Command.h"
 #include "../RESTfulRequestHandler.h"
@@ -16,15 +17,20 @@ namespace Reach {
 	using Poco::Util::Application;
 	using Poco::URI;
 	using Poco::JSON::Parser;
+	using Poco::JSON::Object;
 	using Poco::DynamicStruct;
 	using Poco::FileInputStream;
 
-	///RS_CloudLoginAuth
-	class CloudLoginAuth : public Command, public CloudCommand
+	///RS_CloudEncryptData
+	class CloudEncryptData : public Command, public CloudCommand
 	{
 	public:
-		CloudLoginAuth(const std::string& transid, const std::string& url)
-			:CloudCommand(url),_transid(transid), _action("1")
+		CloudEncryptData(const std::string& symKey,const std::string& transid, const std::string& token,const std::string& url) :
+			CloudCommand(url),
+			_symKey(symKey),
+			_transid(transid),
+			_token(token),
+			_action("")
 		{
 		}
 
@@ -36,16 +42,26 @@ namespace Reach {
 			if (!success())
 				throw RequestHandleException(RAR_UNKNOWNERR);
 
-			add("action", _action);
-			add("authIdent", extract("body"));
+			std::string pubkey = extract("pubkey");
+			encryptSM2(_symKey, pubkey);
+
+			add("encSymKey", _symKey);
+			add("signCertBase64", extract("signCertBase64"));
+			add("encCertBase64", extract("encCertBase64"));
 		}
 	protected:
+		void encryptSM2(std::string& data, const std::string& pubkey)
+		{
+			_symKey = data.append(pubkey);
+			_action = "2";
+			sendRequest();
+		}
 		virtual void mixValue()
 		{
 			Application& app = Application::instance();
-			FileInputStream in("F:\\source\\RSTestRunner\\bin\\config\\CloudLoginAuth.json");
+			FileInputStream in("F:\\source\\RSTestRunner\\bin\\config\\CloudEncryptData.json");
 			DynamicStruct ds = *parse(in).extract<Object::Ptr>();
-			ds["bodyJson"]["action"] = _action;
+			ds["bodyJson"]["token"] = _token;
 			ds["bodyJson"]["transid"] = _transid;
 
 			ds["bodyJson"]["authCode"] = app.config().getString("authCode", "");
@@ -53,15 +69,18 @@ namespace Reach {
 			ds.erase("bodyJson");
 
 			prepare(ds.toString());
-			poco_information_f1(app.logger(), "CloudLoginAuth mixValue:\n%s", ds.toString());
+			poco_information_f1(app.logger(), "CloudEncryptData mixValue:\n%s", ds.toString());
 		}
 
 	private:
+		std::string _symKey;
 		std::string _transid;
+		std::string _token;
 		std::string _action;
+		std::string _msg;
 	};
 
-	class CloudLoginAuthRequestHandler : public RESTfulRequestHandler
+	class CloudEncryptDataRequestHandler : public RESTfulRequestHandler
 	{
 	public:
 		void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
@@ -71,9 +90,11 @@ namespace Reach {
 			RESTfulRequestHandler::handleCORS(request, response);
 
 			HTMLForm form(request, request.stream());
+			std::string symKey = form.get("symKey", "");
 			std::string transid = form.get("transid", "");
+			std::string token = form.get("token", "");
 			std::string url = app.config().getString("rsigncloudTest");
-			CloudLoginAuth command(transid, url);
+			CloudEncryptData command(symKey, transid, token, url);
 			command.execute();
 
 			return response.sendBuffer(command().data(), command().length());

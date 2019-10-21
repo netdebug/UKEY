@@ -3,7 +3,7 @@
 #include "Poco/Util/Application.h"
 #include "../Command.h"
 #include "../RESTfulRequestHandler.h"
-
+#include "qrencode.h"
 
 namespace Reach {
 
