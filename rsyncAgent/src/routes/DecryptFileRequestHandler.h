@@ -16,7 +16,7 @@ namespace Reach {
 		bool _decrypted;
 		std::string _kv;
 		std::string _encrypt;
-		std::string _decrypt_directory;
+		std::string _decrypt;
 	};
 
 	class DecryptFileRequestHandler : public RESTfulRequestHandler
