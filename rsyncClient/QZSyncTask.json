@@ -1,16 +1,6 @@
 {
   "sendKeySealInfo": {
     "url": "http://192.168.1.240:8089/iSignatureServer/keyinfo/sendKeySealInfo.action",
-    "sealdata": {
-      "imgdata": "",
-      "signname": "",
-      "width": "2.94",
-      "height": "2.94",
-      "imgext": "gif",
-      "signType": "80",
-      "imgItem": "",
-      "imgArea": ""
-    },
     "fmt": {
       "appcode": "3E0AB16A02F84037AD6818C85E7DF1B7",
       "keysn": "",

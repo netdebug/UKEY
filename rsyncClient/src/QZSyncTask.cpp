@@ -129,23 +129,28 @@ std::string QZSyncTask::submitToKGServer(const std::string& url, const std::stri
 std::string QZSyncTask::CommonRequest(const std::string& url, const std::string& data, const std::string& method)
 {
 	Application& app = Application::instance();
-	poco_information_f2(app.logger(), "post : %s\n sendRequest:\n%s", url, data);
 
 	URI uri(url);
-
-	HTTPRequest request(method, uri.getPath());
-	request.setContentLength((int)data.length());
-	HTTPClientSession session(uri.getHost(), uri.getPort());
-	session.sendRequest(request) << data;
-	poco_information_f3(app.logger(), "session : %s:[%u] {%s}", uri.getHost(), uri.getPort(), uri.getPath());
-
-	HTTPResponse response;
-	std::istream& out = session.receiveResponse(response);
 	std::ostringstream ostr;
-	StreamCopier::copyStream(out, ostr);
+	try
+	{
+		HTTPResponse response;
+		HTTPRequest request(HTTPRequest::HTTP_POST, uri.getPath());
+		request.setContentLength((int)data.length());
+
+		HTTPClientSession session(uri.getHost(), uri.getPort());
+		session.sendRequest(request) << (data);
+
+		std::istream& receive = session.receiveResponse(response);
+
+		StreamCopier::copyStream(receive, ostr);
+	}
+	catch (Poco::Exception& e)
+	{
+		poco_information_f1(app.logger(), "CommonRequest Error:\n%s", e.message());
+	}
 
 	poco_information_f1(app.logger(), "receiveResponse:\n%s", ostr.str());
-
 	return ostr.str();
 }
 
@@ -241,38 +246,29 @@ void QZSyncTask::ReadSealInfo()
 {
 	/// 解析签章数据，读取多个base64图片信息，中间&&拼接
 	Application& app = Application::instance();
-	DynamicStruct tds = *_templateJSON;
-	Var d = tds["sendKeySealInfo"]["sealdata"];
-	poco_information_f1(app.logger(), "sealdata object : %s", d.toString());
-	Parser ps;
-	Var result = ps.parse(d);
-	assert(result.type() == typeid(Object::Ptr));
 
-	Object indata = *result.extract<Object::Ptr>();
-	Object data;
+	OESSealProvider oes;
+	
+	_name = oes.getProperty("name");
+	_code = oes.getProperty("code");
+	_validStart = oes.getProperty("validStart");
+	_validEnd = oes.getProperty("validEnd");
+	Var result = oes.read();
+	poco_information_f1(app.logger(), "%s", result.convert<std::string>());
 
-	SealProvider* ptr = new XSSealProvider;
-	providers.push_back(ptr);
-	for (QZSyncTask::SealProviderIter it = providers.begin(); it != providers.end(); it++)
-	{
-		SealProvider* ptr = (*it);
-		ptr->read(&indata, &data);
-		DynamicStruct ds = data;
-		if (!ds.empty()) {
-			_seal_data = ds.toString();
-			_name = (*it)->getProperty("name");
-			_code = (*it)->getProperty("code");
-			_validStart = (*it)->getProperty("validStart");
-			_validEnd = (*it)->getProperty("validEnd");
-			break;
-		}
-	}
-	poco_information_f1(app.logger(), "%s%s", _seal_data);
+	//
+	/*assert(result.type() == typeid(Array::Ptr));
+	Array::Ptr data = result.extract<Array::Ptr>();
+	assert(!data.isNull());
+	Poco::Dynamic::Array dda = *data;
+	for (int i = 0; i < dda.size(); i++) {
+		dda[i].toString();
+	}*/
 }
 
 void QZSyncTask::GetContainerId()
 {
-	std::string receive = CommonRequest("http://localhost:11200/RS_GetUserList", "");
+	std::string receive = CommonRequest("http://127.0.0.1:11200/RS_GetUserList", "");
 
 	Parser json;
 	Var result = json.parse(receive);
@@ -295,8 +291,9 @@ void QZSyncTask::GetContainerId()
 
 void QZSyncTask::GetKeySN()
 {
+	GetContainerId();
 	std::string body(format("containerId=%s", _cid));
-	std::string receive = CommonRequest("http://localhost:11200/RS_KeyGetKeySn", body);
+	std::string receive = CommonRequest("http://127.0.0.1:11200/RS_KeyGetKeySn", body);
 	Parser json;
 	Var result = json.parse(receive);
 	DynamicStruct ds = *result.extract<Object::Ptr>();
@@ -307,7 +304,7 @@ void QZSyncTask::GetKeySN()
 void QZSyncTask::GetSignedCert()
 {
 	std::string body(format("containerId=%s&certType=$d", _cid, type_signed_cer));
-	std::string receive = CommonRequest("http://localhost:11200/RS_GetCertBase64String", body);
+	std::string receive = CommonRequest("http://127.0.0.1:11200/RS_GetCertBase64String", body);
 	Parser json;
 	Var result = json.parse(receive);
 	DynamicStruct ds = *result.extract<Object::Ptr>();
