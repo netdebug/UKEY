@@ -45,13 +45,21 @@
     <None Include="..\bin\config\CloudLogout.json" />
     <None Include="..\bin\config\CloudReceiveDevryptResult.json" />
     <None Include="..\bin\config\CloudSignByP7.json" />
+    <None Include="C:\Users\Administrator\Desktop\sm2\pub2sm1.bin" />
+    <None Include="C:\Users\Administrator\Desktop\sm2\sm2.pem" />
+    <None Include="C:\Users\Administrator\Desktop\sm2\sm2Pub.pem" />
     <None Include="Language.ini" />
     <None Include="rsyncAgent.properties" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
     <ClInclude Include="src\AdaptiveRecevier.h" />
+    <ClInclude Include="src\CloudEventRecevier.h" />
     <ClInclude Include="src\GMCrypto.h" />
+    <ClInclude Include="src\MQTTAsyncClient.h" />
+    <ClInclude Include="src\qrcode\BitBuffer.hpp" />
+    <ClInclude Include="src\qrcode\QrCode.hpp" />
+    <ClInclude Include="src\qrcode\QrSegment.hpp" />
     <ClInclude Include="src\RequestHandlerFactory.h" />
     <ClInclude Include="src\routes\CertLoginRequestHandler.h" />
     <ClInclude Include="src\routes\ChangePassWdRequestHandler.h" />
@@ -107,6 +115,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\AdaptiveRecevier.cpp" />
+    <ClCompile Include="src\CloudEventRecevier.cpp" />
+    <ClCompile Include="src\MQTTAsyncClient.cpp" />
+    <ClCompile Include="src\qrcode\BitBuffer.cpp" />
+    <ClCompile Include="src\qrcode\QrCode.cpp" />
+    <ClCompile Include="src\qrcode\QrSegment.cpp" />
     <ClCompile Include="src\RequestHandlerFactory.cpp" />
     <ClCompile Include="src\routes\CertLoginRequestHandler.cpp" />
     <ClCompile Include="src\routes\ChangePassWdRequestHandler.cpp" />
@@ -171,7 +184,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug_shared|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v120_xp</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -237,7 +250,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug_shared|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../;..\RData\include;..\RData\SOF\include;..\RData\FJCA\include;..\include\poco\Crypto\include;..\include\poco\Data\include;..\include\poco\Data\SQLite\include;..\include\poco\JSON\include;..\include\poco\Foundation\include;..\include\poco\Net\include;..\include\poco\Util\include;.\include;..\libqrencode\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../;..\RData\include;..\RData\SOF\include;..\RData\FJCA\include;..\include\poco\Crypto\include;..\include\poco\Data\include;..\include\poco\Data\SQLite\include;..\include\poco\JSON\include;..\include\poco\Foundation\include;..\include\poco\Net\include;..\include\poco\Util\include;..\include\mqtt\include;.\include;..\libqrencode\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>true</MinimalRebuild>
@@ -254,7 +267,7 @@
       <DisableSpecificWarnings>4800</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>PocoFoundationd.lib;PocoJSONd.lib;PocoCryptod.lib;PocoNetd.lib;PocoUtild.lib;PocoDatad.lib;rsyncDatad.lib;Iphlpapi.lib;msi.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PocoFoundationd.lib;PocoJSONd.lib;PocoCryptod.lib;PocoNetd.lib;PocoUtild.lib;PocoDatad.lib;paho-mqtt3a.lib;paho-mqtt3as.lib;libcrypto.lib;libssl.lib;rsyncDatad.lib;Iphlpapi.lib;msi.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\bin\rsyncAgentd.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -277,7 +290,7 @@ xcopy /y $(ProjectDir)Language.ini $(OutDir)</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
-      <AdditionalIncludeDirectories>..\RData\include;..\RData\FJCA\include;..\RData\SOF\include;..\include\poco\Data\include;..\include\poco\Data\SQLite\include;..\include\poco\JSON\include;..\include\poco\Crypto\include;..\include\poco\Foundation\include;..\include\poco\Net\include;..\include\poco\Util\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\RData\include;..\RData\FJCA\include;..\RData\SOF\include;..\include\poco\Data\include;..\include\poco\Data\SQLite\include;..\include\poco\JSON\include;..\include\poco\Crypto\include;..\include\poco\Foundation\include;..\include\poco\Net\include;..\include\poco\Util\include;.\include;..\include\mqtt\include;..\libqrencode\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -291,7 +304,7 @@ xcopy /y $(ProjectDir)Language.ini $(OutDir)</Command>
       <CompileAs>Default</CompileAs>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>PocoFoundation.lib;PocoJSON.lib;PocoUtil.lib;PocoNet.lib;PocoData.lib;PocoDataSQLite.lib;rsyncData.lib;PocoCrypto.lib;ws2_32.lib;iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PocoFoundation.lib;PocoJSON.lib;PocoUtil.lib;PocoNet.lib;PocoData.lib;PocoDataSQLite.lib;rsyncData.lib;PocoCrypto.lib;paho-mqtt3a.lib;paho-mqtt3as.lib;libcrypto.lib;libssl.lib;ws2_32.lib;iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\bin\rsyncAgent.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>false</GenerateDebugInformation>

@@ -49,6 +49,9 @@
     <Filter Include="RequestHandler\common">
       <UniqueIdentifier>{bd7dce43-9d4d-4ca6-8317-ba8cae2b5822}</UniqueIdentifier>
     </Filter>
+    <Filter Include="RequestHandler\qrcode">
+      <UniqueIdentifier>{53a59e75-902f-4195-8087-7d9739c86664}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="rsyncAgent.properties">
@@ -110,6 +113,15 @@
     </None>
     <None Include="..\bin\config\CloudSignByP7.json">
       <Filter>RequestHandler\Clould\config</Filter>
+    </None>
+    <None Include="C:\Users\Administrator\Desktop\sm2\pub2sm1.bin">
+      <Filter>Core\Source Files</Filter>
+    </None>
+    <None Include="C:\Users\Administrator\Desktop\sm2\sm2Pub.pem">
+      <Filter>Core\Source Files</Filter>
+    </None>
+    <None Include="C:\Users\Administrator\Desktop\sm2\sm2.pem">
+      <Filter>Core\Source Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -278,6 +290,21 @@
     <ClInclude Include="src\routes\CloudAPI\CloudLogoutRequestHandler.h">
       <Filter>RequestHandler\Clould\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\qrcode\BitBuffer.hpp">
+      <Filter>RequestHandler\qrcode</Filter>
+    </ClInclude>
+    <ClInclude Include="src\qrcode\QrCode.hpp">
+      <Filter>RequestHandler\qrcode</Filter>
+    </ClInclude>
+    <ClInclude Include="src\qrcode\QrSegment.hpp">
+      <Filter>RequestHandler\qrcode</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CloudEventRecevier.h">
+      <Filter>Core\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MQTTAsyncClient.h">
+      <Filter>Core\Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\RequestHandlerFactory.cpp">
@@ -357,6 +384,21 @@
     </ClCompile>
     <ClCompile Include="src\routes\CloudAPI\CloudCommand.cpp">
       <Filter>RequestHandler\Clould</Filter>
+    </ClCompile>
+    <ClCompile Include="src\qrcode\BitBuffer.cpp">
+      <Filter>RequestHandler\qrcode</Filter>
+    </ClCompile>
+    <ClCompile Include="src\qrcode\QrCode.cpp">
+      <Filter>RequestHandler\qrcode</Filter>
+    </ClCompile>
+    <ClCompile Include="src\qrcode\QrSegment.cpp">
+      <Filter>RequestHandler\qrcode</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CloudEventRecevier.cpp">
+      <Filter>Core\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MQTTAsyncClient.cpp">
+      <Filter>Core\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
