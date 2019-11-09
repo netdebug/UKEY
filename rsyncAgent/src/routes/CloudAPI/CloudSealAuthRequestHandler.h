@@ -45,7 +45,7 @@ namespace Reach {
 		virtual void mixValue()
 		{
 			Application& app = Application::instance();
-			FileInputStream in("F:\\source\\RSTestRunner\\bin\\config\\CloudSealAuth.json");
+			FileInputStream in(app.config().getString("cloudconfigdir","")+"CloudSealAuth.json");
 			DynamicStruct ds = *parse(in).extract<Object::Ptr>();
 
 			bool authType = Poco::Dynamic::Var(app.config().getString("authType")).convert<bool>();
@@ -64,6 +64,8 @@ namespace Reach {
 			ds["bodyJson"]["keySn"] = _keysn;
 
 			ds["bodyJson"]["authCode"] = app.config().getString("authCode", "");
+			ds["bodyJson"]["clientId"] = app.config().getString("clientId", "456789");
+
 			ds["body"] = ds["bodyJson"].toString();
 			ds.erase("bodyJson");
 

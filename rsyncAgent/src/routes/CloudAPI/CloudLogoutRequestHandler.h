@@ -44,7 +44,7 @@ namespace Reach {
 		virtual void mixValue()
 		{
 			Application& app = Application::instance();
-			FileInputStream in("F:\\source\\RSTestRunner\\bin\\config\\CloudLogout.json");
+			FileInputStream in(app.config().getString("cloudconfigdir","")+"CloudLogout.json");
 			DynamicStruct ds = *parse(in).extract<Object::Ptr>();
 
 			ds["bodyJson"]["userId"] = _userId;

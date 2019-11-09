@@ -31,7 +31,7 @@ namespace Reach {
 			CloudCommand(url),
 			_dealData(msg),_keySn(keySn),
 			_token(token),_transid(transid),
-			_action("")
+			_action("T")
 		{
 		}
 
@@ -48,7 +48,7 @@ namespace Reach {
 		virtual void mixValue()
 		{
 			Application& app = Application::instance();
-			FileInputStream in("F:\\source\\RSTestRunner\\bin\\config\\CloudSignByP7.json");
+			FileInputStream in(app.config().getString("cloudconfigdir","")+"CloudSignByP7.json");
 			DynamicStruct ds = *parse(in).extract<Object::Ptr>();
 			ds["bodyJson"]["token"] = _token;
 			ds["bodyJson"]["dealData"] = _dealData;
@@ -56,6 +56,7 @@ namespace Reach {
 			ds["bodyJson"]["transid"] = _transid;
 
 			ds["bodyJson"]["authCode"] = app.config().getString("authCode", "");
+			ds["bodyJson"]["clientId"] = app.config().getString("clientId", "456789");
 			ds["body"] = ds["bodyJson"].toString();
 			ds.erase("bodyJson");
 

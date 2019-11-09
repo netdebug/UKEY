@@ -41,15 +41,15 @@ namespace Reach {
 			if (!success())
 				throw RequestHandleException(RAR_UNKNOWNERR);
 
-			add("signResult", extract("signResult"));
-			add("signdMsg", extract("signdMsg"));
-			add("certBase64", extract("certBase64"));
+			add("signResult", extract("body","signResult"));
+			add("signdMsg", extract("body","signdMsg"));
+			add("certBase64", extract("body","certBase64"));
 		}
 	protected:
 		virtual void mixValue()
 		{
 			Application& app = Application::instance();
-			FileInputStream in("F:\\source\\RSTestRunner\\bin\\config\\CloudGetSignResult.json");
+			FileInputStream in(app.config().getString("cloudconfigdir","")+"CloudGetSignResult.json");
 			DynamicStruct ds = *parse(in).extract<Object::Ptr>();
 
 			ds["bodyJson"]["token"] = _token;

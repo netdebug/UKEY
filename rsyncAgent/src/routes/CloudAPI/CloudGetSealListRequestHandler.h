@@ -43,14 +43,10 @@ namespace Reach {
 
 			Poco::JSON::Array data;
 
-			int total = 10;
-			for (int i = 0; i < total; i++) {
-				Object seal;
-				seal.set("keySn", extract("keySn"));
-				seal.set("signSn", extract("signSn"));
-
-				data.add(seal);
-			}
+			Object seal;
+			seal.set("keySn", extract("body", "keySn"));
+			seal.set("signSn", extract("body", "signSn"));
+			data.add(seal);
 
 			Object result;
 			result.set("code", "0000");
@@ -63,7 +59,7 @@ namespace Reach {
 		virtual void mixValue()
 		{
 			Application& app = Application::instance();
-			FileInputStream in("F:\\source\\RSTestRunner\\bin\\config\\CloudGetSealList.json");
+			FileInputStream in(app.config().getString("cloudconfigdir","")+"CloudGetSealList.json");
 			DynamicStruct ds = *parse(in).extract<Object::Ptr>();
 			ds["bodyJson"]["action"] = _action;
 			ds["bodyJson"]["token"] = _token;

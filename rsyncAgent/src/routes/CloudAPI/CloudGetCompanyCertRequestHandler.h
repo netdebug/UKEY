@@ -42,14 +42,14 @@ namespace Reach {
 			if (!success())
 				throw RequestHandleException(RAR_UNKNOWNERR);
 
-			add("signCertBase64", extract("signCertBase64"));
-			add("encCertBase64", extract("encCertBase64"));
+			add("signCertBase64", extract("body","signCertBase64"));
+			add("encCertBase64", extract("body", "encCertBase64"));
 		}
 	protected:
 		virtual void mixValue()
 		{
 			Application& app = Application::instance();
-			FileInputStream in("F:\\source\\RSTestRunner\\bin\\config\\CloudGetCompanyCert.json");
+			FileInputStream in(app.config().getString("cloudconfigdir","")+"CloudGetCompanyCert.json");
 			DynamicStruct ds = *parse(in).extract<Object::Ptr>();
 			ds["bodyJson"]["token"] = _token;
 			ds["bodyJson"]["transid"] = _transid;

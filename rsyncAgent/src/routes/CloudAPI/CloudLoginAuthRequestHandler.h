@@ -43,12 +43,13 @@ namespace Reach {
 		virtual void mixValue()
 		{
 			Application& app = Application::instance();
-			FileInputStream in("F:\\source\\RSTestRunner\\bin\\config\\CloudLoginAuth.json");
+			FileInputStream in(app.config().getString("cloudconfigdir","")+"CloudLoginAuth.json");
 			DynamicStruct ds = *parse(in).extract<Object::Ptr>();
 			ds["bodyJson"]["action"] = _action;
 			ds["bodyJson"]["transid"] = _transid;
-
 			ds["bodyJson"]["authCode"] = app.config().getString("authCode", "");
+			ds["bodyJson"]["clientId"] = app.config().getString("clientId", "456789");
+
 			ds["body"] = ds["bodyJson"].toString();
 			ds.erase("bodyJson");
 

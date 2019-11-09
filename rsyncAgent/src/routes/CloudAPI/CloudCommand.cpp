@@ -2,6 +2,7 @@
 #include "Poco/JSON/Object.h"
 #include "Poco/Util/Application.h"
 #include "Poco/DynamicStruct.h"
+#include "Poco/Dynamic/Var.h"
 #include <cassert>
 #include "../Utility.h"
 
@@ -9,6 +10,7 @@ using namespace Reach;
 using Poco::Util::Application;
 using Poco::JSON::Object;
 using Poco::DynamicStruct;
+using Poco::Dynamic::Var;
 
 CloudCommand::CloudCommand(const std::string& url)
 :_url(url)
@@ -51,6 +53,16 @@ void CloudCommand::prepare(const std::string& data)
 std::string CloudCommand::extract(const std::string& name)
 {
 	DynamicStruct ds = *_out.extract<Object::Ptr>();
+	assert(ds.contains(name));
+	return ds[name];
+}
+
+std::string CloudCommand::extract(const std::string& body, const std::string& name)
+{
+	DynamicStruct ds = *_out.extract<Object::Ptr>();
+	Var result = parse(ds[body]);
+	assert(result.type() == typeid(Object::Ptr));
+	ds = *result.extract<Object::Ptr>();
 	assert(ds.contains(name));
 	return ds[name];
 }

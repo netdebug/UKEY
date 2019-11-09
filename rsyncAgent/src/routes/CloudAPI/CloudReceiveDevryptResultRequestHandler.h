@@ -30,7 +30,7 @@ namespace Reach {
 			CloudCommand(url),
 			_token(token),
 			_result(result),
-			_action("3")
+			_action("")
 		{
 		}
 
@@ -41,12 +41,13 @@ namespace Reach {
 
 			if (!success())
 				throw RequestHandleException(RAR_UNKNOWNERR);
+
 		}
 	protected:
 		virtual void mixValue()
 		{
 			Application& app = Application::instance();
-			FileInputStream in("F:\\source\\RSTestRunner\\bin\\config\\CloudReceiveDevryptResult.json");
+			FileInputStream in(app.config().getString("cloudconfigdir","")+"CloudReceiveDevryptResult.json");
 			DynamicStruct ds = *parse(in).extract<Object::Ptr>();
 			ds["bodyJson"]["action"] = _action;
 			ds["bodyJson"]["token"] = _token;

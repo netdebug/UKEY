@@ -1,29 +1,55 @@
 #pragma once
 
 #include "Poco/Util/Application.h"
+#include "Poco/FileStream.h"
 #include "../Command.h"
 #include "../RESTfulRequestHandler.h"
-#include "qrencode.h"
+#include "../../qrcode/QrCode.hpp"
 
 namespace Reach {
 
 	using Poco::Util::Application;
+	using Poco::FileOutputStream;
+	using qrcodegen::QrCode;
 
 	///RS_GreateQRCode
 	class GreateQRCode : public Command
 	{
 	public:
-		GreateQRCode(const std::string& qrcode, const std::string& path)
-			:_qrcode(qrcode), _path(path)
+		GreateQRCode(const std::string& text, const std::string& path)
+			:_text(text), _path(path)
 		{
 		}
 
 		void run()
 		{
-			throw Poco::NotImplementedException();
+			/// const char *text = "Hello, world!";              // User-supplied text
+			const QrCode::Ecc errCorLvl = QrCode::Ecc::QUARTILE;  // Error correction level
+
+			// Make and print the QR Code symbol
+			const QrCode qr = QrCode::encodeText(_text.data(), errCorLvl);
+			printQr(qr);
+			//std::cout << qr.toSvgString(4) << std::endl;
+			std::cout << "version : " << qr.getVersion() << std::endl
+				<< "mask : " << qr.getMask() << std::endl;
+
+			FileOutputStream ofs(_path);
+			ofs << qr.toSvgString(4) << std::endl;
+			ofs.close();
+		}
+		void printQr(const QrCode &qr) {
+			int border = 4;
+
+			for (int y = -border; y < qr.getSize() + border; y++) {
+				for (int x = -border; x < qr.getSize() + border; x++) {
+					std::cout << (qr.getModule(x, y) ? "##" : "  ");
+				}
+				std::cout << std::endl;
+			}
+			std::cout << std::endl;
 		}
 	private:
-		std::string _qrcode;
+		std::string _text;
 		std::string _path;
 	};
 
