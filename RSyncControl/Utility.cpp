@@ -30,8 +30,7 @@ using Poco::JSON::Object;
 using Poco::DynamicStruct;
 using Poco::Dynamic::Var;
 
-namespace Reach {
-namespace ActiveX {
+using namespace Reach::ActiveX;
 
 
 Poco::Net::HTTPClientSession Utility::_session("127.0.0.1", 9900);
@@ -43,15 +42,22 @@ Utility::Utility()
 
 void Utility::get(const std::string& url)
 {
-	Debugger::message(format("request url [%s] body [%s]", url));
-	HTTPRequest request(HTTPRequest::HTTP_GET, url);
-	_session.sendRequest(request);
+	try
+	{
+		Debugger::message(format("request url [%s] body [%s]", url));
+		HTTPRequest request(HTTPRequest::HTTP_GET, url);
+		_session.sendRequest(request);
 
-	HTTPResponse response;
-	std::istream& receive = _session.receiveResponse(response);
-	std::ostringstream ostr;
-	StreamCopier::copyStream(receive, ostr);
-	Debugger::message(format("response {%s}", ostr.str()));
+		HTTPResponse response;
+		std::istream& receive = _session.receiveResponse(response);
+		std::ostringstream ostr;
+		StreamCopier::copyStream(receive, ostr);
+		Debugger::message(format("response {%s}", ostr.str()));
+	}
+	catch (Poco::Exception& e)
+	{
+		Debugger::message(e.message());
+	}
 }
 
 void Utility::request(const std::string& url, const std::string& body)
@@ -68,20 +74,20 @@ void Utility::request(const std::string& url, const std::string& body)
 	{
 		Debugger::message(e.message());
 	}
-	
+
 }
 
 std::string Utility::response()
 {
 	std::ostringstream ostr;
-	try 
+	try
 	{
 		HTTPResponse response;
 		std::istream& receive = _session.receiveResponse(response);
 		StreamCopier::copyStream(receive, ostr);
 		Debugger::message(format("response {%s}", ostr.str()));
 	}
-	catch (Poco::Exception& e) 
+	catch (Poco::Exception& e)
 	{
 		Debugger::message(e.message());
 	}
@@ -90,29 +96,36 @@ std::string Utility::response()
 
 std::string Utility::SuperRequest(const std::string& url, const std::string& body)
 {
-	HTTPResponse response;
-	HTTPRequest request(HTTPRequest::HTTP_POST, url);
-	request.setContentLength((int)body.length());
-
-	HTTPClientSession session("127.0.0.1", 11200);
-	session.sendRequest(request) << (body);
-
-	std::istream& receive = session.receiveResponse(response);
 	std::ostringstream ostr;
-	StreamCopier::copyStream(receive, ostr);
+	try
+	{
+		HTTPResponse response;
+		HTTPRequest request(HTTPRequest::HTTP_POST, url);
+		request.setContentLength((int)body.length());
 
+		HTTPClientSession session("127.0.0.1", 11200);
+		session.sendRequest(request) << (body);
+
+		std::istream& receive = session.receiveResponse(response);
+		
+		StreamCopier::copyStream(receive, ostr);
+	}
+	catch (Poco::Exception& e)
+	{
+		Debugger::message(e.message());
+	}
 	return ostr.str();
 }
 
- std::wstring Utility::convert(const std::string& utf8)
+std::wstring Utility::convert(const std::string& utf8)
 {
-	 std::wstring ucs;
-	 UnicodeConverter::toUTF16(utf8, ucs);
-	 return ucs;
+	std::wstring ucs;
+	UnicodeConverter::toUTF16(utf8, ucs);
+	return ucs;
 }
 
 std::string Utility::formatUid(const std::string& entries)
- {
+{
 	std::string uid;
 
 	try
@@ -142,8 +155,6 @@ std::string Utility::formatUid(const std::string& entries)
 	{
 		Debugger::message(e.message());
 	}
-	
-	return uid;
- }
 
-}} //Reach::ActiveX
+	return uid;
+}
