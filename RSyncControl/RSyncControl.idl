@@ -29,20 +29,38 @@ library RSyncControlLib	// RS_CertSafeLib
 		methods:
 
 			[id(DISPID_ABOUTBOX)] void AboutBox();
-			[id(19)] BSTR RS_KeyGetKeySn(void);
-			[id(20)] BSTR RS_KeyGetKeySnExt(BSTR containerId);
-			[id(21)] BSTR RS_GetUserList(void);
-			[id(22)] BSTR RS_GetCertBase64String(BSTR containerId, SHORT certType);
-			[id(23)] BSTR RS_CertLogin(BSTR containerId, BSTR password);
-			[id(24)] BSTR RS_GetPinRetryCount(BSTR containerId);
-			[id(25)] BSTR RS_ChangePassWd(BSTR containerId, BSTR oldCdoe, BSTR newCode);
-			[id(27)] BSTR RS_KeySignByP1(BSTR msg, BSTR containerId);
-			[id(28)] BSTR RS_VerifySignByP1(BSTR certBase64, BSTR msg, BSTR signdMsg);
-			[id(29)] BSTR RS_KeyEncryptData(BSTR rsKey, BSTR certBase64);
-			[id(30)] BSTR RS_KeyDecryptData(BSTR encRsKey, BSTR containerId);
-			[id(31)] BSTR RS_GetCertInfo(BSTR certBase64, BSTR type);
-			[id(32)] BSTR RS_KeySignByP7(BSTR msg, BSTR flag, BSTR containerId);
-			[id(33)] BSTR RS_VerifySignByP7(BSTR msg, BSTR signdMsg, BSTR flag);
+			[id(20)]BSTR RS_KeyGetKeySn(void);
+			[id(21)]BSTR RS_KeyGetKeySnExt(BSTR containerId);
+			[id(22)]BSTR RS_GetUserList(void);
+			[id(23)]BSTR RS_GetCertBase64String(BSTR containerId, SHORT certType);
+			[id(24)]BSTR RS_CertLogin(BSTR containerId, BSTR password);
+			[id(25)]BSTR RS_GetPinRetryCount(BSTR containerId);
+			[id(26)]BSTR RS_ChangePassWd(BSTR containerId, BSTR oldCdoe, BSTR newCode);
+			[id(27)]BSTR RS_KeySignByP1(BSTR msg, BSTR containerId);
+			[id(28)]BSTR RS_VerifySignByP1(BSTR certBase64, BSTR msg, BSTR signdMsg);
+			[id(29)]BSTR RS_KeyEncryptData(BSTR rsKey, BSTR certBase64);
+			[id(30)]BSTR RS_KeyDecryptData(BSTR encRsKey, BSTR containerId);
+			[id(31)]BSTR RS_GetCertInfo(BSTR certBase64, BSTR type);
+			[id(32)]BSTR RS_KeySignByP7(BSTR msg, BSTR flag, BSTR containerId);
+			[id(33)]BSTR RS_VerifySignByP7(BSTR msg, BSTR signdMsg, BSTR flag);
+			[id(34)]BSTR RS_CloudLoginAuth(BSTR transid);
+			[id(35)]BSTR RS_CloudSealAuth(BSTR transid);
+			[id(36)]BSTR RS_CloudGetAuth(BSTR transid);
+			[id(37)]BSTR RS_CloudGetSealList(BSTR token);
+			[id(38)]BSTR RS_CloudSignByP7(BSTR msg, BSTR keySn, BSTR transid, BSTR token);
+			[id(39)]BSTR RS_CloudGetSignResult(BSTR transid);
+			[id(40)]BSTR RS_CloudLogoutAuth(BSTR token);
+			[id(41)]BSTR RS_CloudEncryptAuth(BSTR transid);
+			[id(42)]BSTR RS_CloudEncryptData(BSTR reachKey, BSTR transid, BSTR token);
+			[id(43)]BSTR RS_CloudEncryptFile(BSTR souceFilePath, BSTR encFilePath, BSTR transid, BSTR token);
+			[id(44)]BSTR RS_CloudDevryptAuth(BSTR transid);
+			[id(45)]BSTR RS_CloudDevryptData(BSTR encReachKey, BSTR url, BSTR transid, BSTR token);
+			[id(46)]BSTR RS_CloudDevryptFile(BSTR encFilePath, BSTR dncFilePath, BSTR url, BSTR transid, BSTR token);
+			[id(47)]BSTR RS_CloudReceiveDevryptResult(BSTR token, BSTR resultData);
+			[id(48)]BSTR RS_CloudGetCompanyCert(BSTR transid, BSTR token);
+			[id(49)]BSTR RS_CloudGetCertAuth(BSTR transid);
+			[id(50)]BSTR RS_CloudGetCertBase64(BSTR transid, BSTR token);
+			[id(51)]BSTR RS_CloudLogout(BSTR userId);
 	};
 
 	//  CRSyncControlCtrl 的事件调度接口
