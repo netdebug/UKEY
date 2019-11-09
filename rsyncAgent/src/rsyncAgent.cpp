@@ -11,6 +11,7 @@
 
 #include "rsyncAgent.h"
 #include "AdaptiveRecevier.h"
+#include "CloudEventRecevier.h"
 #include "Poco/Util/Application.h"
 #include "Poco/Util/Option.h"
 #include "Poco/Util/OptionSet.h"
@@ -92,6 +93,7 @@ int rsyncAgent::main(const ArgVec& args)
 	if (!_helpRequested)
 	{
 		TaskManager tm;
+		tm.start(new CloudEventRecevier);
 		tm.start(new AdaptiveRecevier);
 		unsigned short port = (unsigned short)config().getInt("HTTPFormServer.port", 9980);
 		ServerSocket svs(port);
