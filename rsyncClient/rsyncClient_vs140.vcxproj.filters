@@ -27,25 +27,7 @@
     <None Include="rsyncClient.properties">
       <Filter>Configuration Files</Filter>
     </None>
-    <None Include="QZSyncTask.json">
-      <Filter>Configuration Files</Filter>
-    </None>
-    <None Include="sealdata.json">
-      <Filter>Configuration Files</Filter>
-    </None>
-    <None Include="checkKeyinfo.json">
-      <Filter>Configuration Files</Filter>
-    </None>
-    <None Include="sendKeySealInfo.json">
-      <Filter>Configuration Files</Filter>
-    </None>
     <None Include="QZSyncWorker.json">
-      <Filter>Configuration Files</Filter>
-    </None>
-    <None Include="C:\Users\Administrator\Desktop\test">
-      <Filter>Configuration Files</Filter>
-    </None>
-    <None Include="C:\Users\Administrator\Desktop\testutf8">
       <Filter>Configuration Files</Filter>
     </None>
   </ItemGroup>

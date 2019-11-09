@@ -27,14 +27,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <None Include="C:\Users\Administrator\Desktop\test" />
-    <None Include="C:\Users\Administrator\Desktop\testutf8" />
-    <None Include="checkKeyinfo.json" />
-    <None Include="QZSyncTask.json" />
     <None Include="QZSyncWorker.json" />
     <None Include="rsyncClient.properties" />
-    <None Include="sealdata.json" />
-    <None Include="sendKeySealInfo.json" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\BridgeKG_HARD_EXT.cpp" />
