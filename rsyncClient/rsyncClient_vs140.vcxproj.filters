@@ -30,6 +30,24 @@
     <None Include="QZSyncTask.json">
       <Filter>Configuration Files</Filter>
     </None>
+    <None Include="sealdata.json">
+      <Filter>Configuration Files</Filter>
+    </None>
+    <None Include="checkKeyinfo.json">
+      <Filter>Configuration Files</Filter>
+    </None>
+    <None Include="sendKeySealInfo.json">
+      <Filter>Configuration Files</Filter>
+    </None>
+    <None Include="QZSyncWorker.json">
+      <Filter>Configuration Files</Filter>
+    </None>
+    <None Include="C:\Users\Administrator\Desktop\test">
+      <Filter>Configuration Files</Filter>
+    </None>
+    <None Include="C:\Users\Administrator\Desktop\testutf8">
+      <Filter>Configuration Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\rsyncClient.h">
@@ -66,9 +84,6 @@
     <ClInclude Include="src\BridgeWindowsLiveLogin.h">
       <Filter>idl\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\QZSyncTask.h">
-      <Filter>Core\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\XSSealProvider.h">
       <Filter>Core\Header Files</Filter>
     </ClInclude>
@@ -83,6 +98,9 @@
     </ClInclude>
     <ClInclude Include="src\KG_GetKeyInfo_FJRS.h">
       <Filter>Core\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\QZSyncWorker.h">
+      <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -119,9 +137,6 @@
     <ClCompile Include="src\BridgeWindowsLiveLogin.cpp">
       <Filter>idl\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\QZSyncTask.cpp">
-      <Filter>Core\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\XSSealProvider.cpp">
       <Filter>Core\Source Files</Filter>
     </ClCompile>
@@ -133,6 +148,9 @@
     </ClCompile>
     <ClCompile Include="src\KGSealProvider.cpp">
       <Filter>Core\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\QZSyncWorker.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

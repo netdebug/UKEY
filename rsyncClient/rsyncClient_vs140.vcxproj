@@ -27,8 +27,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <None Include="C:\Users\Administrator\Desktop\test" />
+    <None Include="C:\Users\Administrator\Desktop\testutf8" />
+    <None Include="checkKeyinfo.json" />
     <None Include="QZSyncTask.json" />
+    <None Include="QZSyncWorker.json" />
     <None Include="rsyncClient.properties" />
+    <None Include="sealdata.json" />
+    <None Include="sendKeySealInfo.json" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\BridgeKG_HARD_EXT.cpp" />
@@ -39,7 +45,7 @@
     <ClCompile Include="src\KGSealProvider.cpp" />
     <ClCompile Include="src\KG_HARD_EXT_i.c" />
     <ClCompile Include="src\OESSealProvider.cpp" />
-    <ClCompile Include="src\QZSyncTask.cpp" />
+    <ClCompile Include="src\QZSyncWorker.cpp" />
     <ClCompile Include="src\rsyncClient.cpp" />
     <ClCompile Include="src\SampleTask.cpp" />
     <ClCompile Include="src\SealProvider.cpp" />
@@ -60,7 +66,7 @@
     <ClInclude Include="src\KG_GetKeyInfo_FJRS.h" />
     <ClInclude Include="src\KG_HARD_EXT.h" />
     <ClInclude Include="src\OESSealProvider.h" />
-    <ClInclude Include="src\QZSyncTask.h" />
+    <ClInclude Include="src\QZSyncWorker.h" />
     <ClInclude Include="src\rsyncClient.h" />
     <ClInclude Include="src\SampleTask.h" />
     <ClInclude Include="src\SealProvider.h" />
@@ -144,6 +150,7 @@
     <IntDir>obj\rsyncClient\$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
     <TargetExt>.exe</TargetExt>
+    <IncludePath>C:\Program Files %28x86%29\GmSSL\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release_shared|Win32'">
     <OutDir>..\bin\</OutDir>
@@ -170,7 +177,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug_shared|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include\poco\Data\include;..\include\poco\Data\SQLite\include;..\include\poco\XML\include;..\include\poco\JSON\include;..\include\poco\Foundation\include;..\include\poco\Net\include;..\include\poco\Util\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include\poco\Data\include;..\include\poco\Data\SQLite\include;..\include\poco\XML\include;..\include\poco\JSON\include;..\include\poco\Crypto\include;..\include\poco\Foundation\include;..\include\poco\Net\include;..\include\poco\Util\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>true</MinimalRebuild>
@@ -186,7 +193,7 @@
       <CompileAs>Default</CompileAs>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>PocoFoundationd.lib;PocoJSONd.lib;PocoNetd.lib;PocoUtild.lib;PocoDatad.lib;PocoDataSQLited.lib;SoFProviderd.lib;Iphlpapi.lib;msi.lib;ws2_32.lib;TCardCert.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PocoFoundationd.lib;PocoJSONd.lib;PocoNetd.lib;PocoUtild.lib;PocoDatad.lib;PocoCryptod.lib;PocoDataSQLited.lib;SoFProviderd.lib;Iphlpapi.lib;msi.lib;ws2_32.lib;TCardCert.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetFileName)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -199,7 +206,7 @@
     </Link>
     <PostBuildEvent>
       <Command>xcopy /y $(ProjectDir)rsyncClient.properties $(OutDir)
-xcopy /y $(ProjectDir)QZSyncTask.json $(OutDir)</Command>
+xcopy /y $(ProjectDir)QZSyncWorker.json $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='release_shared|Win32'">

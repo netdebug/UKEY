@@ -15,7 +15,7 @@
 #include "Poco/TaskManager.h"
 #include "rsyncClient.h"
 #include "SampleTask.h"
-#include "QZSyncTask.h"
+#include "QZSyncWorker.h"
 
 using namespace Reach;
 
@@ -84,7 +84,7 @@ int rsyncClient::main(const ArgVec& args)
 
 		TaskManager tm;
 		//tm.start(new SampleTask(host, port));
-		tm.start(new QZSyncTask);
+		tm.start(new QZSyncWorker);
 		waitForTerminationRequest();
 		tm.cancelAll();
 		tm.joinAll();
