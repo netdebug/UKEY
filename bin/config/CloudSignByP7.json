@@ -11,6 +11,7 @@
     "token": "",
     "dealData": "",
     "keySn": "",
-    "transid": ""
+    "transid": "",
+    "clientId": ""
   }
 }
