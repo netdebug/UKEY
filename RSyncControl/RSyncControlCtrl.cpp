@@ -13,6 +13,7 @@
 #include "Poco/JSON/Parser.h"
 #include "Poco/JSON/Object.h"
 #include "Poco/DynamicStruct.h"
+#include "CloudEventRecevier.h"
 #include <cassert>
 #include <sstream>
 
@@ -43,30 +44,49 @@ END_MESSAGE_MAP()
 
 BEGIN_DISPATCH_MAP(CRSyncControlCtrl, COleControl)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "AboutBox", DISPID_ABOUTBOX, AboutBox, VT_EMPTY, VTS_NONE)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_GetUserList", dispid_GetUserList, RS_GetUserList, VT_BSTR, VTS_NONE)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_GetCertBase64String", dispid_GetCertBase64String, RS_GetCertBase64String, VT_BSTR, VTS_BSTR VTS_I2)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CertLogin", dispid_CertLogin, RS_CertLogin, VT_BSTR, VTS_BSTR VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_GetPinRetryCount", dispid_GetPinRetryCount, RS_GetPinRetryCount, VT_BSTR, VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyGetKeySn", dispid_KeyGetKeySn, RS_KeyGetKeySn, VT_BSTR, VTS_NONE)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyGetKeySnExt", dispid_KeyGetKeySnExt, RS_KeyGetKeySnExt, VT_BSTR, VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeySignByP1", dispid_KeySignByP1, RS_KeySignByP1, VT_BSTR, VTS_BSTR VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_VerifySignByP1", dispid_VerifySignByP1, RS_VerifySignByP1, VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyEncryptData", dispid_KeyEncryptData, RS_KeyEncryptData, VT_BSTR, VTS_BSTR VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyDecryptData", dispid_KeyDecryptData, RS_KeyDecryptData, VT_BSTR, VTS_BSTR VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_GetCertInfo", dispid_GetCertInfo, RS_GetCertInfo, VT_BSTR, VTS_BSTR VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeySignByP7", dispid_KeySignByP7, RS_KeySignByP7, VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_VerifySignByP7", dispid_VerifySignByP7, RS_VerifySignByP7, VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyGetKeySn",						dispid_20,			RS_KeyGetKeySn,				VT_BSTR, VTS_NONE)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyGetKeySnExt",					dispid_21,			RS_KeyGetKeySnExt,			VT_BSTR, VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_GetUserList",						dispid_22,			RS_GetUserList,				VT_BSTR, VTS_NONE)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_GetCertBase64String",				dispid_23,			RS_GetCertBase64String,		VT_BSTR, VTS_BSTR VTS_I2)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CertLogin",							dispid_24,			RS_CertLogin,				VT_BSTR, VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_GetPinRetryCount",					dispid_25,			RS_GetPinRetryCount,		VT_BSTR, VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_ChangePassWd",						dispid_26,			RS_ChangePassWd,			VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeySignByP1",						dispid_27,			RS_KeySignByP1,				VT_BSTR, VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_VerifySignByP1",					dispid_28,			RS_VerifySignByP1,			VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyEncryptData",					dispid_29,			RS_KeyEncryptData,			VT_BSTR, VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyDecryptData",					dispid_30,			RS_KeyDecryptData,			VT_BSTR, VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_GetCertInfo",						dispid_31,			RS_GetCertInfo,				VT_BSTR, VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeySignByP7",						dispid_32,			RS_KeySignByP7,				VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_VerifySignByP7",					dispid_33,			RS_VerifySignByP7,			VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudLoginAuth",					dispid_34,			RS_CloudLoginAuth,			VT_BSTR, VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudSealAuth",						dispid_35,			RS_CloudSealAuth,					VT_BSTR,VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudGetAuth",						dispid_36,			RS_CloudGetAuth,					VT_BSTR,VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudGetSealList",					dispid_37,			RS_CloudGetSealList,				VT_BSTR,VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudSignByP7",						dispid_38,			RS_CloudSignByP7,					VT_BSTR,VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudGetSignResult",				dispid_39,			RS_CloudGetSignResult,				VT_BSTR,VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudLogoutAuth",					dispid_40,			RS_CloudLogoutAuth,					VT_BSTR,VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudEncryptAuth",					dispid_41,			RS_CloudEncryptAuth,				VT_BSTR,VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudEncryptData",					dispid_42,			RS_CloudEncryptData,				VT_BSTR,VTS_BSTR VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudEncryptFile",					dispid_43,			RS_CloudEncryptFile,				VT_BSTR,VTS_BSTR VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudDevryptAuth",					dispid_44,			RS_CloudDevryptAuth,				VT_BSTR,VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudDevryptData",					dispid_45,			RS_CloudDevryptData,				VT_BSTR,VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudDevryptFile",					dispid_46,			RS_CloudDevryptFile,				VT_BSTR,VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudReceiveDevryptResult",			dispid_47,			RS_CloudReceiveDevryptResult,		VT_BSTR, VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudGetCompanyCert",				dispid_48,			RS_CloudGetCompanyCert,				VT_BSTR,VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudGetCertAuth",					dispid_49,			RS_CloudGetCertAuth,				VT_BSTR,VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudGetCertBase64",				dispid_50,			RS_CloudGetCertBase64,				VT_BSTR,VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudLogout",						dispid_51,			RS_CloudLogout,						VT_BSTR,VTS_BSTR)
 END_DISPATCH_MAP()
 
 // 事件映射
 
 BEGIN_EVENT_MAP(CRSyncControlCtrl, COleControl)
-	EVENT_CUSTOM_ID("RS_CloudSealAuthEvent", eventidRS_CloudSealAuthEvent, RS_CloudSealAuthEvent, VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR)
-	EVENT_CUSTOM_ID("RS_CloudGetSignResultEvent", eventidRS_CloudGetSignResultEvent, RS_CloudGetSignResultEvent, VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR)
-	EVENT_CUSTOM_ID("RS_CloudLoginAuthEvent", eventidRS_CloudLoginAuthEvent, RS_CloudLoginAuthEvent, VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR)
-	EVENT_CUSTOM_ID("RS_CloudEncAuthEvent", eventidRS_CloudEncAuthEvent, RS_CloudEncAuthEvent, VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR)
-	EVENT_CUSTOM_ID("RS_CloudDevAuthEvent", eventidRS_CloudDevAuthEvent, RS_CloudDevAuthEvent, VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR)
-	EVENT_CUSTOM_ID("RS_CloudGetCertAuthEvent", eventidRS_CloudGetCertAuthEvent, RS_CloudGetCertAuthEvent, VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR)
+	EVENT_CUSTOM_ID("RS_CloudSealAuthEvent",			eventid_1, RS_CloudSealAuthEvent, VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR)
+	EVENT_CUSTOM_ID("RS_CloudGetSignResultEvent",		eventid_2, RS_CloudGetSignResultEvent, VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR)
+	EVENT_CUSTOM_ID("RS_CloudLoginAuthEvent",			eventid_3, RS_CloudLoginAuthEvent, VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR)
+	EVENT_CUSTOM_ID("RS_CloudEncAuthEvent",				eventid_4, RS_CloudEncAuthEvent, VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR)
+	EVENT_CUSTOM_ID("RS_CloudDevAuthEvent",				eventid_5, RS_CloudDevAuthEvent, VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR)
+	EVENT_CUSTOM_ID("RS_CloudGetCertAuthEvent",			eventid_6, RS_CloudGetCertAuthEvent, VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR)
 END_EVENT_MAP()
 
 // 属性页
@@ -134,20 +154,64 @@ BOOL CRSyncControlCtrl::CRSyncControlCtrlFactory::UpdateRegistry(BOOL bRegister)
 
 
 // CRSyncControlCtrl::CRSyncControlCtrl - 构造函数
+#include "Poco/Observer.h"
+#include "MQTTNotification.h"
+using namespace Poco;
 
 CRSyncControlCtrl::CRSyncControlCtrl()
 {
 	InitializeIIDs(&IID_DRSyncControl, &IID_DRSyncControlEvents);
 	// TODO:  在此初始化控件的实例数据。
+	NotificationCenter& nc = NotificationCenter::defaultCenter();
+	Observer<CRSyncControlCtrl, MQTTNotification> o1(*this, &CRSyncControlCtrl::handle1);
+	nc.addObserver(o1);
+	tm.start(new Reach::CloudEventRecevier);
 }
 
 // CRSyncControlCtrl::~CRSyncControlCtrl - 析构函数
 
 CRSyncControlCtrl::~CRSyncControlCtrl()
 {
+	NotificationCenter& nc = NotificationCenter::defaultCenter();
+	nc.removeObserver(Observer<CRSyncControlCtrl, MQTTNotification>(*this, &CRSyncControlCtrl::handle1));
 	// TODO:  在此清理控件的实例数据。
+	tm.cancelAll();
+	tm.joinAll();
 }
 
+#include "Poco/Debugger.h"
+using Poco::Debugger;
+
+void CRSyncControlCtrl::handle1(MQTTNotification* pNf)
+{
+	Debugger::message(format("MQTTNotification action =", pNf->context));
+
+	if (pNf){
+		switch(pNf->action)
+		{
+		case eventid_1:
+			//FireEvent(pNf->action, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), "1", "2", "3", "4");
+			break;
+		case eventid_2:
+			//FireEvent(pNf->action, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), "1", "2", "3", "4");
+			break;
+		case eventid_3:
+			//FireEvent(pNf->action, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), "1", "2", "3", "4");
+			break;
+		case eventid_4:
+			//FireEvent(pNf->action, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), "1", "2", "3", "4");
+			break;
+		case eventid_5:
+			//FireEvent(pNf->action, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), "1", "2", "3", "4");
+			break;
+		case eventid_6:
+			//FireEvent(pNf->action, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), "1", "2", "3", "4");
+			break;
+		default:
+			break;
+		}
+	}
+}
 // CRSyncControlCtrl::OnDraw - 绘图函数
 
 void CRSyncControlCtrl::OnDraw(
@@ -422,5 +486,263 @@ BSTR CRSyncControlCtrl::RS_GetCertInfo(BSTR certBase64, BSTR type)
 	return _bstr_t(bstr.data());
 }
 
+BSTR CRSyncControlCtrl::RS_CloudLoginAuth(BSTR transid)
+{
+	std::string id = _com_util::ConvertBSTRToString(transid);
+
+	HTMLForm params;
+	params.set("transid", id);
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_CloudLoginAuth", body.str());
+
+	return _bstr_t(result.data());
+}
+
+BSTR CRSyncControlCtrl::RS_CloudSealAuth(BSTR transid)
+{
+	std::string id = _com_util::ConvertBSTRToString(transid);
+
+	HTMLForm params;
+	params.set("transid", id);
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_CloudSealAuth", body.str());
+
+	return _bstr_t(result.data());
+}
+
+BSTR CRSyncControlCtrl::RS_CloudGetAuth(BSTR transid)
+{
+	std::string TRANSID = _com_util::ConvertBSTRToString(transid);
+
+	HTMLForm params;
+	params.set("transid", TRANSID);
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_CloudGetAuth", body.str());
+
+	return _bstr_t(result.data());
+}
+
+BSTR CRSyncControlCtrl::RS_CloudGetSealList(BSTR token)
+{
+	std::string TOKEN = _com_util::ConvertBSTRToString(token);
+
+	HTMLForm params;
+	params.set("token", TOKEN);
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_CloudGetSealList", body.str());
+
+	return _bstr_t(result.data());
+}
+BSTR CRSyncControlCtrl::RS_CloudSignByP7(BSTR msg, BSTR keySn, BSTR transid, BSTR token)
+{
+	std::string MSG = _com_util::ConvertBSTRToString(msg);
+	std::string KEYSN = _com_util::ConvertBSTRToString(keySn);
+	std::string TRANSID = _com_util::ConvertBSTRToString(transid);
+	std::string TOKEN = _com_util::ConvertBSTRToString(token);
+
+	HTMLForm params;
+	params.set("msg", MSG);
+	params.set("keySn", KEYSN);
+	params.set("transid", TRANSID);
+	params.set("token", TOKEN);
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_CloudSignByP7", body.str());
+
+	return _bstr_t(result.data());
+}
+
+BSTR CRSyncControlCtrl::RS_CloudGetSignResult(BSTR transid)
+{
+	std::string TRANSID = _com_util::ConvertBSTRToString(transid);
+
+	HTMLForm params;
+	params.set("transid", TRANSID);
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_CloudGetSignResult", body.str());
+
+	return _bstr_t(result.data());
+}
+
+BSTR CRSyncControlCtrl::RS_CloudLogoutAuth(BSTR token)
+{
+	std::string TOKEN = _com_util::ConvertBSTRToString(token);
+
+	HTMLForm params;
+	params.set("token", TOKEN);
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_CloudLogoutAuth", body.str());
+
+	return _bstr_t(result.data());
+}
+BSTR CRSyncControlCtrl::RS_CloudEncryptAuth(BSTR transid)
+{
+	std::string TRANSID = _com_util::ConvertBSTRToString(transid);
+
+	HTMLForm params;
+	params.set("transid", TRANSID);
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_CloudEncryptAuth", body.str());
+
+	return _bstr_t(result.data());
+}
+BSTR CRSyncControlCtrl::RS_CloudEncryptData(BSTR reachKey, BSTR transid, BSTR token)
+{
+	std::string REACHKEY = _com_util::ConvertBSTRToString(reachKey);
+	std::string TOKEN = _com_util::ConvertBSTRToString(token);
+
+	HTMLForm params;
+	params.set("reachKey", REACHKEY);
+	params.set("token", TOKEN);
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_CloudEncryptData", body.str());
+
+	return _bstr_t(result.data());
+}
+
+BSTR CRSyncControlCtrl::RS_CloudEncryptFile(BSTR souceFilePath, BSTR encFilePath, BSTR transid, BSTR token)
+{
+	std::string SOUCEFILEPATH = _com_util::ConvertBSTRToString(souceFilePath);
+	std::string ENCFILEPATH = _com_util::ConvertBSTRToString(encFilePath);
+	std::string TOKEN = _com_util::ConvertBSTRToString(token);
+
+	HTMLForm params;
+	params.set("souceFilePath", SOUCEFILEPATH);
+	params.set("encFilePath", ENCFILEPATH);
+	params.set("token", TOKEN);
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_CloudEncryptFile", body.str());
+
+	return _bstr_t(result.data());
+}
+BSTR CRSyncControlCtrl::RS_CloudDevryptAuth(BSTR transid)
+{
+	std::string TRANSID = _com_util::ConvertBSTRToString(transid);
+
+	HTMLForm params;
+	params.set("transid", TRANSID);
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_CloudDevryptAuth", body.str());
+
+	return _bstr_t(result.data());
+}
+BSTR CRSyncControlCtrl::RS_CloudDevryptData(BSTR encReachKey, BSTR url, BSTR transid, BSTR token)
+{
+	std::string ENCREACHKEY = _com_util::ConvertBSTRToString(encReachKey);
+	std::string URL = _com_util::ConvertBSTRToString(url);
+	std::string TRANSID = _com_util::ConvertBSTRToString(transid);
+	std::string TOKEN = _com_util::ConvertBSTRToString(token);
+
+	HTMLForm params;
+	params.set("encReachKey", ENCREACHKEY);
+	params.set("url", URL);
+	params.set("transid", TRANSID);
+	params.set("token", TOKEN);
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_CloudDevryptData", body.str());
+
+	return _bstr_t(result.data());
+}
+
+BSTR CRSyncControlCtrl::RS_CloudDevryptFile(BSTR encFilePath, BSTR dncFilePath, BSTR url, BSTR transid, BSTR token)
+{
+	std::string ENCFILEPATH = _com_util::ConvertBSTRToString(encFilePath);
+	std::string DNCFILEPATH = _com_util::ConvertBSTRToString(dncFilePath);
+	std::string TRANSID = _com_util::ConvertBSTRToString(transid);
+	std::string TOKEN = _com_util::ConvertBSTRToString(token);
+
+	HTMLForm params;
+	params.set("encFilePath", ENCFILEPATH);
+	params.set("dncFilePath", DNCFILEPATH);
+	params.set("transid", TRANSID);
+	params.set("token", TOKEN);
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_CloudDevryptFile", body.str());
+
+	return _bstr_t(result.data());
+}
+BSTR CRSyncControlCtrl::RS_CloudReceiveDevryptResult(BSTR token, BSTR resultData)
+{
+	std::string RESULTDATA = _com_util::ConvertBSTRToString(resultData);
+	std::string TOKEN = _com_util::ConvertBSTRToString(token);
+
+	HTMLForm params;
+	params.set("transid", RESULTDATA);
+	params.set("token", TOKEN);
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_CloudReceiveDevryptResult", body.str());
+
+	return _bstr_t(result.data());
+
+}
+
+BSTR CRSyncControlCtrl::RS_CloudGetCompanyCert(BSTR transid, BSTR token)
+{
+	std::string TRANSID = _com_util::ConvertBSTRToString(transid);
+	std::string TOKEN = _com_util::ConvertBSTRToString(token);
+
+	HTMLForm params;
+	params.set("transid", TRANSID);
+	params.set("token", TOKEN);
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_CloudGetCompanyCert", body.str());
+
+	return _bstr_t(result.data());
+}
+
+BSTR CRSyncControlCtrl::RS_CloudGetCertAuth(BSTR transid)
+{
+	std::string TRANSID = _com_util::ConvertBSTRToString(transid);
+
+	HTMLForm params;
+	params.set("transid", TRANSID);
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_CloudGetCertAuth", body.str());
+
+	return _bstr_t(result.data());
+}
+
+BSTR CRSyncControlCtrl::RS_CloudGetCertBase64(BSTR transid, BSTR token)
+{
+	std::string TRANSID = _com_util::ConvertBSTRToString(transid);
+	std::string TOKEN = _com_util::ConvertBSTRToString(token);
+
+	HTMLForm params;
+	params.set("transid", TRANSID);
+	params.set("token", TOKEN);
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_CloudGetCertBase64", body.str());
+
+	return _bstr_t(result.data());
+}
+
+BSTR CRSyncControlCtrl::RS_CloudLogout(BSTR userId)
+{
+	std::string USERID = _com_util::ConvertBSTRToString(userId);
+
+	HTMLForm params;
+	params.set("userId", USERID);
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_CloudLogout", body.str());
+
+	return _bstr_t(result.data());
+}
 
 // CRSyncControlCtrl 消息处理程序

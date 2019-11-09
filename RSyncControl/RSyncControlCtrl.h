@@ -1,15 +1,17 @@
 ﻿#pragma once
-
+#include "Poco/TaskManager.h"
 // RSyncControlCtrl.h : CRSyncControlCtrl ActiveX 控件类的声明。
 
 
 // CRSyncControlCtrl : 请参阅 RSyncControlCtrl.cpp 了解实现。
 #include <string>
-
+class MQTTNotification;
 class CRSyncControlCtrl : public COleControl
 {
 	DECLARE_DYNCREATE(CRSyncControlCtrl)
 
+private:
+	Poco::TaskManager tm;
 // 构造函数
 public:
 	CRSyncControlCtrl();
@@ -51,68 +53,105 @@ protected:
 	BSTR RS_KeyEncryptData(BSTR rsKey, BSTR certBase64);
 	BSTR RS_KeyDecryptData(BSTR encRsKey, BSTR containerId);
 	BSTR RS_GetCertInfo(BSTR certBase64, BSTR type);
-
+	/// Cloud API
+	BSTR RS_CloudLoginAuth(BSTR transid);
+	BSTR RS_CloudSealAuth(BSTR transid);
+	BSTR RS_CloudGetAuth(BSTR transid);
+	BSTR RS_CloudGetSealList(BSTR token);
+	BSTR RS_CloudSignByP7(BSTR msg, BSTR keySn, BSTR transid, BSTR token);
+	BSTR RS_CloudGetSignResult(BSTR transid);
+	BSTR RS_CloudLogoutAuth(BSTR token);
+	BSTR RS_CloudEncryptAuth(BSTR transid);
+	BSTR RS_CloudEncryptData(BSTR reachKey, BSTR transid, BSTR token);
+	BSTR RS_CloudEncryptFile(BSTR souceFilePath, BSTR encFilePath, BSTR transid, BSTR token);
+	BSTR RS_CloudDevryptAuth(BSTR transid);
+	BSTR RS_CloudDevryptData(BSTR encReachKey, BSTR url, BSTR transid, BSTR token);
+	BSTR RS_CloudDevryptFile(BSTR encFilePath, BSTR dncFilePath, BSTR url, BSTR transid, BSTR token);
+	BSTR RS_CloudReceiveDevryptResult(BSTR token, BSTR resultData);
+	BSTR RS_CloudGetCompanyCert(BSTR transid, BSTR token);
+	BSTR RS_CloudGetCertAuth(BSTR transid);
+	BSTR RS_CloudGetCertBase64(BSTR transid, BSTR token);
+	BSTR RS_CloudLogout(BSTR userId);
 	//签章授权事件
 	void RS_CloudSealAuthEvent(LPCTSTR authResult, LPCTSTR transid, LPCTSTR token, LPCTSTR msg)
 	{
-		FireEvent(eventidRS_CloudSealAuthEvent, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), authResult, transid, token, msg);
+		FireEvent(eventid_1, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), authResult, transid, token, msg);
 	}
 
 	//获取签名结果事件
 	void RS_CloudGetSignResultEvent(LPCTSTR signResult, LPCTSTR signdMsg, LPCTSTR transid, LPCTSTR signdCert, LPCTSTR msg)
 	{
-		FireEvent(eventidRS_CloudGetSignResultEvent, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), signResult, signdMsg, transid, signdCert, msg);
+		FireEvent(eventid_2, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), signResult, signdMsg, transid, signdCert, msg);
 	}
 
 	//登入授权事件
 	void RS_CloudLoginAuthEvent(LPCTSTR authResult, LPCTSTR transid, LPCTSTR token, LPCTSTR mobile, LPCTSTR userName, LPCTSTR userID, LPCTSTR msg)
 	{
-		FireEvent(eventidRS_CloudLoginAuthEvent, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), authResult, transid, token, mobile, userName, userID, msg);
+		FireEvent(eventid_3, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), authResult, transid, token, mobile, userName, userID, msg);
 	}
 
 	//加密授权事件
 	void RS_CloudEncAuthEvent(LPCTSTR authResult, LPCTSTR transid, LPCTSTR token, LPCTSTR msg)
 	{
-		FireEvent(eventidRS_CloudEncAuthEvent, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), authResult, transid, token, msg);
+		FireEvent(eventid_4, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), authResult, transid, token, msg);
 	}
 
 	//解密授权事件
 	void RS_CloudDevAuthEvent(LPCTSTR authResult, LPCTSTR transid, LPCTSTR token, LPCTSTR msg)
 	{
-		FireEvent(eventidRS_CloudDevAuthEvent, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), authResult, transid, token, msg);
+		FireEvent(eventid_5, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), authResult, transid, token, msg);
 	}
 	//获取证书授权事件
 	void RS_CloudGetCertAuthEvent(LPCTSTR authResult, LPCTSTR transid, LPCTSTR token, LPCTSTR msg)
 	{
-		FireEvent(eventidRS_CloudGetCertAuthEvent, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), authResult, transid, token, msg);
+		FireEvent(eventid_6, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), authResult, transid, token, msg);
 	}
 // 事件映射
 	DECLARE_EVENT_MAP()
-
+	protected:
+		void handle1(MQTTNotification* pNf);
 // 调度和事件 ID
-public:
+private:
 	enum {
-		dispid_GetUserList = 21,
-		dispid_GetCertBase64String,
-		dispid_CertLogin,
-		dispid_GetPinRetryCount,
-		dispid_ChangePassWd,
-		dispid_KeyGetKeySn,
-		dispid_KeyGetKeySnExt,
-		dispid_KeySignByP1,
-		dispid_VerifySignByP1,
-		dispid_KeyEncryptData,
-		dispid_KeyDecryptData,
-		dispid_GetCertInfo,
-		dispid_KeySignByP7,
-		dispid_VerifySignByP7,
+		eventid_1 = 1,
+		eventid_2,
+		eventid_3,
+		eventid_4,
+		eventid_5,
+		eventid_6,
 
-		eventidRS_CloudSealAuthEvent,
-		eventidRS_CloudGetSignResultEvent,
-		eventidRS_CloudLoginAuthEvent,
-		eventidRS_CloudEncAuthEvent,
-		eventidRS_CloudDevAuthEvent,
-		eventidRS_CloudGetCertAuthEvent
+		dispid_20 = 20,
+		dispid_21,
+		dispid_22,
+		dispid_23,
+		dispid_24,
+		dispid_25,
+		dispid_26,
+		dispid_27,
+		dispid_28,
+		dispid_29,
+		dispid_30,
+		dispid_31,
+		dispid_32,
+		dispid_33,
+		dispid_34,
+		dispid_35,
+		dispid_36,
+		dispid_37,
+		dispid_38,
+		dispid_39,
+		dispid_40,
+		dispid_41,
+		dispid_42,
+		dispid_43,
+		dispid_44,
+		dispid_45,
+		dispid_46,
+		dispid_47,
+		dispid_48,
+		dispid_49,
+		dispid_50,
+		dispid_51
 	};
 };
 
