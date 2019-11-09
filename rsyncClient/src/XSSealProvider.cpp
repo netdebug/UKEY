@@ -35,7 +35,18 @@ XSSealProvider::~XSSealProvider()
 	sl.unload();
 }
 
-void XSSealProvider::read(Object::Ptr JSONin, Object::Ptr JSONout)
+void XSSealProvider::extract()
+{
+	TCardGetCert();
+	readSeal();
+	ExtractSealPicture();
+	PeriodOfValidity();
+	FetchKeySN();
+	GeneratedCode();
+	GeneratedMD5();
+}
+
+void XSSealProvider::ExtractSealPicture()
 {
 	Application& app = Application::instance();
 	
@@ -44,8 +55,8 @@ void XSSealProvider::read(Object::Ptr JSONin, Object::Ptr JSONout)
 
 	static const std::string simple =
 		"<config>\r\n"
-		"<prop1>value1</prop1>\r\n"
-		"<prop2>value2</prop2>\r\n"
+		"\t<prop1>value1</prop1>\r\n"
+		"\t<prop2>value2</prop2>\r\n"
 		"</config>\r\n";
 
 	std::istringstream istr(_content);
@@ -57,14 +68,13 @@ void XSSealProvider::read(Object::Ptr JSONin, Object::Ptr JSONout)
 	Node* pSealinfo = pDoc->getNodeByPath("/sealinfos/sealinfo");
 
 	setProperty("name", pSealbaseinfo->getNodeByPath("username")->innerText());
-	setProperty("code", UUIDGenerator::defaultGenerator().createRandom().toString());
+	//setProperty("code", UUIDGenerator::defaultGenerator().createRandom().toString());
 
 	/// 证书有效期时间
 	setProperty("validStart", "");
 	setProperty("validEnd", "");
 
-	*JSONout = *JSONin;
-	DynamicStruct ds = *JSONout;
+	DynamicStruct ds;
 
 	ds["imgdata"] = pSealinfo->getNodeByPath("sealdata");
 	ds["signname"] = pSealinfo->getNodeByPath("sealname");
@@ -72,54 +82,6 @@ void XSSealProvider::read(Object::Ptr JSONin, Object::Ptr JSONout)
 	ds["imgArea"] = "";
 
 	poco_information_f2(app.logger(), "pSealbaseinfo: %s, pSealinfo:%s", pSealbaseinfo->innerText(), pSealinfo->innerText());
-}
-
-void XSSealProvider::setProperty(const std::string& name, const std::string& value)
-{
-	if (name == "name")
-	{
-		_name = value;
-	}
-	else if (name == "code")
-	{
-		_code = value;
-	}
-	else if (name == "validStart")
-	{
-		_validStart = value;
-	}
-	else if (name == "validEnd")
-	{
-		_validEnd = value;
-	}
-	else
-	{
-		SealProvider::setProperty(name, value);
-	}
-}
-
-std::string XSSealProvider::getProperty(const std::string& name) const
-{
-	if (name == "name")
-	{
-		return _name;
-	}
-	else if (name == "code")
-	{
-		return _code;
-	}
-	else if (name == "validStart")
-	{
-		return _validStart;
-	}
-	else if (name == "validEnd")
-	{
-		return _validEnd;
-	}
-	else
-	{
-		return SealProvider::getProperty(name);
-	}
 }
 
 void XSSealProvider::readSeal()
@@ -165,4 +127,19 @@ void XSSealProvider::testKeyIn()
 		_bPresent = fn();
 		poco_information_f1(app.logger(), "seal.count : -> %b", _bPresent);
 	}
+}
+
+void XSSealProvider::FetchKeySN()
+{
+
+}
+
+void XSSealProvider::TCardGetCert()
+{
+
+}
+
+void XSSealProvider::PeriodOfValidity()
+{
+
 }

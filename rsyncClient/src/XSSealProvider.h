@@ -10,13 +10,15 @@ namespace Reach {
 	public:
 		XSSealProvider();
 		~XSSealProvider();
-		virtual void read(Object::Ptr JSONin, Object::Ptr JSONout);
-		virtual void setProperty(const std::string& name, const std::string& value);
-		virtual std::string getProperty(const std::string& name) const;
+		virtual void extract();
 	protected:
 		void readSeal();
 		void count();
 		void testKeyIn();
+		void FetchKeySN();
+		void TCardGetCert();
+		void PeriodOfValidity();
+		void ExtractSealPicture();
 	private:
 		Poco::SharedLibrary sl;
 

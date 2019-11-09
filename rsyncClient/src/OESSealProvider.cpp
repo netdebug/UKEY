@@ -1,6 +1,4 @@
 #include "OESSealProvider.h"
-#include "Poco/UUIDGenerator.h"
-#include "Poco/UUID.h"
 #include "Poco/Util/Application.h"
 #include "Poco/Exception.h"
 #include "Poco/JSON/Parser.h"
@@ -8,16 +6,14 @@
 #include "Poco/JSON/Array.h"
 #include "Poco/DynamicStruct.h"
 #include "Poco/Dynamic/Var.h"
-#include "Poco/UUIDGenerator.h"
 #include "Poco/Exception.h"
-#include "Poco/MemoryStream.h"
-#include "Poco/FileStream.h"
 #include "Poco/StreamCopier.h"
 #include "Poco/Base64Encoder.h"
 #include "Poco/Crypto/X509Certificate.h"
 #include "Poco/DateTimeFormatter.h"
 #include "Windows.h"
 #include "TCardCert.h"
+#include "BridgeKG_HARD_EXT.h"
 #include <cassert>
 #include <fstream>
 using namespace Reach;
@@ -29,94 +25,78 @@ using Poco::JSON::Array;
 using Poco::JSON::Parser;
 using Poco::DynamicStruct;
 using Poco::Dynamic::Var;
-using Poco::UUIDGenerator;
 using Poco::Crypto::X509Certificate;
 using Poco::Base64Encoder;
 using Poco::Base64EncodingOptions;
 using Poco::DateTimeFormatter;
 
-
 OESSealProvider::OESSealProvider()
-	:_sealdata(new Array)
+	:app(Application::instance())
 {
-	Application& app = Application::instance();
 	try
 	{
 		sl.load("StampManageSystem.dll");
-		TCardGetCert();
-		readSeal();
-		setName();
-		set_vaild_date();
 	}
 	catch (Poco::LibraryLoadException& e)
 	{
-		poco_information_f1(app.logger(), "OESSealProvider : %s", e.message());
-		throw Poco::Exception("OESSealProvider init failed!");
-	}
-	catch (Poco::Exception& e)
-	{
-		poco_information_f1(app.logger(), "OESSealProvider : %s", e.message());
+		poco_information_f1(app.logger(), "%s", e.message());
 	}
 }
 
 OESSealProvider::~OESSealProvider()
 {
 	sl.unload();
-	//delete _sealdata;
 }
 
-void OESSealProvider::read(Object::Ptr JSONin, Object::Ptr JSONout)
+void Reach::OESSealProvider::extract()
 {
-
+	TCardGetCert();
+	readSeal();
+	ExtractSealPicture();
+	PeriodOfValidity();
+	FetchKeySN();
+	GeneratedCode();
+	GeneratedMD5();
 }
 
-Var OESSealProvider::read()
+void OESSealProvider::ExtractSealPicture()
 {
-	Application& app = Application::instance();
-
-	set_seal_data();
-
-	return Poco::Dynamic::Var(_sealdata);
-}
-
-void OESSealProvider::set_seal_data()
-{
-	Parser sp;
-	std::ifstream input("F:\\source\\RSTestRunner\\rsyncClient\\sealdata.json");
-	Var tmp = sp.parse(input);
-	DynamicStruct ds = *tmp.extract<Object::Ptr>();
-
+	Parser ps;
+	Var result = ps.parse(_sealdata);
+	std::cout << result.type().name();
 	assert(result.type() == typeid(Object::Ptr));
-	Object::Ptr object = result.extract<Object::Ptr>();
-	Poco::Dynamic::Array dda = *object->getObject("sealinfos")->getArray("sealinfo");
-	
-	for (int i = 0; i < dda.size(); i++)
-	{
-		Poco::JSON::Object ob;
-		ds["imgdata"] = dda[i]["sealdata"];
-		ds["signname"] = dda[i]["sealname"];
-		ds["imgItem"] = "82";/// ¿­ÌØÇ©ÕÂ
-		ds["imgArea"] = "81";/// ¸£½¨CA 
-		_sealdata->add(ds);
-	}
-}
+	if (result.type() != typeid(Object::Ptr))
+		throw Poco::Exception("the data is not a JSON Object!");
 
-void OESSealProvider::setName()
-{
-	assert(result.type() == typeid(Object::Ptr));
 	Object::Ptr object = result.extract<Object::Ptr>();
 	DynamicStruct ds = *object;
 	setProperty("name", ds["sealinfos"]["sealbaseinfo"]["username"]);
+
+	Poco::Dynamic::Var info = ds["sealinfos"]["sealinfo"];
+	Poco::JSON::Array seals;
+	for (int i = 0; i < info.size(); i++)
+	{
+		Poco::JSON::Object ob;
+		ob.set("imgdata", info[i]["sealdata"]);
+		ob.set("signname", info[i]["sealname"]);
+		ob.set("imgItem", "82");/// ¿­ÌØÇ©ÕÂ
+		ob.set("imgArea", "81");/// ¸£½¨CA 
+		seals.add(ob);
+	}
+	
+	std::ostringstream ostr;
+	seals.stringify(ostr);
+	setProperty("seals", ostr.str());
 }
 
-void OESSealProvider::set_vaild_date()
+void OESSealProvider::PeriodOfValidity()
 {
-	std::string pem;
-	pem.append("-----BEGIN CERTIFICATE-----\n");
-	pem.append(_certContent);
-	pem.append("\n-----END CERTIFICATE-----\n");
-	std::istringstream istr(pem);
-	X509Certificate cert(istr);
+	std::stringstream ss;
+	ss << "-----BEGIN CERTIFICATE-----\n"
+		<< _certContent
+		<< "\n-----END CERTIFICATE-----\n";
+
+	X509Certificate cert(ss);
 	std::string fmt("%Y-%m-%d");
 	std::string validStart = DateTimeFormatter::format(cert.validFrom(), fmt);
 	std::string validEnd = DateTimeFormatter::format(cert.expiresOn(), fmt);
@@ -124,7 +104,6 @@ void OESSealProvider::set_vaild_date()
 	setProperty("validStart", validStart);
 	setProperty("validEnd", validEnd);
 }
-
 
 void OESSealProvider::readSeal()
 {
@@ -150,17 +129,37 @@ void OESSealProvider::readSeal()
 			_content.assign(seal_data.data(), seal_data.size());
 			if(_content.empty())
 				throw Poco::Exception("readSeal get json length exception!");
-			std::ofstream fs("OES_ReadSealData.json");
-			fs.write(_content.data(), _content.size());
-			fs.close();
-			std::ifstream input("OES_ReadSealData_utf8.json");
-			Parser ps;
-			result = ps.parse(input);
-			assert(result.type() == typeid(Object::Ptr));
-			if (result.type() != typeid(Object::Ptr))
-				throw Poco::Exception("the data is not a JSON Object!");
+			_sealdata = GBKtoUTF8(_content);
 		}
 	}
+}
+
+#include "Poco/ASCIIEncoding.h"
+#include "Poco/StreamConverter.h"
+
+using namespace Poco;
+using Poco::OutputStreamConverter;
+
+std::string OESSealProvider::GBKtoUTF8(const std::string& text)
+{
+	std::ostringstream ostr;
+#ifdef TEST
+	UTF8Encoding utf8Encoding;
+	ASCIIEncoding asciiEncoding;
+
+	OutputStreamConverter converter(ostr, utf8Encoding, asciiEncoding);
+	converter << text;
+
+#else
+	std::ofstream fs("OES_ReadSealData.json");
+	fs.write(text.data(), text.size());
+	fs.close();
+
+	std::ifstream input("OES_ReadSealData_utf8.json");
+	Poco::StreamCopier::copyStream(input, ostr);
+	
+#endif // TEST
+	return ostr.str();
 }
 
 void OESSealProvider::count()
@@ -174,7 +173,7 @@ void OESSealProvider::count()
 		OES_GetSealCount fn = (OES_GetSealCount)sl.getSymbol(name);
 		long len = 2048;
 		Poco::Buffer<char> tmp(len);
-		_count = fn(_x509cer.data(), _x509cer.size(), (unsigned char*)tmp.begin(), &len);
+		_count = fn(_certContent.data(), _certContent.size(), (unsigned char*)tmp.begin(), &len);
 		if (_count < 0) 
 			throw Poco::Exception("count exception!");
 
@@ -218,50 +217,11 @@ void OESSealProvider::TCardGetCert()
 	rv = ExitTCard(hDev);
 }
 
-void OESSealProvider::setProperty(const std::string& name, const std::string& value)
+void OESSealProvider::FetchKeySN()
 {
-	if (name == "name")
-	{
-		_name = value;
-	}
-	else if (name == "code")
-	{
-		_code = value;
-	}
-	else if (name == "validStart")
-	{
-		_validStart = value;
-	}
-	else if (name == "validEnd")
-	{
-		_validEnd = value;
-	}
-	else
-	{
-		SealProvider::setProperty(name, value);
-	}
-}
-
-std::string OESSealProvider::getProperty(const std::string& name) const
-{
-	if (name == "name")
-	{
-		return _name;
-	}
-	else if (name == "code")
-	{
-		return _code;
-	}
-	else if (name == "validStart")
-	{
-		return _validStart;
-	}
-	else if (name == "validEnd")
-	{
-		return _validEnd;
-	}
-	else
-	{
-		return SealProvider::getProperty(name);
-	}
+	BridgeKG_HARD_EXT ext;
+	ext.WebConnectDev();
+	std::string keysn = ext.WebGetSerial();
+	setProperty("keysn", keysn);
+	ext.WebDisconnectDev();
 }
