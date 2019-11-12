@@ -24,6 +24,7 @@ MQTTAsyncClient::MQTTAsyncClient(bool useSSL)
 
 	initialize();
 	deviceId = UUIDGenerator::defaultGenerator().create().toString();
+	app.config().setString("clientId", deviceId);
 	//deviceId = app.config().getString("clientId", "456789");
 	clientIdUrl = Poco::format("%s@@@%s", groupId, deviceId);
 

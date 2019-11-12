@@ -49,10 +49,10 @@ void rsyncAgent::initialize(Application& self)
 	ServerApplication::initialize(self);
 	logger().information("starting up");
 
-	self.config().setString("rsigncloud", "http://114.115.208.11:9090/rssigncloud/post.json");
-	self.config().setString("rsigncloudTest", "http://192.168.1.158:8088/post.json");
+	/*self.config().setString("rsigncloud", "");
+	self.config().setString("rsigncloudTest", "");
 	self.config().setString("authType", "0");
-	self.config().setString("keySn", "keySn");
+	self.config().setString("keySn", "keySn");*/
 }
 
 void rsyncAgent::uninitialize()
