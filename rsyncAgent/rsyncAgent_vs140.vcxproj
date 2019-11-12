@@ -222,7 +222,7 @@
     <IntDir>obj\rsyncAgent\$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
     <TargetExt>.exe</TargetExt>
-    <IncludePath>C:\Program Files (x86)\OpenSSL\include;$(IncludePath)</IncludePath>
+    <IncludePath>F:\source\RJSCC\RS_CertSafe\SDK\OpenSLL\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release_shared|Win32'">
     <OutDir>..\bin\</OutDir>
