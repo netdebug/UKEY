@@ -1,6 +1,6 @@
 #include "WindowsGBKEncoding.h"
 #include "Poco/String.h"
- 
+
 namespace Poco {
 
 
@@ -69,7 +69,7 @@ namespace Poco {
 
 	int WindowsGBKEncoding::convert(const unsigned char* bytes) const
 	{
-		return _charMap[*bytes];		
+		return _charMap[*bytes];
 	}
 
 
@@ -85,41 +85,41 @@ namespace Poco {
 		if (!bytes)
 			return 0;
 
-			word = *(uni_ptr + uni_ind);
-			uni_ind++;
+		word = *(uni_ptr + uni_ind);
+		uni_ind++;
 
-			if (word == 0x0000)  //字符串结束符
-				return 0;
+		/*if (word == 0x0000)  //字符串结束符
+			return 0;*/
 
-			if (word <= 0x80) 
+		if (word <= 0x80)
+		{
+			*(gbk_ptr + gbk_ind) = (unsigned char)word;
+			gbk_ind++;
+			gbk_num += 1;//gbk字符+1
+		}
+		else
+		{
+			if (length < 2)
 			{
-				*(gbk_ptr + gbk_ind) = (unsigned char)word;
+				return 0;
+			}
+			word_pos = word - unicode_first_code;
+			if (word >= unicode_first_code && word <= unicode_last_code && word_pos < gbk_buf_size)
+			{
+				gbk_word = gbkTables[word_pos];//gbk_word是gbk编码，但是为unsigned short类型，需要拆分成两个字节
+
+				*(gbk_ptr + gbk_ind) = (unsigned char)(gbk_word >> 8);//提取高8位
 				gbk_ind++;
-				gbk_num += 1;//gbk字符+1
+				*(gbk_ptr + gbk_ind) = (unsigned char)(gbk_word >> 0);//提取低8位
+				gbk_ind++;
+				gbk_num += 2;//gbk字符加2个
 			}
 			else
 			{
-				if (length < 2)
-				{
-					return 0;
-				}
-				word_pos = word - unicode_first_code;
-				if (word >= unicode_first_code && word <= unicode_last_code && word_pos < gbk_buf_size)
-				{
-					gbk_word = gbkTables[word_pos];//gbk_word是gbk编码，但是为unsigned short类型，需要拆分成两个字节
-
-					*(gbk_ptr + gbk_ind) = (unsigned char)(gbk_word >> 8);//提取高8位
-					gbk_ind++;
-					*(gbk_ptr + gbk_ind) = (unsigned char)(gbk_word >> 0);//提取低8位
-					gbk_ind++;
-					gbk_num += 2;//gbk字符加2个
-				}
-				else
-				{
-					//没找到编码。
-					/*中日韩符号和标点符号
-						CJK Symbols and Punctuation
-						U+3000 - U+303F*/
+				//没找到编码。
+				/*中日韩符号和标点符号
+					CJK Symbols and Punctuation
+					U+3000 - U+303F*/
 					/*中文标点的Unicode编码
 						0b7	·	183
 						00d7	×	215
@@ -145,107 +145,107 @@ namespace Poco {
 						ff1b	；	65307
 						ff1f	？	65311*/
 
-					unsigned int UBiaodianT[23] = 
+				unsigned int UBiaodianT[23] =
+				{
+					183,
+					215,
+					8212,
+					8216,
+					8217,
+					8220,
+					8221,
+					8230,
+					12289,
+					12290,
+					12298,
+					12299,
+					12302,
+					12303,
+					12304,
+					12305,
+					65281,
+					65288,
+					65289,
+					65292,
+					65306,
+					65307,
+					65311
+				};
+				/*gbk中文标点符号表
+					·A1A4
+					×A1C1
+					—A1AA
+					‘A1AE
+					’A1AF
+					“A1B0
+					”A1B1
+					…A1AD
+					、A1A2
+					。A1A3
+					《A1B6
+					》A1B7
+					『A1BA
+					』A1BB
+					【A1BE
+					】A1BF
+					!21
+					（A3A8
+					）A3A9
+					，A3AC
+					：A3BA
+					；A3BB
+					？A3BF
+					*/
+				unsigned int GBiaodianT[23] =
+				{
+					0xA1A4,
+					0xA1C1,
+					0xA1AA,
+					0xA1AE,
+					0xA1AF,
+					0xA1B0,
+					0xA1B1,
+					0xA1AD,
+					0xA1A2,
+					0xA1A3,
+					0xA1B6,
+					0xA1B7,
+					0xA1BA,
+					0xA1BB,
+					0xA1BE,
+					0xA1BF,
+					0x21,
+					0xA3A8,
+					0xA3A9,
+					0xA3AC,
+					0xA3BA,
+					0xA3BB,
+					0xA3BF
+				};
+
+				int i = 0;
+				for (i = 0; i <= 23; i++)
+				{
+					if (word == UBiaodianT[i])
 					{
-						183,
-						215,
-						8212,
-						8216,
-						8217,
-						8220,
-						8221,
-						8230,
-						12289,
-						12290,
-						12298,
-						12299,
-						12302,
-						12303,
-						12304,
-						12305,
-						65281,
-						65288,
-						65289,
-						65292,
-						65306,
-						65307,
-						65311
-					};
-					/*gbk中文标点符号表
-						·A1A4
-						×A1C1
-						—A1AA
-						‘A1AE
-						’A1AF
-						“A1B0
-						”A1B1
-						…A1AD
-						、A1A2
-						。A1A3
-						《A1B6
-						》A1B7
-						『A1BA
-						』A1BB
-						【A1BE
-						】A1BF
-						!21
-						（A3A8
-						）A3A9
-						，A3AC
-						：A3BA
-						；A3BB
-						？A3BF
-						*/
-					unsigned int GBiaodianT[23] = 
-					{
-						0xA1A4,
-						0xA1C1,
-						0xA1AA,
-						0xA1AE,
-						0xA1AF,
-						0xA1B0,
-						0xA1B1,
-						0xA1AD,
-						0xA1A2,
-						0xA1A3,
-						0xA1B6,
-						0xA1B7,
-						0xA1BA,
-						0xA1BB,
-						0xA1BE,
-						0xA1BF,
-						0x21,
-						0xA3A8,
-						0xA3A9,
-						0xA3AC,
-						0xA3BA,
-						0xA3BB,
-						0xA3BF
-					};
-					
-					int i = 0;
-					for (i = 0; i <= 23; i++)
-					{
-						if(word == UBiaodianT[i])
-						{
-							break;
-						}
-					}
-					if (i >= 24)
-					{
-						return 1;//找不到字符
-					}
-					else
-					{
-						unsigned int temp = GBiaodianT[i];
-						*(gbk_ptr + gbk_ind) = (unsigned char)(temp >> 8);//提取高8位
-						gbk_ind++;
-						*(gbk_ptr + gbk_ind) = (unsigned char)(temp >> 0);//提取低8位
-						gbk_ind++;
-						gbk_num += 2;//gbk字符加2个
+						break;
 					}
 				}
+				if (i >= 24)
+				{
+					return 1;//找不到字符
+				}
+				else
+				{
+					unsigned int temp = GBiaodianT[i];
+					*(gbk_ptr + gbk_ind) = (unsigned char)(temp >> 8);//提取高8位
+					gbk_ind++;
+					*(gbk_ptr + gbk_ind) = (unsigned char)(temp >> 0);//提取低8位
+					gbk_ind++;
+					gbk_num += 2;//gbk字符加2个
+				}
 			}
+		}
 
 
 		return gbk_num;
@@ -265,41 +265,41 @@ namespace Poco {
 		if (!bytes)
 			return 0;
 
-		
-			ch = *(gbk_ptr + gbk_ind);
 
-			if (ch == 0x00)
-				return 0;
+		ch = *(gbk_ptr + gbk_ind);
 
-			if (ch > 0x80)
+		/*if (ch == 0x00)
+			return 0;*/
+
+		if (ch > 0x80)
+		{
+			if (length < 2)
 			{
-				if (length < 2)
-				{
-					return -2;
-				}
-				//将gbk编码的中文字符的两个字节组合成一个    unsigned short word;
-				word = *(gbk_ptr + gbk_ind);
-				word <<= 8;
-				word += *(gbk_ptr + gbk_ind + 1);
-				gbk_ind += 2;
-
-				word_pos = word - gbk_first_code;
-				if (word >= gbk_first_code && word <= gbk_last_code && (word_pos < unicode_buf_size))
-				{
-					*(uni_ptr + uni_ind) = unicodeTables[word_pos];
-					uni_ind++;
-					uni_num++;
-				}
+				return -2;
 			}
-			else
+			//将gbk编码的中文字符的两个字节组合成一个    unsigned short word;
+			word = *(gbk_ptr + gbk_ind);
+			word <<= 8;
+			word += *(gbk_ptr + gbk_ind + 1);
+			gbk_ind += 2;
+
+			word_pos = word - gbk_first_code;
+			if (word >= gbk_first_code && word <= gbk_last_code && (word_pos < unicode_buf_size))
 			{
-				gbk_ind++;
-				*(uni_ptr + uni_ind) = ch;
+				*(uni_ptr + uni_ind) = unicodeTables[word_pos];
 				uni_ind++;
 				uni_num++;
 			}
+		}
+		else
+		{
+			gbk_ind++;
+			*(uni_ptr + uni_ind) = ch;
+			uni_ind++;
+			uni_num++;
+		}
 
-	
+
 
 
 
@@ -309,7 +309,7 @@ namespace Poco {
 
 	int WindowsGBKEncoding::sequenceLength(const unsigned char* bytes, int length) const
 	{
-	
+
 		if (*bytes > 0x80)
 		{
 			return 2;
