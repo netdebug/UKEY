@@ -11,6 +11,7 @@
 #include "Poco/Net/HTTPClientSession.h"
 #include "Poco/Net/HTTPResponse.h"
 #include "OESSealProvider.h"
+#include "XSSealProvider.h"
 #include <cassert>
 
 using namespace Reach;
@@ -41,11 +42,19 @@ void QZSyncWorker::runTask()
 	{
 		app.logger().trace("busy doing QZSyncTask... " + DateTimeFormatter::format(app.uptime()));
 
-		if (IsUSBKeyPresent()) {
-			composite();
-			updateStatus();
-			transfer();
+		try
+		{
+			if (IsUSBKeyPresent()) {
+				composite();
+				updateStatus();
+				transfer();
+			}
 		}
+		catch (Poco::Exception& e)
+		{
+			poco_information_f2(app.logger(), "QZSyncWorker Exception: code = %d, message = %s", e.code(), e.message());
+		}
+		
 	}
 }
 
@@ -58,15 +67,30 @@ void QZSyncWorker::composite()
 {
 	Application& app = Application::instance();
 
-	OESSealProvider oes;
-	oes.extract();
-	_name = oes.getProperty("name");
-	_code = oes.getProperty("code");
-	_validStart = oes.getProperty("validStart");
-	_validEnd = oes.getProperty("validEnd");
-	_keysn = oes.getProperty("keysn");
-	_seals = oes.getProperty("seals");
-	_md5 = oes.getProperty("dataMD5");
+	typedef std::vector<Poco::AutoPtr<SealProvider>> SPVec;
+	typedef std::vector<Poco::AutoPtr<SealProvider>>::iterator SPIter;
+	SPVec oess;
+	oess.push_back(new OESSealProvider);
+	oess.push_back(new XSSealProvider);
+
+	for (SPIter it = oess.begin(); it != oess.end(); it++)
+	{
+		Poco::AutoPtr<SealProvider> ptr = *it;
+		assert(ptr);
+		ptr->extract();
+		_name = ptr->getProperty("name");
+		_code = ptr->getProperty("code");
+		_validStart = ptr->getProperty("validStart");
+		_validEnd = ptr->getProperty("validEnd");
+		_keysn = ptr->getProperty("keysn");
+		_seals = ptr->getProperty("seals");
+		_md5 = ptr->getProperty("dataMD5");
+
+		poco_information_f2(app.logger(), "name:%s,code%:%s", _name, _code);
+		poco_information_f2(app.logger(), "validStart:%s,validEnd%:%s", _validStart, _validEnd);
+		poco_information_f2(app.logger(), "keysn:%s,dataMD5%:%s", _keysn, _md5);
+		poco_information_f1(app.logger(), "seal -> \n%s", _seals);
+	}
 }
 
 void QZSyncWorker::updateStatus()

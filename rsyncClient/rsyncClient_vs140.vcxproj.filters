@@ -30,6 +30,12 @@
     <None Include="QZSyncWorker.json">
       <Filter>Configuration Files</Filter>
     </None>
+    <None Include="..\..\..\Test\gitfile\textencoding\OES_ReadSealData_utf8.json">
+      <Filter>Configuration Files</Filter>
+    </None>
+    <None Include="..\..\..\Test\gitfile\textencoding\gbk2utf8output.json">
+      <Filter>Configuration Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\rsyncClient.h">
@@ -84,6 +90,12 @@
     <ClInclude Include="src\QZSyncWorker.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="src\Utility.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\WindowsGBKEncoding.h">
+      <Filter>Core\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\rsyncClient.cpp">
@@ -128,11 +140,14 @@
     <ClCompile Include="src\OESSealProvider.cpp">
       <Filter>Core\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\KGSealProvider.cpp">
-      <Filter>Core\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\QZSyncWorker.cpp">
       <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Utility.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\WindowsGBKEncoding.cpp">
+      <Filter>Core\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
