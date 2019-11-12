@@ -13,6 +13,12 @@
 #include "Poco/DynamicStruct.h"
 #include "Poco/Dynamic/Var.h"
 #include "Poco/URI.h"
+#include "Poco/ASCIIEncoding.h"
+#include "Poco/StreamConverter.h"
+#include "WindowsGBKEncoding.h"
+#include "Poco/TextConverter.h"
+
+
 #include <cassert>
 #include <sstream>
 
@@ -28,6 +34,9 @@ using Poco::JSON::Parser;
 using Poco::JSON::Object;
 using Poco::DynamicStruct;
 using Poco::Dynamic::Var;
+using Poco::OutputStreamConverter;
+using Poco::UTF8Encoding;
+using Poco::WindowsGBKEncoding;
 
 using namespace Reach::ActiveX;
 
@@ -157,4 +166,22 @@ std::string Utility::formatUid(const std::string& entries)
 	}
 
 	return uid;
+}
+
+std::string Utility::GBKtoUTF8(const std::string& text)
+{
+	UTF8Encoding utf8Encoding;
+	WindowsGBKEncoding gbkEncoding;
+#ifndef TEST
+	std::ostringstream ostr;
+	OutputStreamConverter converter(ostr, gbkEncoding, utf8Encoding);
+	converter << text;
+	return ostr.str();
+#else
+	std::string convertext;
+	Poco::TextConverter tc(gbkEncoding, utf8Encoding);
+	tc.convert(text, convertext);
+	poco_information_f1(app.logger(), "%s", convertext);
+	return convertext;
+#endif // TEST
 }
