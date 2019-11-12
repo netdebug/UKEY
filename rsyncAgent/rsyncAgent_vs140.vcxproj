@@ -222,7 +222,7 @@
     <IntDir>obj\rsyncAgent\$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
     <TargetExt>.exe</TargetExt>
-    <IncludePath>C:\Program Files %28x86%29\GmSSL\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Program Files (x86)\OpenSSL\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release_shared|Win32'">
     <OutDir>..\bin\</OutDir>
@@ -324,7 +324,7 @@ xcopy /y $(ProjectDir)Language.ini $(OutDir)</Command>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug_static_mt|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include\poco\JSON\include;..\include\poco\Foundation\include;..\include\poco\CppUnit\include;.\include;.\include\SOFProvider;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include\poco\JSON\include;..\include\poco\Foundation\include;..\include\poco\CppUnit\include;.\include;.\include\SOFProvider;.\include\poco\Net\include;.\include\mqtt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>true</MinimalRebuild>
