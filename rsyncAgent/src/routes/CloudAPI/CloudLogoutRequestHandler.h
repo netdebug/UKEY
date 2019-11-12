@@ -38,7 +38,8 @@ namespace Reach {
 			sendRequest();
 
 			if (!success())
-				throw RequestHandleException(RAR_UNKNOWNERR);
+				throw CloudCommandException(extract("head", "message"),
+					std::stoi(extract("head", "code"), 0, 16));
 		}
 	protected:
 		virtual void mixValue()

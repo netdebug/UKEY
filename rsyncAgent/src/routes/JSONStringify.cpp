@@ -60,7 +60,7 @@ JSONStringify& JSONStringify::operator = (const JSONStringify& other)
 void JSONStringify::format()
 {
 	std::stringstream _;
-	_ << std::setw(4) << std::left << std::setfill('0') << NumberFormatter::formatHex(code);
+	_ << std::setw(4) << std::right << std::setfill('0') << NumberFormatter::formatHex(code);
 
 	result.set("code", _.str());
 	result.set("msg", message);

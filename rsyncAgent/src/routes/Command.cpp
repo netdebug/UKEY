@@ -44,11 +44,11 @@ Command& Command::execute()
 	catch (Reach::Data::ConnectionFailedException& e) {
 		sendErrorResponse(e.className(), RAR_OPENDEVICEFAILED);
 	}
-	catch (Poco::NotFoundException&e ){
-		sendErrorResponse(e.className(), RAR_NODEVICE);
+	catch (Reach::CloudCommandException& e) {
+		sendErrorResponseEx(e.message(), e.code());
 	}
 	catch (Poco::Exception& e) {
-		sendErrorResponse(e.className(), RAR_UNKNOWNERR);
+		sendErrorResponseEx(e.message(), e.code());
 	}
 
 	return *this;
@@ -68,6 +68,11 @@ void  Command::add(const std::string& name, const std::string& value)
 void  Command::add(const std::string& name, int value)
 {
 	colletion.add(name, std::to_string(value));
+}
+
+void Command::sendErrorResponseEx(const std::string& msg, int code)
+{
+	response = JSONStringify(msg, code);
 }
 
 void  Command::sendErrorResponse(const std::string& msg, int code)

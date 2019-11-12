@@ -1,9 +1,7 @@
 #pragma once
 #include <string>
-#include "Poco/Configurable.h"
 #include "SealProvider.h"
 #include "Poco/SharedLibrary.h"
-#include "Poco/Dynamic/Var.h"
 #include "Poco/Util/Application.h"
 
 namespace Reach {
@@ -18,7 +16,6 @@ namespace Reach {
 		void readSeal();
 		void count();
 		void TCardGetCert();
-		void PeriodOfValidity();
 		void FetchKeySN();
 		void ExtractSealPicture();
 		std::string GBKtoUTF8(const std::string& text);

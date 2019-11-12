@@ -41,14 +41,15 @@ namespace Reach {
 			sendRequest();
 
 			if (!success())
-				throw RequestHandleException(RAR_UNKNOWNERR);
+				throw CloudCommandException(extract("head", "message"),
+					std::stoi(extract("head", "code"), 0, 16));
 
 			std::string pubkey = extract("body","pubkey");
 
 			Poco::FileInputStream SI(_source);
 			std::string data;
 			Poco::StreamCopier::copyToString(SI, data);
-			external_encrypt(data, pubkey);
+			//external_encrypt(data, pubkey);
 			Poco::FileOutputStream out(_encrypt);
 			out.write(encyptdata.data(), encyptdata.size());
 			out.close();
@@ -57,7 +58,7 @@ namespace Reach {
 			add("encCertBase64", extract("encCertBase64"));
 		}
 	protected:
-		void external_encrypt(std::string& source, const std::string& pubkey)
+		/*void external_encrypt(std::string& source, const std::string& pubkey)
 		{
 			Application& app = Application::instance();
 
@@ -82,7 +83,7 @@ namespace Reach {
 			poco_information_f2(app.logger(), "encryptSM2,\n %s \n len:%u", enc, enc.length());
 
 			encyptdata = enc;
-		}
+		}*/
 		virtual void mixValue()
 		{
 			Application& app = Application::instance();

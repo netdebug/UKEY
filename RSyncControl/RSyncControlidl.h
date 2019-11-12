@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 7.00.0555 */
-/* at Tue Nov 12 17:22:12 2019
+/* at Tue Nov 12 17:34:27 2019
  */
 /* Compiler settings for RSyncControl.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 7.00.0555 

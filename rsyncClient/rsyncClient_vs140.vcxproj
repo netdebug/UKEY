@@ -27,6 +27,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\Test\gitfile\textencoding\gbk2utf8output.json" />
+    <None Include="..\..\..\Test\gitfile\textencoding\OES_ReadSealData_utf8.json" />
     <None Include="QZSyncWorker.json" />
     <None Include="rsyncClient.properties" />
   </ItemGroup>
@@ -36,7 +38,6 @@
     <ClCompile Include="src\BridgeWindowsLiveLogin.cpp" />
     <ClCompile Include="src\Container.cpp" />
     <ClCompile Include="src\iWebPDF_i.c" />
-    <ClCompile Include="src\KGSealProvider.cpp" />
     <ClCompile Include="src\KG_HARD_EXT_i.c" />
     <ClCompile Include="src\OESSealProvider.cpp" />
     <ClCompile Include="src\QZSyncWorker.cpp" />
@@ -45,6 +46,8 @@
     <ClCompile Include="src\SealProvider.cpp" />
     <ClCompile Include="src\UKeyDevice.cpp" />
     <ClCompile Include="src\Certificate.cpp" />
+    <ClCompile Include="src\Utility.cpp" />
+    <ClCompile Include="src\WindowsGBKEncoding.cpp" />
     <ClCompile Include="src\WindowsLiveLogin_i.c" />
     <ClCompile Include="src\XSSealProvider.cpp" />
   </ItemGroup>
@@ -65,6 +68,8 @@
     <ClInclude Include="src\SampleTask.h" />
     <ClInclude Include="src\SealProvider.h" />
     <ClInclude Include="src\UKeyDevice.h" />
+    <ClInclude Include="src\Utility.h" />
+    <ClInclude Include="src\WindowsGBKEncoding.h" />
     <ClInclude Include="src\WindowsLiveLogin.h" />
     <ClInclude Include="src\XSSealProvider.h" />
   </ItemGroup>

@@ -2,6 +2,7 @@
 #include <string>
 #include "SealProvider.h"
 #include "Poco/SharedLibrary.h"
+#include "Poco/Util/Application.h"
 
 namespace Reach {
 	class XSSealProvider 
@@ -16,19 +17,19 @@ namespace Reach {
 		void count();
 		void testKeyIn();
 		void FetchKeySN();
+		void GetContainerId();
 		void TCardGetCert();
-		void PeriodOfValidity();
 		void ExtractSealPicture();
 	private:
+		Poco::Util::Application& app;
 		Poco::SharedLibrary sl;
-
-		std::string _name;
-		std::string _code;
-		std::string _validStart;
-		std::string _validEnd;
 
 		int _count;
 		bool _bPresent;
 		std::string _content;
+		std::string _id;
+		std::string _sealdata;
+
+		const std::string _type = "2";
 	};
 }

@@ -1,34 +1,31 @@
 #include "OESSealProvider.h"
-#include "Poco/Util/Application.h"
 #include "Poco/Exception.h"
 #include "Poco/JSON/Parser.h"
 #include "Poco/JSON/Object.h"
 #include "Poco/JSON/Array.h"
 #include "Poco/DynamicStruct.h"
 #include "Poco/Dynamic/Var.h"
-#include "Poco/Exception.h"
 #include "Poco/StreamCopier.h"
 #include "Poco/Base64Encoder.h"
-#include "Poco/Crypto/X509Certificate.h"
-#include "Poco/DateTimeFormatter.h"
 #include "Windows.h"
 #include "TCardCert.h"
 #include "BridgeKG_HARD_EXT.h"
-#include <cassert>
+#include "Utility.h"
 #include <fstream>
+#include <cassert>
+
+using namespace Poco::JSON;
+
 using namespace Reach;
+using namespace Reach::ActiveX;
 
 using Poco::Util::Application;
-using Poco::SharedLibrary;
-using Poco::JSON::Object;
-using Poco::JSON::Array;
-using Poco::JSON::Parser;
 using Poco::DynamicStruct;
 using Poco::Dynamic::Var;
-using Poco::Crypto::X509Certificate;
 using Poco::Base64Encoder;
 using Poco::Base64EncodingOptions;
 using Poco::DateTimeFormatter;
+using Poco::StreamCopier;
 
 OESSealProvider::OESSealProvider()
 	:app(Application::instance())
@@ -89,22 +86,6 @@ void OESSealProvider::ExtractSealPicture()
 	setProperty("seals", ostr.str());
 }
 
-void OESSealProvider::PeriodOfValidity()
-{
-	std::stringstream ss;
-	ss << "-----BEGIN CERTIFICATE-----\n"
-		<< _certContent
-		<< "\n-----END CERTIFICATE-----\n";
-
-	X509Certificate cert(ss);
-	std::string fmt("%Y-%m-%d");
-	std::string validStart = DateTimeFormatter::format(cert.validFrom(), fmt);
-	std::string validEnd = DateTimeFormatter::format(cert.expiresOn(), fmt);
-	/// 证书有效期时间
-	setProperty("validStart", validStart);
-	setProperty("validEnd", validEnd);
-}
-
 void OESSealProvider::readSeal()
 {
 	Application& app = Application::instance();
@@ -129,37 +110,11 @@ void OESSealProvider::readSeal()
 			_content.assign(seal_data.data(), seal_data.size());
 			if(_content.empty())
 				throw Poco::Exception("readSeal get json length exception!");
-			_sealdata = GBKtoUTF8(_content);
+			_sealdata = Utility::GBKtoUTF8(_content);
+			_sealdata = _sealdata.substr(0, _sealdata.size() -1);//00 Excess characters found after JSON end.
+			poco_information_f1(app.logger(), "%s", _sealdata);
 		}
 	}
-}
-
-#include "Poco/ASCIIEncoding.h"
-#include "Poco/StreamConverter.h"
-
-using namespace Poco;
-using Poco::OutputStreamConverter;
-
-std::string OESSealProvider::GBKtoUTF8(const std::string& text)
-{
-	std::ostringstream ostr;
-#ifdef TEST
-	UTF8Encoding utf8Encoding;
-	ASCIIEncoding asciiEncoding;
-
-	OutputStreamConverter converter(ostr, utf8Encoding, asciiEncoding);
-	converter << text;
-
-#else
-	std::ofstream fs("OES_ReadSealData.json");
-	fs.write(text.data(), text.size());
-	fs.close();
-
-	std::ifstream input("OES_ReadSealData_utf8.json");
-	Poco::StreamCopier::copyStream(input, ostr);
-	
-#endif // TEST
-	return ostr.str();
 }
 
 void OESSealProvider::count()
@@ -214,6 +169,7 @@ void OESSealProvider::TCardGetCert()
 	encoder.close();
 
 	_certContent = ostr.str();
+	setProperty("cert", _certContent);
 	rv = ExitTCard(hDev);
 }
 

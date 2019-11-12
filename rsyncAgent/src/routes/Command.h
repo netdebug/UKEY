@@ -24,6 +24,7 @@ namespace Reach {
 		void add(const std::string& name, const std::string& value);
 	private:
 		void sendErrorResponse(const std::string& msg, int code);
+		void sendErrorResponseEx(const std::string & msg, int code);
 		void toJSON();
 
 		JSONStringify response;

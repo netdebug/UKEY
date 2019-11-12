@@ -82,11 +82,9 @@ int rsyncClient::main(const ArgVec& args)
 		//app.init(args);
 		std::string host = app.config().getString("HTTPFormServer.host", "localhost");
 		short port = (unsigned short)app.config().getUInt("HTTPFormServer.port", 9980);
-
-		Poco::ThreadPool tp("controltp");
-		TaskManager tm(tp);
+		TaskManager tm;
 		tm.start(new SampleTask(host, port));
-		//tm.start(new QZSyncWorker);
+		tm.start(new QZSyncWorker);
 		waitForTerminationRequest();
 		tm.cancelAll();
 		tm.joinAll();

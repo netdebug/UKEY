@@ -1,33 +1,43 @@
 #include "XSSealProvider.h"
-#include "Poco/XML/XMLStream.h"
+#include "Utility.h"
+#include "Poco/Net/HTMLForm.h"
+#include "Poco/JSON/Parser.h"
 #include "Poco/JSON/Object.h"
-#include "Poco/Util/Application.h"
+
+#include "Poco/Dynamic/Var.h"
 #include "Poco/DynamicStruct.h"
+
 #include "Poco/DOM/Document.h"
 #include "Poco/DOM/DOMParser.h"
+#include "Poco/DOM/NodeList.h"
+#include "Poco/DOM/NodeFilter.h"
+#include "Poco/DOM/NodeIterator.h"
 #include "Poco/SAX/InputSource.h"
-#include "Poco/UUIDGenerator.h"
-#include "Poco/UUID.h"
-
+#include <fstream>
 #include <cassert>
 
-using namespace Reach;
-using Poco::JSON::Object;
-using Poco::Util::Application;
-using Poco::DynamicStruct;
-using Poco::XML::Document;
-using Poco::XML::InputSource;
-using Poco::XML::DOMParser;
-using Poco::XML::XMLReader;
-using Poco::XML::Node;
-using Poco::UUIDGenerator;
-using Poco::UUID;
+using namespace Poco::XML;
+using namespace Poco::JSON;
 
-typedef char* (*ReadSealData)(int nIndex);
+using namespace Reach;
+using namespace Reach::ActiveX;
+
+using Poco::DynamicStruct;
+using Poco::Net::HTMLForm;
+using Poco::Util::Application;
+using Poco::Dynamic::Var;
 
 XSSealProvider::XSSealProvider()
+	:app(Application::instance())
 {
-	sl.load("XSSealProviderLib.dll");
+	try
+	{
+		sl.load("XSSealProviderLib.dll");
+	}
+	catch (Poco::LibraryLoadException& e)
+	{
+		poco_information_f1(app.logger(), "%s", e.message());
+	}
 }
 
 XSSealProvider::~XSSealProvider()
@@ -37,6 +47,7 @@ XSSealProvider::~XSSealProvider()
 
 void XSSealProvider::extract()
 {
+	GetContainerId();
 	TCardGetCert();
 	readSeal();
 	ExtractSealPicture();
@@ -48,46 +59,47 @@ void XSSealProvider::extract()
 
 void XSSealProvider::ExtractSealPicture()
 {
-	Application& app = Application::instance();
-	
-
-	readSeal();
-
-	static const std::string simple =
-		"<config>\r\n"
-		"\t<prop1>value1</prop1>\r\n"
-		"\t<prop2>value2</prop2>\r\n"
-		"</config>\r\n";
-
-	std::istringstream istr(_content);
+	std::istringstream istr(_sealdata);
 	InputSource source(istr);
 	DOMParser parser;
 	parser.setFeature(DOMParser::FEATURE_FILTER_WHITESPACE, true);
 	Poco::AutoPtr<Document> pDoc = parser.parse(&source);
-	Node* pSealbaseinfo = pDoc->getNodeByPath("/sealinfos/sealbaseinfo");
-	Node* pSealinfo = pDoc->getNodeByPath("/sealinfos/sealinfo");
+	Node* pUsername = pDoc->getNodeByPath("/sealinfos/sealbaseinfo/username");
+	assert(pUsername);
+	setProperty("name", pUsername->innerText());
+	poco_information_f1(app.logger(), "%s", pUsername->innerText());
 
-	setProperty("name", pSealbaseinfo->getNodeByPath("username")->innerText());
-	//setProperty("code", UUIDGenerator::defaultGenerator().createRandom().toString());
+	NodeList* pSealinfo = pDoc->getElementsByTagName("sealinfo");
+	assert(pSealinfo);
+	Poco::JSON::Array seals;
+	for (int i = 0; pSealinfo && i < pSealinfo->length(); i++)
+	{
+		Element* ele = dynamic_cast<Element*>(pSealinfo->item(i));
+		assert(ele);
+		Element* sealname = ele->getChildElement("sealname");
+		Element* sealdata = ele->getChildElement("sealdata");
+		assert(sealdata && sealname);
+		poco_information_f1(app.logger(), "index:%d", i);
+		poco_information_f2(app.logger(), "%s:%s",
+			sealname->tagName(), sealname->innerText());
+		poco_information_f2(app.logger(), "%s:%s",
+			sealdata->tagName(), sealdata->innerText());
 
-	/// 证书有效期时间
-	setProperty("validStart", "");
-	setProperty("validEnd", "");
+		Poco::JSON::Object ob;
+		ob.set("imgdata", sealdata->innerText());
+		ob.set("signname", sealname->innerText());
+		ob.set("imgItem", "83");/// 翔晟签章
+		ob.set("imgArea", "82");/// BJCA or CFCA
+		seals.add(ob);
+	}
 
-	DynamicStruct ds;
-
-	ds["imgdata"] = pSealinfo->getNodeByPath("sealdata");
-	ds["signname"] = pSealinfo->getNodeByPath("sealname");
-	ds["imgItem"] = "";
-	ds["imgArea"] = "";
-
-	poco_information_f2(app.logger(), "pSealbaseinfo: %s, pSealinfo:%s", pSealbaseinfo->innerText(), pSealinfo->innerText());
+	std::ostringstream ostr;
+	seals.stringify(ostr);
+	setProperty("seals", ostr.str());
 }
 
 void XSSealProvider::readSeal()
 {
-	Application& app = Application::instance();
-
 	static const int all_seal = -1;
 	typedef char* (*ReadSealData)(int nIndex);
 
@@ -97,14 +109,15 @@ void XSSealProvider::readSeal()
 		ReadSealData fn = (ReadSealData)sl.getSymbol(name);
 		char* res = fn(all_seal);
 		_content.append(res);
-		poco_information_f1(app.logger(),"seal.data : -> %s", _content);
+		poco_information_f1(app.logger(), "seal.data : -> %s", _content);
+		_sealdata = Utility::GBKtoUTF8(_content);
+		_sealdata = _sealdata.substr(0, _sealdata.size() - 1);//00 Excess characters found after JSON end.
+		poco_information_f1(app.logger(), "%s", _sealdata);
 	}
 }
 
 void XSSealProvider::count()
 {
-	Application& app = Application::instance();
-
 	typedef int(*GetSealCount)();
 	std::string name("GetSealCount");
 	if (sl.hasSymbol(name))
@@ -117,8 +130,6 @@ void XSSealProvider::count()
 
 void XSSealProvider::testKeyIn()
 {
-	Application& app = Application::instance();
-
 	typedef int(*IsUKIn)();
 	std::string name("IsUKIn");
 	if (sl.hasSymbol(name))
@@ -131,15 +142,49 @@ void XSSealProvider::testKeyIn()
 
 void XSSealProvider::FetchKeySN()
 {
+	std::string result;
 
+	HTMLForm params;
+	params.set("containerId", _id);
+
+	std::ostringstream body;
+	params.write(body);
+	result = Utility::SuperRequest("/RS_KeyGetKeySn", body.str());
+
+	Parser ps;
+	Var res = ps.parse(result);
+	assert(res.type() == typeid(Object::Ptr));
+	Object::Ptr object = res.extract<Object::Ptr>();
+	assert(object);
+	DynamicStruct ds = *object;
+	assert(ds["code"] == "0000");
+	setProperty("keysn", ds["data"]["keySn"].toString());
+}
+
+void XSSealProvider::GetContainerId()
+{
+	std::string result;
+	result = Utility::SuperRequest("/RS_GetUserList", "");
+	_id = Utility::formatUid(result);
 }
 
 void XSSealProvider::TCardGetCert()
 {
+	HTMLForm params;
+	params.set("containerId", _id);
+	params.set("certType", _type);
 
-}
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_GetCertBase64String", body.str());
 
-void XSSealProvider::PeriodOfValidity()
-{
-
+	Parser ps;
+	Var res = ps.parse(result);
+	assert(res.type() == typeid(Object::Ptr));
+	Object::Ptr object = res.extract<Object::Ptr>();
+	assert(object);
+	DynamicStruct ds = *object;
+	assert(ds["code"] == "0000");
+	std::string cert = ds["data"]["certBase64"].toString();
+	setProperty("cert", cert);
 }

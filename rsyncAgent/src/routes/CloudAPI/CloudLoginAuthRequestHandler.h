@@ -33,8 +33,11 @@ namespace Reach {
 			mixValue();
 			sendRequest();
 
-			if (!success())
-				throw RequestHandleException(RAR_UNKNOWNERR);
+			if (!success()) {
+				throw CloudCommandException(extract("head", "message"), 
+					std::stoi(extract("head", "code"), 0, 16));
+			}
+				
 
 			add("action", _action);
 			add("authIdent", extract("body"));

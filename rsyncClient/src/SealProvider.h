@@ -16,6 +16,7 @@ namespace Reach {
 		virtual std::string getProperty(const std::string& name) const;
 		virtual void GeneratedMD5();
 		virtual void GeneratedCode();
+		virtual void PeriodOfValidity();
 	private:
 		std::string _name;
 		std::string _code;
@@ -24,5 +25,6 @@ namespace Reach {
 		std::string _keysn;
 		std::string _seals;
 		std::string _md5;
+		std::string _cert;
 	};
 }
