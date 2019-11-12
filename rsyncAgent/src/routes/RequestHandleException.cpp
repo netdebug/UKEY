@@ -18,5 +18,5 @@
 namespace Reach {
 
 POCO_IMPLEMENT_EXCEPTION(RequestHandleException, Poco::Exception, "RequestHandler Exception")
-
+POCO_IMPLEMENT_EXCEPTION(CloudCommandException, Poco::Exception, "CloudCommand Exception")
 } // namespace Reach

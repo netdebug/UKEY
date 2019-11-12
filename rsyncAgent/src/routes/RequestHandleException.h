@@ -23,7 +23,7 @@
 namespace Reach {
 
 POCO_DECLARE_EXCEPTION(, RequestHandleException, Poco::Exception)
-
+POCO_DECLARE_EXCEPTION(, CloudCommandException, Poco::Exception)
 }  // namespace Reach
 
 
