@@ -25,10 +25,10 @@ namespace Reach {
 	class CloudLogout : public Command, public CloudCommand
 	{
 	public:
-		CloudLogout(const std::string& userId,
-			const std::string& url) :
-			CloudCommand(url),
-			_action("")
+		CloudLogout(const std::string& userId, const std::string& url) 
+			:CloudCommand(url),
+			_action(""),
+			_userId(userId)
 		{
 		}
 
