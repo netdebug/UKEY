@@ -14,11 +14,12 @@ BridgePDFReader::BridgePDFReader()
 	if (FAILED(hr))
 		throw std::exception("CoInitialize Failed!", hr);
 
+	int a = 1;
 	hr = CoCreateInstance(CLSID_PDFReader,
 		NULL,
-		CLSCTX_INPROC_SERVER,
+		CLSCTX_ALL,
 		IID_IPDFReader,
-		(void**)&_reader);
+		(void**)&_reader);//这里的异常
 
 	if (FAILED(hr))
 		throw std::exception("CoCreateInstance PDFReader Failed!", hr);
