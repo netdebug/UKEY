@@ -170,11 +170,14 @@ void QZSyncWorker::transfer()
 
 		HTTPResponse response;
 		std::istream& out = session.receiveResponse(response);
+		
+		assert(out.eof());
 		DynamicStruct res = *extract<Object::Ptr>(out);
 		poco_information_f2(app.logger(), "code:%s\n message:%s\n", res["code"].toString(), res["message"].toString());
 		//assert(res["code"] == "0");
-	}
 
+		
+	}
 	setSync(_keysn);
 }
 

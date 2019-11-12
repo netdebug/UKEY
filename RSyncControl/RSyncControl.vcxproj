@@ -227,6 +227,7 @@
   <ItemGroup>
     <ClCompile Include="Cathelp.cpp" />
     <ClCompile Include="CloudEventRecevier.cpp" />
+    <ClCompile Include="EncodingTransfer.cpp" />
     <ClCompile Include="MQTTAsyncClient.cpp" />
     <ClCompile Include="MQTTNotification.cpp" />
     <ClCompile Include="RSyncControl.cpp" />
@@ -243,6 +244,7 @@
   <ItemGroup>
     <ClInclude Include="Cathelp.h" />
     <ClInclude Include="CloudEventRecevier.h" />
+    <ClInclude Include="EncodingTransfer.h" />
     <ClInclude Include="MQTTAsyncClient.h" />
     <ClInclude Include="MQTTNotification.h" />
     <ClInclude Include="Resource.h" />

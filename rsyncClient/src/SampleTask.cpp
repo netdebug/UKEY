@@ -34,10 +34,13 @@ void SampleTask::runTask()
 {
 	Application& app = Application::instance();
 
+	
+
 	while (!sleep(2000))
 	{
-		app.logger().trace("busy doing nothing... " + DateTimeFormatter::format(app.uptime()));
-
+		Poco::Logger& l = app.logger();
+		l.trace("busy doing nothing... " + DateTimeFormatter::format(app.uptime()));
+		int a = 1;
 		try
 		{
 			if (IsUSBKeyPresent()) {
