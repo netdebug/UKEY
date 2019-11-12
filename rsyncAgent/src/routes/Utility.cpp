@@ -225,7 +225,7 @@ std::string Utility::sendRequest(const std::string& url, const std::string& data
 	request.setContentType("application/json");
 	HTTPClientSession session(uri.getHost(), uri.getPort());
 	session.sendRequest(request) << data;
-	poco_information_f3(app.logger(), "session : %s:[%u] {%s}", uri.getHost(), uri.getPort(), uri.getPath());
+	poco_information_f3(app.logger(), "session : %s:%hu %s", uri.getHost(), uri.getPort(), uri.getPath());
 
 	HTTPResponse response;
 	std::istream& out = session.receiveResponse(response);
