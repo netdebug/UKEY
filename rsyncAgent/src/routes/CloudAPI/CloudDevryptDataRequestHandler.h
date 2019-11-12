@@ -55,7 +55,7 @@ namespace Reach {
 			DynamicStruct ds = *parse(in).extract<Object::Ptr>();
 			ds["bodyJson"]["token"] = _token;
 			ds["bodyJson"]["transid"] = _transid;
-			ds["bodyJson"]["dealData"] = _encSymKey;
+			ds["bodyJson"]["dealData"] = Poco::toUpper(_encSymKey);
 			ds["bodyJson"]["bussUrl"] = _callbackUrl;
 
 			ds["bodyJson"]["authCode"] = app.config().getString("authCode", "");

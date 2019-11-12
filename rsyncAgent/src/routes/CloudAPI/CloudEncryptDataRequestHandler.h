@@ -35,15 +35,8 @@ namespace Reach {
 	using Poco::JSON::Object;
 	using Poco::DynamicStruct;
 	using Poco::FileInputStream;
-	//using Poco::Crypto::CipherFactory;
-	//using Poco::Crypto::Cipher;
-	//using Poco::Crypto::CipherKey;
-	//using Poco::Crypto::ECKey;
-	//using Poco::Crypto::CryptoOutputStream;
 	using Poco::HexBinaryEncoder;
 	using Poco::HexBinaryDecoder;
-	using Poco::Base64Encoder;
-	using Poco::Base64Decoder;
 
 	///RS_CloudEncryptData
 	class CloudEncryptData : public Command, public CloudCommand
@@ -88,31 +81,13 @@ namespace Reach {
 			privateKeyPassphrase = "Fjreach";
 		}
 		void run()
-		{	
-
-#define TEST
-
+		{
 #ifdef TEST
-			/*std::string encyptdata = "8648CBA49F41C4BFC85A8C0773E432D52BBF7C90405C0F7B9514858616E4885EEE78E98103F79BA7E64461650ACD9444BDAE7FD58CDE5526CDFB02EFBD6F369BCA248303ED4AFC8BFF7D0419358BD888ED3C3069FAAE33D5A5FCEFC1777A0530D2901429684D8D6ECCF4A6F49BDB1F2D94ACF75EF2DC9090C6DC219D4AE78EC16FD9FA0C64564079";
-			external_decrypt(encyptdata, g_prikey, privateKeyPassphrase);*/
 			std::string source(_symKey);
-			//v_encrypt_by_sm2(std::string("standard encryption"), "0420F19FF762F0CC0EE77243FF76E02657E6596A4F9CD74A671BA862A485441051ED415A59DA78D5D087AFCB2EF12DF99561FB658B11645D3F92C4CA638730BA05");
-			v_encrypt_by_sm2(std::string("standard encryption"), "04F6E0C3345AE42B51E06BF50B98834988D54EBC7460FE135A48171BC0629EAE205EEDE253A530608178A98F1E19BB737302813BA39ED3FA3C51639D7A20C7391A");
-			//external_encrypt(std::string("werwr的范德萨发我是阿道夫"), "0420F19FF762F0CC0EE77243FF76E02657E6596A4F9CD74A671BA862A485441051ED415A59DA78D5D087AFCB2EF12DF99561FB658B11645D3F92C4CA638730BA05");
-			//external_decrypt(encyptdata, g_prikey, privateKeyPassphrase);
-
-			/*std::string encdata = "fAAAAEAAAABWzv1g18h8AA1Y71f6c7pNnA36CMCKczFJ"
-				"XC4do/K9UjG35+bMgYn2aFNc4Pjq8b1t6EwYL2yOcW94DTqXCiPDEAAAABRd/1"
-				"Zr970cWqnQsBqM5XsgAAAAlwILWeyMyjGCI9IqbAK5AbXdVluBvAPFtTdCXfGa"
-				"ATwgAAAAPA+FSdI3UkfgDaCRqK1PL21InJ7hdpOBMMhvQXJaWQQ=";
-			external_decrypt_base64(encdata, g_fjprikey, privateKeyPassphrase);*/
-
-			/*std::string prikey = "3690655E33D5EA3D9A4AE1A1ADD766FDEA045CDEAA43A9206FB8C430CEFE0D94";
-			std::string encdata = "04A0D90BA78BE7BE415230ABC5709AF7FDF3263F758C311448755E315181E9282F0E6BD86040425DA95EB4F236A76E074BD7627DB47C86FB5A175AA8C66F32F96AAB63FF6909C32E7DCB940EE056B6537C59555435284E6CCB99C46EE5A808C1ED71A495FFEDE2BF136F87EED5";
-			external_decrypt_base64(encdata, prikey, "");
-			add("encSymKey", encyptdata);
+			v_encrypt_by_sm2(std::string("standard encryption"), "0420F19FF762F0CC0EE77243FF76E02657E6596A4F9CD74A671BA862A485441051ED415A59DA78D5D087AFCB2EF12DF99561FB658B11645D3F92C4CA638730BA05");
+			add("encSymKey", ciphertext);
 			add("signCertBase64", "signCertBase64");
-			add("encCertBase64", "encCertBase64");*/
+			add("encCertBase64", "encCertBase64");
 #else
 			mixValue();
 			sendRequest();
@@ -123,15 +98,15 @@ namespace Reach {
 
 			std::string source(_symKey);
 			std::string pubkey(extract("body", "pubkey"));
-			external_encrypt(source, pubkey, true);
+			v_encrypt_by_sm2(source, pubkey);
 
-			add("encSymKey", encyptdata);
+			add("encSymKey", ciphertext);
 			add("signCertBase64", extract("body", "signCertBase64"));
 			add("encCertBase64", extract("body", "encCertBase64"));
 #endif // TEST	
 		}
 	protected:
-		void v_encrypt_by_sm2(const std::string& source, const std::string& pubkey)
+		void v_encrypt_by_sm2(const std::string& plaintext, const std::string& pubkey)
 		{
 			Application& app = Application::instance();
 
@@ -143,22 +118,25 @@ namespace Reach {
 
 			poco_information_f1(app.logger(), "%s", skey);
 
-			unsigned char c1[65], c3[32];
-			unsigned char *c2;
-			if (!(c2 = (unsigned char *)malloc(source.size())))
+			unsigned char c1[65], c3[32] = { 0 };
+			unsigned char *c2 = nullptr;
+
+			size_t length = plaintext.size();
+			if (!(c2 = (unsigned char *)malloc(length)))
 				throw Poco::OutOfMemoryException();
 
-			if (!sm2_encrypt((unsigned char*)source.data(), source.size(), (unsigned char*)skey.data(), c1, c3, c2))
-			{
-				std::ostringstream ostr;
-				HexBinaryEncoder encoder(ostr);
-				encoder.rdbuf()->setLineLength(0);
-				encoder.write((const char*)c1, sizeof(c1));
-				encoder.write((const char*)c3, sizeof(c3));
-				encoder.write((const char*)c2, source.size());
-				
-				poco_information_f1(app.logger(), "%s", ostr.str());
-			}
+			if (sm2_encrypt((unsigned char*)plaintext.data(), plaintext.size(), (unsigned char*)skey.data(), c1, c3, c2) && c2)
+				throw Poco::LogicException("sm2 cipher failed!");
+
+			std::ostringstream ostr;
+			HexBinaryEncoder encoder(ostr);
+			encoder.rdbuf()->setLineLength(0);
+			encoder.write((const char*)c1, sizeof(c1));
+			encoder.write((const char*)c3, sizeof(c3));
+			encoder.write((const char*)c2, length);
+
+			poco_information_f1(app.logger(), "%s", ostr.str());
+			ciphertext = Poco::toUpper(ostr.str());
 		}
 		int sm2_encrypt(const unsigned char *message, const int message_len, const unsigned char *pub_key, unsigned char *c1, unsigned char *c3, unsigned char *c2)
 		{
@@ -432,196 +410,7 @@ namespace Reach {
 
 			return error_code;
 		}
-		/*
-		void external_encrypt(const std::string& source, const std::string& pubkey, bool hexdump)
-		{
-			std::string ec;
-			std::string start("-----BEGIN PUBLIC KEY-----\r\n");
-			std::string end("-----END PUBLIC KEY-----\r\n");
-			std::string header("");
-			std::string s;
-			std::string pem;
-			pem.append(header).append(pubkey);
-			std::istringstream istr(pem);
-			HexBinaryDecoder decoder(istr);
-			int c = decoder.get();
-			while (c != -1) { s += char(c); c = decoder.get(); }
-			std::ostringstream base64;
-			Base64Encoder encoder(base64);
-			encoder.write(s.data(), s.length());
-			encoder.close();
 
-			external_encrypt(source, start + base64.str()+ "\r\n" + end);
-		}
-
-		void external_encrypt(const std::string& source, const char* pubkey)
-		{
-			Application& app = Application::instance();
-
-			EC_KEY				*key = NULL;
-			EC_POINT			*pub_key;
-			const EC_GROUP		*group;
-			
-
-			key = EC_KEY_new_by_curve_name(NID_sm2p256v1);
-			group = EC_KEY_get0_group(key);
-			pub_key = EC_POINT_new(group);
-			EC_POINT_hex2point(group, pubkey, pub_key, 0);
-			EC_KEY_set_public_key(key, pub_key);
-
-			if (!EC_KEY_check_key(key)) {
-				printf("EC_KEY_check_key failed:\n");
-				printf("%s\n", ERR_error_string(ERR_get_error(), NULL));
-			}
-			else {
-				printf("Public key verified OK\n");
-			}
-
-			int ret = 0;
-			size_t outlen = 512;
-			std::vector<char> encrypt(outlen, 0);
-			ret = SM2_encrypt_with_recommended((unsigned char*)source.data(), source.size(), (unsigned char*)encrypt.data(), &outlen,
-				key);
-
-			if (!ret && encrypt.size() < outlen)
-			{
-				encrypt.resize(outlen, 0);
-				ret = SM2_encrypt_with_recommended((unsigned char*)source.data(), source.size(), (unsigned char*)encrypt.data(), &outlen,
-					key);
-			}
-
-			if (!ret)
-			{
-				poco_information_f1(app.logger(), "%s", getOpenSSLError());
-				throw Poco::Exception(getOpenSSLError());
-			}
-
-			{
-				encrypt.resize(outlen);
-				//std::reverse(encrypt.begin(), encrypt.end());
-				std::ostringstream ostr;
-				HexBinaryEncoder encoder(ostr);
-				encoder.rdbuf()->setLineLength(0);
-				encoder.write(encrypt.data(), outlen);
-				encyptdata = ostr.str();
-				poco_information_f2(app.logger(), "encryptSM2,\n %s \n len:%u", encyptdata, encyptdata.length());
-			}
-		}
-
-		void external_encrypt(const std::string& source, const std::string& pubkey)
-		{
-			Application& app = Application::instance();
-
-			std::istringstream iPub(pubkey);
-			Poco::Crypto::ECKey ek(&iPub);
-
-			ek.save("pubkeyself.pem");
-
-			int ret = 0;
-			size_t outlen = 512;
-			std::vector<char> encrypt(outlen, 0);
-
-			ret = SM2_encrypt_with_recommended((unsigned char*)source.data(), source.size(), (unsigned char*)encrypt.data(), &outlen,
-				ek.impl()->getECKey());
-
-			if (!ret && encrypt.size() < outlen)
-			{
-				encrypt.resize(outlen, 0);
-				ret = SM2_encrypt_with_recommended((unsigned char*)source.data(), source.size(), (unsigned char*)encrypt.data(), &outlen,
-					ek.impl()->getECKey());
-			}
-
-			if (!ret)
-			{
-				poco_information_f1(app.logger(), "%s", getOpenSSLError());
-				throw Poco::Exception(getOpenSSLError());
-			}
-
-			
-			
-			{
-				encrypt.resize(outlen);
-	
-				std::ostringstream ostr;
-				HexBinaryEncoder encoder(ostr);
-				encoder.rdbuf()->setLineLength(0);
-				encoder.write(encrypt.data(), outlen);
-				encyptdata = ostr.str();
-				poco_information_f2(app.logger(), "encryptSM2,\n %s \n len:%u", encyptdata, encyptdata.length());
-			}
-			
-		}
-
-		void external_decrypt_base64(const std::string& encrypt, const std::string& prikey, const std::string& privateKeyPassphrase)
-		{
-			Application& app = Application::instance();
-
-			std::vector<char> enc;
-			std::istringstream istr(encrypt);
-			Base64Decoder decoder(istr);
-			int c = decoder.get();
-			while (c != -1) { enc.push_back(char(c)); c = decoder.get(); }
-
-			int ret = 0;
-			std::istringstream iPri(prikey);
-			Poco::Crypto::ECKey ek(0, &iPri, privateKeyPassphrase);
-			size_t outlen = 128;
-			std::vector<char> decrypt(outlen, 0);
-			//ret = SM2_decrypt_with_recommended((unsigned char*)enc.data(), enc.size(), (unsigned char*)decrypt.data(), &outlen,
-			//	ek.impl()->getECKey());
-
-			if (!ret && decrypt.size() < outlen) {
-
-				decrypt.resize(outlen, 0);
-			//	ret = SM2_decrypt_with_recommended((unsigned char*)enc.data(), enc.size(), (unsigned char*)decrypt.data(), &outlen,
-			//		ek.impl()->getECKey());
-			}
-
-			if (!ret)
-			{
-				poco_information_f1(app.logger(), "%s", getOpenSSLError());
-				throw Poco::Exception(getOpenSSLError());
-			}
-
-			std::string dec(decrypt.data(), decrypt.size());
-			poco_information_f2(app.logger(), "decryptSM2,\n %s len:%u:", dec, dec.length());
-		}
-
-		void external_decrypt(const std::string& encrypt, const std::string& prikey, const std::string& privateKeyPassphrase)
-		{
-			Application& app = Application::instance();
-
-			std::vector<char> enc;
-			std::istringstream istr(encrypt);
-			HexBinaryDecoder decoder(istr);
-			int c = decoder.get();
-			while (c != -1) { enc.push_back(char(c)); c = decoder.get(); }
-
-			int ret = 0;
-			std::istringstream iPri(prikey);
-			Poco::Crypto::ECKey ek(0, &iPri, privateKeyPassphrase);
-			size_t outlen = 128;
-			std::vector<char> decrypt(outlen, 0);
-			//ret = SM2_decrypt_with_recommended((unsigned char*)enc.data(), enc.size(), (unsigned char*)decrypt.data(), &outlen,
-			//	ek.impl()->getECKey());
-			
-			if (!ret && decrypt.size() < outlen) {
-
-				decrypt.resize(outlen, 0);
-			//	ret = SM2_decrypt_with_recommended((unsigned char*)enc.data(), enc.size(), (unsigned char*)decrypt.data(), &outlen,
-			//		ek.impl()->getECKey());
-			}
-			
-			if (!ret)
-			{
-				poco_information_f1(app.logger(), "%s", getOpenSSLError());
-				throw Poco::Exception(getOpenSSLError());
-			}
-
-			std::string dec(decrypt.data(), decrypt.size());
-			poco_information_f2(app.logger(), "decryptSM2,\n %s len:%u:", dec, dec.length());
-		}
-		*/
 		virtual void mixValue()
 		{
 			Application& app = Application::instance();
@@ -649,14 +438,13 @@ namespace Reach {
 		}
 
 	private:
-	private:
 		std::string _symKey;
 		std::string _transid;
 		std::string _token;
 		std::string _action;
 		std::string _msg;
 
-		std::string encyptdata;
+		std::string ciphertext;
 		std::string g_pubkey;
 		std::string g_prikey;
 		std::string privateKeyPassphrase;
