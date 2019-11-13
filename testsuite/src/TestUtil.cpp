@@ -21,6 +21,7 @@
 #include "Poco/StreamCopier.h"
 #include "Poco/Path.h"
 #include "Poco/File.h"
+#include <iostream>
 
 using Poco::File;
 using Poco::Path;
