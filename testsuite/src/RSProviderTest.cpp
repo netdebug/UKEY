@@ -24,6 +24,7 @@
 #include "Poco/LogStream.h"
 #include "Poco/WindowsConsoleChannel.h"
 #include "Poco/AutoPtr.h"
+#include "GMCrypto.h"
 
 #include <stdio.h>
 #include <sstream>
@@ -117,10 +118,6 @@ void RSProviderTest::testRSGetCertInfo()
 	Logger& root = Logger::get("LoggerTest");//Logger::root();
 	LogStream ls(root);
 
-#define SGD_CERT_VERSION 0x00000001
-#define SGD_CERT_SERIAL 0x00000002
-#define SGD_OID_IDENTIFY_NUMBER 0x01100034
-
 	Reach::RSFoundation rsf;
 
 	{
@@ -138,6 +135,7 @@ void RSProviderTest::testRSGetCertInfo()
 		ls.trace() << "SGD_CERT_VERSION" << rsf.RS_GetCertInfo(cert, SGD_CERT_VERSION) << std::endl;
 		ls.trace() << "SGD_CERT_SERIAL" << rsf.RS_GetCertInfo(cert, SGD_CERT_SERIAL) << std::endl;
 		ls.trace() << "RS_GetCertInfo:" << rsf.RS_GetCertInfo(cert, SGD_OID_IDENTIFY_NUMBER) << std::endl;
+		ls.trace() << "RS_GetCertInfo:" << rsf.RS_GetCertInfo(cert, SGD_CERT_VALID_TIME) << std::endl;
 	}
 
 
@@ -156,6 +154,7 @@ void RSProviderTest::testRSGetCertInfo()
 		ls.trace() << "SGD_CERT_VERSION" << rsf.RS_GetCertInfo(cert, SGD_CERT_VERSION) << std::endl;
 		ls.trace() << "SGD_CERT_SERIAL" << rsf.RS_GetCertInfo(cert, SGD_CERT_SERIAL) << std::endl;
 		ls.trace() << "RS_GetCertInfo:" << rsf.RS_GetCertInfo(cert, SGD_OID_IDENTIFY_NUMBER) << std::endl;
+		ls.trace() << "RS_GetCertInfo:" << rsf.RS_GetCertInfo(cert, SGD_CERT_VALID_TIME) << std::endl;
 	}
 }
 
@@ -546,9 +545,11 @@ void RSProviderTest::setUp()
 	uid = "{1B57694E-911E-41D9-8123-971EDD71342C}";
 	pwd = "00000000";
 	/*uid = "806000119631708";
+	pwd = "111111";
+	uid = "4334801F-55EA-4F16-982C-CFB2AB8B44F7";
+	pwd = "111111";
+	uid = "C64FB078-28B4-450D-8ACB-68AE249CBA8D";
 	pwd = "111111";*/
-	//uid = "4334801F-55EA-4F16-982C-CFB2AB8B44F7";
-	//pwd = "111111";
 	AutoPtr<Channel> pChannel = new WindowsColorConsoleChannel;
 	pChannel->setProperty("traceColor", "lightGreen");
 	Logger& root = Poco::Logger::get("LoggerTest");//Logger::root();
@@ -568,8 +569,6 @@ CppUnit::Test* RSProviderTest::suite()
 {
 	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("RSProviderTest");
 
-	/*CppUnit_addTest(pSuite, RSProviderTest, testRSGetConfigParameters);
-	CppUnit_addTest(pSuite, RSProviderTest, testRSConfigParameters);*/
 	CppUnit_addTest(pSuite, RSProviderTest, testRSGetUserList);
 	CppUnit_addTest(pSuite, RSProviderTest, testRSGetCertBase64String);
 	CppUnit_addTest(pSuite, RSProviderTest, testRSGetCertInfo);

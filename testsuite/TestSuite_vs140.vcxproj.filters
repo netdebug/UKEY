@@ -25,11 +25,20 @@
     <Filter Include="SharedLibrary\Source Files">
       <UniqueIdentifier>{25a98bd2-26c0-4354-beb6-bec47d557f61}</UniqueIdentifier>
     </Filter>
-    <Filter Include="RSFoundation">
-      <UniqueIdentifier>{87d9fcb8-cae3-47b1-a7b9-69603349aec5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Util">
       <UniqueIdentifier>{4812d961-377c-484a-89c9-eab3c780ed4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sync">
+      <UniqueIdentifier>{2a98d686-859c-4490-96f1-12bca73bcd81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sync\Source">
+      <UniqueIdentifier>{c4904a2c-4f4e-4ae0-ae54-1ffe4e92fe54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sync\Hearder">
+      <UniqueIdentifier>{d6a93104-3efc-42ea-b065-e11d684963c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="openssl">
+      <UniqueIdentifier>{daa8cb1e-1faa-407a-bde7-6179ec56611f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -45,17 +54,8 @@
     <ClCompile Include="src\SharedLibraryTest.cpp">
       <Filter>SharedLibrary\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\SealProviderTest.cpp">
-      <Filter>SharedLibrary\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\GmskfProviderTest.cpp">
-      <Filter>SharedLibrary\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\TestUtil.cpp">
       <Filter>Util</Filter>
-    </ClCompile>
-    <ClCompile Include="src\RSProviderTest.cpp">
-      <Filter>RSFoundation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -68,20 +68,8 @@
     <ClInclude Include="src\SharedLibraryTest.h">
       <Filter>SharedLibrary\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\SealProviderTest.h">
-      <Filter>SharedLibrary\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GmskfProviderTest.h">
-      <Filter>SharedLibrary\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SOFProviderTest.h">
-      <Filter>SharedLibrary\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\TestUtil.h">
       <Filter>Util</Filter>
-    </ClInclude>
-    <ClInclude Include="src\RSProviderTest.h">
-      <Filter>RSFoundation</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

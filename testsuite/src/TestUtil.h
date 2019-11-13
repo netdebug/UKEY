@@ -25,6 +25,7 @@ public:
 	~TestUtil();
 
 	void testCreateCppHeaders();
+	void removeDuplicates();
 
 	void setUp();
 	void tearDown();
