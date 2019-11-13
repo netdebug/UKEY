@@ -44,7 +44,7 @@ namespace Reach {
 		std::string host;
 		std::size_t port;
 		std::string groupId;
-		std::string deviceId;
+		std::string clientId;
 		std::string serverURI;
 		std::string clientIdUrl;
 		MQTTAsync client;
