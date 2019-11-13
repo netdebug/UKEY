@@ -149,7 +149,7 @@
     <IntDir>obj\rsyncClient\$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
     <TargetExt>.exe</TargetExt>
-    <IncludePath>C:\Program Files %28x86%29\GmSSL\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release_shared|Win32'">
     <OutDir>..\bin\</OutDir>
@@ -176,7 +176,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug_shared|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include\poco\Data\include;..\include\poco\Data\SQLite\include;..\include\poco\XML\include;..\include\poco\JSON\include;..\include\poco\Crypto\include;..\include\poco\Foundation\include;..\include\poco\Net\include;..\include\poco\Util\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include\poco\Data\include;..\include\poco\Data\SQLite\include;..\include\poco\XML\include;..\include\poco\JSON\include;..\include\poco\Crypto\include;..\include\poco\Foundation\include;..\include\poco\Net\include;..\include\poco\Util\include;.\include;..\include\openssl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>true</MinimalRebuild>
@@ -215,7 +215,7 @@ xcopy /y $(ProjectDir)QZSyncWorker.json $(OutDir)</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
-      <AdditionalIncludeDirectories>..\include\poco\Data\include;..\include\poco\Data\SQLite\include;..\include\poco\JSON\include;..\include\poco\Foundation\include;..\include\poco\Net\include;..\include\poco\Util\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include\poco\Data\include;..\include\poco\Data\SQLite\include;..\include\poco\JSON\include;..\include\poco\XML\include;..\include\poco\Foundation\include;..\include\poco\Net\include;..\include\poco\Crypto\include;..\include\poco\Util\include;.\include;..\include\openssl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -229,7 +229,7 @@ xcopy /y $(ProjectDir)QZSyncWorker.json $(OutDir)</Command>
       <CompileAs>Default</CompileAs>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>PocoFoundation.lib;PocoJSON.lib;PocoUtil.lib;PocoNet.lib;PocoData.lib;PocoDataSQLite.lib;SoFProvider.lib;ws2_32.lib;iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PocoFoundation.lib;PocoJSON.lib;PocoUtil.lib;PocoNet.lib;PocoData.lib;PocoDataSQLite.lib;SoFProvider.lib;TCardCert.lib;ws2_32.lib;iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\bin\rsyncClient.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>false</GenerateDebugInformation>
