@@ -1,10 +1,13 @@
 ﻿#pragma once
 #include "Poco/TaskManager.h"
+#include "Poco/Debugger.h"
+#include "Poco/Format.h"
 // RSyncControlCtrl.h : CRSyncControlCtrl ActiveX 控件类的声明。
 
 
 // CRSyncControlCtrl : 请参阅 RSyncControlCtrl.cpp 了解实现。
 #include <string>
+#include <comutil.h>
 class MQTTNotification;
 class CRSyncControlCtrl : public COleControl
 {
@@ -21,7 +24,9 @@ public:
 	virtual void OnDraw(CDC* pdc, const CRect& rcBounds, const CRect& rcInvalid);
 	virtual void DoPropExchange(CPropExchange* pPX);
 	virtual void OnResetState();
-
+	//主动查询事件
+	BSTR RS_CloudInitactiveGetSign();
+	BSTR RS_CloudInitactiveGetAuth();
 // 实现
 protected:
 	~CRSyncControlCtrl();
@@ -72,6 +77,7 @@ protected:
 	BSTR RS_CloudGetCertAuth(BSTR transid);
 	BSTR RS_CloudGetCertBase64(BSTR transid, BSTR token);
 	BSTR RS_CloudLogout(BSTR userId);
+
 	//签章授权事件
 	void RS_CloudSealAuthEvent(LPCTSTR authResult, LPCTSTR transid, LPCTSTR token, LPCTSTR msg)
 	{
@@ -81,6 +87,7 @@ protected:
 	//获取签名结果事件
 	void RS_CloudGetSignResultEvent(LPCTSTR signResult, LPCTSTR signdMsg, LPCTSTR transid, LPCTSTR signdCert, LPCTSTR msg)
 	{
+		
 		FireEvent(eventid_2, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), signResult, signdMsg, transid, signdCert, msg);
 	}
 
@@ -104,8 +111,11 @@ protected:
 	//获取证书授权事件
 	void RS_CloudGetCertAuthEvent(LPCTSTR authResult, LPCTSTR transid, LPCTSTR token, LPCTSTR msg)
 	{
+		m_authResult = authResult;
+		Poco::Debugger::message(Poco::format("m_authResult=%s",m_authResult.c_str()));
 		FireEvent(eventid_6, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), authResult, transid, token, msg);
 	}
+
 // 事件映射
 	DECLARE_EVENT_MAP()
 	protected:
@@ -153,5 +163,8 @@ private:
 		dispid_50,
 		dispid_51
 	};
+
+	std::wstring m_signResult;//event2
+	std::wstring m_authResult;//event6
 };
 

@@ -12,7 +12,8 @@
 #include "Poco/Dynamic/Var.h"
 #include "Poco/JSON/Parser.h"
 #include "Poco/JSON/Object.h"
-#include "Poco/DynamicStruct.h"
+#include "Poco/Dynamic/Var.h"
+#include "poco/DynamicStruct.h"
 #include "CloudEventRecevier.h"
 #include <cassert>
 #include <sstream>
@@ -185,16 +186,30 @@ using Poco::Debugger;
 
 void CRSyncControlCtrl::handle1(MQTTNotification* pNf)
 {
-	Debugger::message(format("MQTTNotification action =", pNf->context));
+	
 
 	if (pNf){
+		//Parser sp;
+		
+		//Var result = sp.parse(str);
+		//assert(result.type() == typeid(Object::Ptr));
+		//DynamicStruct ds = *result.extract<Object::Ptr>();//data:action, token, userid, username
+		
+		//std::stringstream ss;
+		//ss << ds["action"].toString() << "\n" << ds["token"].toString() << "\n" << ds["userid"].toString() << "\n" << ds["username"].toString() << "\n";
+
+		//Poco::Debugger::message(Poco::format("%s",ss.str()));
+		const std::string str(pNf->context);
+		Debugger::message(format("MQTTNotification action = %s", str.c_str()));
 		switch(pNf->action)
 		{
 		case eventid_1:
 			//FireEvent(pNf->action, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), "1", "2", "3", "4");
 			break;
 		case eventid_2:
-			//FireEvent(pNf->action, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), "1", "2", "3", "4");
+			m_signResult = EncodingTransfer(_bstr_t(str.c_str()));
+			Poco::Debugger::message(Poco::format("m_signResult=%s", m_signResult.c_str()));
+			//FireEvent(pNf->action, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), "1", "2", "3", "4");		
 			break;
 		case eventid_3:
 			//FireEvent(pNf->action, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), "1", "2", "3", "4");
@@ -206,6 +221,8 @@ void CRSyncControlCtrl::handle1(MQTTNotification* pNf)
 			//FireEvent(pNf->action, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), "1", "2", "3", "4");
 			break;
 		case eventid_6:
+			m_authResult = EncodingTransfer(_bstr_t(str.c_str()));
+			Poco::Debugger::message(Poco::format("m_authResult=%s", m_authResult.c_str()));
 			//FireEvent(pNf->action, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), "1", "2", "3", "4");
 			break;
 		default:
@@ -747,3 +764,14 @@ BSTR CRSyncControlCtrl::RS_CloudLogout(BSTR userId)
 }
 
 // CRSyncControlCtrl 消息处理程序
+
+
+	//主动查询事件
+BSTR CRSyncControlCtrl::RS_CloudInitactiveGetSign()
+{
+	return _bstr_t(m_signResult.c_str());
+}
+BSTR CRSyncControlCtrl::RS_CloudInitactiveGetAuth()
+{
+	return _bstr_t(m_authResult.c_str());
+}

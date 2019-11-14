@@ -84,6 +84,7 @@
     <TargetName>$(ProjectName)d</TargetName>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
     <PreLinkEventUseInBuild>false</PreLinkEventUseInBuild>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -118,6 +119,7 @@
       <AdditionalDependencies>comsuppw.lib;PocoFoundationd.lib;PocoNetd.lib;paho-mqtt3a.lib;paho-mqtt3as.lib;libcrypto.lib;libssl.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\lib;..\lib\libpoco</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <PerUserRedirection>true</PerUserRedirection>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
