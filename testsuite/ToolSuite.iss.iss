@@ -6,14 +6,14 @@
 [Setup]
 AppName={cm:MyAppName}
 AppId={{62DA7343-2512-4713-8976-73C42F9D63EA}
-AppVerName={cm:MyAppVerName,2.0.0.0012}
+AppVerName={cm:MyAppVerName,2.0.0.0013}
 WizardStyle=modern
 DefaultDirName={pf}\{cm:MyAppName}
 DefaultGroupName={cm:MyAppName}
 UninstallDisplayIcon={app}\MyProg.exe
 VersionInfoDescription=testSuite
 VersionInfoProductName=testSuite
-VersionInfoVersion=2.0.0.0012
+VersionInfoVersion=2.0.0.0013
 OutputBaseFilename=testSuite
 OutputDir=.\output
 ; Uncomment the following line to disable the "Select Setup Language"
@@ -92,6 +92,8 @@ Source: "..\bin\rsyncFJCA.dll"; DestDir: "{app}";
 Source: "..\bin\rsyncSOF.dll"; DestDir: "{app}";
 Source: "..\bin\SoFProvider.dll"; DestDir: "{app}";
 Source: ".\release\config.ini"; DestDir: "{app}";
+;config
+Source: "..\bin\config\*"; DestDir: "{app}\config\"; Flags: recursesubdirs;
 
 Source: "..\bin\UKEYMonitor.exe"; DestDir: "{app}";
 Source: "..\bin\UKEYMonitor.properties"; DestDir: "{app}";
@@ -108,11 +110,14 @@ Source: "..\bin\PocoUtil.dll"; DestDir: "{app}";
 Source: "..\bin\PocoXML.dll"; DestDir: "{app}";
 
 ;PocoCrypto GMSSL
+Source: "..\bin\gmssl.exe"; DestDir: "{app}";
 Source: "..\bin\libcrypto-1_1.dll"; DestDir: "{app}";
 Source: "..\bin\libssl-1_1.dll"; DestDir: "{app}";
 
-
-
+;MQTT
+Source: "..\bin\paho-mqtt3a.dll"; DestDir: "{app}";
+Source: "..\bin\paho-mqtt3as.dll"; DestDir: "{app}";
+Source: "..\bin\lua53.dll"; DestDir: "{app}";
 
 [Icons]
 Name: "{group}\{cm:MyAppName}"; Filename: "{app}\testSuite.exe"

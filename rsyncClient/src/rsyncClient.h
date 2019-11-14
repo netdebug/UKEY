@@ -32,8 +32,6 @@ namespace Reach {
 		void defineOptions(OptionSet& options);
 		void handleHelp(const std::string& name, const std::string& value);
 		void displayHelp();
-		void printProperties();
-		void printProperties(const std::string& base);
 
 		int main(const ArgVec& args);
 

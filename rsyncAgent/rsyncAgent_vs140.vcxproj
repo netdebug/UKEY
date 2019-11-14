@@ -96,12 +96,15 @@
     <ClInclude Include="src\routes\JSONStringify.h" />
     <ClInclude Include="src\routes\KeyDecryptByDigitalEnvelopeRequestHandler.h" />
     <ClInclude Include="src\routes\KeyDecryptDataRequestHandler.h" />
+    <ClInclude Include="src\routes\KeyDecryptFileRequestHandler.h" />
     <ClInclude Include="src\routes\KeyDigitalSignByP1RequestHandler.h" />
     <ClInclude Include="src\routes\KeyEncryptByDigitalEnvelopeRequestHandler.h" />
     <ClInclude Include="src\routes\KeyEncryptDataRequestHandler.h" />
+    <ClInclude Include="src\routes\KeyEncryptFileRequestHandler.h" />
     <ClInclude Include="src\routes\KeyGetKeySnRequestHandler.h" />
     <ClInclude Include="src\routes\KeySignByP1RequestHandler.h" />
     <ClInclude Include="src\routes\KeySignByP7RequestHandler.h" />
+    <ClInclude Include="src\routes\KeyStatusRequestHandler.h" />
     <ClInclude Include="src\routes\RequestHandleException.h" />
     <ClInclude Include="src\routes\translater.h" />
     <ClInclude Include="src\routes\Utility.h" />
@@ -134,11 +137,14 @@
     <ClCompile Include="src\routes\JSONStringify.cpp" />
     <ClCompile Include="src\routes\KeyDecryptByDigitalEnvelopeRequestHandler.cpp" />
     <ClCompile Include="src\routes\KeyDecryptDataRequestHandler.cpp" />
+    <ClCompile Include="src\routes\KeyDecryptFileRequestHandler.cpp" />
     <ClCompile Include="src\routes\KeyEncryptByDigitalEnvelopeRequestHandler.cpp" />
     <ClCompile Include="src\routes\KeyEncryptDataRequestHandler.cpp" />
+    <ClCompile Include="src\routes\KeyEncryptFileRequestHandler.cpp" />
     <ClCompile Include="src\routes\KeyGetKeySnRequestHandler.cpp" />
     <ClCompile Include="src\routes\KeySignByP1RequestHandler.cpp" />
     <ClCompile Include="src\routes\KeySignByP7RequestHandler.cpp" />
+    <ClCompile Include="src\routes\KeyStatusRequestHandler.cpp" />
     <ClCompile Include="src\routes\RequestHandleException.cpp" />
     <ClCompile Include="src\routes\translater.cpp" />
     <ClCompile Include="src\routes\Utility.cpp" />
@@ -222,14 +228,14 @@
     <IntDir>obj\rsyncAgent\$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
     <TargetExt>.exe</TargetExt>
-    <IncludePath>F:\source\RJSCC\RS_CertSafe\SDK\OpenSLL\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release_shared|Win32'">
     <OutDir>..\bin\</OutDir>
     <IntDir>obj\rsyncAgent\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <TargetExt>.exe</TargetExt>
-    <IncludePath>C:\Program Files %28x86%29\GmSSL\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug_static_mt|Win32'">
     <OutDir>..\lib\</OutDir>
@@ -251,7 +257,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug_shared|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../;..\RData\include;..\RData\SOF\include;..\RData\FJCA\include;..\include\poco\Crypto\include;..\include\poco\Data\include;..\include\poco\Data\SQLite\include;..\include\poco\JSON\include;..\include\poco\Foundation\include;..\include\poco\Net\include;..\include\poco\Util\include;..\include\mqtt\include;.\include;..\libqrencode\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../;..\RData\include;..\RData\SOF\include;..\RData\FJCA\include;..\include\poco\Crypto\include;..\include\poco\Data\include;..\include\poco\Data\SQLite\include;..\include\poco\JSON\include;..\include\poco\Foundation\include;..\include\poco\Net\include;..\include\poco\Util\include;..\include\mqtt\include;.\include;..\libqrencode\include;..\include\openssl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>true</MinimalRebuild>
@@ -291,7 +297,7 @@ xcopy /y $(ProjectDir)Language.ini $(OutDir)</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
-      <AdditionalIncludeDirectories>..\RData\include;..\RData\FJCA\include;..\RData\SOF\include;..\include\poco\Data\include;..\include\poco\Data\SQLite\include;..\include\poco\JSON\include;..\include\poco\Crypto\include;..\include\poco\Foundation\include;..\include\poco\Net\include;..\include\poco\Util\include;.\include;..\include\mqtt\include;..\libqrencode\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\RData\include;..\RData\FJCA\include;..\RData\SOF\include;..\include\poco\Data\include;..\include\poco\Data\SQLite\include;..\include\poco\JSON\include;..\include\poco\Crypto\include;..\include\poco\Foundation\include;..\include\poco\Net\include;..\include\poco\Util\include;.\include;..\include\mqtt\include;..\libqrencode\include;..\include\openssl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>

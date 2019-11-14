@@ -28,6 +28,9 @@
 #include "routes/DecryptFileRequestHandler.h"
 #include "routes/KeyEncryptDataRequestHandler.h"
 #include "routes/KeyDecryptDataRequestHandler.h"
+#include "routes/KeyEncryptFileRequestHandler.h"
+#include "routes/KeyDecryptFileRequestHandler.h"
+#include "routes/KeyStatusRequestHandler.h"
 #include "routes/KeyEncryptByDigitalEnvelopeRequestHandler.h"
 #include "routes/KeyDecryptByDigitalEnvelopeRequestHandler.h"
 #include "routes/CloudAPI/GetTransidRequestHandler.h"
@@ -116,10 +119,16 @@ HTTPRequestHandler * Reach::RequestHandlerFactory::createRequestHandler(const HT
 		return new KeyEncryptDataRequestHandler;
 	else if (request.getURI() == "/RS_KeyDecryptData")
 		return new KeyDecryptDataRequestHandler;
+	else if (request.getURI() == "/RS_KeyEncryptFile")
+		return new KeyEncryptFileRequestHandler;
+	else if (request.getURI() == "/RS_KeyDecryptFile")
+		return new KeyDecryptFileRequestHandler;
 	else if (request.getURI() == "/RS_KeyEncryptByDigitalEnvelope")
 		return new KeyEncryptByDigitalEnvelopeRequestHandler;
 	else if (request.getURI() == "/RS_KeyDecryptByDigitalEnvelope")
 		return new KeyDecryptByDigitalEnvelopeRequestHandler;
+	else if (request.getURI() == "/RS_KeyStatus")
+		return new KeyStatusRequestHandler;
 	else if (request.getURI() == "/RS_GetTransid")
 		return new GetTransidRequestHandler;
 	else if (request.getURI() == "/RS_GreateQRCode")

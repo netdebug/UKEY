@@ -107,12 +107,12 @@ Name: "{group}\{cm:UninstallProgram,{cm:MyAppName}}"; Filename: "{uninstallexe}"
 Name: mytask; Description: "{cm:MyDescription}"
 
 [Run]
-Filename: "{sys}\regsvr32.exe";Parameters:" /s ""{app}\RS_CertSafe.ocx"" ";
+Filename: "{sys}\regsvr32.exe";Parameters:" /s ""{app}\RSyncControl.ocx"" ";
 Filename: "{app}\Drive\HSIC DriverSetup.exe";
 ;Filename: "{app}\Drive\ePass3000SimpChinese-With-PrvDll_silent.exe";
 ;Filename: "{app}\Drive\HTSetup_NMCA.exe";
 [UninstallRun]
-Filename: "{sys}\regsvr32.exe";Parameters:"/u /s ""{app}\RS_CertSafe.ocx"" "
+Filename: "{sys}\regsvr32.exe";Parameters:"/u /s ""{app}\RSyncControl.ocx"" "
 
 [UninstallDelete]
 ; Type: files; Name:"{app}\RS_CertSafe.ocx"

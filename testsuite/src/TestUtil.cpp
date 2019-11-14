@@ -21,6 +21,7 @@
 #include "Poco/StreamCopier.h"
 #include "Poco/Path.h"
 #include "Poco/File.h"
+#include <iostream>
 
 using Poco::File;
 using Poco::Path;
@@ -63,6 +64,29 @@ void TestUtil::testCreateCppHeaders()
 	}
 	
 }
+
+int removeDuplicates(std::vector<int>& nums) {
+	if (nums.empty()) return 0;
+	int i = 0;
+	for (int j = 1; j < nums.size(); j++) {
+		if (nums[j] != nums[i]) {
+			i++;
+			nums[i] = nums[j];
+		}
+	}
+	for (int j = 0; j < nums.size(); j++)
+		std::cout << nums[j] << std::endl;
+	return i + 1;
+}
+
+void TestUtil::removeDuplicates()
+{
+	std::vector<int> nums = { 1, 1, 2, 2, 3, 3 };
+	::removeDuplicates(nums);
+}
+
+
+
 
 void TestUtil::setUp()
 {

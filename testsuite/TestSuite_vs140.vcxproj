@@ -121,12 +121,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug_shared|Win32'">
     <ExecutablePath>$(VC_ExecutablePath_x86);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(SystemRoot)\SysWow64;$(FxCopDir);$(PATH);</ExecutablePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86)</LibraryPath>
-    <IncludePath>$(IncludePath)</IncludePath>
+    <IncludePath>C:\Program Files %28x86%29\GmSSL\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug_shared|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include\poco\JSON\include;..\include\poco\Foundation\include;..\include\poco\CppUnit\include;..\RSFoundation\include;..\RSFoundation\include\SOFProvider;..\..\CppUnit\include;..\..\CppUnit\WinTestRunner\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include\poco\Util\include;..\include\poco\JSON\include;..\include\poco\Foundation\include;..\include\poco\CppUnit\include;..\RSFoundation\include;..\RSFoundation\include\SOFProvider;..\..\CppUnit\include;..\..\CppUnit\WinTestRunner\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;WINVER=0x0600;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -143,7 +143,7 @@
       <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>RSFoundationd.lib;CppUnitd.lib;PocoFoundationd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>CppUnitd.lib;PocoFoundationd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\bin\TestSuited.exe</OutputFile>
       <AdditionalLibraryDirectories>..\lib;..\lib\libpoco;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -180,7 +180,7 @@
       <AdditionalOptions>/FS</AdditionalOptions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>CppUnit.lib;PocoFoundation.lib;RSFoundation.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>CppUnit.lib;PocoFoundation.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\bin\TestSuite.exe</OutputFile>
       <AdditionalLibraryDirectories>..\lib;..\lib\libpoco;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -336,21 +336,14 @@
   <ItemGroup>
     <ClCompile Include="src\Driver.cpp" />
     <ClCompile Include="src\FoundationTestSuite.cpp" />
-    <ClCompile Include="src\GmskfProviderTest.cpp" />
-    <ClCompile Include="src\RSProviderTest.cpp" />
-    <ClCompile Include="src\SealProviderTest.cpp" />
     <ClCompile Include="src\SharedLibraryTest.cpp" />
     <ClCompile Include="src\SharedLibraryTestSuite.cpp" />
     <ClCompile Include="src\TestUtil.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\FoundationTestSuite.h" />
-    <ClInclude Include="src\GmskfProviderTest.h" />
-    <ClInclude Include="src\RSProviderTest.h" />
-    <ClInclude Include="src\SealProviderTest.h" />
     <ClInclude Include="src\SharedLibraryTest.h" />
     <ClInclude Include="src\SharedLibraryTestSuite.h" />
-    <ClInclude Include="src\SOFProviderTest.h" />
     <ClInclude Include="src\TestUtil.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

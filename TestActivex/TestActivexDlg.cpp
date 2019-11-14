@@ -65,7 +65,7 @@ BEGIN_MESSAGE_MAP(CTestActivexDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDC_BUTTON1, &CTestActivexDlg::OnBnClickedButton1)
+	ON_BN_CLICKED(IDC_BUTTON1, &CTestActivexDlg::OnBnGetUserList)
 END_MESSAGE_MAP()
 
 
@@ -156,7 +156,7 @@ HCURSOR CTestActivexDlg::OnQueryDragIcon()
 
 
 
-void CTestActivexDlg::OnBnClickedButton1()
+void CTestActivexDlg::OnBnGetUserList()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	rstest.AboutBox();

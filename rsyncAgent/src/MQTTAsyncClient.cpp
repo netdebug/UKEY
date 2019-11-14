@@ -23,10 +23,14 @@ MQTTAsyncClient::MQTTAsyncClient(bool useSSL)
 	Application& app = Application::instance();
 
 	initialize();
-	deviceId = UUIDGenerator::defaultGenerator().create().toString();
-	app.config().setString("clientId", deviceId);
-	//deviceId = app.config().getString("clientId", "456789");
-	clientIdUrl = Poco::format("%s@@@%s", groupId, deviceId);
+
+	if (!app.config().hasProperty("clientId")) {
+		clientId = UUIDGenerator::defaultGenerator().create().toString();
+		app.config().setString("clientId", clientId);
+	}
+
+	clientId = app.config().getString("clientId", "456789");
+	clientIdUrl = Poco::format("%s@@@%s", groupId, clientId);
 
 	int rc = 0;
 	if (rc = MQTTAsync_createWithOptions(&client, serverURI.data(),

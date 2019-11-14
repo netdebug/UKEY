@@ -19,6 +19,8 @@
 #include "CppUnit/TestCase.h"
 #include "Poco/Logger.h"
 #include "Poco/LogStream.h"
+#include "Poco/AutoPtr.h"
+#include "Poco/Channel.h"
 
 
 class GmskfProviderTest: public CppUnit::TestCase
@@ -50,7 +52,7 @@ public:
 
 private:
 	Poco::SharedLibrary sl;
-	Poco::LogStream ls;
+	Poco::AutoPtr<Poco::Channel> pChannel;
 };
 
 

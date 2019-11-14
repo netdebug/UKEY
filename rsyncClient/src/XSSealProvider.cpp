@@ -111,7 +111,6 @@ void XSSealProvider::readSeal()
 		_content.append(res);
 		poco_information_f1(app.logger(), "seal.data : -> %s", _content);
 		_sealdata = Utility::GBKtoUTF8(_content);
-		_sealdata = _sealdata.substr(0, _sealdata.size() - 1);//00 Excess characters found after JSON end.
 		poco_information_f1(app.logger(), "%s", _sealdata);
 	}
 }

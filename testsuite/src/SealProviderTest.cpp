@@ -13,6 +13,10 @@
 #include "CppUnit/TestSuite.h"
 #include "Poco/SharedLibrary.h"
 #include "Poco/Exception.h"
+#include "Poco/Logger.h"
+#include "Poco/AutoPtr.h"
+#include "Poco/Channel.h"
+#include "Poco/WindowsConsoleChannel.h"
 #include <stdio.h>
 #include <sstream>
 #include <iostream>
@@ -21,6 +25,11 @@ using Poco::SharedLibrary;
 using Poco::NotFoundException;
 using Poco::LibraryLoadException;
 using Poco::LibraryAlreadyLoadedException;
+using Poco::AutoPtr;
+using Poco::Channel;
+using Poco::WindowsColorConsoleChannel;
+
+int SealProviderTest::count = 0;
 
 SealProviderTest::SealProviderTest(const std::string& name): CppUnit::TestCase(name)
 {
@@ -29,90 +38,73 @@ SealProviderTest::SealProviderTest(const std::string& name): CppUnit::TestCase(n
 
 SealProviderTest::~SealProviderTest()
 {
+	
 }
 
 void SealProviderTest::testIsUSBKeyExist()
 {
-	//接口说明：
-	//原型：int IsUKIn()
-	//描述：判断签章设备是否连接
-	//返回值：0 签章设备存在 其他值签章设备不存在
-	typedef int(*IsUKIn)();
-	std::string fnName("IsUKIn");
+	Poco::Logger& logger = Poco::Logger::get("LoggerTest");
 
-	assert(sl.isLoaded());
+	std::string fnName("IsUKIn");
 	assert(sl.hasSymbol(fnName));
+
 	IsUKIn fnTest = (IsUKIn)sl.getSymbol(fnName);
 	assertNotNullPtr(fnTest);
+
 	int val = fnTest();
-	std::ostringstream ostr;
-	ostr << "API:"<< fnName << std::endl;
-	ostr << "The function actual result is :" << val << std::endl;
-	ostr << "We will test Now!" << std::endl;
-	std::cout << ostr.str() << std::endl;
+	poco_information_f3(logger, "\n%s\n API: %s\n The function actual result is :%d", sl.getPath(), fnName, val);
 	assertEqual(SealProviderTest::connected, fnTest());
 }
 
 void SealProviderTest::testGetSealCount()
 {
-	//描述：获取签章数目
-	//返回值：签章数目
-	typedef int(*GetSealCount)();
-	std::string fnName("GetSealCount");
+	Poco::Logger& logger = Poco::Logger::get("LoggerTest");
 
-	assert(sl.isLoaded());
+	std::string fnName("GetSealCount");
 	assert(sl.hasSymbol(fnName));
 	GetSealCount fnTest = (GetSealCount)sl.getSymbol(fnName);
 	assertNotNullPtr(fnTest);
+	
 	int val = fnTest();
-	std::ostringstream ostr;
-	ostr << "API:" << fnName << std::endl;
-	ostr << "The function actual result is :" << val << std::endl;
-	ostr << "We will test Now!" << std::endl;
-	std::cout << ostr.str() << std::endl;
+	count = val;
+	poco_information_f3(logger, "\n%s\n API: %s\n The function actual result is :%d", sl.getPath(), fnName, val);
 	assert(fnTest() > 0);
 }
 
 void SealProviderTest::testReadSealContent()
 {
-	//描述：获取签章数据
-	//参数：nIndex 签章索引 0为第一个章，以此类推 - 1获取所有签章
-	//返回值：签章数据
-	//ReadSealData 返回值格式如下：
-	//<sealinfos>
-	//	<sealbaseinfo>
-	//		<username>用户名称</username>
-	//		<projectname>项目名称</projectname>
-	//	</sealbaseinfo>
-	//	<sealinfo>	//如果有多个签章，则会有多个此节点
-	//		<sealname>签章名称</sealname>
-	//		<sealtime>签章到期时间</sealtime>
-	//		<sealdata>签章印模base64数据</sealdata>
-	//	</sealinfo>
-	//</sealinfos>
-	typedef char* (*ReadSealData)(int nIndex);
+	Poco::Logger& logger = Poco::Logger::get("LoggerTest");
+
 	std::string fnName("ReadSealData");
-
-
-	assert(sl.isLoaded());
 	assert(sl.hasSymbol(fnName));
 	ReadSealData fnTest = (ReadSealData)sl.getSymbol(fnName);
 	assertNotNullPtr(fnTest);
+
 	std::string content = fnTest(SealProviderTest::all_seal);
+	poco_information_f3(logger, "\n%s\n API: %s\n The function actual result is :%s", sl.getPath(), fnName, content);
 	assert(!content.empty());
-	std::cout << "API:"<< fnName << std::endl;
-	std::ostringstream ostr("We will test Now!");
-	std::cout << ostr.str() << std::endl 
-		<< content << std::endl;
+
+	for (size_t i = 0; i < count; i++) {
+		std::string text = fnTest(i);
+		poco_information_f3(logger, "\n API: %s\n The index : %d actual result is :%s" ,fnName, i, text);
+	}
 }
 
 void SealProviderTest::setUp()
 {
-	std::string path = "testTarget\\XSSealProviderLib.dll";
+	std::string path = "XSSealProviderLib.dll";
 	sl.load(path);
 	assert(sl.isLoaded());
+
+	setupLogger();
 }
 
+void SealProviderTest::setupLogger()
+{
+	AutoPtr<Channel> pChannel = new WindowsColorConsoleChannel;
+	pChannel->setProperty("informationColor", "brown");
+	Poco::Logger::get("LoggerTest").setChannel(pChannel.get());
+}
 
 void SealProviderTest::tearDown()
 {

@@ -75,13 +75,26 @@ typedef ULONG	(DEVAPI *SKF_Transmit)(DEVHANDLE hDev, BYTE * pbCommand, ULONG ulC
 typedef ULONG	(DEVAPI *SKF_GetLastError)();
 
 GmskfProviderTest::GmskfProviderTest(const std::string& name)
-	: CppUnit::TestCase(name), ls(Logger::get("LoggerTest"))//Logger::root();
+	: CppUnit::TestCase(name)
 {
+	pChannel = new WindowsColorConsoleChannel;
+	pChannel->setProperty("traceColor", "lightGreen");
+	Logger& root = Poco::Logger::get("LoggerTest");//Logger::root();
+	root.setChannel(pChannel.get());
+	root.setLevel(Message::PRIO_TRACE);
+
+	//std::string path = "SKF_Library\\001\\SKF_APP_XS.dll";
+	//std::string path = "SKF_Library\\002\\SKFAPI20549.dll";
+	std::string path = "SKF_Library\\003\\lgu3073_p1514_gm.dll";
+	sl.load(path);
+	assert(sl.isLoaded());
 }
 
 
 GmskfProviderTest::~GmskfProviderTest()
 {
+	sl.unload();
+	assert(!sl.isLoaded());
 }
 
 void GmskfProviderTest::testEnumDev()
@@ -91,7 +104,8 @@ void GmskfProviderTest::testEnumDev()
 	//std::vector<char> list(name.data(), name.data() + name.size() + 1u);
 	auto p = name.data();
 	assertEqual(SAR_OK, Symbol(SKF_EnumDev)(true, p, &pulSize));
-
+	
+	Poco::LogStream ls(Logger::get("LoggerTest"));
 	ls.trace()
 		<< "testEnumDev :" << name << std::endl;
 
@@ -100,7 +114,7 @@ void GmskfProviderTest::testEnumDev()
 
 void GmskfProviderTest::testGetDevInfo()
 {
-	ULONG pulSize = 0;
+	ULONG pulSize = 2048;
 	char szNameList[2048] = { 0 };
 	DEVHANDLE hDev = NULL;
 
@@ -116,9 +130,12 @@ void GmskfProviderTest::testGetDevInfo()
 	}
 
 	{
-		DEVINFO* devInfo = new DEVINFO;
+		DEVINFO* devInfo = (DEVINFO*)malloc(sizeof(DEVINFO));
+		memset(devInfo, 0, sizeof(devInfo));
 		SKF_GetDevInfo fnTest = Symbol(SKF_GetDevInfo);
 		assertEqual(SAR_OK, fnTest(hDev, devInfo));
+		/*
+		Poco::LogStream ls(Logger::get("LoggerTest"));
 
 		ls.trace() << "devInfo->Version:" << std::to_string(devInfo->Version.major) << "." << std::to_string(devInfo->Version.minor) << std::endl
 			<< "devInfo->Manufacturer:" << devInfo->Manufacturer << std::endl
@@ -128,8 +145,8 @@ void GmskfProviderTest::testGetDevInfo()
 			<< "devInfo->HWVersion:" << std::to_string(devInfo->HWVersion.major) << "." << std::to_string(devInfo->HWVersion.minor) << std::endl
 			<< "devInfo->FirmwareVersion:" << std::to_string(devInfo->FirmwareVersion.major) << "." << std::to_string(devInfo->FirmwareVersion.minor)
 			<< std::endl;
-
-		//delete devInfo;
+			*/
+		free(devInfo);
 	}
 
 	{
@@ -178,23 +195,11 @@ void GmskfProviderTest::testHotSwap()
 
 void GmskfProviderTest::setUp()
 {
-	AutoPtr<Channel> pChannel = new WindowsColorConsoleChannel;
-	pChannel->setProperty("traceColor", "lightGreen");
-	Logger& root = Poco::Logger::get("LoggerTest");//Logger::root();
-	root.setChannel(pChannel.get());
-	root.setLevel(Message::PRIO_TRACE);
-	//std::string path = "SKF_Library\\001\\SKF_APP_XS.dll";
-	//std::string path = "SKF_Library\\002\\SKFAPI20549.dll";
-	std::string path = "SKF_Library\\003\\lgu3073_p1514_gm.dll";
-	sl.load(path);
-	assert(sl.isLoaded());
 }
 
 
 void GmskfProviderTest::tearDown()
 {
-	sl.unload();
-	assert(!sl.isLoaded());
 }
 
 
@@ -204,7 +209,7 @@ CppUnit::Test* GmskfProviderTest::suite()
 
 	CppUnit_addTest(pSuite, GmskfProviderTest, testEnumDev);
 	CppUnit_addTest(pSuite, GmskfProviderTest, testGetDevInfo); 
-	CppUnit_addTest(pSuite, GmskfProviderTest, testHotSwap);
+	//CppUnit_addTest(pSuite, GmskfProviderTest, testHotSwap);
 
 	return pSuite;
 }

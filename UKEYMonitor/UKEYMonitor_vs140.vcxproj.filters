@@ -18,6 +18,7 @@
     <None Include="devicelist.json">
       <Filter>Configuration Files</Filter>
     </None>
+    <None Include="..\testsuite\TestSuite_vs140.vcxproj" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\UKEYMonitor.cpp">

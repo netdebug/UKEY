@@ -5,13 +5,21 @@
 #include "../Command.h"
 #include "../RESTfulRequestHandler.h"
 #include "../../qrcode/QrCode.hpp"
+#include "Poco/StreamConverter.h"
+#include "Poco/TextConverter.h"
+#include "Poco/UnicodeConverter.h"
+#include "Poco/UTF16Encoding.h"
 
 namespace Reach {
 
 	using Poco::Util::Application;
 	using Poco::FileOutputStream;
 	using qrcodegen::QrCode;
-
+	using Poco::OutputStreamConverter;
+	using Poco::UTF8Encoding;
+	using Poco::UTF16Encoding;
+	using Poco::TextConverter;
+	using Poco::UnicodeConverter;
 	///RS_GreateQRCode
 	class GreateQRCode : public Command
 	{
@@ -23,26 +31,33 @@ namespace Reach {
 
 		void run()
 		{
+			Application& app = Application::instance();
 			/// const char *text = "Hello, world!";              // User-supplied text
-			const QrCode::Ecc errCorLvl = QrCode::Ecc::QUARTILE;  // Error correction level
+			const QrCode::Ecc errCorLvl = QrCode::Ecc::LOW;  // Error correction level
 
 			// Make and print the QR Code symbol
 			const QrCode qr = QrCode::encodeText(_text.data(), errCorLvl);
 			printQr(qr);
-			//std::cout << qr.toSvgString(4) << std::endl;
-			std::cout << "version : " << qr.getVersion() << std::endl
-				<< "mask : " << qr.getMask() << std::endl;
+			poco_information_f2(app.logger(), "version : %s, mask : %s", qr.getVersion(), qr.getMask());
 
 			FileOutputStream ofs(_path);
 			ofs << qr.toSvgString(4) << std::endl;
 			ofs.close();
 		}
+
 		void printQr(const QrCode &qr) {
+
 			int border = 4;
+			HANDLE _hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+			DWORD written;
 
 			for (int y = -border; y < qr.getSize() + border; y++) {
 				for (int x = -border; x < qr.getSize() + border; x++) {
-					std::cout << (qr.getModule(x, y) ? "##" : "  ");
+					std::string utf8 = (qr.getModule(x, y) ? "\xE2\x96\xA0" : "  ");
+					Poco::UTF16String ucs2;
+					UnicodeConverter::convert(utf8, ucs2);
+					
+					WriteConsoleW(_hConsole, ucs2.data(), static_cast<DWORD>(ucs2.size()), &written, NULL);
 				}
 				std::cout << std::endl;
 			}

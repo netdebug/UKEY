@@ -27,6 +27,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\testsuite\TestSuite_vs140.vcxproj" />
     <None Include="devicelist.json" />
     <None Include="UKEYMonitor.properties" />
   </ItemGroup>
