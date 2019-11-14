@@ -3,7 +3,7 @@
 #include "Command.h"
 #include "RESTfulRequestHandler.h"
 #include "Poco/Util/Application.h"
-
+#include "KeyEncryptDataRequestHandler.h"
 using Poco::Util::Application;
 
 namespace Reach {
@@ -12,12 +12,15 @@ namespace Reach {
 	{
 	public:
 		KeyEncryptFile(const std::string& fpPlain, const std::string& fpCipher, const std::string& cert);
+		~KeyEncryptFile() { delete _KED; _KED = NULL; }
 		virtual void run();
 
 	private:
 		std::string _fpPlain;
 		std::string _fpCipher;
 		std::string _cert;
+		KeyEncryptData*	_KED;
+		std::stringstream filebuf;
 	};
 
 	class KeyEncryptFileRequestHandler : public RESTfulRequestHandler

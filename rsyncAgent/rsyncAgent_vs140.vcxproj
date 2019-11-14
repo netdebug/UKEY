@@ -240,7 +240,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug_static_mt|Win32'">
     <OutDir>..\lib\</OutDir>
     <IntDir>obj\RSFoundation\$(Configuration)\</IntDir>
-    <IncludePath>D:\poco-1.9.4-all\poco-1.9.4-all\Foundation\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\poco-1.9.4-all\poco-1.9.4-all\Data\SQLite\include;D:\poco-1.9.4-all\poco-1.9.4-all\Data\include;D:\fjreach\GmSSL\include;D:\fjreach\UKEY1\include\mqtt\include;D:\poco-1.9.4-all\poco-1.9.4-all\Crypto\include;D:\fjreach\UKEY1\RData\include;D:\poco-1.9.4-all\poco-1.9.4-all\Net\include;D:\poco-1.9.4-all\poco-1.9.4-all\Util\include;D:\poco-1.9.4-all\poco-1.9.4-all\CppUnit\include;D:\poco-1.9.4-all\poco-1.9.4-all\Foundation\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release_static_mt|Win32'">
     <OutDir>..\lib\</OutDir>

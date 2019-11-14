@@ -3,12 +3,14 @@
 #include "Reach/Data/Session.h"
 #include "Utility.h"
 
+
 using namespace Reach;
 using Reach::Data::Session;
 
 KeyEncryptData::KeyEncryptData(const std::string& paintText, const std::string& base64)
 	:_paintext(paintText), _base64(base64), _encrypt_data("")
 {
+	
 }
 
 void KeyEncryptData::run()

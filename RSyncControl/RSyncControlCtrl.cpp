@@ -199,16 +199,17 @@ void CRSyncControlCtrl::handle1(MQTTNotification* pNf)
 		//ss << ds["action"].toString() << "\n" << ds["token"].toString() << "\n" << ds["userid"].toString() << "\n" << ds["username"].toString() << "\n";
 
 		//Poco::Debugger::message(Poco::format("%s",ss.str()));
-		const std::string str(pNf->context);
-		Debugger::message(format("MQTTNotification action = %s", str.c_str()));
+		const std::string str((char*)(pNf->context.c_str()), pNf->context.size());
+		Debugger::message(format("MQTTNotification action = %s", str));
 		switch(pNf->action)
 		{
 		case eventid_1:
 			//FireEvent(pNf->action, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), "1", "2", "3", "4");
 			break;
 		case eventid_2:
+			m_signResult = std::wstring((BSTR)(pNf->context.c_str()), pNf->context.size());
 			m_signResult = EncodingTransfer(_bstr_t(str.c_str()));
-			Poco::Debugger::message(Poco::format("m_signResult=%s", m_signResult.c_str()));
+			Poco::Debugger::message(Poco::format("m_signResult=%ls", m_signResult));
 			//FireEvent(pNf->action, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), "1", "2", "3", "4");		
 			break;
 		case eventid_3:
@@ -221,8 +222,9 @@ void CRSyncControlCtrl::handle1(MQTTNotification* pNf)
 			//FireEvent(pNf->action, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), "1", "2", "3", "4");
 			break;
 		case eventid_6:
+			m_authResult = std::wstring((BSTR)(pNf->context.c_str()), pNf->context.size());
 			m_authResult = EncodingTransfer(_bstr_t(str.c_str()));
-			Poco::Debugger::message(Poco::format("m_authResult=%s", m_authResult.c_str()));
+			Poco::Debugger::message(Poco::format("m_authResult=%ls", m_authResult));
 			//FireEvent(pNf->action, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), "1", "2", "3", "4");
 			break;
 		default:
