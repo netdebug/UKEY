@@ -4,6 +4,8 @@
 #include "RESTfulRequestHandler.h"
 #include "Poco/Util/Application.h"
 #include "Poco/Dynamic/Var.h"
+#include "Poco/Crypto/X509Certificate.h"
+#include "Poco/SharedPtr.h"
 
 using Poco::Util::Application;
 using Poco::Dynamic::Var;
@@ -18,11 +20,20 @@ namespace Reach {
 		virtual void run();
 		///base64 \/×ªÒå×Ö·û
 	protected:
-		std::string toLegelID(const std::string& text, const std::string& pattern);
+		void enterprise();
+		void personal();
+		void decode_utf8(const std::string & text);
+		void extract(const std::string & text);
+		void extract(const std::string & text, const std::string & tag);
+		void x509_validFrom_expiresOn();
+		std::string cat(const std::string & delim, std::size_t pos, const std::string & str);
+		std::string GetCertOwnerID(const std::string & base64);
+		std::string toLegelID(const std::string & text, const std::string & pattern);
 	private:
 		std::string _item;
-		std::string _base64;
+		std::string _cer;
 		int _type;
+		Poco::SharedPtr<Poco::Crypto::X509Certificate> x509ptr;
 	};
 
 	class GetCertInfoRequestHandler : public RESTfulRequestHandler

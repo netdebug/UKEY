@@ -8,6 +8,8 @@
 #include "Poco/Timezone.h"
 #include "Poco/RegularExpression.h"
 
+#include <cassert>
+
 using namespace Reach;
 using Reach::Data::Session;
 using Poco::Crypto::X509Certificate;
@@ -17,70 +19,242 @@ using Poco::Timezone;
 using Poco::RegularExpression;
 using Poco::LocalDateTime;
 using Poco::DateTimeFormat;
+using Poco::Debugger;
+using Poco::NumberParser;
+using Poco::DateTime;
+using Poco::DateTimeParser;
+
+#define SGD_CERT_SUBJECT_CN 0x00000031
+extern std::string SOF_GetCertInfoByOid(std::string Base64EncodeCert, std::string oid);
+extern std::string SOF_GetCertInfo(std::string Base64EncodeCert, short Type);
 
 GetCertInfo::GetCertInfo(const std::string& base64, int type)
-	:_base64(base64), _type(type)
+	:_cer(base64), _type(type)
 {
+	std::string PEM;
+	std::istringstream istr(_cer);
+	PEM.append("-----BEGIN CERTIFICATE-----\n");
+	PEM.append(cat("\n", 64, _cer));
+	PEM.append("-----END CERTIFICATE-----\n");
+	std::istringstream certStream(PEM);
+	x509ptr = new X509Certificate(certStream);
+
+	std::string text("/CN=\\xE9\\x87\\x91\\xE8\\xB4\\xA2\\xE6\\xB5\\x8B\\xE8\\xAF\\x95KEY32");
+	std::string text1("/CN=\\xE9\\x87\\x91KEY32");
+	decode_utf8(text);
 }
 
 void GetCertInfo::run()
 {
-	/// FJCA SOF all use this
-	//Session session("SOF", "REST");
-	Session session(Utility::getSession());
+	switch (_type) {
+	case 1:
+		_item = Poco::format("V%ld", x509ptr->version());
+		break;
+	case 2:
+		_item = x509ptr->serialNumber();
+		break;
+	case 5:
+		extract(x509ptr->issuerName()); break;
+	case 6:
+		x509_validFrom_expiresOn(); break;
+	case 7:
+		extract(x509ptr->subjectName()); break;
+	case 33:
+		_item = x509ptr->issuerName(X509Certificate::NID_COMMON_NAME);
+		break;
+	case 34:
+		_item = x509ptr->issuerName(X509Certificate::NID_ORGANIZATION_NAME);
+		break;
+	case 35:
+		_item = x509ptr->issuerName(X509Certificate::NID_ORGANIZATION_UNIT_NAME);
+		break;
+	case 49:
+		_item = x509ptr->subjectName(X509Certificate::NID_COMMON_NAME);
+		break;
+	case 50:
+		_item = x509ptr->subjectName(X509Certificate::NID_ORGANIZATION_NAME);
+		break;
+	case 51:
+		_item = x509ptr->subjectName(X509Certificate::NID_ORGANIZATION_UNIT_NAME);
+		break;
+	case 52:
+		_item = x509ptr->subjectName(X509Certificate::NID_PKCS9_EMAIL_ADDRESS);
+		break;
+	case 53:
+		personal(); break;
+	case 54:
+		enterprise(); break;
+	default:
+		break;
+	}
 
-	std::string info = session.getCertInfo(_base64, _type);
-
-	add("info", info);
+	add("info", _item);
 }
-
-
-void parseFromX509(const std::string& cer)
+void GetCertInfo::personal()
 {
-	//1 RSA 2 SM2
-	std::string PEM;
-	PEM.append("-----BEGIN CERTIFICATE-----\n");
-	PEM.append(Utility::cat("\n", 64, cer));
-	PEM.append("-----END CERTIFICATE-----\n");
-	std::istringstream certStream(PEM);
-	X509Certificate x509(certStream);
-	std::ostringstream ostr;
-	x509.print(ostr);
-	long version = x509.version();
-	std::string SN = x509.serialNumber();
-	std::string issuer = x509.issuerName();
-	std::string owner = x509.subjectName();
-
-	std::string validFrom = DateTimeFormatter::format(LocalDateTime(x509.validFrom()), DateTimeFormat::SORTABLE_FORMAT);
-	std::string expiresOn = DateTimeFormatter::format(LocalDateTime(x509.expiresOn()), DateTimeFormat::SORTABLE_FORMAT);
-	std::string validLife = format("From %s to %s", validFrom, expiresOn);
-
-	std::string issuer_CN = x509.issuerName(X509Certificate::NID_COMMON_NAME);
-	std::string issuer_O = x509.issuerName(X509Certificate::NID_ORGANIZATION_NAME);
-	std::string issuer_OU = x509.issuerName(X509Certificate::NID_ORGANIZATION_UNIT_NAME);
-
-	std::string owner_CN = x509.subjectName(X509Certificate::NID_COMMON_NAME);
-	std::string owner_O = x509.subjectName(X509Certificate::NID_ORGANIZATION_NAME);
-	std::string owner_OU = x509.subjectName(X509Certificate::NID_ORGANIZATION_UNIT_NAME);
-	std::string owner_EMail = x509.subjectName(X509Certificate::NID_PKCS9_EMAIL_ADDRESS);
-	//ostr_item = session.getCertInfo(_base64, _type);
-
-	std::string person_id = Utility::GetCertInfoByOid(cer, "1.2.156.10260.4.1.1");
+	_item = GetCertOwnerID(_cer);
+	if (_item.empty())extract(x509ptr->subjectName(), "title");
 }
-/*
-统一组织机构代码：
-SOF CFCA     1.2.156.10260.4.1.1，最后一位为N的表示组织机构代码 
-SOF BJCA      1.2.156.10260.4.1.4
-SOF NMCA	 1.2.86.11.7.3
-FJCA      先1.2.156.10260.4.1.3，没有再1.2.156.10260.4.1.4
-*/
 
-std::string GetCertOwnerID(const std::string& base64)
+void GetCertInfo::enterprise()
+{
+	std::vector<std::string> eid;
+	eid.push_back("1.2.156.10260.4.1.3");
+	eid.push_back("1.2.156.10260.4.1.4");
+	eid.push_back("1.2.86.11.7.3");
+	eid.push_back("1.2.156.10260.4.1.1");
+
+	for (int i = 0; i < eid.size(); ++i) {
+		std::string str;
+		str = SOF_GetCertInfoByOid(_cer, eid[i]);
+		if (!str.empty())
+		{
+			if (eid[i] == "1.2.156.10260.4.1.1")
+			{
+				size_t pos = str.find_last_of("N");
+				if (pos != std::string::npos)
+					str = Poco::replace(str, "N", "");
+				else
+					break;
+			}
+
+			if (eid[i] == "1.2.86.11.7.3")
+				str = Poco::replace(str, "\x13\x12", "");
+
+			_item = str; break;
+		}
+	}
+
+	if (_item.empty())extract(x509ptr->subjectName(), "title");
+
+}
+void GetCertInfo::decode_utf8(const std::string& text)
+{
+	Application& app = Application::instance();
+
+	std::string pattern("(\\\\x[0-F]{2})");
+
+	std::string::size_type offset = 0;
+	int options = 0;
+
+	try
+	{
+		RegularExpression re(pattern, options);
+		RegularExpression::Match mtch = { 0,0 };
+
+		Poco::Buffer<char> T(64);
+		while (re.match(text, offset, mtch) > 0)
+		{
+			std::string str;
+			unsigned int value = 0;
+			re.extract(text, mtch.offset, str);
+			str = Poco::replace(str, "\\x", "");
+			if (Poco::NumberParser::tryParseHex(str, value))
+				T.append((char)value);
+
+			offset += mtch.length;
+		}
+
+		std::string otc(T.begin(), T.size());
+
+		Debugger::message(format("%s,", otc));
+	}
+	catch (Poco::RegularExpressionException& e)
+	{
+		poco_information_f1(app.logger(), "%s", e.message());
+	}
+}
+void GetCertInfo::extract(const std::string& text)
+{
+	std::string pattern("/(\\w+)=(\\w+|.+)");
+	std::string::size_type offset = 0;
+	int options = 0;
+
+	try
+	{
+		RegularExpression re(pattern, options);
+		RegularExpression::Match mtch = { 0,0 };
+
+		while (re.match(text, offset, mtch) > 0)
+		{
+			std::string str;
+			re.extract(text, mtch.offset, str);
+			_item += str;
+			offset += mtch.length;
+			_item += "\r\n";
+		}
+	}
+	catch (Poco::RegularExpressionException&)
+	{
+		_item.clear();
+	}
+
+	Debugger::message(format("%s", _item));
+}
+void GetCertInfo::extract(const std::string& text, const std::string& tag)
+{
+	std::string pattern("/(\\w+)=(\\w+|.+)");
+	int options = 0;
+	std::string::size_type offset = 0;
+
+	try
+	{
+		RegularExpression re(pattern, options);
+		RegularExpression::Match mtch = { 0,0 };
+
+		while (re.match(text, offset, mtch) > 0)
+		{
+			std::vector<std::string> strings;
+			re.split(text, mtch.offset, strings);
+			if (tag == strings[1]) {
+				_item += strings[2]; break;
+			}
+			offset += mtch.length;
+		}
+	}
+	catch (Poco::RegularExpressionException&)
+	{
+		_item.clear();
+	}
+}
+
+void GetCertInfo::x509_validFrom_expiresOn()
+{
+	Poco::DateTime from = x509ptr->validFrom();
+	Poco::DateTime expires = x509ptr->expiresOn();
+
+	std::string timestamp = Poco::format("%s - %s",
+		DateTimeFormatter::format(
+			LocalDateTime(from),
+			DateTimeFormat::SORTABLE_FORMAT),
+		DateTimeFormatter::format(
+			LocalDateTime(expires),
+			DateTimeFormat::SORTABLE_FORMAT));
+
+	_item = timestamp;
+}
+
+std::string GetCertInfo::cat(const std::string& delim, std::size_t pos, const std::string& str)
+{
+	assert(pos < str.length());
+
+	std::string result;
+
+	for (int i = 0; i < str.length(); i++)
+	{
+		result.push_back(str[i]);
+		if (i > 0 && i % pos == 0) result.append(delim);
+	}
+	result.append(delim);
+	return result;
+}
+
+std::string GetCertInfo::GetCertOwnerID(const std::string& base64)
 {
 	std::string item;
-	/*std::string pattern("(\\d+[A-z]?)");
+	std::string pattern("(\\d+[A-z]?)");
 	std::string special_oid("1.2.156.10260.4.1.1");
-	item = Utility::GetCertInfoByOid(base64, special_oid);
+	item = SOF_GetCertInfoByOid(base64, special_oid);
 	if (item.empty()) {
 
 		item = SOF_GetCertInfo(base64, SGD_CERT_SUBJECT_CN);
@@ -90,7 +264,7 @@ std::string GetCertOwnerID(const std::string& base64)
 	item = toLegelID(item, pattern);
 	/// erase 0 if is id card
 	if (!item.empty() && item.at(0) == '0')
-		item = item.replace(0, 1, "");*/
+		item = item.replace(0, 1, "");
 
 	return item;
 }
