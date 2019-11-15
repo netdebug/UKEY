@@ -15,6 +15,7 @@ namespace Reach {
 		virtual void run();
 	private:
 		std::string _uid;
+		bool _isLogined;
 	};
 
 	class KeyStatusRequestHandler : public RESTfulRequestHandler
