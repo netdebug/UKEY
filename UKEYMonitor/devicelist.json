@@ -40,5 +40,17 @@
     "hardwareID": "USB#VID_5448&PID_0003&REV_0310",
     "description": "FJCA",
     "ruleType": "include"
+  },
+  {
+    "engine": "SOF",
+    "hardwareID": "USB#VID_22FB&PID_1014&REV_0101",
+    "description": "008ztkj",
+    "ruleType": "include"
+  },
+  {
+    "engine": "SOF",
+    "hardwareID": "USB#VID_1EA8&PID_C001&REV_0100",
+    "description": "007Net",
+    "ruleType": "include"
   }
 ]
