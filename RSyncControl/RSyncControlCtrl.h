@@ -72,6 +72,7 @@ protected:
 	BSTR RS_CloudGetCertAuth(BSTR transid);
 	BSTR RS_CloudGetCertBase64(BSTR transid, BSTR token);
 	BSTR RS_CloudLogout(BSTR userId);
+	BSTR RS_KeyStatus(BSTR containerId);
 	//签章授权事件
 	void RS_CloudSealAuthEvent(LPCTSTR authResult, LPCTSTR transid, LPCTSTR token, LPCTSTR msg)
 	{
@@ -151,7 +152,8 @@ private:
 		dispid_48,
 		dispid_49,
 		dispid_50,
-		dispid_51
+		dispid_51,
+		dispid_52
 	};
 };
 

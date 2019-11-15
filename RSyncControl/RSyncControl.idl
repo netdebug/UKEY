@@ -61,6 +61,7 @@ library RSyncControlLib	// RS_CertSafeLib
 			[id(49)]BSTR RS_CloudGetCertAuth(BSTR transid);
 			[id(50)]BSTR RS_CloudGetCertBase64(BSTR transid, BSTR token);
 			[id(51)]BSTR RS_CloudLogout(BSTR userId);
+			[id(52)]BSTR RS_KeyStatus(BSTR containerId);
 	};
 
 	//  CRSyncControlCtrl 的事件调度接口

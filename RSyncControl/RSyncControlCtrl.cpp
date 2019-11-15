@@ -77,6 +77,7 @@ BEGIN_DISPATCH_MAP(CRSyncControlCtrl, COleControl)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudGetCertAuth",					dispid_49,			RS_CloudGetCertAuth,				VT_BSTR,VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudGetCertBase64",				dispid_50,			RS_CloudGetCertBase64,				VT_BSTR,VTS_BSTR VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudLogout",						dispid_51,			RS_CloudLogout,						VT_BSTR,VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyStatus",							dispid_52,			RS_KeyStatus,						VT_BSTR, VTS_BSTR)
 END_DISPATCH_MAP()
 
 // 事件映射
@@ -742,6 +743,18 @@ BSTR CRSyncControlCtrl::RS_CloudLogout(BSTR userId)
 	std::ostringstream body;
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_CloudLogout", body.str());
+
+	return EncodingTransfer(_bstr_t(result.data()));
+}
+
+BSTR CRSyncControlCtrl::RS_KeyStatus(BSTR containerId)
+{
+	std::string id = _com_util::ConvertBSTRToString(containerId);
+	HTMLForm params;
+	params.set("containerId", id);
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_KeyStatus", body.str());
 
 	return EncodingTransfer(_bstr_t(result.data()));
 }
