@@ -43,7 +43,7 @@ namespace Reach {
 				throw CloudCommandException(extract("head", "message"),
 					std::stoi(extract("head", "code"), 0, 16));
 
-			add("certBase64", extract("body "));
+			add("certBase64", extract("body"));
 		}
 	protected:
 		virtual void mixValue()
