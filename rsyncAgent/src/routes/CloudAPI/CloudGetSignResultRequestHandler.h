@@ -28,8 +28,7 @@ namespace Reach {
 		CloudGetSignResult(const std::string& transid, const std::string& token,
 			const std::string& url) :
 			CloudCommand(url),
-			_token(token), _transid(transid),
-			_action("")
+			_token(token), _transid(transid)
 		{
 		}
 
@@ -38,15 +37,27 @@ namespace Reach {
 			mixValue();
 			sendRequest();
 
-			if (!success())
-				throw CloudCommandException(extract("head", "message"),
-					std::stoi(extract("head", "code"), 0, 16));
+			filter();
 
-			add("signResult", extract("body","signResult"));
-			add("signdMsg", extract("body","signdMsg"));
-			add("certBase64", extract("body","certBase64"));
+			add("signResult", _signResult);
+			add("signdMsg", _signdMsg);
+			add("certBase64", _certBase64);
 		}
 	protected:
+		void filter()
+		{
+			const std::string code = extract("head", "code");
+			if (code == "0028")
+				_signResult = "0";/// 还未产生签名结果
+			if (code == "0000") {
+				_signResult = "1";/// 获取签名结果成功
+				_signdMsg = extract("body", "signdMsg");
+				_certBase64 = extract("body", "certBase64");
+			}
+			else
+				_signResult = "2"; /// 其他失败
+		}
+
 		virtual void mixValue()
 		{
 			Application& app = Application::instance();
@@ -68,6 +79,9 @@ namespace Reach {
 		std::string _action;
 		std::string _token;
 		std::string _transid;
+		std::string _signResult;
+		std::string _signdMsg;
+		std::string _certBase64;
 	};
 
 	class CloudGetSignResultRequestHandler : public RESTfulRequestHandler
