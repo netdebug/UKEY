@@ -34,6 +34,10 @@ namespace Reach {
 		static bool testJSON(const std::string & buffer);
 		static std::string cat(const std::string& delim, std::size_t pos, const std::string& str);
 		static std::string Utility::sendRequest(const std::string& url, const std::string& data);
+		static std::string v_encrypt_by_sm2(const std::string & plaintext, const std::string & pubkey);
+	private:
+		static int sm2_encrypt(const unsigned char * message, const int message_len, const unsigned char * pub_key, unsigned char * c1, unsigned char * c3, unsigned char * c2);
+		static std::string getOpenSSLError();
 	private:
 		Utility();
 		Utility(const Utility&);

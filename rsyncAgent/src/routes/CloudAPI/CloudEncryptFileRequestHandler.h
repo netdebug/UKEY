@@ -7,6 +7,7 @@
 #include "Poco/DynamicStruct.h"
 #include "Poco/JSON/Object.h"
 #include "Poco/FileStream.h"
+#include "../Utility.h"
 #include "../Command.h"
 #include "../RESTfulRequestHandler.h"
 #include "CloudCommand.h"
@@ -49,41 +50,15 @@ namespace Reach {
 			Poco::FileInputStream SI(_source);
 			std::string data;
 			Poco::StreamCopier::copyToString(SI, data);
-			//external_encrypt(data, pubkey);
+			std::string ciphertext = Utility::v_encrypt_by_sm2(data, pubkey);
 			Poco::FileOutputStream out(_encrypt);
-			out.write(encyptdata.data(), encyptdata.size());
+			out.write(ciphertext.data(), ciphertext.size());
 			out.close();
 
 			add("signCertBase64", extract("signCertBase64"));
 			add("encCertBase64", extract("encCertBase64"));
 		}
 	protected:
-		/*void external_encrypt(std::string& source, const std::string& pubkey)
-		{
-			Application& app = Application::instance();
-
-			std::istringstream iPub(pubkey);
-			Poco::Crypto::ECKey ek(&iPub);
-			size_t outlen = 512;
-			Poco::Buffer<unsigned char> encrypt(outlen); encrypt.clear();
-
-			if (!SM2_encrypt_with_recommended((unsigned char*)source.data(), source.size(), encrypt.begin(), &outlen,
-				ek.impl()->getECKey())) {
-				if (outlen > encrypt.capacity())
-				{
-					encrypt.resize(outlen, false);
-					SM2_encrypt_with_recommended((unsigned char*)source.data(), source.size(), encrypt.begin(), &outlen,
-						ek.impl()->getECKey());
-				}
-				else
-					poco_information_f1(app.logger(), "%s", getOpenSSLError());
-			}
-
-			std::string enc((const char*)encrypt.begin(), encrypt.size());
-			poco_information_f2(app.logger(), "encryptSM2,\n %s \n len:%u", enc, enc.length());
-
-			encyptdata = enc;
-		}*/
 		virtual void mixValue()
 		{
 			Application& app = Application::instance();
@@ -99,16 +74,6 @@ namespace Reach {
 			prepare(ds.toString());
 			poco_information_f1(app.logger(), "CloudEncryptFile mixValue:\n%s", ds.toString());
 		}
-		std::string getOpenSSLError()
-		{
-			BIO *bio = BIO_new(BIO_s_mem());
-			ERR_print_errors(bio);
-			char *buf;
-			size_t len = BIO_get_mem_data(bio, &buf);
-			std::string ret(buf, len);
-			BIO_free(bio);
-			return ret;
-		}
 	private:
 		std::string _source;
 		std::string _encrypt;
@@ -116,8 +81,6 @@ namespace Reach {
 		std::string _token;
 		std::string _action;
 		std::string _symKey;
-
-		std::string encyptdata;
 	};
 
 	class CloudEncryptFileRequestHandler : public RESTfulRequestHandler
