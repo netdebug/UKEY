@@ -25,9 +25,8 @@ namespace Reach {
 		static const int all_seal = -1;
 		std::string _content;
 		std::string _id;
+		std::string _sealdata;
 
 		const std::string _type = "2";
-
-		KG_GetKeyInfo_FJRS* _ext;
 	};
 }

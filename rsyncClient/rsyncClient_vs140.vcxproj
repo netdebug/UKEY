@@ -38,6 +38,7 @@
     <ClCompile Include="src\BridgeWindowsLiveLogin.cpp" />
     <ClCompile Include="src\Container.cpp" />
     <ClCompile Include="src\iWebPDF_i.c" />
+    <ClCompile Include="src\KGSealProvider.cpp" />
     <ClCompile Include="src\KG_HARD_EXT_i.c" />
     <ClCompile Include="src\OESSealProvider.cpp" />
     <ClCompile Include="src\QZSyncWorker.cpp" />
@@ -56,6 +57,7 @@
     <ClInclude Include="src\BridgeKG_HARD_EXT.h" />
     <ClInclude Include="src\BridgePDFReader.h" />
     <ClInclude Include="src\BridgeWindowsLiveLogin.h" />
+    <ClInclude Include="src\CDKG_GetKeyInfo_FJRS.h" />
     <ClInclude Include="src\Certificate.h" />
     <ClInclude Include="src\Container.h" />
     <ClInclude Include="src\iWebPDF.h" />
@@ -108,6 +110,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v120_xp</PlatformToolset>
+    <UseOfMfc>Dynamic</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug_shared|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -177,7 +180,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\include\poco\Data\include;..\include\poco\Data\SQLite\include;..\include\poco\XML\include;..\include\poco\JSON\include;..\include\poco\Crypto\include;..\include\poco\Foundation\include;..\include\poco\Net\include;..\include\poco\Util\include;.\include;..\include\openssl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;_AFXDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>

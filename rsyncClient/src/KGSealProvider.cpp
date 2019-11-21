@@ -1,16 +1,13 @@
+#include "stdafx.h"
 #include "KGSealProvider.h"
 #include "Utility.h"
 #include "Poco/JSON/Parser.h"
 #include "Poco/JSON/Object.h"
-
 #include "Poco/Dynamic/Var.h"
 #include "Poco/DynamicStruct.h"
-
 #include "Poco/Net/HTMLForm.h"
-#include <Windows.h>
-#include <comdef.h>
-#include "KG_GetKeyInfo_FJRS.h"
 #include <cassert>
+#include "CDKG_GetKeyInfo_FJRS.h"
 
 using namespace Reach;
 using namespace Reach::ActiveX;
@@ -30,16 +27,6 @@ KGSealProvider::KGSealProvider()
 	/// Com interface
 	HRESULT	hr;
 	hr = CoInitialize(0);
-	assert(SUCCEEDED(hr));
-
-	hr = CoCreateInstance(CLSID_KG_GetKeyInfo_FJRS,
-		NULL,
-		CLSCTX_INPROC_SERVER,
-		DIID__DKG_GetKeyInfo_FJRS,
-		(void**)&_ext);
-
-	assert(SUCCEEDED(hr));
-
 }
 
 KGSealProvider::~KGSealProvider()
@@ -49,9 +36,9 @@ KGSealProvider::~KGSealProvider()
 
 void KGSealProvider::extract()
 {
+	readSeal();
 	GetContainerId();
 	TCardGetCert();
-	readSeal();
 	ExtractSealPicture();
 	PeriodOfValidity();
 	FetchKeySN();
@@ -59,22 +46,16 @@ void KGSealProvider::extract()
 	GeneratedMD5();
 }
 
-#include "CDKG_GetKeyInfo_FJRS.h"
 void KGSealProvider::readSeal()
 {
-	/*CoInitialize(NULL);
 	CDKG_GetKeyInfo_FJRS  KG_GetKeyInfo_FJRS;
 	BOOL bRet = FALSE;
-	CoCreateInstance(KG_GetKeyInfo_FJRS.GetClsid(),
-		NULL,
-		CLSCTX_INPROC_SERVER,
-		IID_IKG_HARD_EXT,
-		(void**)&_ext);
-	bRet = KG_GetKeyInfo_FJRS.CreateControl(KG_GetKeyInfo_FJRS.GetClsid(), _T("Test"), WS_CHILD | WS_DLGFRAME, rect, CWnd::FromHandle(hWnd), 100);
+	bRet = KG_GetKeyInfo_FJRS.CreateDispatch(_T("KG_GETKEYINFO_FJ.KG_GetKeyInfo_FJCtrl.1"));
 	CString KeyInfo = _T("");
 	KeyInfo = KG_GetKeyInfo_FJRS.KGGetKeyInfo();
-	MessageBox(KeyInfo, _T("KG_GetKeyInfo_FJRS"), MB_OK);
-	CoUninitialize();*/
+	_content = KeyInfo.GetString();
+	_sealdata = Utility::GBKtoUTF8(_content);
+	poco_information_f1(app.logger(), "%s", _sealdata);
 }
 
 void KGSealProvider::FetchKeySN()
@@ -128,5 +109,31 @@ void KGSealProvider::TCardGetCert()
 
 void KGSealProvider::ExtractSealPicture()
 {
+	Parser ps;
+	Var result = ps.parse(_sealdata);
+	std::cout << result.type().name();
+	assert(result.type() == typeid(Object::Ptr));
+	if (result.type() != typeid(Object::Ptr))
+		throw Poco::Exception("the data is not a JSON Object!");
 
+	Object::Ptr object = result.extract<Object::Ptr>();
+	DynamicStruct ds = *object;
+	Poco::Dynamic::Var info = ds["seals"];
+	assert(info.size() > 0);
+	if (info.size() > 0) setProperty("name", info[0]["username"]);
+
+	Poco::JSON::Array seals;
+	for (int i = 0; i < info.size(); i++)
+	{
+		Poco::JSON::Object ob;
+		ob.set("imgdata", info[i]["imgdata"]);
+		ob.set("signname", info[i]["signname"]);
+		ob.set("imgItem", "81");/// ½ð¸ñÇ©ÕÂ
+		ob.set("imgArea", "84");/// ÄÚÃÉ¹ÅCA 
+		seals.add(ob);
+	}
+
+	std::ostringstream ostr;
+	seals.stringify(ostr);
+	setProperty("seals", ostr.str());
 }

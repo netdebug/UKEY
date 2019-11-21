@@ -96,6 +96,9 @@
     <ClInclude Include="src\WindowsGBKEncoding.h">
       <Filter>Core\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\CDKG_GetKeyInfo_FJRS.h">
+      <Filter>Core\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\rsyncClient.cpp">
@@ -147,6 +150,9 @@
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="src\WindowsGBKEncoding.cpp">
+      <Filter>Core\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\KGSealProvider.cpp">
       <Filter>Core\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
