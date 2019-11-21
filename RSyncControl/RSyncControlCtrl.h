@@ -12,6 +12,7 @@ class CRSyncControlCtrl : public COleControl
 
 private:
 	Poco::TaskManager tm;
+	BOOL   m_bLoginState;
 // 构造函数
 public:
 	CRSyncControlCtrl();
@@ -38,6 +39,9 @@ protected:
 	DECLARE_DISPATCH_MAP()
 
 	afx_msg void AboutBox();
+	BSTR ShowRSyncLoginView(BSTR containerId);
+	BSTR onRsyncLogin(std::string nameStr, std::string passwordStr);
+	BSTR IsLoginState(BSTR containerId);
 
 	BSTR RS_GetUserList();
 	BSTR RS_GetCertBase64String(BSTR containerId, SHORT certType);
@@ -107,6 +111,7 @@ protected:
 	{
 		FireEvent(eventid_6, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), authResult, transid, token, msg);
 	}
+
 // 事件映射
 	DECLARE_EVENT_MAP()
 	protected:

@@ -17,6 +17,9 @@
 #include <cassert>
 #include <sstream>
 #include "EncodingTransfer.h"
+#include "RSyncLoginView.h"
+#include "RSyncMsgTip.h"
+#include <atlconv.h>
 
 using Poco::Dynamic::Var;
 using Poco::Net::HTMLForm;
@@ -168,6 +171,7 @@ CRSyncControlCtrl::CRSyncControlCtrl()
 	Observer<CRSyncControlCtrl, MQTTNotification> o1(*this, &CRSyncControlCtrl::handle1);
 	nc.addObserver(o1);
 	tm.start(new Reach::CloudEventRecevier);
+	m_bLoginState = FALSE;
 }
 
 // CRSyncControlCtrl::~CRSyncControlCtrl - 析构函数
@@ -183,6 +187,86 @@ CRSyncControlCtrl::~CRSyncControlCtrl()
 
 #include "Poco/Debugger.h"
 using Poco::Debugger;
+// 弹出登录界面
+BSTR CRSyncControlCtrl::ShowRSyncLoginView(BSTR containerId)
+{
+	
+	RSyncLoginView loginView;
+	std::string id = _com_util::ConvertBSTRToString(containerId);
+	if (id == "")
+	{
+		//若id为空则获取
+		 std::string result = Utility::SuperRequest("/RS_GetUserList", "");
+		 id = Utility::formatUid(result);
+		 containerId = _com_util::ConvertStringToBSTR(id.data());
+	}
+	loginView.SetInputName(containerId);
+	INT_PTR modal = loginView.DoModal();
+	if (modal == IDOK)
+	{
+		//确定
+		CString nameStr = loginView.GetInputName();
+		CString passwordStr = loginView.GetInputPassword();
+		std::string msg = (LPCSTR)(CStringA)nameStr;
+		return onRsyncLogin(msg, (LPCSTR)(CStringA)passwordStr);
+		
+	}
+	return BSTR();
+}
+//登录
+BSTR CRSyncControlCtrl::onRsyncLogin(std::string nameStr, std::string passwordStr) {
+
+	HTMLForm params;
+	params.set("containerId", nameStr);
+	params.set("password", passwordStr);
+
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_CertLogin", body.str());
+	//获取登录状态并保存
+	if (result != "")
+	{
+		Parser ps;
+		Var res = ps.parse(result);
+		Object::Ptr object = res.extract<Object::Ptr>();
+		assert(object);
+		DynamicStruct ds = *object;
+		std::string code = ds["code"];
+		m_bLoginState = code == "0000";
+		std::string msg = ds["msg"];
+		if (!m_bLoginState)
+		{
+			auto tipmsg = EncodingTransfer(_bstr_t(msg.data()));
+			RSyncMsgTip ex(tipmsg);
+			ex.DoModal();
+		}
+	}
+	return  EncodingTransfer(_bstr_t(result.data()));
+}
+//判断登录状态
+BSTR CRSyncControlCtrl::IsLoginState(BSTR containerId)
+{
+	m_bLoginState = FALSE;
+	std::string id = _com_util::ConvertBSTRToString(containerId);
+	HTMLForm params;
+	params.set("containerId", id);
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_KeyStatus", body.str());
+
+	Parser ps;
+	Var res = ps.parse(result);
+	Object::Ptr object = res.extract<Object::Ptr>();
+	assert(object);
+	DynamicStruct ds = *object;
+	std::string code = ds["code"];
+	m_bLoginState = code == "0000";
+	if (!m_bLoginState)
+	{
+		return ShowRSyncLoginView(containerId);
+	}
+	return BSTR();
+}
 
 void CRSyncControlCtrl::handle1(MQTTNotification* pNf)
 {
@@ -283,6 +367,11 @@ BSTR CRSyncControlCtrl::RS_CertLogin(BSTR containerId, BSTR password)
 
 	std::string id = _com_util::ConvertBSTRToString(containerId);
 	std::string word = _com_util::ConvertBSTRToString(password);
+	if (id == "" || word == "") //缺少用户名密码需要弹框
+	{
+		BSTR ret = ShowRSyncLoginView(containerId);
+		return ret;
+	}
 	//std::string body(Poco::format("containerId=%s&password=%s", id, word));
 	HTMLForm params;
 	params.set("containerId", id);
@@ -352,6 +441,15 @@ BSTR CRSyncControlCtrl::RS_KeyGetKeySn()
 	//std::string body(Poco::format("containerId=%s", id));
 	HTMLForm params;
 	params.set("containerId", id);
+
+	//需要登录状态下才能调用接口
+	BSTR containerId = _com_util::ConvertStringToBSTR(id.data());
+	BSTR ret = IsLoginState(containerId);
+	if (!m_bLoginState)
+	{
+		//返回登录错误json
+		return ret;
+	}
 
 	std::ostringstream body;
 	params.write(body);
