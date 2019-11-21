@@ -38,7 +38,7 @@ namespace Reach {
 			// Make and print the QR Code symbol
 			const QrCode qr = QrCode::encodeText(_text.data(), errCorLvl);
 			printQr(qr);
-			poco_information_f2(app.logger(), "version : %s, mask : %s", qr.getVersion(), qr.getMask());
+			poco_information_f2(app.logger(), "version : %d, mask : %d", qr.getVersion(), qr.getMask());
 
 			FileOutputStream ofs(_path);
 			ofs << qr.toSvgString(4) << std::endl;
