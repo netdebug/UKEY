@@ -51,8 +51,9 @@ namespace Reach {
 
 			_buffer_decrypt = extract("body");
 
-			Poco::FileOutputStream out;
+			Poco::FileOutputStream out(_decrypt);
 			out << _buffer_decrypt;
+			out.close();
 		}
 	protected:
 		virtual void mixValue()

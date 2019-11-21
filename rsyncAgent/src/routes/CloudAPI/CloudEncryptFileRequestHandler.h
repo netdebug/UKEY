@@ -55,8 +55,8 @@ namespace Reach {
 			out.write(ciphertext.data(), ciphertext.size());
 			out.close();
 
-			add("signCertBase64", extract("signCertBase64"));
-			add("encCertBase64", extract("encCertBase64"));
+			add("signCertBase64", extract("body","signCertBase64"));
+			add("encCertBase64", extract("body","encCertBase64"));
 		}
 	protected:
 		virtual void mixValue()
