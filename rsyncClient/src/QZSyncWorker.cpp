@@ -12,6 +12,7 @@
 #include "Poco/Net/HTTPResponse.h"
 #include "OESSealProvider.h"
 #include "XSSealProvider.h"
+#include "KGSealProvider.h"
 #include <cassert>
 
 using namespace Reach;
@@ -72,24 +73,30 @@ void QZSyncWorker::composite()
 	SPVec oess;
 	oess.push_back(new OESSealProvider);
 	oess.push_back(new XSSealProvider);
-
+	oess.push_back(new KGSealProvider);
 	for (SPIter it = oess.begin(); it != oess.end(); it++)
 	{
-		Poco::AutoPtr<SealProvider> ptr = *it;
-		assert(ptr);
-		ptr->extract();
-		_name = ptr->getProperty("name");
-		_code = ptr->getProperty("code");
-		_validStart = ptr->getProperty("validStart");
-		_validEnd = ptr->getProperty("validEnd");
-		_keysn = ptr->getProperty("keysn");
-		_seals = ptr->getProperty("seals");
-		_md5 = ptr->getProperty("dataMD5");
+		try
+		{
+			Poco::AutoPtr<SealProvider> ptr = *it;
+			assert(ptr);
+			ptr->extract();
+			_name = ptr->getProperty("name");
+			_code = ptr->getProperty("code");
+			_validStart = ptr->getProperty("validStart");
+			_validEnd = ptr->getProperty("validEnd");
+			_keysn = ptr->getProperty("keysn");
+			_seals = ptr->getProperty("seals");
+			_md5 = ptr->getProperty("dataMD5");
 
-		poco_information_f2(app.logger(), "name:%s,code%:%s", _name, _code);
-		poco_information_f2(app.logger(), "validStart:%s,validEnd%:%s", _validStart, _validEnd);
-		poco_information_f2(app.logger(), "keysn:%s,dataMD5%:%s", _keysn, _md5);
-		poco_information_f1(app.logger(), "seal -> \n%s", _seals);
+			poco_information_f2(app.logger(), "name:%s,code%:%s", _name, _code);
+			poco_information_f2(app.logger(), "validStart:%s,validEnd%:%s", _validStart, _validEnd);
+			poco_information_f2(app.logger(), "keysn:%s,dataMD5%:%s", _keysn, _md5);
+			poco_information_f1(app.logger(), "seal -> \n%s", _seals);
+		}
+		catch (Poco::Exception&)
+		{
+		}
 	}
 }
 
@@ -194,13 +201,8 @@ void QZSyncWorker::transfer()
 
 		HTTPResponse response;
 		std::istream& out = session.receiveResponse(response);
-		
-		assert(out.eof());
 		DynamicStruct res = *extract<Object::Ptr>(out);
-		poco_information_f2(app.logger(), "code:%s\n message:%s\n", res["code"].toString(), res["message"].toString());
-		//assert(res["code"] == "0");
-
-		
+		poco_information_f2(app.logger(), "code:%s\n message:%s\n", res["code"].toString(), res["message"].toString());	
 	}
 	setSync(_keysn);
 }
