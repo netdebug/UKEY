@@ -121,6 +121,9 @@ void GetCertInfo::enterprise()
 			if (eid[i] == "1.2.86.11.7.3")
 				str = Poco::replace(str, "\x13\x12", "");
 
+			if(eid[i] == "1.2.156.10260.4.1.4")
+				str = Poco::replace(str, "\f\x12", "");
+
 			_item = str; break;
 		}
 	}
