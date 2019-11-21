@@ -45,6 +45,12 @@
     <ClCompile Include="EncodingTransfer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="RSyncLoginView.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="RSyncMsgTip.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RSyncControl.h">
@@ -81,6 +87,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="EncodingTransfer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RSyncLoginView.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RSyncMsgTip.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

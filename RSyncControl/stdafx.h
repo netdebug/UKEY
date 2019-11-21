@@ -35,4 +35,6 @@
 #endif // _AFX_NO_DAO_SUPPORT
 
 #endif // _WIN64
+#include <afxwin.h>
+#include <afxcontrolbars.h>
 
