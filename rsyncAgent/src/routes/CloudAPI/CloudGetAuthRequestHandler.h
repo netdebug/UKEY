@@ -26,7 +26,7 @@ namespace Reach {
 	{
 	public:
 		CloudGetAuth(const std::string& transid, const std::string& url)
-			:CloudCommand(url), _transid(transid), _action("")
+			:CloudCommand(url), _transid(transid)
 		{
 		}
 
@@ -35,15 +35,31 @@ namespace Reach {
 			mixValue();
 			sendRequest();
 
-			if (!success())
-				throw CloudCommandException(extract("head", "message"),
-					std::stoi(extract("head", "code"), 0, 16));
-
-			add("authResult", extract(""));
-			add("token", extract(""));
-			add("keySn", extract(""));
+			filter();
+			
+			add("authResult", _authResult);
+			add("token", _token);
+			add("keySn", _keysn);
 		}
 	protected:
+		void filter()
+		{
+			Application& app = Application::instance();
+
+			const std::string code = extract("head", "code");
+			if (code == "0000")
+				_authResult = "1";//授权成功
+			else if (code == "0028")
+				_authResult = "0";//未授权
+			else
+				_authResult = "4";//其他情况
+
+			size_t authType = app.config().getUInt("authType", 0);
+			if (!authType)
+				_token = extract("body", "token");
+			else
+				_keysn = app.config().getString("keySn");
+		}
 		virtual void mixValue()
 		{
 			Application& app = Application::instance();
@@ -62,6 +78,9 @@ namespace Reach {
 	private:
 		std::string _transid;
 		std::string _action;
+		std::string _authResult;
+		std::string _token;
+		std::string _keysn;
 	};
 
 	class CloudGetAuthRequestHandler : public RESTfulRequestHandler
