@@ -19,7 +19,7 @@ void CertLogin::run()
 	Session session(Utility::getSession());
 
 	if (_uid.empty() || _pwd.empty())
-		throw RequestHandleException(RAR_UNKNOWNERR);
+		throw RequestHandleException(RAR_9010);
 
 	if (_uid != session.contianer())
 		throw RequestHandleException(RAR_UNIQUEIDUNCORRECT);
@@ -29,7 +29,7 @@ void CertLogin::run()
 		throw RequestHandleException(_uid, RAR_UNKNOWNERR);
 
 	if (!session.login(_pwd))
-		throw RequestHandleException(_uid, RAR_UNKNOWNERR);
+		throw RequestHandleException(_uid, RAR_9011);
 
 	add("containerId", _uid);
 }
