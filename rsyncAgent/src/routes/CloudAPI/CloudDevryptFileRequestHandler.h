@@ -20,6 +20,7 @@ namespace Reach {
 	using Poco::JSON::Object;
 	using Poco::DynamicStruct;
 	using Poco::FileInputStream;
+	using Poco::FileOutputStream;
 
 	///RS_CloudDevryptFile
 	class CloudDevryptFile : public Command, public CloudCommand
@@ -51,7 +52,7 @@ namespace Reach {
 
 			_buffer_decrypt = extract("body");
 
-			Poco::FileOutputStream out(_decrypt);
+			FileOutputStream out(_decrypt);
 			out << _buffer_decrypt;
 			out.close();
 		}

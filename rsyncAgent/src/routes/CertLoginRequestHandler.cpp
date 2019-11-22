@@ -7,8 +7,6 @@ using namespace Reach;
 using Reach::Data::Session;
 ///RS_CertLogin
 
-
-
 CertLogin::CertLogin(const std::string& uid, const std::string& password)
 	:_uid(uid), _pwd(password)
 {

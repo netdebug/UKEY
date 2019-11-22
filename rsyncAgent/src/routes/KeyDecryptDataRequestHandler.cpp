@@ -21,7 +21,6 @@ KeyDecryptData::KeyDecryptData(const std::string& uid, const std::string& encryp
 
 void KeyDecryptData::run()
 {
-	//Session session(getEngine(), "REST");
 	Session session(Utility::getSession());
 
 	if (_uid != session.contianer())

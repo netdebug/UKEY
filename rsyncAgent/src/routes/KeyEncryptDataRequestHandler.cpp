@@ -13,9 +13,6 @@ KeyEncryptData::KeyEncryptData(const std::string& paintText, const std::string& 
 
 void KeyEncryptData::run()
 {
-	//UDevice::default();
-	//Reach::Data::Session session("SOF", "REST");
-	//Reach::Data::Session session(getEngine(), "REST");
 	Session session(Utility::getSession());
 	if (_paintext.empty())
 		throw RequestHandleException(RAR_ERRNODECRYPT);
