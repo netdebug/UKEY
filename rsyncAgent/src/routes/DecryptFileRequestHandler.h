@@ -2,6 +2,8 @@
 #include "Command.h"
 #include "RESTfulRequestHandler.h"
 #include "Poco/Util/Application.h"
+#include "Poco/FileStream.h"
+#include "Poco/Crypto/Cipher.h"
 
 using Poco::Util::Application;
 
@@ -12,11 +14,14 @@ namespace Reach {
 	public:
 		DecryptFile(std::string& SymKey, std::string& EncryptFile, std::string& OutDir);
 		virtual void run();
+	protected:
+		virtual void generateKey();
 	private:
 		bool _decrypted;
 		std::string _kv;
-		std::string _encrypt;
-		std::string _decrypt;
+		Poco::FileInputStream _sink;
+		Poco::FileOutputStream _sank;
+		Poco::Crypto::Cipher* _pCipher;
 	};
 
 	class DecryptFileRequestHandler : public RESTfulRequestHandler

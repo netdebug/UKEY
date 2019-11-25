@@ -22,29 +22,22 @@ using Poco::Crypto::CryptoOutputStream;
 using Poco::Base64Encoder;
 
 EncryptFile::EncryptFile(const std::string& SourceFile, const std::string& EncryptFile)
-	:_source(SourceFile), _encrypt(EncryptFile), _encrypted(false)
+	:_sink(SourceFile), _sank(EncryptFile), _encrypted(false)
 {
-	File fi(_source);
-	if (!fi.exists())
+	if(_sink.bad())
 		throw RequestHandleException(RAR_UNKNOWNERR);
+
+	generateKey();
 }
-void EncryptFile::run()
+
+void EncryptFile::generateKey()
 {
 	Application& app = Application::instance();
-
 	///TODO: SMS4-CBC - Further write to config()
-	CipherKey ckey("SMS4-CBC");
+	//CipherKey ckey("SMS4-CBC");
+	CipherKey ckey("aes256");
 	CipherFactory& factory = CipherFactory::defaultFactory();
-	Cipher* pCipher = factory.createCipher(ckey);
-
-	Poco::FileOutputStream sink(_encrypt);
-	CryptoOutputStream encryptor(sink, pCipher->createEncryptor());
-
-	Poco::FileInputStream source(_source);
-	Poco::StreamCopier::copyStream(source, encryptor);
-
-	encryptor.close();
-	sink.close();
+	_pCipher = factory.createCipher(ckey);
 
 	std::ostringstream keyStream;
 	Base64Encoder encoder(keyStream);
@@ -55,8 +48,18 @@ void EncryptFile::run()
 	encoder.write(reinterpret_cast<const char*>(&ckey.getIV()[0]), ckey.ivSize());
 	encoder.close();
 
-	std::string base64Key = keyStream.str();
-	poco_information_f1(app.logger(), "EncryptFile CipherKey::ByteVec:\n%s", base64Key);
+	_symKey = keyStream.str();
 
-	add("symKey", base64Key);
+	poco_information_f1(app.logger(), "EncryptFile CipherKey::ByteVec:\n%s", _symKey);
+}
+
+void EncryptFile::run()
+{
+	Application& app = Application::instance();
+
+	CryptoOutputStream encryptorStream(_sank, _pCipher->createEncryptor());
+	Poco::StreamCopier::copyStream(_sink, encryptorStream);
+	encryptorStream.close();
+
+	add("symKey", _symKey);
 }

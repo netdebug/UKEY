@@ -3,7 +3,8 @@
 #include "Command.h"
 #include "RESTfulRequestHandler.h"
 #include "Poco/Util/Application.h"
-
+#include "Poco/FileStream.h"
+#include "Poco/Crypto/Cipher.h"
 using Poco::Util::Application;
 
 namespace Reach {
@@ -13,11 +14,14 @@ namespace Reach {
 	public:
 		EncryptFile(const std::string& SourceFile, const std::string& EncryptFile);
 		virtual void run();
+	protected:
+		virtual void generateKey();
 	private:
 		bool _encrypted;
-		std::string _source;
-		std::string _encrypt;
-		std::string _random_digital;
+		Poco::FileInputStream _sink;
+		Poco::FileOutputStream _sank;
+		Poco::Crypto::Cipher* _pCipher;
+		std::string _symKey;
 	};
 
 	class EncryptFileRequestHandler : public RESTfulRequestHandler
