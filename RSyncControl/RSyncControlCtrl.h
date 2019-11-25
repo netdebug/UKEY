@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "Poco/TaskManager.h"
+#include "MQTTNotification.h"
 // RSyncControlCtrl.h : CRSyncControlCtrl ActiveX 控件类的声明。
 
 
@@ -77,39 +78,51 @@ protected:
 	BSTR RS_CloudGetCertBase64(BSTR transid, BSTR token);
 	BSTR RS_CloudLogout(BSTR userId);
 	BSTR RS_KeyStatus(BSTR containerId);
-	//签章授权事件
-	void RS_CloudSealAuthEvent(LPCTSTR authResult, LPCTSTR transid, LPCTSTR token, LPCTSTR msg)
+	///签章授权事件
+	inline void RS_CloudSealAuthEvent(const MQTTNotification& Nf)
 	{
-		FireEvent(eventid_1, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), authResult, transid, token, msg);
+		//LPCTSTR authResult, LPCTSTR transid, LPCTSTR token, LPCTSTR msg
+		FireEvent(eventid_1, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), _bstr_t(Nf.authResult.data()), _bstr_t(Nf.transid.data()), _bstr_t(Nf.token.data()), _bstr_t(Nf.message.data()));
 	}
 
-	//获取签名结果事件
-	void RS_CloudGetSignResultEvent(LPCTSTR signResult, LPCTSTR signdMsg, LPCTSTR transid, LPCTSTR signdCert, LPCTSTR msg)
+	///获取签名结果事件
+	inline void RS_CloudGetSignResultEvent(const MQTTNotification& Nf)
 	{
-		FireEvent(eventid_2, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), signResult, signdMsg, transid, signdCert, msg);
+		//LPCTSTR signResult, LPCTSTR signdMsg, LPCTSTR transid, LPCTSTR signdCert, LPCTSTR msg
+		std::string signdMsg, signdCert;
+		FireEvent(eventid_2, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR),
+			_bstr_t(Nf.authResult.data()), _bstr_t(signdMsg.data()), _bstr_t(Nf.transid.data()), _bstr_t(signdCert.data()), _bstr_t(Nf.message.data()));
 	}
 
-	//登入授权事件
-	void RS_CloudLoginAuthEvent(LPCTSTR authResult, LPCTSTR transid, LPCTSTR token, LPCTSTR mobile, LPCTSTR userName, LPCTSTR userID, LPCTSTR msg)
+	///登入授权事件
+	inline void RS_CloudLoginAuthEvent(const MQTTNotification& Nf)
 	{
-		FireEvent(eventid_3, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), authResult, transid, token, mobile, userName, userID, msg);
+		//LPCTSTR authResult, LPCTSTR transid, LPCTSTR token, LPCTSTR mobile, LPCTSTR userName, LPCTSTR userID, LPCTSTR msg
+		std::string mobile, userName, userID;
+		FireEvent(eventid_3, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR),
+			_bstr_t(Nf.authResult.data()), _bstr_t(Nf.transid.data()), _bstr_t(Nf.token.data())
+			, _bstr_t(mobile.data()), _bstr_t(userName.data()), _bstr_t(userID.data()), _bstr_t(Nf.message.data()));
 	}
 
-	//加密授权事件
-	void RS_CloudEncAuthEvent(LPCTSTR authResult, LPCTSTR transid, LPCTSTR token, LPCTSTR msg)
+	///加密授权事件
+	inline void RS_CloudEncAuthEvent(const MQTTNotification& Nf)
 	{
-		FireEvent(eventid_4, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), authResult, transid, token, msg);
+		//LPCTSTR authResult, LPCTSTR transid, LPCTSTR token, LPCTSTR msg
+		FireEvent(eventid_4, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), _bstr_t(Nf.authResult.data()), _bstr_t(Nf.transid.data()), _bstr_t(Nf.token.data()), _bstr_t(Nf.message.data()));
 	}
 
-	//解密授权事件
-	void RS_CloudDevAuthEvent(LPCTSTR authResult, LPCTSTR transid, LPCTSTR token, LPCTSTR msg)
+	///解密授权事件
+	inline void RS_CloudDevAuthEvent(const MQTTNotification& Nf)
 	{
-		FireEvent(eventid_5, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), authResult, transid, token, msg);
+		//LPCTSTR authResult, LPCTSTR transid, LPCTSTR token, LPCTSTR msg
+		FireEvent(eventid_5, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), _bstr_t(Nf.authResult.data()), _bstr_t(Nf.transid.data()), _bstr_t(Nf.token.data()), _bstr_t(Nf.message.data()));
 	}
-	//获取证书授权事件
-	void RS_CloudGetCertAuthEvent(LPCTSTR authResult, LPCTSTR transid, LPCTSTR token, LPCTSTR msg)
+
+	///获取证书授权事件
+	inline void RS_CloudGetCertAuthEvent(const MQTTNotification& Nf)
 	{
-		FireEvent(eventid_6, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), authResult, transid, token, msg);
+		//LPCTSTR authResult, LPCTSTR transid, LPCTSTR token, LPCTSTR msg
+		FireEvent(eventid_6, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), _bstr_t(Nf.authResult.data()), _bstr_t(Nf.transid.data()), _bstr_t(Nf.token.data()), _bstr_t(Nf.message.data()));
 	}
 
 // 事件映射

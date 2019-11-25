@@ -11,5 +11,8 @@ public:
 	std::size_t action;
 	std::string token;
 	std::string context;
+	std::string transid;
+	std::string authResult;
+	std::string message;
 };
 

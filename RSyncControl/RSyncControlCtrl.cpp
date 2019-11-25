@@ -270,28 +270,39 @@ BSTR CRSyncControlCtrl::IsLoginState(BSTR containerId)
 
 void CRSyncControlCtrl::handle1(MQTTNotification* pNf)
 {
-	Debugger::message(format("MQTTNotification action =", pNf->context));
+	Debugger::message(format("MQTTNotification action = %s", pNf->context));
+	enum action
+	{
+		LoginAuth = 1,
+		EncryptAuth,
+		DecryptAuth,
+		SignedSealAuth,
+		UnSignedSealAuth,
+		GetCertAuth,
+		GetSignResult	
+	};
 
 	if (pNf){
 		switch(pNf->action)
 		{
-		case eventid_1:
-			//FireEvent(pNf->action, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), "1", "2", "3", "4");
+		case LoginAuth:
+			RS_CloudLoginAuthEvent(*pNf);
 			break;
-		case eventid_2:
-			//FireEvent(pNf->action, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), "1", "2", "3", "4");
+		case EncryptAuth:
+			RS_CloudEncAuthEvent(*pNf);
 			break;
-		case eventid_3:
-			//FireEvent(pNf->action, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), "1", "2", "3", "4");
+		case DecryptAuth:
+			RS_CloudDevAuthEvent(*pNf);
 			break;
-		case eventid_4:
-			//FireEvent(pNf->action, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), "1", "2", "3", "4");
+		case SignedSealAuth:
+		case UnSignedSealAuth:
+			RS_CloudSealAuthEvent(*pNf);
 			break;
-		case eventid_5:
-			//FireEvent(pNf->action, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), "1", "2", "3", "4");
+		case GetCertAuth:
+			RS_CloudGetCertAuthEvent(*pNf);
 			break;
-		case eventid_6:
-			//FireEvent(pNf->action, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), "1", "2", "3", "4");
+		case GetSignResult:
+			RS_CloudGetSignResultEvent(*pNf);
 			break;
 		default:
 			break;

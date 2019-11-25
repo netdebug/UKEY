@@ -28,10 +28,10 @@ MQTTAsyncClient::MQTTAsyncClient(bool useSSL)
 {
 	initialize();
 #ifdef OCX
-	deviceId = "456789";
+	deviceId = "123465789";
 #else
 	Application& app = Application::instance();
-	deviceId = app.config().getString("clientId", "456789");
+	deviceId = app.config().getString("clientId", "123465789");
 #endif // OCX
 
 	clientIdUrl = Poco::format("%s@@@%s", groupId, deviceId);

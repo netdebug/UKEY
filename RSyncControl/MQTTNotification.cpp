@@ -12,7 +12,10 @@ using namespace Poco::JSON;
 using namespace Poco::Dynamic;
 
 MQTTNotification::MQTTNotification(const std::string& message)
-	:context(message)
+	:context(message),
+	authResult(""),
+	transid(""),
+	message("")
 {
 	Parser sp;
 	Var result = sp.parse(message);
