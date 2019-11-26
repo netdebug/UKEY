@@ -45,8 +45,8 @@ void DecryptFile::generateKey()
 	CipherKey::ByteVec iv(st[1].begin(), st[1].end());
 
 	///TODO: SMS4-CBC - Further write to config()
-	//CipherKey ckey("SMS4-CBC", key, iv);
-	CipherKey ckey("aes256",key, iv);
+	CipherKey ckey("SMS4-CBC", key, iv);
+	//CipherKey ckey("aes256",key, iv);
 	CipherFactory& factory = CipherFactory::defaultFactory();
 	_pCipher = factory.createCipher(ckey);
 

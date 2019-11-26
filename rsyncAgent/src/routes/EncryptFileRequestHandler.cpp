@@ -34,8 +34,8 @@ void EncryptFile::generateKey()
 {
 	Application& app = Application::instance();
 	///TODO: SMS4-CBC - Further write to config()
-	//CipherKey ckey("SMS4-CBC");
-	CipherKey ckey("aes256");
+	CipherKey ckey("SMS4-CBC");
+	//CipherKey ckey("aes256");
 	CipherFactory& factory = CipherFactory::defaultFactory();
 	_pCipher = factory.createCipher(ckey);
 
