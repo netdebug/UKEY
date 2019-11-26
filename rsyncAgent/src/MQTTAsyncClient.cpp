@@ -6,10 +6,13 @@
 #include "Poco/Util/Application.h"
 #include "Poco/UUIDGenerator.h"
 #include "Poco/UUID.h"
+#include "Poco/Data/SQLite/Connector.h"
+#include "Poco/Data/Session.h"
 
 using namespace Reach;
 using namespace Poco;
 using namespace Poco::Dynamic;
+using namespace Poco::Data;
 using Poco::Util::Application;
 
 bool MQTTAsyncClient::connected = false;
@@ -20,6 +23,8 @@ MQTTAsyncClient::MQTTAsyncClient(bool useSSL)
 	groupId("GID_fjreach"),
 	_useSSL(useSSL)
 {
+	Poco::Data::SQLite::Connector::registerConnector();
+
 	Application& app = Application::instance();
 
 	initialize();
@@ -52,12 +57,38 @@ MQTTAsyncClient::MQTTAsyncClient(bool useSSL)
 MQTTAsyncClient::~MQTTAsyncClient()
 {
 	MQTTAsync_destroy(&client);
+
+	Poco::Data::SQLite::Connector::unregisterConnector();
 }
+
+#include <cassert>
+#include "Poco/Data/SQLite/Utility.h"
+using namespace Poco::Data::Keywords;
 
 void MQTTAsyncClient::initialize()
 {
+	Session mem(Poco::Data::SQLite::Connector::KEY, ":memory:");
+	mem << "DROP TABLE IF EXISTS Person", now;
+	mem << "CREATE TABLE IF NOT EXISTS LocalMessageCache (transid INTEGER PRIMARY KEY, mobile VARCHAR(26), authResult VARCHAR(2), action VARCHAR(2), userId VARCHAR, userName VARCHAR, token VARCHAR, msg VARCHAR)", now;
+	assert(Poco::Data::SQLite::Utility::fileToMemory(mem, "dummy.db"));
+
 	createOpts();
 	connectOpts();
+}
+
+#include "Poco/JSON/Parser.h"
+using namespace Poco::JSON;
+
+void MQTTAsyncClient::cacheMessage(const std::string& topic, const std::string& message)
+{
+	Parser sp;
+	Var result = sp.parse(message);
+	assert(result.type() == typeid(Object::Ptr));
+	DynamicStruct ds = *result.extract<Object::Ptr>();
+	std::string action = ds["action"];
+	//assert(ds.contains())
+	Session mem(Poco::Data::SQLite::Connector::KEY, ":memory:");
+	assert(Poco::Data::SQLite::Utility::fileToMemory(mem, "dummy.db"));
 }
 
 void MQTTAsyncClient::createOpts()
@@ -111,6 +142,7 @@ int MQTTAsyncClient::messageArrived(void* context, char* topicName, int topicLen
 	//message.assign;
 	poco_information_f2(app.logger(), "recv message from: %s, body is %s", topic, message);
 	//printf("recv message from %s ,body is %s\n", topicName, (char *)m->payload);
+	MQTTAsyncClient::cacheMessage(topic, message);
 	MQTTAsync_freeMessage(&msg);
 	MQTTAsync_free(topicName);
 	return 1;

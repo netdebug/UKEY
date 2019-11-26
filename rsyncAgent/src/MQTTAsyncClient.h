@@ -38,6 +38,7 @@ namespace Reach {
 		std::string generatorUsername(const std::string & accessKey, const std::string & instanceId);
 
 		void initialize();
+		static void cacheMessage(const std::string & topic, const std::string & message);
 		void createOpts();
 		void connectOpts();
 	private:
