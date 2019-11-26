@@ -281,8 +281,12 @@ std::string Utility::v_encrypt_by_sm2(const std::string& plaintext, const std::s
 	return ciphertext;
 }
 
+
+
 int Utility::sm2_encrypt(const unsigned char *message, const int message_len, const unsigned char *pub_key, unsigned char *c1, unsigned char *c3, unsigned char *c2)
 {
+	int error_code = 0;
+#ifndef GMSSL
 	//生成密钥对错误代码
 #define CREATE_SM2_KEY_PAIR_FAIL     0x1002
 #define ALLOCATION_MEMORY_FAIL       0x1004
@@ -299,7 +303,6 @@ int Utility::sm2_encrypt(const unsigned char *message, const int message_len, co
 #define INVALID_SM2_CIPHERTEXT       0x100b
 #define SM2_DECRYPT_FAIL             0x100c
 
-	int error_code;
 	unsigned char pub_key_x[32], pub_key_y[32], c1_x[32], c1_y[32], x2[32], y2[32];
 	unsigned char c1_point[65], x2_y2[64];
 	unsigned char *t = NULL;
@@ -550,6 +553,7 @@ clean_up:
 	{
 		EVP_MD_CTX_free(md_ctx);
 	}
+#endif // GMSSL
 
 	return error_code;
 }
