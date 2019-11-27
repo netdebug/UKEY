@@ -70,7 +70,7 @@ void MQTTAsyncClient::initialize()
 	Session mem(Poco::Data::SQLite::Connector::KEY, ":memory:");
 	mem << "DROP TABLE IF EXISTS Person", now;
 	mem << "CREATE TABLE IF NOT EXISTS LocalMessageCache (transid INTEGER PRIMARY KEY, mobile VARCHAR(26), authResult VARCHAR(2), action VARCHAR(2), userId VARCHAR, userName VARCHAR, token VARCHAR, msg VARCHAR)", now;
-	assert(Poco::Data::SQLite::Utility::fileToMemory(mem, "dummy.db"));
+	//assert(Poco::Data::SQLite::Utility::fileToMemory(mem, "dummy.db"));
 
 	createOpts();
 	connectOpts();
@@ -142,7 +142,7 @@ int MQTTAsyncClient::messageArrived(void* context, char* topicName, int topicLen
 	//message.assign;
 	poco_information_f2(app.logger(), "recv message from: %s, body is %s", topic, message);
 	//printf("recv message from %s ,body is %s\n", topicName, (char *)m->payload);
-	MQTTAsyncClient::cacheMessage(topic, message);
+	//MQTTAsyncClient::cacheMessage(topic, message);
 	MQTTAsync_freeMessage(&msg);
 	MQTTAsync_free(topicName);
 	return 1;
