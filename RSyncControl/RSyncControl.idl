@@ -62,6 +62,12 @@ library RSyncControlLib	// RS_CertSafeLib
 			[id(50)]BSTR RS_CloudGetCertBase64(BSTR transid, BSTR token);
 			[id(51)]BSTR RS_CloudLogout(BSTR userId);
 			[id(52)]BSTR RS_KeyStatus(BSTR containerId);
+			[id(53)]BSTR RS_ConfigParameters(BSTR cmd, BSTR val);
+			[id(54)]BSTR RS_GetParameters(BSTR cmd);
+			[id(55)]BSTR RS_CreateQRCode(BSTR qrcode, BSTR path);
+			[id(56)]BSTR RS_GetTransid(BSTR joinCode);
+			[id(57)]BSTR RS_EncryptFile(BSTR souceFilePath, BSTR encFilePath);
+			[id(58)]BSTR RS_DevryptFile(BSTR symKey, BSTR encFilePath, BSTR dncDirectoryPath);
 	};
 
 	//  CRSyncControlCtrl 的事件调度接口

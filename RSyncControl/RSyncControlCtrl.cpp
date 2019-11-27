@@ -36,6 +36,9 @@ using Reach::ActiveX::Utility;
 #define new DEBUG_NEW
 #endif
 
+
+#define UM_EVENT (WM_USER + 666)
+
 IMPLEMENT_DYNCREATE(CRSyncControlCtrl, COleControl)
 
 // 消息映射
@@ -71,7 +74,7 @@ BEGIN_DISPATCH_MAP(CRSyncControlCtrl, COleControl)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudLogoutAuth",					dispid_40,			RS_CloudLogoutAuth,					VT_BSTR,VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudEncryptAuth",					dispid_41,			RS_CloudEncryptAuth,				VT_BSTR,VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudEncryptData",					dispid_42,			RS_CloudEncryptData,				VT_BSTR,VTS_BSTR VTS_BSTR VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudEncryptFile",					dispid_43,			RS_CloudEncryptFile,				VT_BSTR,VTS_BSTR VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudEncryptFile",					dispid_43,			RS_CloudEncryptFile,				VT_BSTR,VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudDevryptAuth",					dispid_44,			RS_CloudDevryptAuth,				VT_BSTR,VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudDevryptData",					dispid_45,			RS_CloudDevryptData,				VT_BSTR,VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudDevryptFile",					dispid_46,			RS_CloudDevryptFile,				VT_BSTR,VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR)
@@ -81,6 +84,12 @@ BEGIN_DISPATCH_MAP(CRSyncControlCtrl, COleControl)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudGetCertBase64",				dispid_50,			RS_CloudGetCertBase64,				VT_BSTR,VTS_BSTR VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudLogout",						dispid_51,			RS_CloudLogout,						VT_BSTR,VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyStatus",							dispid_52,			RS_KeyStatus,						VT_BSTR, VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_ConfigParameters",					dispid_53,			RS_ConfigParameters,				VTS_NONE, VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_GetParameters",						dispid_54,			RS_GetParameters,					VT_BSTR, VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CreateQRCode",						dispid_55,			RS_CreateQRCode,					VT_BSTR, VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_GetTransid",						dispid_56,			RS_GetTransid,						VT_BSTR, VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_EncryptFile",						dispid_57,			RS_EncryptFile,						VT_BSTR, VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_DevryptFile",						dispid_58,			RS_DevryptFile,						VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
 END_DISPATCH_MAP()
 
 // 事件映射
@@ -241,7 +250,8 @@ BSTR CRSyncControlCtrl::onRsyncLogin(std::string nameStr, std::string passwordSt
 			ex.DoModal();
 		}
 	}
-	return  EncodingTransfer(_bstr_t(result.data()));
+	std::string gbkstring = Utility::UTF8EncodingGBK(result);
+	return  EncodingTransfer(_bstr_t(gbkstring.data()));
 }
 //判断登录状态
 BSTR CRSyncControlCtrl::IsLoginState(BSTR containerId)
@@ -270,7 +280,13 @@ BSTR CRSyncControlCtrl::IsLoginState(BSTR containerId)
 
 void CRSyncControlCtrl::handle1(MQTTNotification* pNf)
 {
-	Debugger::message(format("MQTTNotification action = %s", pNf->context));
+	Debugger::message(format("MQTTNotification action = %s", pNf->context()));
+	this->SendMessage(UM_EVENT, (WPARAM)pNf);
+	//process_event(pNf);
+}
+
+void CRSyncControlCtrl::process_event(MQTTNotification * pNf)
+{
 	enum action
 	{
 		LoginAuth = 1,
@@ -283,10 +299,10 @@ void CRSyncControlCtrl::handle1(MQTTNotification* pNf)
 	};
 
 	if (pNf){
-		switch(pNf->action)
+		switch(pNf->action())
 		{
 		case LoginAuth:
-			RS_CloudLoginAuthEvent(*pNf);
+			RS_CloudLoginAuthEvent(pNf);
 			break;
 		case EncryptAuth:
 			RS_CloudEncAuthEvent(*pNf);
@@ -309,6 +325,19 @@ void CRSyncControlCtrl::handle1(MQTTNotification* pNf)
 		}
 	}
 }
+
+
+LRESULT CRSyncControlCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM Lparam)
+{
+	if (message == UM_EVENT)
+	{
+		MQTTNotification *pNf = (MQTTNotification*)wParam;
+		process_event(pNf);
+	}
+	return COleControl::WindowProc(message, wParam, Lparam);
+}
+
+
 // CRSyncControlCtrl::OnDraw - 绘图函数
 
 void CRSyncControlCtrl::OnDraw(
@@ -351,10 +380,109 @@ void CRSyncControlCtrl::AboutBox()
 	dlgAbout.DoModal();
 }
 
+void CRSyncControlCtrl::RS_ConfigParameters(BSTR cmd, BSTR val)
+{
+	std::string cmdid = _com_util::ConvertBSTRToString(cmd);
+	std::string valadress = _com_util::ConvertBSTRToString(val);
+
+	HTMLForm params;
+	params.set("cmd", cmdid);
+	params.set("var", valadress);
+	
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_ConfigParameters", body.str());
+	return;
+}
+
+BSTR CRSyncControlCtrl::RS_GetParameters(BSTR cmd)
+{
+	std::string cmdid = _com_util::ConvertBSTRToString(cmd);
+
+	HTMLForm params;
+	params.set("cmd", cmdid);
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_GetParameters", body.str());
+
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return EncodingTransfer(_bstr_t(encoding.data()));
+}
+
+BSTR CRSyncControlCtrl::RS_CreateQRCode(BSTR qrcode, BSTR path)
+{
+	std::string qrcodestr = _com_util::ConvertBSTRToString(qrcode);
+	std::string pathstr = _com_util::ConvertBSTRToString(path);
+
+	HTMLForm params;
+	params.set("qrcode", qrcodestr);
+	params.set("path", pathstr);
+
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_GreateQRCode", body.str());
+
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return EncodingTransfer(_bstr_t(encoding.data()));
+}
+
+BSTR CRSyncControlCtrl::RS_GetTransid(BSTR joinCode)
+{
+	std::string joinCodestr = _com_util::ConvertBSTRToString(joinCode);
+
+	HTMLForm params;
+	params.set("joinCode", joinCodestr);
+
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_GetTransid", body.str());
+
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return EncodingTransfer(_bstr_t(encoding.data()));
+}
+
+BSTR CRSyncControlCtrl::RS_EncryptFile(BSTR souceFilePath, BSTR encFilePath)
+{
+	std::string soucestr = _com_util::ConvertBSTRToString(souceFilePath);
+	std::string encstr = _com_util::ConvertBSTRToString(encFilePath);
+
+	HTMLForm params;
+	params.set("souceFilePath", soucestr);
+	params.set("encFilePath", encstr);
+
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_EncryptFile", body.str());
+
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return EncodingTransfer(_bstr_t(encoding.data()));
+}
+
+BSTR CRSyncControlCtrl::RS_DevryptFile(BSTR symKey, BSTR encFilePath, BSTR dncDirectoryPath)
+{
+	std::string symkeyid = _com_util::ConvertBSTRToString(symKey);
+	std::string encstr = _com_util::ConvertBSTRToString(encFilePath);
+	std::string dncpathstr = _com_util::ConvertBSTRToString(dncDirectoryPath);
+
+	HTMLForm params;
+	params.set("symKey", symkeyid);
+	params.set("encFilePath", encstr);
+	params.set("dncDirectoryPath", dncpathstr);
+
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_DevryptFile", body.str());
+
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return EncodingTransfer(_bstr_t(encoding.data()));
+}
+
 BSTR CRSyncControlCtrl::RS_GetUserList()
 {
 	std::string result = Utility::SuperRequest("/RS_GetUserList", "");
-	return EncodingTransfer(_bstr_t(result.data()));
+
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return EncodingTransfer(_bstr_t(encoding.data()));
 }
 
 BSTR CRSyncControlCtrl::RS_GetCertBase64String(BSTR containerId, SHORT certType)
@@ -369,7 +497,8 @@ BSTR CRSyncControlCtrl::RS_GetCertBase64String(BSTR containerId, SHORT certType)
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_GetCertBase64String", body.str());
 
-	return EncodingTransfer(_bstr_t(result.data()));
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return EncodingTransfer(_bstr_t(encoding.data()));
 }
 
 BSTR CRSyncControlCtrl::RS_CertLogin(BSTR containerId, BSTR password)
@@ -392,7 +521,8 @@ BSTR CRSyncControlCtrl::RS_CertLogin(BSTR containerId, BSTR password)
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_CertLogin", body.str());
 
-	return EncodingTransfer(_bstr_t(result.data()));
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return EncodingTransfer(_bstr_t(encoding.data()));
 }
 
 BSTR CRSyncControlCtrl::RS_GetPinRetryCount(BSTR containerId)
@@ -406,7 +536,8 @@ BSTR CRSyncControlCtrl::RS_GetPinRetryCount(BSTR containerId)
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_GetPinRetryCount", body.str());
 
-	return EncodingTransfer(_bstr_t(result.data()));
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return EncodingTransfer(_bstr_t(encoding.data()));
 }
 
 BSTR CRSyncControlCtrl::RS_ChangePassWd(BSTR containerId, BSTR oldCode, BSTR newCode)
@@ -425,7 +556,8 @@ BSTR CRSyncControlCtrl::RS_ChangePassWd(BSTR containerId, BSTR oldCode, BSTR new
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_ChangePassWd", body.str());
 
-	return EncodingTransfer(_bstr_t(result.data()));
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return EncodingTransfer(_bstr_t(encoding.data()));
 }
 
 BSTR CRSyncControlCtrl::RS_KeyGetKeySnExt(BSTR containerId)
@@ -439,7 +571,8 @@ BSTR CRSyncControlCtrl::RS_KeyGetKeySnExt(BSTR containerId)
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_KeyGetKeySn", body.str());
 
-	return EncodingTransfer(_bstr_t(result.data()));
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return EncodingTransfer(_bstr_t(encoding.data()));
 }
 
 BSTR CRSyncControlCtrl::RS_KeyGetKeySn()
@@ -495,7 +628,8 @@ BSTR CRSyncControlCtrl::RS_KeySignByP1(BSTR msg, BSTR containerId)
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_KeySignByP1", body.str());
 
-	return EncodingTransfer(_bstr_t(result.data()));
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return EncodingTransfer(_bstr_t(encoding.data()));
 }
 
 BSTR CRSyncControlCtrl::RS_VerifySignByP1(BSTR certBase64, BSTR msg, BSTR signdMsg)
@@ -512,7 +646,8 @@ BSTR CRSyncControlCtrl::RS_VerifySignByP1(BSTR certBase64, BSTR msg, BSTR signdM
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_VerifySignByP1", body.str());
 
-	return EncodingTransfer(_bstr_t(result.data()));
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return EncodingTransfer(_bstr_t(encoding.data()));
 }
 
 BSTR CRSyncControlCtrl::RS_KeySignByP7(BSTR msg, BSTR flag, BSTR containerId)
@@ -529,7 +664,8 @@ BSTR CRSyncControlCtrl::RS_KeySignByP7(BSTR msg, BSTR flag, BSTR containerId)
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_KeySignByP7", body.str());
 
-	return EncodingTransfer(_bstr_t(result.data()));
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return EncodingTransfer(_bstr_t(encoding.data()));
 }
 
 BSTR CRSyncControlCtrl::RS_VerifySignByP7(BSTR msg, BSTR signdMsg, BSTR flag)
@@ -547,7 +683,8 @@ BSTR CRSyncControlCtrl::RS_VerifySignByP7(BSTR msg, BSTR signdMsg, BSTR flag)
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_VerifySignByP7", body.str());
 
-	return EncodingTransfer(_bstr_t(result.data()));
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return EncodingTransfer(_bstr_t(encoding.data()));
 }
 
 BSTR CRSyncControlCtrl::RS_KeyEncryptData(BSTR rsKey, BSTR certBase64)
@@ -562,7 +699,8 @@ BSTR CRSyncControlCtrl::RS_KeyEncryptData(BSTR rsKey, BSTR certBase64)
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_KeyEncryptData", body.str());
 
-	return EncodingTransfer(_bstr_t(result.data()));
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return EncodingTransfer(_bstr_t(encoding.data()));
 }
 
 BSTR CRSyncControlCtrl::RS_KeyDecryptData(BSTR encRsKey, BSTR containerId)
@@ -577,7 +715,8 @@ BSTR CRSyncControlCtrl::RS_KeyDecryptData(BSTR encRsKey, BSTR containerId)
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_KeyDecryptData", body.str());
 
-	return EncodingTransfer(_bstr_t(result.data()));
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return EncodingTransfer(_bstr_t(encoding.data()));
 }
 
 BSTR CRSyncControlCtrl::RS_GetCertInfo(BSTR certBase64, BSTR type)
@@ -592,9 +731,9 @@ BSTR CRSyncControlCtrl::RS_GetCertInfo(BSTR certBase64, BSTR type)
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_GetCertInfo", body.str());
 
-	std::wstring bstr = Utility::convert(result);
-
-	return EncodingTransfer(_bstr_t(bstr.data()));
+	//std::wstring bstr = Utility::convert(result);
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return EncodingTransfer(_bstr_t(encoding.data()));
 }
 
 BSTR CRSyncControlCtrl::RS_CloudLoginAuth(BSTR transid)
@@ -607,7 +746,8 @@ BSTR CRSyncControlCtrl::RS_CloudLoginAuth(BSTR transid)
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_CloudLoginAuth", body.str());
 
-	return EncodingTransfer(_bstr_t(result.data()));
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return EncodingTransfer(_bstr_t(encoding.data()));
 }
 
 BSTR CRSyncControlCtrl::RS_CloudSealAuth(BSTR transid)
@@ -620,7 +760,8 @@ BSTR CRSyncControlCtrl::RS_CloudSealAuth(BSTR transid)
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_CloudSealAuth", body.str());
 
-	return EncodingTransfer(_bstr_t(result.data()));
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return EncodingTransfer(_bstr_t(encoding.data()));
 }
 
 BSTR CRSyncControlCtrl::RS_CloudGetAuth(BSTR transid)
@@ -633,7 +774,8 @@ BSTR CRSyncControlCtrl::RS_CloudGetAuth(BSTR transid)
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_CloudGetAuth", body.str());
 
-	return EncodingTransfer(_bstr_t(result.data()));
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return EncodingTransfer(_bstr_t(encoding.data()));
 }
 
 BSTR CRSyncControlCtrl::RS_CloudGetSealList(BSTR token)
@@ -646,7 +788,8 @@ BSTR CRSyncControlCtrl::RS_CloudGetSealList(BSTR token)
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_CloudGetSealList", body.str());
 
-	return EncodingTransfer(_bstr_t(result.data()));
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return EncodingTransfer(_bstr_t(encoding.data()));
 }
 BSTR CRSyncControlCtrl::RS_CloudSignByP7(BSTR msg, BSTR keySn, BSTR transid, BSTR token)
 {
@@ -664,7 +807,8 @@ BSTR CRSyncControlCtrl::RS_CloudSignByP7(BSTR msg, BSTR keySn, BSTR transid, BST
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_CloudSignByP7", body.str());
 
-	return EncodingTransfer(_bstr_t(result.data()));
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return EncodingTransfer(_bstr_t(encoding.data()));
 }
 
 BSTR CRSyncControlCtrl::RS_CloudGetSignResult(BSTR transid)
@@ -677,7 +821,8 @@ BSTR CRSyncControlCtrl::RS_CloudGetSignResult(BSTR transid)
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_CloudGetSignResult", body.str());
 
-	return EncodingTransfer(_bstr_t(result.data()));
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return EncodingTransfer(_bstr_t(encoding.data()));
 }
 
 BSTR CRSyncControlCtrl::RS_CloudLogoutAuth(BSTR token)
@@ -690,7 +835,8 @@ BSTR CRSyncControlCtrl::RS_CloudLogoutAuth(BSTR token)
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_CloudLogoutAuth", body.str());
 
-	return EncodingTransfer(_bstr_t(result.data()));
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return EncodingTransfer(_bstr_t(encoding.data()));
 }
 BSTR CRSyncControlCtrl::RS_CloudEncryptAuth(BSTR transid)
 {
@@ -702,7 +848,8 @@ BSTR CRSyncControlCtrl::RS_CloudEncryptAuth(BSTR transid)
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_CloudEncryptAuth", body.str());
 
-	return EncodingTransfer(_bstr_t(result.data()));
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return EncodingTransfer(_bstr_t(encoding.data()));
 }
 BSTR CRSyncControlCtrl::RS_CloudEncryptData(BSTR reachKey, BSTR transid, BSTR token)
 {
@@ -716,7 +863,8 @@ BSTR CRSyncControlCtrl::RS_CloudEncryptData(BSTR reachKey, BSTR transid, BSTR to
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_CloudEncryptData", body.str());
 
-	return EncodingTransfer(_bstr_t(result.data()));
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return EncodingTransfer(_bstr_t(encoding.data()));
 }
 
 BSTR CRSyncControlCtrl::RS_CloudEncryptFile(BSTR souceFilePath, BSTR encFilePath, BSTR transid, BSTR token)
@@ -733,7 +881,8 @@ BSTR CRSyncControlCtrl::RS_CloudEncryptFile(BSTR souceFilePath, BSTR encFilePath
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_CloudEncryptFile", body.str());
 
-	return EncodingTransfer(_bstr_t(result.data()));
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return EncodingTransfer(_bstr_t(encoding.data()));
 }
 BSTR CRSyncControlCtrl::RS_CloudDevryptAuth(BSTR transid)
 {
@@ -745,7 +894,8 @@ BSTR CRSyncControlCtrl::RS_CloudDevryptAuth(BSTR transid)
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_CloudDevryptAuth", body.str());
 
-	return EncodingTransfer(_bstr_t(result.data()));
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return EncodingTransfer(_bstr_t(encoding.data()));
 }
 BSTR CRSyncControlCtrl::RS_CloudDevryptData(BSTR encReachKey, BSTR url, BSTR transid, BSTR token)
 {
@@ -763,7 +913,8 @@ BSTR CRSyncControlCtrl::RS_CloudDevryptData(BSTR encReachKey, BSTR url, BSTR tra
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_CloudDevryptData", body.str());
 
-	return EncodingTransfer(_bstr_t(result.data()));
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return EncodingTransfer(_bstr_t(encoding.data()));
 }
 
 BSTR CRSyncControlCtrl::RS_CloudDevryptFile(BSTR encFilePath, BSTR dncFilePath, BSTR url, BSTR transid, BSTR token)
@@ -782,7 +933,8 @@ BSTR CRSyncControlCtrl::RS_CloudDevryptFile(BSTR encFilePath, BSTR dncFilePath, 
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_CloudDevryptFile", body.str());
 
-	return EncodingTransfer(_bstr_t(result.data()));
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return EncodingTransfer(_bstr_t(encoding.data()));
 }
 BSTR CRSyncControlCtrl::RS_CloudReceiveDevryptResult(BSTR token, BSTR resultData)
 {
@@ -796,7 +948,8 @@ BSTR CRSyncControlCtrl::RS_CloudReceiveDevryptResult(BSTR token, BSTR resultData
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_CloudReceiveDevryptResult", body.str());
 
-	return EncodingTransfer(_bstr_t(result.data()));
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return EncodingTransfer(_bstr_t(encoding.data()));
 
 }
 
@@ -812,7 +965,8 @@ BSTR CRSyncControlCtrl::RS_CloudGetCompanyCert(BSTR transid, BSTR token)
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_CloudGetCompanyCert", body.str());
 
-	return EncodingTransfer(_bstr_t(result.data()));
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return EncodingTransfer(_bstr_t(encoding.data()));
 }
 
 BSTR CRSyncControlCtrl::RS_CloudGetCertAuth(BSTR transid)
@@ -825,7 +979,8 @@ BSTR CRSyncControlCtrl::RS_CloudGetCertAuth(BSTR transid)
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_CloudGetCertAuth", body.str());
 
-	return EncodingTransfer(_bstr_t(result.data()));
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return EncodingTransfer(_bstr_t(encoding.data()));
 }
 
 BSTR CRSyncControlCtrl::RS_CloudGetCertBase64(BSTR transid, BSTR token)
@@ -840,7 +995,8 @@ BSTR CRSyncControlCtrl::RS_CloudGetCertBase64(BSTR transid, BSTR token)
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_CloudGetCertBase64", body.str());
 
-	return EncodingTransfer(_bstr_t(result.data()));
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return EncodingTransfer(_bstr_t(encoding.data()));
 }
 
 BSTR CRSyncControlCtrl::RS_CloudLogout(BSTR userId)
@@ -853,7 +1009,8 @@ BSTR CRSyncControlCtrl::RS_CloudLogout(BSTR userId)
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_CloudLogout", body.str());
 
-	return EncodingTransfer(_bstr_t(result.data()));
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return EncodingTransfer(_bstr_t(encoding.data()));
 }
 
 BSTR CRSyncControlCtrl::RS_KeyStatus(BSTR containerId)
@@ -865,7 +1022,26 @@ BSTR CRSyncControlCtrl::RS_KeyStatus(BSTR containerId)
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_KeyStatus", body.str());
 
-	return EncodingTransfer(_bstr_t(result.data()));
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return EncodingTransfer(_bstr_t(encoding.data()));
+}
+
+inline void CRSyncControlCtrl::RS_CloudLoginAuthEvent(const MQTTNotification* pLg)
+{
+	MQTTNotificationEvent* Nf = (MQTTNotificationEvent*)pLg;
+	CString _authResult, _transid, _token, _mobile, _userName, _userID, _message;
+	_authResult = Nf->authResult().data();
+	_transid = Nf->transid().data();
+	_token = Nf->token().data();
+	_message = Nf->message().data();
+	if ("1" == Nf->authResult())
+	{
+		_mobile = Nf->_mobile.data();
+		_userName = Nf->_userName.data();
+		_userID = Nf->_userID.data();
+	}
+	FireEvent(eventid_3, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), _authResult, _transid, _token
+		, _mobile, _userName, _userID, _message);
 }
 
 // CRSyncControlCtrl 消息处理程序

@@ -16,6 +16,8 @@
 #include "Poco/URI.h"
 #include <cassert>
 #include <sstream>
+#include "Poco/Windows936Encoding.h"
+#include "Poco/TextConverter.h"
 
 using Poco::Net::HTTPRequest;
 using Poco::Net::HTTPResponse;
@@ -115,6 +117,26 @@ std::string Utility::SuperRequest(const std::string& url, const std::string& bod
 		Debugger::message(e.message());
 	}
 	return ostr.str();
+}
+
+std::string Reach::ActiveX::Utility::GBKEncodingUTF8(const std::string & inEncoding)
+{
+	std::string outstring;
+	Poco::UTF8Encoding utf8;
+	Poco::Windows936Encoding gbk;
+	Poco::TextConverter coverter(gbk, utf8);
+	coverter.convert(inEncoding, outstring);
+	return outstring;
+}
+
+std::string Reach::ActiveX::Utility::UTF8EncodingGBK(const std::string & inEncoding)
+{
+	std::string outstring;
+	Poco::UTF8Encoding utf8;
+	Poco::Windows936Encoding gbk;
+	Poco::TextConverter coverter(utf8, gbk);
+	coverter.convert(inEncoding, outstring);
+	return outstring;
 }
 
 std::wstring Utility::convert(const std::string& utf8)
