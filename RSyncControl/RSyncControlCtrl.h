@@ -44,6 +44,14 @@ protected:
 	BSTR onRsyncLogin(std::string nameStr, std::string passwordStr);
 	BSTR IsLoginState(BSTR containerId);
 
+	//通用接口
+	void RS_ConfigParameters(BSTR cmd, BSTR val);
+	BSTR RS_GetParameters(BSTR cmd);
+	BSTR RS_CreateQRCode(BSTR qrcode, BSTR path);
+	BSTR RS_GetTransid(BSTR joinCode);
+	BSTR RS_EncryptFile(BSTR souceFilePath, BSTR encFilePath);
+	BSTR RS_DevryptFile(BSTR symKey, BSTR encFilePath, BSTR dncDirectoryPath);
+
 	BSTR RS_GetUserList();
 	BSTR RS_GetCertBase64String(BSTR containerId, SHORT certType);
 	BSTR RS_CertLogin(BSTR containerId, BSTR password);
@@ -82,7 +90,7 @@ protected:
 	inline void RS_CloudSealAuthEvent(const MQTTNotification& Nf)
 	{
 		//LPCTSTR authResult, LPCTSTR transid, LPCTSTR token, LPCTSTR msg
-		FireEvent(eventid_1, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), _bstr_t(Nf.authResult.data()), _bstr_t(Nf.transid.data()), _bstr_t(Nf.token.data()), _bstr_t(Nf.message.data()));
+		FireEvent(eventid_1, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), CString(Nf.authResult().data()), CString(Nf.transid().data()), CString(Nf.token().data()), CString(Nf.message().data()));
 	}
 
 	///获取签名结果事件
@@ -91,44 +99,44 @@ protected:
 		//LPCTSTR signResult, LPCTSTR signdMsg, LPCTSTR transid, LPCTSTR signdCert, LPCTSTR msg
 		std::string signdMsg, signdCert;
 		FireEvent(eventid_2, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR),
-			_bstr_t(Nf.authResult.data()), _bstr_t(signdMsg.data()), _bstr_t(Nf.transid.data()), _bstr_t(signdCert.data()), _bstr_t(Nf.message.data()));
+			CString(Nf.authResult().data()), CString(Nf.transid().data()), CString(Nf.token().data()), CString(Nf.message().data()));
 	}
 
 	///登入授权事件
-	inline void RS_CloudLoginAuthEvent(const MQTTNotification& Nf)
-	{
+	inline void RS_CloudLoginAuthEvent(const MQTTNotification* Nf);
+	/*{
 		//LPCTSTR authResult, LPCTSTR transid, LPCTSTR token, LPCTSTR mobile, LPCTSTR userName, LPCTSTR userID, LPCTSTR msg
-		std::string mobile, userName, userID;
-		FireEvent(eventid_3, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR),
-			_bstr_t(Nf.authResult.data()), _bstr_t(Nf.transid.data()), _bstr_t(Nf.token.data())
-			, _bstr_t(mobile.data()), _bstr_t(userName.data()), _bstr_t(userID.data()), _bstr_t(Nf.message.data()));
-	}
+		//std::string mobile, userName, userID;
+		
+	}*/
 
 	///加密授权事件
 	inline void RS_CloudEncAuthEvent(const MQTTNotification& Nf)
 	{
 		//LPCTSTR authResult, LPCTSTR transid, LPCTSTR token, LPCTSTR msg
-		FireEvent(eventid_4, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), _bstr_t(Nf.authResult.data()), _bstr_t(Nf.transid.data()), _bstr_t(Nf.token.data()), _bstr_t(Nf.message.data()));
+		FireEvent(eventid_4, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), CString(Nf.authResult().data()), CString(Nf.transid().data()), CString(Nf.token().data()), CString(Nf.message().data()));
 	}
 
 	///解密授权事件
 	inline void RS_CloudDevAuthEvent(const MQTTNotification& Nf)
 	{
 		//LPCTSTR authResult, LPCTSTR transid, LPCTSTR token, LPCTSTR msg
-		FireEvent(eventid_5, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), _bstr_t(Nf.authResult.data()), _bstr_t(Nf.transid.data()), _bstr_t(Nf.token.data()), _bstr_t(Nf.message.data()));
+		FireEvent(eventid_5, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), CString(Nf.authResult().data()), CString(Nf.transid().data()), CString(Nf.token().data()), CString(Nf.message().data()));
 	}
 
 	///获取证书授权事件
 	inline void RS_CloudGetCertAuthEvent(const MQTTNotification& Nf)
 	{
 		//LPCTSTR authResult, LPCTSTR transid, LPCTSTR token, LPCTSTR msg
-		FireEvent(eventid_6, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), _bstr_t(Nf.authResult.data()), _bstr_t(Nf.transid.data()), _bstr_t(Nf.token.data()), _bstr_t(Nf.message.data()));
+		FireEvent(eventid_6, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), CString(Nf.authResult().data()), CString(Nf.transid().data()), CString(Nf.token().data()), CString(Nf.message().data()));
 	}
 
 // 事件映射
 	DECLARE_EVENT_MAP()
 	protected:
 		void handle1(MQTTNotification* pNf);
+		void process_event(MQTTNotification* pNf);
+		virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM Lparam);
 // 调度和事件 ID
 private:
 	enum {
@@ -171,7 +179,13 @@ private:
 		dispid_49,
 		dispid_50,
 		dispid_51,
-		dispid_52
+		dispid_52,
+		dispid_53,
+		dispid_54,
+		dispid_55,
+		dispid_56,
+		dispid_57,
+		dispid_58
 	};
 };
 

@@ -126,7 +126,7 @@ int MQTTAsyncClient::messageArrived(void* context, char* topicName, int topicLen
 	poco_information_f2(app.logger(), "recv message from: %s, body is %s", topic, message);
 #endif // OCX
 
-	NotificationCenter::defaultCenter().postNotification(new MQTTNotification(message));
+	NotificationCenter::defaultCenter().postNotification(new MQTTNotificationEvent(message));
 	MQTTAsync_freeMessage(&msg);
 	MQTTAsync_free(topicName);
 	return 1;

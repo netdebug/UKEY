@@ -14,6 +14,8 @@ namespace Reach {
 			static std::wstring convert(const std::string& utf8);
 			static std::string formatUid(const std::string& entries);
 			static std::string SuperRequest(const std::string& url, const std::string& body);
+			static std::string UTF8EncodingGBK(const std::string& inEncoding);
+			static std::string GBKEncodingUTF8(const std::string& inEncoding);
 		private:
 			Utility();
 			Utility(const Utility&);
