@@ -60,7 +60,7 @@ namespace Reach {
 		virtual void mixValue()
 		{
 			Application& app = Application::instance();
-			FileInputStream in(app.config().getString("cloudconfigdir","")+"CloudDevryptFile.json");
+			FileInputStream in(Utility::config("config\\CloudDevryptFile.json"));
 			DynamicStruct ds = *parse(in).extract<Object::Ptr>();
 			ds["bodyJson"]["token"] = _token;
 			ds["bodyJson"]["transid"] = _transid;

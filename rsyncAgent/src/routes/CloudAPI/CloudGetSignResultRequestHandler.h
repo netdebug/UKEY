@@ -61,7 +61,7 @@ namespace Reach {
 		virtual void mixValue()
 		{
 			Application& app = Application::instance();
-			FileInputStream in(app.config().getString("cloudconfigdir","")+"CloudGetSignResult.json");
+			FileInputStream in(Utility::config("config\\CloudGetSignResult.json"));
 			DynamicStruct ds = *parse(in).extract<Object::Ptr>();
 
 			ds["bodyJson"]["token"] = _token;

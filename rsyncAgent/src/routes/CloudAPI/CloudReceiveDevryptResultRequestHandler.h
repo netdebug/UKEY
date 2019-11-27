@@ -48,7 +48,7 @@ namespace Reach {
 		virtual void mixValue()
 		{
 			Application& app = Application::instance();
-			FileInputStream in(app.config().getString("cloudconfigdir","")+"CloudReceiveDevryptResult.json");
+			FileInputStream in(Utility::config("config\\CloudReceiveDevryptResult.json"));
 			DynamicStruct ds = *parse(in).extract<Object::Ptr>();
 			ds["bodyJson"]["action"] = _action;
 			ds["bodyJson"]["token"] = _token;

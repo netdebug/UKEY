@@ -45,7 +45,7 @@ namespace Reach {
 		virtual void mixValue()
 		{
 			Application& app = Application::instance();
-			FileInputStream in(app.config().getString("cloudconfigdir","")+"CloudLogout.json");
+			FileInputStream in(Utility::config("config\\CloudLogout.json"));
 			DynamicStruct ds = *parse(in).extract<Object::Ptr>();
 
 			ds["bodyJson"]["userId"] = _userId;

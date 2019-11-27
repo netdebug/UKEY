@@ -83,7 +83,7 @@ namespace Reach {
 			std::string pubkey(extract("body", "pubkey"));
 			std::string ciphertext = Utility::v_encrypt_by_sm2(source, pubkey);
 
-			add("encSymKey", ciphertext);
+			add("encReachKey", ciphertext);
 			add("signCertBase64", extract("body", "signCertBase64"));
 			add("encCertBase64", extract("body", "encCertBase64"));
 #endif // TEST	
@@ -93,7 +93,7 @@ namespace Reach {
 		virtual void mixValue()
 		{
 			Application& app = Application::instance();
-			FileInputStream in(app.config().getString("cloudconfigdir", "") + "CloudEncryptData.json");
+			FileInputStream in(Utility::config("config\\CloudEncryptData.json"));
 			DynamicStruct ds = *parse(in).extract<Object::Ptr>();
 			ds["bodyJson"]["token"] = _token;
 			ds["bodyJson"]["transid"] = _transid;
