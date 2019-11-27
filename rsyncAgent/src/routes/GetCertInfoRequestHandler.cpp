@@ -44,6 +44,8 @@ GetCertInfo::GetCertInfo(const std::string& base64, int type)
 	decode_utf8(text);
 }
 
+/// GBK中文乱码
+
 void GetCertInfo::run()
 {
 	switch (_type) {
@@ -84,6 +86,9 @@ void GetCertInfo::run()
 		personal(); break;
 	case 54:
 		enterprise(); break;
+	case 300:
+		/*调用福建ca keysn整串字符包含@*/
+		break;
 	default:
 		break;
 	}

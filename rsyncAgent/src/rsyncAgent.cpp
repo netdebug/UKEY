@@ -48,11 +48,6 @@ void rsyncAgent::initialize(Application& self)
 	loadConfiguration(); // load default configuration files, if present
 	ServerApplication::initialize(self);
 	logger().information("starting up");
-
-	/*self.config().setString("rsigncloud", "");
-	self.config().setString("rsigncloudTest", "");
-	self.config().setString("authType", "0");
-	self.config().setString("keySn", "keySn");*/
 }
 
 void rsyncAgent::uninitialize()
