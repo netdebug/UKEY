@@ -235,7 +235,7 @@ xcopy /y $(ProjectDir)QZSyncWorker.json $(OutDir)</Command>
       <AdditionalDependencies>PocoFoundation.lib;PocoJSON.lib;PocoUtil.lib;PocoNet.lib;PocoData.lib;PocoDataSQLite.lib;SoFProvider.lib;TCardCert.lib;ws2_32.lib;iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\bin\rsyncClient.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\lib;..\lib\libpoco;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -243,6 +243,7 @@ xcopy /y $(ProjectDir)QZSyncWorker.json $(OutDir)</Command>
       <ImportLibrary>
       </ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
+      <ProgramDatabaseFile>..\bin\rsyncClient.pdb</ProgramDatabaseFile>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /y $(ProjectDir)rsyncClient.properties $(OutDir)</Command>

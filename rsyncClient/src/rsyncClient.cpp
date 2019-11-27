@@ -14,7 +14,7 @@
 #include "Poco/Util/HelpFormatter.h"
 #include "Poco/TaskManager.h"
 #include "rsyncClient.h"
-#include "SampleTask.h"
+//#include "SampleTask.h"
 #include "QZSyncWorker.h"
 
 using namespace Reach;
@@ -79,8 +79,6 @@ int rsyncClient::main(const ArgVec& args)
 	if (!_helpRequested)
 	{
 		Application& app = Application::instance();
-		std::string host = app.config().getString("HTTPFormServer.host", "localhost");
-		short port = (unsigned short)app.config().getUInt("HTTPFormServer.port", 9980);
 		TaskManager tm;
 		//tm.start(new SampleTask(host, port));
 		tm.start(new QZSyncWorker);

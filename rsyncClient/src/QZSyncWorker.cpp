@@ -13,10 +13,11 @@
 #include "OESSealProvider.h"
 #include "XSSealProvider.h"
 #include "KGSealProvider.h"
+#include "Utility.h"
 #include <cassert>
 
 using namespace Reach;
-
+using namespace Reach::ActiveX;
 using namespace Poco;
 using namespace Poco::Data;
 using namespace Poco::Data::SQLite;
@@ -30,7 +31,7 @@ QZSyncWorker::QZSyncWorker()
 	:Task("QZSyncWorker")
 {
 	Poco::Data::SQLite::Connector::registerConnector();
-	FileInputStream in("QZSyncWorker.json");
+	FileInputStream in(Utility::config("QZSyncWorker.json"));
 	object = extract<Object::Ptr>(in);
 	assert(object);
 }
@@ -39,10 +40,10 @@ void QZSyncWorker::runTask()
 {
 	Application& app = Application::instance();
 
-	while (!sleep(2000))
+	while (!sleep(5000))
 	{
 		app.logger().trace("busy doing QZSyncTask... " + DateTimeFormatter::format(app.uptime()));
-
+		if (isCancelled()) break;
 		try
 		{
 			if (IsUSBKeyPresent()) {

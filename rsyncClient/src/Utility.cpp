@@ -17,7 +17,7 @@
 #include "Poco/StreamConverter.h"
 #include "WindowsGBKEncoding.h"
 #include "Poco/TextConverter.h"
-
+#include "Poco/Util/Application.h"
 
 #include <cassert>
 #include <sstream>
@@ -37,6 +37,9 @@ using Poco::Dynamic::Var;
 using Poco::OutputStreamConverter;
 using Poco::UTF8Encoding;
 using Poco::WindowsGBKEncoding;
+using Poco::Util::Application;
+using Poco::Path;
+using Poco::replace;
 
 using namespace Reach::ActiveX;
 
@@ -130,6 +133,18 @@ std::wstring Utility::convert(const std::string& utf8)
 	std::wstring ucs;
 	UnicodeConverter::toUTF16(utf8, ucs);
 	return ucs;
+}
+
+std::string Utility::config(const std::string& name)
+{
+	Application& app = Application::instance();
+
+	std::string appName = Path(app.commandPath()).getFileName();
+	std::string fullpath = replace(app.commandPath(), appName, std::string(""));
+
+	Path filePath(fullpath, name);
+
+	return filePath.toString();
 }
 
 std::string Utility::formatUid(const std::string& entries)
