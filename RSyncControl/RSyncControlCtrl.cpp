@@ -387,7 +387,7 @@ void CRSyncControlCtrl::RS_ConfigParameters(BSTR cmd, BSTR val)
 
 	HTMLForm params;
 	params.set("cmd", cmdid);
-	params.set("var", valadress);
+	params.set("val", valadress);
 	
 	std::ostringstream body;
 	params.write(body);
@@ -471,7 +471,7 @@ BSTR CRSyncControlCtrl::RS_DevryptFile(BSTR symKey, BSTR encFilePath, BSTR dncDi
 
 	std::ostringstream body;
 	params.write(body);
-	std::string result = Utility::SuperRequest("/RS_DevryptFile", body.str());
+	std::string result = Utility::SuperRequest("/RS_DecryptFile", body.str());
 
 	std::string encoding = Utility::UTF8EncodingGBK(result);
 	return _bstr_t(encoding.data());
@@ -855,10 +855,12 @@ BSTR CRSyncControlCtrl::RS_CloudEncryptData(BSTR reachKey, BSTR transid, BSTR to
 {
 	std::string REACHKEY = _com_util::ConvertBSTRToString(reachKey);
 	std::string TOKEN = _com_util::ConvertBSTRToString(token);
+	std::string TRANSID = _com_util::ConvertBSTRToString(transid);
 
 	HTMLForm params;
-	params.set("reachKey", REACHKEY);
+	params.set("symKey", REACHKEY);
 	params.set("token", TOKEN);
+	params.set("transid", TRANSID);
 	std::ostringstream body;
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_CloudEncryptData", body.str());
@@ -872,11 +874,13 @@ BSTR CRSyncControlCtrl::RS_CloudEncryptFile(BSTR souceFilePath, BSTR encFilePath
 	std::string SOUCEFILEPATH = _com_util::ConvertBSTRToString(souceFilePath);
 	std::string ENCFILEPATH = _com_util::ConvertBSTRToString(encFilePath);
 	std::string TOKEN = _com_util::ConvertBSTRToString(token);
+	std::string TRANSID = _com_util::ConvertBSTRToString(transid);
 
 	HTMLForm params;
 	params.set("souceFilePath", SOUCEFILEPATH);
 	params.set("encFilePath", ENCFILEPATH);
 	params.set("token", TOKEN);
+	params.set("transid", TRANSID);
 	std::ostringstream body;
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_CloudEncryptFile", body.str());
@@ -905,7 +909,7 @@ BSTR CRSyncControlCtrl::RS_CloudDevryptData(BSTR encReachKey, BSTR url, BSTR tra
 	std::string TOKEN = _com_util::ConvertBSTRToString(token);
 
 	HTMLForm params;
-	params.set("encReachKey", ENCREACHKEY);
+	params.set("encSymKey", ENCREACHKEY);
 	params.set("url", URL);
 	params.set("transid", TRANSID);
 	params.set("token", TOKEN);
@@ -923,10 +927,12 @@ BSTR CRSyncControlCtrl::RS_CloudDevryptFile(BSTR encFilePath, BSTR dncFilePath, 
 	std::string DNCFILEPATH = _com_util::ConvertBSTRToString(dncFilePath);
 	std::string TRANSID = _com_util::ConvertBSTRToString(transid);
 	std::string TOKEN = _com_util::ConvertBSTRToString(token);
+	std::string URL = _com_util::ConvertBSTRToString(url);
 
 	HTMLForm params;
 	params.set("encFilePath", ENCFILEPATH);
 	params.set("dncFilePath", DNCFILEPATH);
+	params.set("url", URL);
 	params.set("transid", TRANSID);
 	params.set("token", TOKEN);
 	std::ostringstream body;

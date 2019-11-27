@@ -108,7 +108,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_USRDLL;OCX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\include\poco\Net\include;..\include\poco\Foundation\include;..\include\poco\JSON\include;..\include\mqtt\include;..\include\poco\Util\include;..\include\openssl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include\poco\Net\include;..\include\poco\Foundation\include;..\include\poco\JSON\include;..\include\mqtt\include;..\include\poco\Util\include;..\include\openssl\include;..\include\poco\Encodings\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -168,7 +168,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_USRDLL;OCX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\include\poco\Net\include;..\include\poco\Foundation\include;..\include\poco\JSON\include;..\include\mqtt\include;..\include\poco\Util\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include\poco\Net\include;..\include\poco\Foundation\include;..\include\poco\JSON\include;..\include\mqtt\include;..\include\poco\Util\include;..\include\poco\Encodings\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
