@@ -416,7 +416,7 @@ BSTR CRSyncControlCtrl::RS_CreateQRCode(BSTR qrcode, BSTR path)
 
 	HTMLForm params;
 	params.set("qrcode", qrcodestr);
-	params.set("path", pathstr);
+	params.set("path", Utility::GBKEncodingUTF8(pathstr));
 
 	std::ostringstream body;
 	params.write(body);
@@ -447,8 +447,8 @@ BSTR CRSyncControlCtrl::RS_EncryptFile(BSTR souceFilePath, BSTR encFilePath)
 	std::string encstr = _com_util::ConvertBSTRToString(encFilePath);
 
 	HTMLForm params;
-	params.set("souceFilePath", soucestr);
-	params.set("encFilePath", encstr);
+	params.set("souceFilePath", Utility::GBKEncodingUTF8(soucestr));
+	params.set("encFilePath", Utility::GBKEncodingUTF8(encstr));
 
 	std::ostringstream body;
 	params.write(body);
@@ -466,8 +466,8 @@ BSTR CRSyncControlCtrl::RS_DevryptFile(BSTR symKey, BSTR encFilePath, BSTR dncDi
 
 	HTMLForm params;
 	params.set("symKey", symkeyid);
-	params.set("encFilePath", encstr);
-	params.set("dncDirectoryPath", dncpathstr);
+	params.set("encFilePath", Utility::GBKEncodingUTF8(encstr));
+	params.set("dncDirectoryPath", Utility::GBKEncodingUTF8(dncpathstr));
 
 	std::ostringstream body;
 	params.write(body);
@@ -611,7 +611,7 @@ BSTR CRSyncControlCtrl::RS_KeyGetKeySn()
 	object->set("data", data);
 	DynamicStruct ds = *object;
 
-	return EncodingTransfer(_bstr_t(ds.toString().data()));
+	return _bstr_t(ds.toString().data());
 }
 
 BSTR CRSyncControlCtrl::RS_KeySignByP1(BSTR msg, BSTR containerId)
@@ -877,8 +877,8 @@ BSTR CRSyncControlCtrl::RS_CloudEncryptFile(BSTR souceFilePath, BSTR encFilePath
 	std::string TRANSID = _com_util::ConvertBSTRToString(transid);
 
 	HTMLForm params;
-	params.set("souceFilePath", SOUCEFILEPATH);
-	params.set("encFilePath", ENCFILEPATH);
+	params.set("souceFilePath", Utility::GBKEncodingUTF8(SOUCEFILEPATH));
+	params.set("encFilePath", Utility::GBKEncodingUTF8(ENCFILEPATH));
 	params.set("token", TOKEN);
 	params.set("transid", TRANSID);
 	std::ostringstream body;
@@ -930,8 +930,8 @@ BSTR CRSyncControlCtrl::RS_CloudDevryptFile(BSTR encFilePath, BSTR dncFilePath, 
 	std::string URL = _com_util::ConvertBSTRToString(url);
 
 	HTMLForm params;
-	params.set("encFilePath", ENCFILEPATH);
-	params.set("dncFilePath", DNCFILEPATH);
+	params.set("encFilePath", Utility::GBKEncodingUTF8(ENCFILEPATH));
+	params.set("dncFilePath", Utility::GBKEncodingUTF8(DNCFILEPATH));
 	params.set("url", URL);
 	params.set("transid", TRANSID);
 	params.set("token", TOKEN);
