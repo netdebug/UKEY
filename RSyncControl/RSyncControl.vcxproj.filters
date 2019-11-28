@@ -42,9 +42,6 @@
     <ClCompile Include="MQTTAsyncClient.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="EncodingTransfer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="RSyncLoginView.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -84,9 +81,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="MQTTAsyncClient.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="EncodingTransfer.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="RSyncLoginView.h">
