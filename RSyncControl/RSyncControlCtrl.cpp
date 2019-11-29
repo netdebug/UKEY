@@ -90,6 +90,7 @@ BEGIN_DISPATCH_MAP(CRSyncControlCtrl, COleControl)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_GetTransid",						dispid_56,			RS_GetTransid,						VT_BSTR, VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_EncryptFile",						dispid_57,			RS_EncryptFile,						VT_BSTR, VTS_BSTR VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_DevryptFile",						dispid_58,			RS_DevryptFile,						VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_VerifyIdentity",					dispid_59,			RS_VerifyIdentity,					VT_BSTR, VTS_BSTR VTS_BSTR)
 END_DISPATCH_MAP()
 
 // 事件映射
@@ -472,6 +473,23 @@ BSTR CRSyncControlCtrl::RS_DevryptFile(BSTR symKey, BSTR encFilePath, BSTR dncDi
 	std::ostringstream body;
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_DecryptFile", body.str());
+
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return _bstr_t(encoding.data());
+}
+
+BSTR CRSyncControlCtrl::RS_VerifyIdentity(BSTR certBase64, BSTR authNo)
+{
+	std::string CERTBASE64 = _com_util::ConvertBSTRToString(certBase64);
+	std::string AUTHNO = _com_util::ConvertBSTRToString(authNo);
+
+	HTMLForm params;
+	params.set("certBase64", CERTBASE64);
+	params.set("authNo", AUTHNO);
+
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_VerifyIdentity", body.str());
 
 	std::string encoding = Utility::UTF8EncodingGBK(result);
 	return _bstr_t(encoding.data());
