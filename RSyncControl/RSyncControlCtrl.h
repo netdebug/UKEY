@@ -187,7 +187,8 @@ private:
 		dispid_55,
 		dispid_56,
 		dispid_57,
-		dispid_58
+		dispid_58,
+		dispid_59
 	};
 };
 
