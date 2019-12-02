@@ -91,6 +91,8 @@ BEGIN_DISPATCH_MAP(CRSyncControlCtrl, COleControl)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_EncryptFile",						dispid_57,			RS_EncryptFile,						VT_BSTR, VTS_BSTR VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_DevryptFile",						dispid_58,			RS_DevryptFile,						VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_VerifyIdentity",					dispid_59,			RS_VerifyIdentity,					VT_BSTR, VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyEncryptFile",					dispid_60,			RS_KeyEncryptFile,					VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyDecryptFile",					dispid_61,			RS_KeyDecryptFile,					VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
 END_DISPATCH_MAP()
 
 // 事件映射
@@ -493,6 +495,20 @@ BSTR CRSyncControlCtrl::RS_VerifyIdentity(BSTR certBase64, BSTR authNo)
 
 	std::string encoding = Utility::UTF8EncodingGBK(result);
 	return _bstr_t(encoding.data());
+}
+
+BSTR CRSyncControlCtrl::RS_KeyEncryptFile(BSTR souceFilePath, BSTR encFilePath, BSTR certBase64)
+{
+	std::string result;
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return _bstr_t(encoding.data());;
+}
+
+BSTR CRSyncControlCtrl::RS_KeyDecryptFile(BSTR encFilePath, BSTR dncFilePath, BSTR containerId)
+{
+	std::string result;
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return _bstr_t(encoding.data());;
 }
 
 BSTR CRSyncControlCtrl::RS_GetUserList()

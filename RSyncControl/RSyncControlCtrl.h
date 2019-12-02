@@ -68,6 +68,8 @@ protected:
 	BSTR RS_KeyDecryptData(BSTR encRsKey, BSTR containerId);
 	BSTR RS_GetCertInfo(BSTR certBase64, BSTR type);
 	BSTR RS_VerifyIdentity(BSTR certBase64, BSTR authNo);
+	BSTR RS_KeyEncryptFile(BSTR souceFilePath, BSTR encFilePath, BSTR certBase64);
+	BSTR RS_KeyDecryptFile(BSTR encFilePath, BSTR dncFilePath, BSTR containerId);
 	/// Cloud API
 	BSTR RS_CloudLoginAuth(BSTR transid);
 	BSTR RS_CloudSealAuth(BSTR transid);
@@ -188,7 +190,9 @@ private:
 		dispid_56,
 		dispid_57,
 		dispid_58,
-		dispid_59
+		dispid_59,
+		dispid_60,
+		dispid_61
 	};
 };
 

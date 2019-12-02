@@ -69,6 +69,8 @@ library RS_CertSafeLib	// RS_CertSafeLib
 			[id(57)]BSTR RS_EncryptFile(BSTR souceFilePath, BSTR encFilePath);
 			[id(58)]BSTR RS_DevryptFile(BSTR symKey, BSTR encFilePath, BSTR dncDirectoryPath);
 			[id(59)]BSTR RS_VerifyIdentity(BSTR certBase64, BSTR authNo);
+			[id(60)]BSTR RS_KeyEncryptFile(BSTR souceFilePath, BSTR encFilePath, BSTR certBase64);
+			[id(61)]BSTR RS_KeyDecryptFile(BSTR encFilePath, BSTR dncFilePath, BSTR containerId);
 	};
 
 	//  CRSyncControlCtrl 的事件调度接口
