@@ -86,7 +86,7 @@ BEGIN_DISPATCH_MAP(CRSyncControlCtrl, COleControl)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyStatus",							dispid_52,			RS_KeyStatus,						VT_BSTR, VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_ConfigParameters",					dispid_53,			RS_ConfigParameters,				VTS_NONE, VTS_BSTR VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_GetParameters",						dispid_54,			RS_GetParameters,					VT_BSTR, VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CreateQRCode",						dispid_55,			RS_CreateQRCode,					VT_BSTR, VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_GreateQRCode",						dispid_55,			RS_CreateQRCode,					VT_BSTR, VTS_BSTR VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_GetTransid",						dispid_56,			RS_GetTransid,						VT_BSTR, VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_EncryptFile",						dispid_57,			RS_EncryptFile,						VT_BSTR, VTS_BSTR VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_DevryptFile",						dispid_58,			RS_DevryptFile,						VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
@@ -115,7 +115,7 @@ END_PROPPAGEIDS(CRSyncControlCtrl)
 
 //IMPLEMENT_OLECREATE_EX(CRSyncControlCtrl, "RSyncControl.RSyncControlCtrl.1",
 //	0xa0b23721,0x9350,0x4b4d,0xb5,0x81,0x65,0xad,0xd1,0xa7,0x7a,0x5e)
-IMPLEMENT_OLECREATE_EX(CRSyncControlCtrl, "RSyncControl.RSyncControlCtrl.1",
+IMPLEMENT_OLECREATE_EX(CRSyncControlCtrl, "RS_CERTSAFE.RS_CertSafeCtrl.1",
 	0xF84C8F57,0x5A05,0x4D8C,0x82,0x6D,0x29,0x58,0x9C,0x7A,0x12,0x1C)
 
 // 键入库 ID 和版本

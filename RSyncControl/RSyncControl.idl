@@ -2,7 +2,7 @@
 
 // 此文件将由 MIDL 编译器工具处理以
 // 生成类型库(RSyncControl.tlb)，该类型库将成为
-// RSyncControl.ocx。
+// RS_CertSafe.ocx。
 
 #include <olectl.h>
 #include <idispids.h>
@@ -13,17 +13,17 @@
 	version(2.0),
 	control 
 ]
-library RSyncControlLib	// RS_CertSafeLib
+library RS_CertSafeLib	// RS_CertSafeLib
 {
 	importlib(STDOLE_TLB);
 
 	//  CRSyncControlCtrl 的主调度接口
 	[ 
-		// _DRSyncControl
+		// _DRS_CertSafe
 		// uuid(db403885-f81d-41d2-80d7-40365097d60c)
 		uuid(7A58AA86-D40D-4611-9DA1-DFCEAE95315A) 
 	]
-	dispinterface _DRSyncControl	// _DRS_CertSafe	uuid(7A58AA86-D40D-4611-9DA1-DFCEAE95315A)
+	dispinterface _DRS_CertSafe	// _DRS_CertSafe	uuid(7A58AA86-D40D-4611-9DA1-DFCEAE95315A)
 	{
 		properties:
 		methods:
@@ -64,7 +64,7 @@ library RSyncControlLib	// RS_CertSafeLib
 			[id(52)]BSTR RS_KeyStatus(BSTR containerId);
 			[id(53)]BSTR RS_ConfigParameters(BSTR cmd, BSTR val);
 			[id(54)]BSTR RS_GetParameters(BSTR cmd);
-			[id(55)]BSTR RS_CreateQRCode(BSTR qrcode, BSTR path);
+			[id(55)]BSTR RS_GreateQRCode(BSTR qrcode, BSTR path);
 			[id(56)]BSTR RS_GetTransid(BSTR joinCode);
 			[id(57)]BSTR RS_EncryptFile(BSTR souceFilePath, BSTR encFilePath);
 			[id(58)]BSTR RS_DevryptFile(BSTR symKey, BSTR encFilePath, BSTR dncDirectoryPath);
@@ -74,11 +74,11 @@ library RSyncControlLib	// RS_CertSafeLib
 	//  CRSyncControlCtrl 的事件调度接口
 
 	[ 
-		// _DRSyncControlEvents
+		// _DRS_CertSafeEvents
 		// uuid(b1c93fb3-0485-4837-9aaf-af8f96a2c0d2)
 		uuid(EECD3FF1-DED8-44B3-877C-99D056D5449D)
 	]
-	dispinterface _DRSyncControlEvents	// _DRS_CertSafeEvents	uuid(EECD3FF1-DED8-44B3-877C-99D056D5449D)
+	dispinterface _DRS_CertSafeEvents	// _DRS_CertSafeEvents	uuid(EECD3FF1-DED8-44B3-877C-99D056D5449D)
 	{
 		properties:
 			//  事件接口没有任何属性
@@ -98,10 +98,10 @@ library RSyncControlLib	// RS_CertSafeLib
 		// uuid(a0b23721-9350-4b4d-b581-65add1a77a5e)
 		uuid(F84C8F57-5A05-4D8C-826D-29589C7A121C)
 	]
-	coclass RSyncControl // RS_CertSafe	uuid(F84C8F57-5A05-4D8C-826D-29589C7A121C)
+	coclass RS_CertSafe // RS_CertSafe	uuid(F84C8F57-5A05-4D8C-826D-29589C7A121C)
 	{
-		[default] dispinterface _DRSyncControl;
-		[default, source] dispinterface _DRSyncControlEvents;
+		[default] dispinterface _DRS_CertSafe;
+		[default, source] dispinterface _DRS_CertSafeEvents;
 	};
 
 };
