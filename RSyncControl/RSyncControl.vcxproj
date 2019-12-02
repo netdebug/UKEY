@@ -81,7 +81,7 @@
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <IntDir>obj\$(ProjectName)\$(Configuration)\</IntDir>
     <OutDir>..\bin\</OutDir>
-    <TargetName>$(ProjectName)d</TargetName>
+    <TargetName>RS_CertSafed</TargetName>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
     <PreLinkEventUseInBuild>false</PreLinkEventUseInBuild>
   </PropertyGroup>
@@ -96,6 +96,7 @@
     <IntDir>obj\$(ProjectName)\$(Configuration)\</IntDir>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
     <IncludePath>C:\Program Files %28x86%29\GmSSL\include;$(IncludePath)</IncludePath>
+    <TargetName>RS_CertSafe</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -175,7 +176,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <ModuleDefinitionFile>.\RSyncControl.def</ModuleDefinitionFile>
-      <OutputFile>$(OutDir)$(ProjectName).ocx</OutputFile>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <RegisterOutput>false</RegisterOutput>
       <AdditionalDependencies>comsuppw.lib;PocoFoundation.lib;PocoNet.lib;paho-mqtt3a.lib;paho-mqtt3as.lib;libcrypto.lib;libssl.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\lib;..\lib\libpoco</AdditionalLibraryDirectories>
