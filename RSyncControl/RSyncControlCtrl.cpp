@@ -281,7 +281,7 @@ BSTR CRSyncControlCtrl::IsLoginState(BSTR containerId)
 void CRSyncControlCtrl::handle1(MQTTNotification* pNf)
 {
 	Debugger::message(format("MQTTNotification action = %s", pNf->context()));
-	this->SendMessage(UM_EVENT, (WPARAM)pNf);
+	PostMessage(UM_EVENT, (WPARAM)pNf);
 	//process_event(pNf);
 }
 
