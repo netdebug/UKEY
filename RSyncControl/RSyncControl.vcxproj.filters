@@ -48,6 +48,9 @@
     <ClCompile Include="RSyncMsgTip.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="RSyncChangPassWd.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RSyncControl.h">
@@ -87,6 +90,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="RSyncMsgTip.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RSyncChangPassWd.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -51,7 +51,7 @@ void RSyncLoginView::OnBnClickedOk()
 	CDialog::OnOK();
 }
 
-void RSyncLoginView::SetInputName(BSTR name)
+void RSyncLoginView::SetInputName(CString name)
 {
 	m_pName = name;
 }

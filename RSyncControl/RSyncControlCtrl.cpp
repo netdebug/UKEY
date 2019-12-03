@@ -20,6 +20,7 @@
 #include "RSyncLoginView.h"
 #include "RSyncMsgTip.h"
 #include <atlconv.h>
+#include "RSyncChangPassWd.h"
 
 using Poco::Dynamic::Var;
 using Poco::Net::HTMLForm;
@@ -90,6 +91,8 @@ BEGIN_DISPATCH_MAP(CRSyncControlCtrl, COleControl)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_GetTransid",						dispid_56,			RS_GetTransid,						VT_BSTR, VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_EncryptFile",						dispid_57,			RS_EncryptFile,						VT_BSTR, VTS_BSTR VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_DevryptFile",						dispid_58,			RS_DevryptFile,						VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyEncryptFile",					dispid_59,			RS_KeyEncryptFile,					VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyDecryptFile",					dispid_60,			RS_KeyDecryptFile,					VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
 END_DISPATCH_MAP()
 
 // 事件映射
@@ -207,9 +210,8 @@ BSTR CRSyncControlCtrl::ShowRSyncLoginView(BSTR containerId)
 		//若id为空则获取
 		 std::string result = Utility::SuperRequest("/RS_GetUserList", "");
 		 id = Utility::formatUid(result);
-		 containerId = _com_util::ConvertStringToBSTR(id.data());
 	}
-	loginView.SetInputName(containerId);
+	loginView.SetInputName(CString(id.data()));
 	INT_PTR modal = loginView.DoModal();
 	if (modal == IDOK)
 	{
@@ -274,6 +276,29 @@ BSTR CRSyncControlCtrl::IsLoginState(BSTR containerId)
 	if (!m_bLoginState)
 	{
 		return ShowRSyncLoginView(containerId);
+	}
+	return BSTR();
+}
+
+BSTR CRSyncControlCtrl::ShowRSyncChangePasswd(std::string containerId, std::string oldCode, std::string newCode)
+{
+	if ("" == containerId)
+	{
+		//若id为空则获取
+		std::string result = Utility::SuperRequest("/RS_GetUserList", "");
+		containerId = Utility::formatUid(result);
+	}
+
+	RSyncChangPassWd passwd(CString(containerId.data()));
+	passwd.SetInputPassWd(CString(oldCode.data()), CString(newCode.data()));
+	INT_PTR modal = passwd.DoModal();
+	if (modal == IDOK)
+	{
+		CString nameStr = passwd.GetInputName();
+		CString oldwordStr = passwd.GetInputNewPasswd();
+		CString newStr = passwd.GetInputOldPasswd();
+		//std::string msg = (LPCSTR)(CStringA)nameStr;
+		return RS_ChangePassWd(_bstr_t(nameStr), _bstr_t(oldwordStr), _bstr_t(newStr));
 	}
 	return BSTR();
 }
@@ -477,6 +502,43 @@ BSTR CRSyncControlCtrl::RS_DevryptFile(BSTR symKey, BSTR encFilePath, BSTR dncDi
 	return _bstr_t(encoding.data());
 }
 
+BSTR CRSyncControlCtrl::RS_KeyEncryptFile(BSTR souceFilePath, BSTR encFilePath, BSTR certBase64)
+{
+	std::string souceFile = _com_util::ConvertBSTRToString(souceFilePath);
+	std::string encFile = _com_util::ConvertBSTRToString(encFilePath);
+	std::string cert = _com_util::ConvertBSTRToString(certBase64);
+
+	HTMLForm params;
+	params.set("souceFilePath", souceFile);
+	params.set("encFilePath", encFile);
+	params.set("certBase64", cert);
+
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_KeyEncryptFile", body.str());
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return _bstr_t(encoding.data());
+}
+
+BSTR CRSyncControlCtrl::RS_KeyDecryptFile(BSTR encFilePath, BSTR dncFilePath, BSTR containerId)
+{
+	std::string encFile = _com_util::ConvertBSTRToString(encFilePath);
+	std::string dncFile = _com_util::ConvertBSTRToString(dncFilePath);
+	std::string id = _com_util::ConvertBSTRToString(containerId);
+
+	HTMLForm params;
+	params.set("encFilePath", encFile);
+	params.set("dncFilePath", dncFile);
+	params.set("containerId", id);
+
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_KeyDecryptFile", body.str());
+	std::string encoding = Utility::UTF8EncodingGBK(result);
+	return _bstr_t(encoding.data());
+}
+
+
 BSTR CRSyncControlCtrl::RS_GetUserList()
 {
 	std::string result = Utility::SuperRequest("/RS_GetUserList", "");
@@ -546,6 +608,12 @@ BSTR CRSyncControlCtrl::RS_ChangePassWd(BSTR containerId, BSTR oldCode, BSTR new
 	std::string theold = _com_util::ConvertBSTRToString(oldCode);
 	std::string thenew = _com_util::ConvertBSTRToString(newCode);
 
+	//没有输入修改的密码
+	if ("" == theold || "" == thenew)
+	{
+		return ShowRSyncChangePasswd(id, theold, thenew);
+	}
+
 	//std::string body(Poco::format("containerId=%s&oldCode=%s&newCode=%s", id, theold, thenew));
 	HTMLForm params;
 	params.set("containerId", id);
@@ -599,8 +667,9 @@ BSTR CRSyncControlCtrl::RS_KeyGetKeySn()
 	params.write(body);
 	result = Utility::SuperRequest("/RS_KeyGetKeySn", body.str());
 
+	std::string encoding = Utility::UTF8EncodingGBK(result);
 	Parser ps;
-	Var res = ps.parse(result);
+	Var res = ps.parse(encoding);
 	assert(res.type() == typeid(Object::Ptr));
 
 	Object::Ptr object = res.extract<Object::Ptr>();

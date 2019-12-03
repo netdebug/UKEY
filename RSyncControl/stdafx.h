@@ -37,4 +37,5 @@
 #endif // _WIN64
 #include <afxwin.h>
 #include <afxcontrolbars.h>
+#include <afxcontrolbars.h>
 

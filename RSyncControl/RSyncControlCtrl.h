@@ -43,7 +43,8 @@ protected:
 	BSTR ShowRSyncLoginView(BSTR containerId);
 	BSTR onRsyncLogin(std::string nameStr, std::string passwordStr);
 	BSTR IsLoginState(BSTR containerId);
-
+	
+	BSTR ShowRSyncChangePasswd(std::string containerId, std::string oldCode, std::string newCode);
 	//通用接口
 	void RS_ConfigParameters(BSTR cmd, BSTR val);
 	BSTR RS_GetParameters(BSTR cmd);
@@ -51,6 +52,8 @@ protected:
 	BSTR RS_GetTransid(BSTR joinCode);
 	BSTR RS_EncryptFile(BSTR souceFilePath, BSTR encFilePath);
 	BSTR RS_DevryptFile(BSTR symKey, BSTR encFilePath, BSTR dncDirectoryPath);
+	BSTR RS_KeyEncryptFile(BSTR souceFilePath, BSTR encFilePath, BSTR certBase64);
+	BSTR RS_KeyDecryptFile(BSTR encFilePath, BSTR dncFilePath, BSTR containerId);
 
 	BSTR RS_GetUserList();
 	BSTR RS_GetCertBase64String(BSTR containerId, SHORT certType);
@@ -185,7 +188,9 @@ private:
 		dispid_55,
 		dispid_56,
 		dispid_57,
-		dispid_58
+		dispid_58,
+		dispid_59,
+		dispid_60
 	};
 };
 

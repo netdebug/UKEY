@@ -22,7 +22,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnBnClickedOk();
-	void SetInputName(BSTR name);
+	void SetInputName(CString name);
 	// 用户名
 	CString m_nameStr;
 	// 密码
@@ -31,5 +31,5 @@ public:
 	CString GetInputName();
 	CString GetInputPassword();
 private:
-	BSTR m_pName;
+	CString m_pName;
 };
