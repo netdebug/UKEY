@@ -44,14 +44,15 @@ protected:
 	BSTR onRsyncLogin(std::string nameStr, std::string passwordStr);
 	BSTR IsLoginState(BSTR containerId);
 
-	//通用接口
+	/// 通用接口
 	void RS_ConfigParameters(BSTR cmd, BSTR val);
 	BSTR RS_GetParameters(BSTR cmd);
 	BSTR RS_CreateQRCode(BSTR qrcode, BSTR path);
 	BSTR RS_GetTransid(BSTR joinCode);
 	BSTR RS_EncryptFile(BSTR souceFilePath, BSTR encFilePath);
 	BSTR RS_DevryptFile(BSTR symKey, BSTR encFilePath, BSTR dncDirectoryPath);
-
+	
+	/// UKEY
 	BSTR RS_GetUserList();
 	BSTR RS_GetCertBase64String(BSTR containerId, SHORT certType);
 	BSTR RS_CertLogin(BSTR containerId, BSTR password);
@@ -66,6 +67,9 @@ protected:
 	BSTR RS_KeyEncryptData(BSTR rsKey, BSTR certBase64);
 	BSTR RS_KeyDecryptData(BSTR encRsKey, BSTR containerId);
 	BSTR RS_GetCertInfo(BSTR certBase64, BSTR type);
+	BSTR RS_VerifyIdentity(BSTR certBase64, BSTR authNo);
+	BSTR RS_KeyEncryptFile(BSTR souceFilePath, BSTR encFilePath, BSTR certBase64);
+	BSTR RS_KeyDecryptFile(BSTR encFilePath, BSTR dncFilePath, BSTR containerId);
 	/// Cloud API
 	BSTR RS_CloudLoginAuth(BSTR transid);
 	BSTR RS_CloudSealAuth(BSTR transid);
@@ -185,7 +189,10 @@ private:
 		dispid_55,
 		dispid_56,
 		dispid_57,
-		dispid_58
+		dispid_58,
+		dispid_59,
+		dispid_60,
+		dispid_61
 	};
 };
 
