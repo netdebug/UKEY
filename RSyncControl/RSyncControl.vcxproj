@@ -230,6 +230,7 @@
     <ClCompile Include="CloudEventRecevier.cpp" />
     <ClCompile Include="MQTTAsyncClient.cpp" />
     <ClCompile Include="MQTTNotification.cpp" />
+    <ClCompile Include="RSyncChangPassWd.cpp" />
     <ClCompile Include="RSyncMsgTip.cpp" />
     <ClCompile Include="RSyncControl.cpp" />
     <ClCompile Include="RSyncControlCtrl.cpp" />
@@ -249,6 +250,7 @@
     <ClInclude Include="MQTTAsyncClient.h" />
     <ClInclude Include="MQTTNotification.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="RSyncChangPassWd.h" />
     <ClInclude Include="RSyncMsgTip.h" />
     <ClInclude Include="RSyncControl.h" />
     <ClInclude Include="RSyncControlCtrl.h" />
