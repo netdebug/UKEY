@@ -305,9 +305,17 @@ BSTR CRSyncControlCtrl::ShowRSyncChangePasswd(std::string containerId, std::stri
 
 void CRSyncControlCtrl::handle1(MQTTNotification* pNf)
 {
-	Debugger::message(format("MQTTNotification action = %s", pNf->context()));
-	this->SendMessage(UM_EVENT, (WPARAM)pNf);
-	//process_event(pNf);
+	 Debugger::message(format("MQTTNotification action = %s", pNf->context()));
+	HWND hwnd = GetSafeHwnd();
+	if (NULL == hwnd)
+	{
+		hwnd = AfxGetMainWnd() == NULL ? NULL : AfxGetMainWnd()->m_hWnd;
+		::PostMessage(HWND_BROADCAST, UM_EVENT, (WPARAM)pNf, NULL);
+
+	} else {
+ 		::PostMessage(hwnd, UM_EVENT, (WPARAM)pNf, NULL);
+	}
+	
 }
 
 void CRSyncControlCtrl::process_event(MQTTNotification * pNf)
@@ -324,10 +332,11 @@ void CRSyncControlCtrl::process_event(MQTTNotification * pNf)
 	};
 
 	if (pNf){
-		switch(pNf->action())
+		std::string act = pNf->getdata("action");
+		switch(atoi(act.data()))
 		{
 		case LoginAuth:
-			RS_CloudLoginAuthEvent(pNf);
+			RS_CloudLoginAuthEvent(*pNf);
 			break;
 		case EncryptAuth:
 			RS_CloudEncAuthEvent(*pNf);
@@ -351,6 +360,16 @@ void CRSyncControlCtrl::process_event(MQTTNotification * pNf)
 	}
 }
 
+void CRSyncControlCtrl::OnSetClientSite()
+{
+	HWND hwnd = GetSafeHwnd();
+	if (NULL == hwnd)
+	{
+		VERIFY(CreateControlWindow(::GetDesktopWindow(), CRect(0, 0, 0, 0), CRect(0, 0, 0, 0)));
+	}
+	
+	COleControl::OnSetClientSite();
+}
 
 LRESULT CRSyncControlCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM Lparam)
 {
@@ -361,7 +380,6 @@ LRESULT CRSyncControlCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM Lparam
 	}
 	return COleControl::WindowProc(message, wParam, Lparam);
 }
-
 
 // CRSyncControlCtrl::OnDraw - 绘图函数
 
@@ -1101,23 +1119,17 @@ BSTR CRSyncControlCtrl::RS_KeyStatus(BSTR containerId)
 	return _bstr_t(result.data());
 }
 
-inline void CRSyncControlCtrl::RS_CloudLoginAuthEvent(const MQTTNotification* pLg)
+inline void CRSyncControlCtrl::RS_CloudLoginAuthEvent(const MQTTNotification& Nf)
 {
-	const MQTTNotificationEvent* Nf = dynamic_cast<const MQTTNotificationEvent*>(pLg);
 	CString _authResult, _transid, _token, _mobile, _userName, _userID, _message;
-	if (Nf)
-	{
-		_authResult = Nf->authResult().data();
-		_transid = Nf->transid().data();
-		_token = Nf->token().data();
-		_message = Nf->message().data();
-		if ("1" == Nf->authResult())
-		{
-			_mobile = Nf->_mobile.data();
-			_userName = Nf->_userName.data();
-			_userID = Nf->_userID.data();
-		}
-	}
+	_authResult = Nf.getdata("authResult").data();
+	_transid = Nf.getdata("transid").data();
+	_token = Nf.getdata("token").data();
+	_message = Nf.getdata("authMsg").data();
+
+	_mobile = Nf.getdata("mobile").data();
+	_userName = Nf.getdata("userName").data();
+	_userID = Nf.getdata("userId").data();
 	FireEvent(eventid_3, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), _authResult, _transid, _token
 		, _mobile, _userName, _userID, _message);
 }
