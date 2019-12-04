@@ -24,69 +24,58 @@ enum action
 	GetSignResult
 };
 
-
 MQTTNotification::MQTTNotification(const std::string& msg)
 	:_context(msg),
-	_authResult(""),
-	_transid(""),
-	_message("")
+	_code(""),
+	_msg("")
 {
-	Parser sp;
-	Var result = sp.parse(msg);
-	assert(result.type() == typeid(Object::Ptr));
-	DynamicStruct ds = *result.extract<Object::Ptr>();
-	_action = ds["action"];
-	if (ds.contains("token")) {
-		_token = ds["token"].toString();
-	}
-	if (ds.contains("msg"))
+	const char* sJson = "{ \
+		\"authResult\":\"\", \
+			\"authMsg\" : \"1\",\
+			\"transid\" : \"\",\
+			\"userId\" : \"\",\
+			\"mobile\" : \"\",\
+			\"userName\" : \"1\",\
+			\"action\" : \"\",\
+			\"token\" : \"\" }";
+	DynamicStruct nameList = paraseString(sJson);
+
+	DynamicStruct ds = paraseString(msg);
+	_code = ds["code"].toString();
+	std::string error = ds["msg"].toString();
+	_msg = Utility::UTF8EncodingGBK(error);
+	std::string data = ds["data"].toString();
+
+	DynamicStruct dast = paraseString(data);
+	DynamicStruct::Iterator it = nameList.begin();
+	for (; it != nameList.end(); ++it)
 	{
-		std::string retMsg = ds["msg"].toString();
-		_message = Utility::UTF8EncodingGBK(retMsg);
-	}
-	if (ds.contains("transid"))
-	{
-		_transid = ds["transid"].toString();
-	}
-	if (ds.contains("authResult"))
-	{
-		_authResult = ds["authResult"].toString();
+		std::string  name = it->first;
+		std::string value = "";
+		if (dast.contains(name))
+		{
+			value = dast[name].toString();
+			std::string sec = it->second;
+			if (atoi(sec.data()) == 1)
+			{
+				value = Utility::UTF8EncodingGBK(value);
+			}
+		}
+		_data[name] = value;
 	}
 }
+
+DynamicStruct MQTTNotification::paraseString(const std::string& str)
+{
+	Parser sp;
+	Var result = sp.parse(str);
+	assert(result.type() == typeid(Object::Ptr));
+	DynamicStruct dast = *result.extract<Object::Ptr>();
+	return dast;
+}
+
 
 MQTTNotification::~MQTTNotification()
-{
-}
-
-MQTTNotificationEvent::MQTTNotificationEvent(const std::string & msg)
-	:MQTTNotification(msg)
-	,_userID(""),
-	_userName(""),
-	_mobile("")
-{
-	if (LoginAuth != action())
-	{
-		return;
-	}
-	Parser sp;
-	Var result = sp.parse(msg);
-	assert(result.type() == typeid(Object::Ptr));
-	DynamicStruct ds = *result.extract<Object::Ptr>();
-	if (ds.contains("userId")) {
-		_userID = ds["userId"].toString();
-	}
-	if (ds.contains("mobile"))
-	{
-		_mobile = ds["mobile"].toString();
-	}
-	if (ds.contains("userName"))
-	{
-		std::string userName = ds["userName"].toString();
-		_userName = Utility::UTF8EncodingGBK(userName);
-	}
-}
-
-MQTTNotificationEvent::~MQTTNotificationEvent()
 {
 
 }
