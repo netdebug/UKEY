@@ -41,11 +41,17 @@ MQTTNotification::MQTTNotification(const std::string& msg)
 	DynamicStruct nameList = paraseString(sJson);
 
 	DynamicStruct ds = paraseString(msg);
-	_code = ds["code"].toString();
+	if (ds.contains("code"))
+	{
+		_code = ds["code"].toString();
+	}
 	std::string error = ds["msg"].toString();
 	_msg = Utility::UTF8EncodingGBK(error);
-	std::string data = ds["data"].toString();
-
+	std::string data = "";
+	if (ds.contains("data"))
+	{
+		data = ds["data"].toString();
+	}
 	DynamicStruct dast = paraseString(data);
 	DynamicStruct::Iterator it = nameList.begin();
 	for (; it != nameList.end(); ++it)

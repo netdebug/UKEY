@@ -266,9 +266,10 @@ BSTR CRSyncControlCtrl::IsLoginState(BSTR containerId)
 	std::ostringstream body;
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_KeyStatus", body.str());
+	std::string gbkstring = Utility::UTF8EncodingGBK(result);
 
 	Parser ps;
-	Var res = ps.parse(result);
+	Var res = ps.parse(gbkstring);
 	Object::Ptr object = res.extract<Object::Ptr>();
 	assert(object);
 	DynamicStruct ds = *object;
@@ -1135,7 +1136,7 @@ BSTR CRSyncControlCtrl::RS_KeyStatus(BSTR containerId)
 	std::string result = Utility::SuperRequest("/RS_KeyStatus", body.str());
 
 	std::string encoding = Utility::UTF8EncodingGBK(result);
-	return _bstr_t(result.data());
+	return _bstr_t(encoding.data());
 }
 
 inline void CRSyncControlCtrl::RS_CloudLoginAuthEvent(const MQTTNotification& Nf)
