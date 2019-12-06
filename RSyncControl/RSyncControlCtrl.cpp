@@ -269,7 +269,7 @@ BSTR CRSyncControlCtrl::IsLoginState(BSTR containerId)
 	std::string gbkstring = Utility::UTF8EncodingGBK(result);
 
 	Parser ps;
-	Var res = ps.parse(gbkstring);
+	Var res = ps.parse(result);
 	Object::Ptr object = res.extract<Object::Ptr>();
 	assert(object);
 	DynamicStruct ds = *object;
@@ -547,8 +547,8 @@ BSTR CRSyncControlCtrl::RS_KeyEncryptFile(BSTR souceFilePath, BSTR encFilePath, 
 	std::string cert = _com_util::ConvertBSTRToString(certBase64);
 
 	HTMLForm params;
-	params.set("souceFilePath", souceFile);
-	params.set("encFilePath", encFile);
+	params.set("souceFilePath", Utility::GBKEncodingUTF8(souceFile));
+	params.set("encFilePath", Utility::GBKEncodingUTF8(encFile));
 	params.set("certBase64", cert);
 
 	std::ostringstream body;
@@ -565,8 +565,8 @@ BSTR CRSyncControlCtrl::RS_KeyDecryptFile(BSTR encFilePath, BSTR dncFilePath, BS
 	std::string id = _com_util::ConvertBSTRToString(containerId);
 
 	HTMLForm params;
-	params.set("encFilePath", encFile);
-	params.set("dncFilePath", dncFile);
+	params.set("encFilePath", Utility::GBKEncodingUTF8(encFile));
+	params.set("dncFilePath", Utility::GBKEncodingUTF8(dncFile));
 	params.set("containerId", id);
 
 	std::ostringstream body;

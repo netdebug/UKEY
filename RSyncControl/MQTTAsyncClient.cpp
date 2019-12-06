@@ -11,6 +11,7 @@
 #include "MQTTNotification.h"
 #include "Poco/Debugger.h"
 #include <cassert>
+#include "Poco/UUIDGenerator.h"
 
 using namespace Reach;
 using namespace Poco;
@@ -27,13 +28,8 @@ MQTTAsyncClient::MQTTAsyncClient(bool useSSL)
 	_useSSL(useSSL)
 {
 	initialize();
-#ifdef OCX
-	deviceId = "123456789";
-#else
-	Application& app = Application::instance();
-	deviceId = app.config().getString("clientId", "123456789");
-#endif // OCX
 
+	deviceId = UUIDGenerator::defaultGenerator().create().toString();
 	clientIdUrl = Poco::format("%s@@@%s", groupId, deviceId);
 
 	int rc = 0;
