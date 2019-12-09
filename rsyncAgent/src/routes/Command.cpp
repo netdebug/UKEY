@@ -47,6 +47,9 @@ Command& Command::execute()
 	catch (Reach::CloudCommandException& e) {
 		sendErrorResponseEx(e.message(), e.code());
 	}
+	catch (Poco::NotFoundException& e){
+		sendErrorResponse(e.message(), e.code());
+	}
 	catch (Poco::Exception& e) {
 		sendErrorResponseEx(e.message(), e.code());
 	}

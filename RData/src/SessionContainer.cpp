@@ -77,7 +77,7 @@ Session SessionContainer::get(const std::string& name)
 
 	FastMutex::ScopedLock lock(_mutex);
 	SessionMap::iterator it = _sessions.find(n);
-	if (_sessions.end() == it) throw Poco::NotFoundException(n);
+	if (_sessions.end() == it) throw Poco::NotFoundException(n, 0x9001);/// no key device
 	return it->second->get();
 }
 
