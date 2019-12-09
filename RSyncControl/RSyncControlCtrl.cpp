@@ -735,7 +735,7 @@ BSTR CRSyncControlCtrl::RS_KeySignByP1(BSTR msg, BSTR containerId)
 	//std::string body(Poco::format("containerId=%s&asn1Msg=%s", id, text));
 	HTMLForm params;
 	params.set("containerId", id);
-	params.set("asn1Msg", text);
+	params.set("asn1Msg", Utility::GBKEncodingUTF8(text));
 	
 	std::ostringstream body;
 	params.write(body);
@@ -753,7 +753,7 @@ BSTR CRSyncControlCtrl::RS_VerifySignByP1(BSTR certBase64, BSTR msg, BSTR signdM
 	//std::string body(Poco::format("certBase64=%s&msg=%s&signdMsg=%s", cert, text, signature));
 	HTMLForm params;
 	params.set("certBase64", cert);
-	params.set("msg", text);
+	params.set("msg", Utility::GBKEncodingUTF8(text));
 	params.set("signdMsg", signature);
 	std::ostringstream body;
 	params.write(body);
@@ -771,7 +771,7 @@ BSTR CRSyncControlCtrl::RS_KeySignByP7(BSTR msg, BSTR flag, BSTR containerId)
 	//std::string body(Poco::format("containerId=%s&msg=%s&flag=%s", id, message, mode));
 	HTMLForm params;
 	params.set("containerId", id);
-	params.set("msg", message);
+	params.set("msg", Utility::GBKEncodingUTF8(message));
 	params.set("flag", mode);
 	std::ostringstream body;
 	params.write(body);
@@ -789,7 +789,7 @@ BSTR CRSyncControlCtrl::RS_VerifySignByP7(BSTR msg, BSTR signdMsg, BSTR flag)
 
 	//std::string body(Poco::format("msg=%s&signdMsg=%s&flag=%s", message, signedMessage, mode));
 	HTMLForm params;
-	params.set("msg", message);
+	params.set("msg", Utility::GBKEncodingUTF8(message));
 	params.set("signdMsg", signedMessage);
 	params.set("flag", mode);
 	std::ostringstream body;
@@ -912,7 +912,7 @@ BSTR CRSyncControlCtrl::RS_CloudSignByP7(BSTR msg, BSTR keySn, BSTR transid, BST
 	std::string TOKEN = _com_util::ConvertBSTRToString(token);
 
 	HTMLForm params;
-	params.set("msg", MSG);
+	params.set("msg", Utility::GBKEncodingUTF8(MSG));
 	params.set("keySn", KEYSN);
 	params.set("transid", TRANSID);
 	params.set("token", TOKEN);
