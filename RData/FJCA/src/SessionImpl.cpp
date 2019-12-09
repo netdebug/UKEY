@@ -146,7 +146,7 @@ bool SessionImpl::login(const std::string& passwd)
 
 bool SessionImpl::changePW(const std::string& oldCode, const std::string& newCode)
 {
-	throw Poco::NotImplementedException("FJCA changePW");
+	throw Poco::NotImplementedException("FJCA changePW is not support", 0x9999); /// 9999 unknown error
 	return false;
 }
 
