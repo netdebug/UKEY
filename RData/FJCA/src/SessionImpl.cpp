@@ -164,7 +164,7 @@ std::string SessionImpl::getCertBase64String(short ctype)
 	char content[4096] = { 0 };
 	bool ret = FJCA_ExportUserCert(ctype, content, 4096);
 
-	if (!ret) throw Reach::Data::DataException();
+	if (!ret) throw Reach::Data::DataException(Utility::lastError(_containerString));
 
 	return content;
 }
@@ -254,13 +254,13 @@ bool SessionImpl::verifySignByP1(const std::string& base64, const std::string& m
 
 std::string SessionImpl::signByP7(const std::string& textual, int mode)
 {
-	throw Poco::NotImplementedException("FJCA signByP7");
+	throw Poco::NotImplementedException("FJCA signByP7 is not supported!");
 	return "";
 }
 
 bool SessionImpl::verifySignByP7(const std::string& textual, const std::string& signature)
 {
-	throw Poco::NotImplementedException("FJCA verifySignByP7");
+	throw Poco::NotImplementedException("FJCA verifySignByP7 is not supported!");
 	return false;
 }
 
