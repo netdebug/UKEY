@@ -557,9 +557,15 @@ BSTR CRSyncControlCtrl::RS_KeyEncryptFile(BSTR souceFilePath, BSTR encFilePath, 
 	std::string encoding = Utility::UTF8EncodingGBK(result);
 	return _bstr_t(encoding.data());
 }
-
+//需要登录状态下才能调用接口
 BSTR CRSyncControlCtrl::RS_KeyDecryptFile(BSTR encFilePath, BSTR dncFilePath, BSTR containerId)
 {
+	BSTR ret = IsLoginState(containerId);
+	if (!m_bLoginState)
+	{
+		return ret;
+	}
+
 	std::string encFile = _com_util::ConvertBSTRToString(encFilePath);
 	std::string dncFile = _com_util::ConvertBSTRToString(dncFilePath);
 	std::string id = _com_util::ConvertBSTRToString(containerId);
