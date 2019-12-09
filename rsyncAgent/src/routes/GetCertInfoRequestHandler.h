@@ -20,6 +20,7 @@ namespace Reach {
 		virtual void run();
 		///base64 \/×ªÒå×Ö·û
 	protected:
+		void keysn();
 		void enterprise();
 		void personal();
 		void decode_utf8(const std::string & text);

@@ -88,6 +88,7 @@ void GetCertInfo::run()
 		enterprise(); break;
 	case 300:
 		/*调用福建ca keysn整串字符包含@*/
+		keysn();
 		break;
 	default:
 		break;
@@ -95,6 +96,26 @@ void GetCertInfo::run()
 
 	add("info", _item);
 }
+
+#include "Reach/Data/FJCA/FJCA_FUN_GT_DLL.h"
+
+void GetCertInfo::keysn()
+{
+	Application& app = Application::instance();
+
+	Session session(Utility::getSession());
+	if (session.connector() == "FJCA")
+	{
+		enum certType { sign = 1, crypto };
+		char num[40] = { 0 };
+		std::string cert =session.getCertBase64String(sign);
+		if (FJCA_GetCertOID(const_cast<char*>(cert.c_str()), num, 40))
+			_item = num;
+	}
+	
+	poco_information_f1(app.logger(), "%s", _item);
+}
+
 void GetCertInfo::personal()
 {
 	_item = GetCertOwnerID(_cer);
