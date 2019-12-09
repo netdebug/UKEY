@@ -38,7 +38,7 @@ void DecryptFile::generateKey()
 	Base64Decoder decoder(istr);
 	std::string s;
 	Poco::StreamCopier::copyToString(decoder, s);
-	StringTokenizer st(s, "IV$", StringTokenizer::TOK_IGNORE_EMPTY);
+	StringTokenizer st(s, "$", StringTokenizer::TOK_IGNORE_EMPTY);
 	assert(st.count() == 2);
 
 	CipherKey::ByteVec key(st[0].begin(), st[0].end());

@@ -42,7 +42,7 @@ void EncryptFile::generateKey()
 	std::ostringstream keyStream;
 	Base64Encoder encoder(keyStream);
 
-	std::string delim("IV$");
+	std::string delim("$");
 	encoder.write(reinterpret_cast<const char*>(&ckey.getKey()[0]), ckey.keySize());
 	encoder << delim;
 	encoder.write(reinterpret_cast<const char*>(&ckey.getIV()[0]), ckey.ivSize());

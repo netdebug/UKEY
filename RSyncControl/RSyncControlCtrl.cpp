@@ -269,7 +269,7 @@ BSTR CRSyncControlCtrl::IsLoginState(BSTR containerId)
 	std::string gbkstring = Utility::UTF8EncodingGBK(result);
 
 	Parser ps;
-	Var res = ps.parse(gbkstring);
+	Var res = ps.parse(result);
 	Object::Ptr object = res.extract<Object::Ptr>();
 	assert(object);
 	DynamicStruct ds = *object;
@@ -547,8 +547,8 @@ BSTR CRSyncControlCtrl::RS_KeyEncryptFile(BSTR souceFilePath, BSTR encFilePath, 
 	std::string cert = _com_util::ConvertBSTRToString(certBase64);
 
 	HTMLForm params;
-	params.set("souceFilePath", souceFile);
-	params.set("encFilePath", encFile);
+	params.set("souceFilePath", Utility::GBKEncodingUTF8(souceFile));
+	params.set("encFilePath", Utility::GBKEncodingUTF8(encFile));
 	params.set("certBase64", cert);
 
 	std::ostringstream body;
@@ -557,16 +557,22 @@ BSTR CRSyncControlCtrl::RS_KeyEncryptFile(BSTR souceFilePath, BSTR encFilePath, 
 	std::string encoding = Utility::UTF8EncodingGBK(result);
 	return _bstr_t(encoding.data());
 }
-
+//需要登录状态下才能调用接口
 BSTR CRSyncControlCtrl::RS_KeyDecryptFile(BSTR encFilePath, BSTR dncFilePath, BSTR containerId)
 {
+	BSTR ret = IsLoginState(containerId);
+	if (!m_bLoginState)
+	{
+		return ret;
+	}
+
 	std::string encFile = _com_util::ConvertBSTRToString(encFilePath);
 	std::string dncFile = _com_util::ConvertBSTRToString(dncFilePath);
 	std::string id = _com_util::ConvertBSTRToString(containerId);
 
 	HTMLForm params;
-	params.set("encFilePath", encFile);
-	params.set("dncFilePath", dncFile);
+	params.set("encFilePath", Utility::GBKEncodingUTF8(encFile));
+	params.set("dncFilePath", Utility::GBKEncodingUTF8(dncFile));
 	params.set("containerId", id);
 
 	std::ostringstream body;
@@ -729,7 +735,7 @@ BSTR CRSyncControlCtrl::RS_KeySignByP1(BSTR msg, BSTR containerId)
 	//std::string body(Poco::format("containerId=%s&asn1Msg=%s", id, text));
 	HTMLForm params;
 	params.set("containerId", id);
-	params.set("asn1Msg", text);
+	params.set("asn1Msg", Utility::GBKEncodingUTF8(text));
 	
 	std::ostringstream body;
 	params.write(body);
@@ -747,7 +753,7 @@ BSTR CRSyncControlCtrl::RS_VerifySignByP1(BSTR certBase64, BSTR msg, BSTR signdM
 	//std::string body(Poco::format("certBase64=%s&msg=%s&signdMsg=%s", cert, text, signature));
 	HTMLForm params;
 	params.set("certBase64", cert);
-	params.set("msg", text);
+	params.set("msg", Utility::GBKEncodingUTF8(text));
 	params.set("signdMsg", signature);
 	std::ostringstream body;
 	params.write(body);
@@ -765,7 +771,7 @@ BSTR CRSyncControlCtrl::RS_KeySignByP7(BSTR msg, BSTR flag, BSTR containerId)
 	//std::string body(Poco::format("containerId=%s&msg=%s&flag=%s", id, message, mode));
 	HTMLForm params;
 	params.set("containerId", id);
-	params.set("msg", message);
+	params.set("msg", Utility::GBKEncodingUTF8(message));
 	params.set("flag", mode);
 	std::ostringstream body;
 	params.write(body);
@@ -783,7 +789,7 @@ BSTR CRSyncControlCtrl::RS_VerifySignByP7(BSTR msg, BSTR signdMsg, BSTR flag)
 
 	//std::string body(Poco::format("msg=%s&signdMsg=%s&flag=%s", message, signedMessage, mode));
 	HTMLForm params;
-	params.set("msg", message);
+	params.set("msg", Utility::GBKEncodingUTF8(message));
 	params.set("signdMsg", signedMessage);
 	params.set("flag", mode);
 	std::ostringstream body;
@@ -906,7 +912,7 @@ BSTR CRSyncControlCtrl::RS_CloudSignByP7(BSTR msg, BSTR keySn, BSTR transid, BST
 	std::string TOKEN = _com_util::ConvertBSTRToString(token);
 
 	HTMLForm params;
-	params.set("msg", MSG);
+	params.set("msg", Utility::GBKEncodingUTF8(MSG));
 	params.set("keySn", KEYSN);
 	params.set("transid", TRANSID);
 	params.set("token", TOKEN);
