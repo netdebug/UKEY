@@ -17,9 +17,13 @@ namespace Reach {
 	{
 	public:
 		GetCertInfo(const std::string& base64, int type);
+		
 		virtual void run();
 		///base64 \/×ªÒå×Ö·û
 	protected:
+		void load();
+		void parse();
+	private:
 		void keysn();
 		void enterprise();
 		void personal();

@@ -31,22 +31,29 @@ extern std::string SOF_GetCertInfo(std::string Base64EncodeCert, short Type);
 GetCertInfo::GetCertInfo(const std::string& base64, int type)
 	:_cer(base64), _type(type)
 {
-	std::string PEM;
-	std::istringstream istr(_cer);
-	PEM.append("-----BEGIN CERTIFICATE-----\n");
-	PEM.append(cat("\n", 64, _cer));
-	PEM.append("-----END CERTIFICATE-----\n");
-	std::istringstream certStream(PEM);
-	x509ptr = new X509Certificate(certStream);
-
-	std::string text("/CN=\\xE9\\x87\\x91\\xE8\\xB4\\xA2\\xE6\\xB5\\x8B\\xE8\\xAF\\x95KEY32");
-	std::string text1("/CN=\\xE9\\x87\\x91KEY32");
-	decode_utf8(text);
+	
 }
 
+void GetCertInfo::load()
+{
+	try
+	{
+		std::string PEM;
+		std::istringstream istr(_cer);
+		PEM.append("-----BEGIN CERTIFICATE-----\n");
+		PEM.append(cat("\n", 64, _cer));
+		PEM.append("-----END CERTIFICATE-----\n");
+		std::istringstream certStream(PEM);
+		x509ptr = new X509Certificate(certStream);
+	}
+	catch (Poco::IOException& e)
+	{
+		throw RequestHandleException(e.message(), RAR_ERRORBASE64);
+	}
+}
 /// GBKÖÐÎÄÂÒÂë
 
-void GetCertInfo::run()
+void GetCertInfo::parse()
 {
 	switch (_type) {
 	case 1:
@@ -91,8 +98,15 @@ void GetCertInfo::run()
 		keysn();
 		break;
 	default:
-		break;
+		throw RequestHandleException("InvalidArgumentException", RAR_ERRORCERTTYPE);
 	}
+
+}
+
+void GetCertInfo::run()
+{
+	load();
+	parse();
 
 	add("info", _item);
 }
