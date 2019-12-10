@@ -117,15 +117,9 @@ void GetCertInfo::keysn()
 {
 	Application& app = Application::instance();
 
-	Session session(Utility::getSession());
-	if (session.connector() == "FJCA")
-	{
-		enum certType { sign = 1, crypto };
-		char num[40] = { 0 };
-		std::string cert =session.getCertBase64String(sign);
-		if (FJCA_GetCertOID(const_cast<char*>(cert.c_str()), num, 40))
-			_item = num;
-	}
+	char num[40] = { 0 };
+	if (FJCA_GetCertOID(const_cast<char*>(_cer.c_str()), num, 40))
+		_item = num;
 	
 	poco_information_f1(app.logger(), "%s", _item);
 }
