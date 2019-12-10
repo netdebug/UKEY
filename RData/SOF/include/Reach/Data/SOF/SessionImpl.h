@@ -116,7 +116,7 @@ private:
 	std::string _connectionString;
 	std::string _containerString;//uid
 	Poco::Mutex _mutex;
-
+	const int defaultError = 0x9999;
 };
 
 inline const std::string& SessionImpl::contianerName() const

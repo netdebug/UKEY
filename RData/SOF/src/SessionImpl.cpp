@@ -71,7 +71,7 @@ void SessionImpl::open(const std::string& connect)
 	if (connect != connectionString())
 	{
 		if (isConnected())
-			throw Poco::InvalidAccessException("Session already connected");
+			throw Poco::InvalidAccessException("Session already connected", defaultError);
 
 		if (!connect.empty())
 			setConnectionString(connect);
@@ -98,7 +98,7 @@ void SessionImpl::open(const std::string& connect)
 	} 
 	catch (SOFException& ex)
 	{
-		throw ConnectionFailedException(ex.displayText());
+		throw ConnectionFailedException(ex.displayText(), defaultError);
 	}
 
 	_connected = true;
@@ -175,11 +175,11 @@ std::string SessionImpl::getCertBase64String(short ctype)
 		_content = SOF_ExportExChangeUserCert(_containerString);
 		break;
 	default:
-		throw Poco::NotImplementedException();
+		throw Poco::NotImplementedException(Utility::lastError(_containerString), defaultError);
 	}
 
 	if (_content.empty())
-		throw Reach::Data::DataException(Utility::lastError(_containerString), SOF_GetLastError());
+		throw Poco::DataException(Utility::lastError(_containerString), defaultError);
 
 	return _content;
 }
@@ -218,7 +218,7 @@ std::string SessionImpl::getSerialNumber()
 	serialNumber = SOF_GetDeviceInfo(_containerString, SGD_DEVICE_SERIAL_NUMBER);
 
 	if (serialNumber.empty()) {
-		Poco::DataException(Utility::lastError(_containerString), SOF_GetLastError());
+		Poco::DataException(Utility::lastError(_containerString), defaultError);
 	}
 
 	return serialNumber;
@@ -232,7 +232,7 @@ std::string SessionImpl::encryptData(const std::string& paintText, const std::st
 	encryptData = SOF_AsEncrypt(base64, paintText);
 
 	if (encryptData.empty()) {
-		throw Poco::DataException(Utility::lastError(_containerString), SOF_GetLastError());
+		throw Poco::DataException(Utility::lastError(_containerString), defaultError);
 		//throw RequestHandleException(RAR_ENCYPTFAILED);
 	}
 
@@ -244,7 +244,7 @@ std::string SessionImpl::decryptData(const std::string& encryptBuffer)
 	std::string decryptBuffer = SOF_AsDecrypt(_containerString, encryptBuffer);
 
 	if (decryptBuffer.empty())
-		throw  Poco::DataException(Utility::lastError(_containerString), SOF_GetLastError());
+		throw  Poco::DataException(Utility::lastError(_containerString), defaultError);
 
 	std::string text;
 	std::istringstream istr(decryptBuffer);
