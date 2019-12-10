@@ -20,7 +20,7 @@ namespace Reach {
 		static int random();
 		static int SOF_GetPinRetryCount(const std::string &);
 		static std::string SOF_SignMessage(short, std::string&, std::string&);
-		static bool SOF_VerifySignedMessage(const std::string&, const std::string&);
+		static bool verifySignByP7(const std::string&, const std::string&);
 		static int SOF_GetLastError();
 		static std::string GetCertInfoByOid(const std::string& cer, const std::string& oid);
 		static SessionContainer& getSC();
