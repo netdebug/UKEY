@@ -179,7 +179,7 @@ std::string SessionImpl::getCertBase64String(short ctype)
 	}
 
 	if (_content.empty())
-		throw Reach::Data::DataException();
+		throw Reach::Data::DataException(Utility::lastError(_containerString), SOF_GetLastError());
 
 	return _content;
 }
@@ -218,7 +218,7 @@ std::string SessionImpl::getSerialNumber()
 	serialNumber = SOF_GetDeviceInfo(_containerString, SGD_DEVICE_SERIAL_NUMBER);
 
 	if (serialNumber.empty()) {
-		Poco::DataException(Utility::lastError(_containerString));
+		Poco::DataException(Utility::lastError(_containerString), SOF_GetLastError());
 	}
 
 	return serialNumber;
@@ -232,7 +232,7 @@ std::string SessionImpl::encryptData(const std::string& paintText, const std::st
 	encryptData = SOF_AsEncrypt(base64, paintText);
 
 	if (encryptData.empty()) {
-		throw Poco::DataException(Utility::lastError(_containerString));
+		throw Poco::DataException(Utility::lastError(_containerString), SOF_GetLastError());
 		//throw RequestHandleException(RAR_ENCYPTFAILED);
 	}
 
@@ -244,7 +244,7 @@ std::string SessionImpl::decryptData(const std::string& encryptBuffer)
 	std::string decryptBuffer = SOF_AsDecrypt(_containerString, encryptBuffer);
 
 	if (decryptBuffer.empty())
-		throw  Poco::DataException(Utility::lastError(_containerString));
+		throw  Poco::DataException(Utility::lastError(_containerString), SOF_GetLastError());
 
 	std::string text;
 	std::istringstream istr(decryptBuffer);
