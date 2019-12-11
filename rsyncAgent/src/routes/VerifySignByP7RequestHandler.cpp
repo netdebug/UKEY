@@ -16,9 +16,10 @@ void VerifySignByP7::run()
 	if (!_mode)
 		_textual.clear();
 
-	Session session(Utility::getSession());
+	//Session session(Utility::getSession());
 
-	_verify = session.verifySignByP7(_textual, _signature);
+	//_verify = session.verifySignByP7(_textual, _signature);
+	_verify = Utility::verifySignByP7(_textual, _signature);
 	if (!_verify) {
 		throw RequestHandleException("SOF_VerifySignedMessage failed!", RAR_UNKNOWNERR);
 	}

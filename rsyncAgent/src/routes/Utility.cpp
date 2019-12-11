@@ -26,6 +26,7 @@
 #include "Poco/HexBinaryDecoder.h"
 #include "Poco/Base64Encoder.h"
 #include "Poco/Base64Decoder.h"
+#include "../src/SoFProvider.h"
 
 using namespace Reach;
 using Poco::SingletonHolder;
@@ -109,10 +110,9 @@ std::string Utility::SOF_SignMessage(short, std::string&, std::string&)
 	return "";
 }
 
-bool Utility::SOF_VerifySignedMessage(const std::string&, const std::string&)
+bool Utility::verifySignByP7(const std::string& signature, const std::string& textual)
 {
-	throw Poco::NotImplementedException("SOF_VerifySignedMessage");
-	return false;
+	return SOF_VerifySignedMessage(signature, textual);
 }
 
 int Utility::SOF_GetLastError()

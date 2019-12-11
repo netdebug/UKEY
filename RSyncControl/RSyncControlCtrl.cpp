@@ -518,7 +518,7 @@ BSTR CRSyncControlCtrl::RS_KeyDecryptFile(BSTR encFilePath, BSTR dncFilePath, BS
 	std::ostringstream body;
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_KeyDecryptFile", body.str());
-
+  
 	return _bstr_t(result.data());
 }
 
@@ -526,6 +526,7 @@ BSTR CRSyncControlCtrl::RS_KeyDecryptFile(BSTR encFilePath, BSTR dncFilePath, BS
 BSTR CRSyncControlCtrl::RS_GetUserList()
 {
 	std::string result = Utility::SuperRequest("/RS_GetUserList", "");
+
 	return _bstr_t(result.data());
 }
 
@@ -577,6 +578,7 @@ std::string Login(const std::string& id, const std::string& word)
 	params.write(body);
 	return Utility::SuperRequest("/RS_CertLogin", body.str());
 }
+
 
 bool OK(const std::string& result)
 {
