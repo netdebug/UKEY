@@ -40,9 +40,11 @@ namespace Reach {
 			printQr(qr);
 			poco_information_f2(app.logger(), "version : %d, mask : %d", qr.getVersion(), qr.getMask());
 
-			FileOutputStream ofs(_path);
+			/*FileOutputStream ofs(_path);
 			ofs << qr.toSvgString(4) << std::endl;
-			ofs.close();
+			ofs.close();*/
+
+			saveBmp(qr);
 		}
 
 		void printQr(const QrCode &qr) {
@@ -62,6 +64,67 @@ namespace Reach {
 				std::cout << std::endl;
 			}
 			std::cout << std::endl;
+		}
+
+		void saveBmp(const QrCode &qr) {
+
+			Application& app = Application::instance();
+
+			unsigned int	unWidth, unHeight, unDataBytes;
+
+			unHeight = unWidth = qr.getSize();
+			/*unWidthAdjusted = unWidth * 8 * 3;
+			if (unWidthAdjusted % 4)
+				unWidthAdjusted = (unWidthAdjusted / 4 + 1) * 4;
+			unDataBytes = unWidthAdjusted * unWidth * 8;*/
+
+			int iLineByteCnt = (((unWidth * 8) + 31) >> 5) << 2;
+			unDataBytes = iLineByteCnt * unHeight * 8;
+
+			BITMAPFILEHEADER kFileHeader;
+			kFileHeader.bfType = 0x4d42;  // "BM"
+			kFileHeader.bfSize = sizeof(BITMAPFILEHEADER) +
+				sizeof(BITMAPINFOHEADER) +
+				unDataBytes;
+			kFileHeader.bfReserved1 = 0;
+			kFileHeader.bfReserved2 = 0;
+			kFileHeader.bfOffBits = sizeof(BITMAPFILEHEADER) +
+				sizeof(BITMAPINFOHEADER);
+
+			BITMAPINFOHEADER kInfoHeader;
+			kInfoHeader.biSize = sizeof(BITMAPINFOHEADER);
+			kInfoHeader.biWidth = iLineByteCnt;
+			kInfoHeader.biHeight = -((int)unHeight);
+			kInfoHeader.biPlanes = 1;
+			kInfoHeader.biBitCount = 24;
+			kInfoHeader.biCompression = BI_RGB;
+			kInfoHeader.biSizeImage = 0;
+			kInfoHeader.biXPelsPerMeter = 0;
+			kInfoHeader.biYPelsPerMeter = 0;
+			kInfoHeader.biClrUsed = 0;
+			kInfoHeader.biClrImportant = 0;
+
+			int border = 0;
+
+			Poco::Buffer<char> data(unDataBytes);
+			std::memset(data.begin(), 0xCC, data.capacityBytes());
+
+			for (int y = -border; y < qr.getSize() + border; y++) {
+				for (int x = -border; x < qr.getSize() + border; x++) {
+					char cpixle = (qr.getModule(x, y) ? 0x00 : 0xFF);
+					data[y * iLineByteCnt * 3 + x * 3] = cpixle;
+					data[y * iLineByteCnt * 3 + x * 3 + 1] = cpixle;
+					data[y * iLineByteCnt * 3 + x * 3 + 2] = cpixle;
+				}
+				std::cout << std::endl;
+			}
+			std::cout << std::endl;
+
+			FileOutputStream ofs(_path);
+			ofs.write((char*)&kFileHeader, sizeof(kFileHeader));
+			ofs.write((char*)&kInfoHeader, sizeof(kInfoHeader));
+			ofs.write((char*)data.begin(), data.size());
+			ofs.close();
 		}
 	private:
 		std::string _text;
