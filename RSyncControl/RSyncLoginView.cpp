@@ -6,15 +6,16 @@
 #include "RSyncLoginView.h"
 #include "afxdialogex.h"
 #include <comutil.h>
+#include <cassert>
 
 // RSyncLoginView 对话框
 
 IMPLEMENT_DYNAMIC(RSyncLoginView, CDialog)
 
-RSyncLoginView::RSyncLoginView(CWnd* pParent /*=nullptr*/)
-	: CDialog(IDD_DIALOG1, pParent)
-	, m_nameStr(_T(""))
-	, m_passwordStr(_T(""))
+RSyncLoginView::RSyncLoginView(CString& cid, CString& cpassword)
+	: CDialog(IDD_DIALOG1, NULL)
+	, m_nameStr(cid)
+	, m_passwordStr(cpassword)
 {
 	
 }
@@ -25,7 +26,7 @@ RSyncLoginView::~RSyncLoginView()
 
 BOOL RSyncLoginView::OnInitDialog()
 {
-	SetDlgItemTextW(IDC_EDIT1, m_pName);
+	SetDlgItemTextW(IDC_EDIT1, m_nameStr);
 	return 0;
 }
 
@@ -66,3 +67,22 @@ CString RSyncLoginView::GetInputPassword()
 	return m_passwordStr;
 }
 
+std::string toString(CString& str)
+{
+	DWORD dBufSize = WideCharToMultiByte(CP_OEMCP, 0, str, -1, NULL, 0, NULL, FALSE);
+	char *dBuf = new char[dBufSize];
+	memset(dBuf, 0, dBufSize);
+	int nRet = WideCharToMultiByte(CP_OEMCP, 0, str, -1, dBuf, dBufSize, NULL, FALSE);
+	assert(nRet > 0);
+	return std::string(dBuf);
+}
+
+std::string RSyncLoginView::name()
+{
+	return toString(m_nameStr);
+}
+
+std::string RSyncLoginView::password()
+{
+	return toString(m_passwordStr);
+}
