@@ -45,7 +45,7 @@ JSONStringify::~JSONStringify()
 JSONStringify::JSONStringify(const JSONStringify& other)
 	:code(other.code), message(other.message), result(other.result)
 {
-
+	result.setEscapeUnicode();
 }
 
 JSONStringify& JSONStringify::operator = (const JSONStringify& other)
@@ -53,6 +53,7 @@ JSONStringify& JSONStringify::operator = (const JSONStringify& other)
 	code = other.code;
 	message = other.message;
 	result = other.result;
+	result.setEscapeUnicode();
 
 	return *this;
 }
