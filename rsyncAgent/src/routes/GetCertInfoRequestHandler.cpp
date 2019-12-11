@@ -9,6 +9,7 @@
 #include "Poco/RegularExpression.h"
 
 #include <cassert>
+#include "Poco/HexBinaryDecoder.h"
 
 using namespace Reach;
 using Reach::Data::Session;
@@ -23,6 +24,7 @@ using Poco::Debugger;
 using Poco::NumberParser;
 using Poco::DateTime;
 using Poco::DateTimeParser;
+using Poco::HexBinaryDecoder;
 
 #define SGD_CERT_SUBJECT_CN 0x00000031
 extern std::string SOF_GetCertInfoByOid(std::string Base64EncodeCert, std::string oid);
@@ -205,7 +207,35 @@ void GetCertInfo::decode_utf8(const std::string& text)
 }
 void GetCertInfo::extract(const std::string& text)
 {
-	std::string pattern("/(\\w+)=(\\w+|.+)");
+	std::string st = text;
+	if (st.find("\\x") == std::string::npos)
+	{
+		_item = st;
+		return;
+	}
+	;
+	for (int idx = 0; idx < st.size();)
+	{
+		if (st[idx] == '\\' && st[idx + 1] == 'x')//Õ¼ÓÃ4×Ö½Ú
+		{
+			idx += 4;
+		}
+		else {
+			char v = st[idx];
+			char c[3] = {};
+			std::sprintf(c, "%02x", v);
+			st.replace(idx, 1, c);
+			idx +=2;
+		}
+	}
+	st = Poco::replace(st, "\\x", "");
+	std::istringstream istr(st);
+	HexBinaryDecoder decoder(istr);
+	std::string s;
+	decoder >> s;
+	_item += s;
+
+	/*std::string pattern("/(\\w+)=(\\w+|.+)");
 	std::string::size_type offset = 0;
 	int options = 0;
 
@@ -226,7 +256,7 @@ void GetCertInfo::extract(const std::string& text)
 	catch (Poco::RegularExpressionException&)
 	{
 		_item.clear();
-	}
+	}*/
 
 	Debugger::message(format("%s", _item));
 }
