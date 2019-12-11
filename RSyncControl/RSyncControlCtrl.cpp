@@ -217,29 +217,6 @@ bool IsLogined(const std::string& id)
 	return ds["code"] == "0000";
 }
 
-BSTR CRSyncControlCtrl::ShowRSyncChangePasswd(std::string containerId, std::string oldCode, std::string newCode)
-{
-	if ("" == containerId)
-	{
-		//若id为空则获取
-		std::string result = Utility::SuperRequest("/RS_GetUserList", "");
-		containerId = Utility::formatUid(result);
-	}
-
-	RSyncChangPassWd passwd(CString(containerId.data()));
-	passwd.SetInputPassWd(CString(oldCode.data()), CString(newCode.data()));
-	INT_PTR modal = passwd.DoModal();
-	if (modal == IDOK)
-	{
-		CString nameStr = passwd.GetInputName();
-		CString oldwordStr = passwd.GetInputNewPasswd();
-		CString newStr = passwd.GetInputOldPasswd();
-		//std::string msg = (LPCSTR)(CStringA)nameStr;
-		return RS_ChangePassWd(_bstr_t(nameStr), _bstr_t(oldwordStr), _bstr_t(newStr));
-	}
-	return BSTR();
-}
-
 void CRSyncControlCtrl::handle1(MQTTNotification* pNf)
 {
 	Debugger::message(format("MQTTNotification action = %s", pNf->context()));
@@ -318,7 +295,6 @@ LRESULT CRSyncControlCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM Lparam
 	}
 	return COleControl::WindowProc(message, wParam, Lparam);
 }
-
 
 // CRSyncControlCtrl::OnDraw - 绘图函数
 
@@ -561,7 +537,7 @@ BSTR CRSyncControlCtrl::RS_CertLogin(BSTR containerId, BSTR password)
 			word = loginView.password();
 		}
 		else
-			return _bstr_t();
+			return onCancelRespone();
 	}
 
 	std::string result = Login(id, word);
@@ -577,6 +553,15 @@ std::string Login(const std::string& id, const std::string& word)
 	std::ostringstream body;
 	params.write(body);
 	return Utility::SuperRequest("/RS_CertLogin", body.str());
+}
+
+BSTR onCancelRespone() {
+	Poco::JSON::Object result;
+	result.set("code", "9999");
+	result.set("msg", "user cancel");
+	std::ostringstream out;
+	result.stringify(out);
+	return _bstr_t(out.str().data());
 }
 
 
@@ -610,13 +595,23 @@ BSTR CRSyncControlCtrl::RS_ChangePassWd(BSTR containerId, BSTR oldCode, BSTR new
 	std::string theold = _com_util::ConvertBSTRToString(oldCode);
 	std::string thenew = _com_util::ConvertBSTRToString(newCode);
 
-	//没有输入修改的密码
-	if ("" == theold || "" == thenew)
+	if (theold.empty() || thenew.empty())
 	{
-		return ShowRSyncChangePasswd(id, theold, thenew);
+		RSyncChangPassWd passwd(CString(id.data()), CString(theold.data()), CString(thenew.data()));
+		INT_PTR modal = passwd.DoModal();
+		if (modal != IDOK) return onCancelRespone();
+		{
+			id = passwd.name();
+			theold = passwd.theOld();
+			thenew = passwd.theNew();
+		}
 	}
-
 	//std::string body(Poco::format("containerId=%s&oldCode=%s&newCode=%s", id, theold, thenew));
+	std::string result = changpasswd(id, theold, thenew);
+	return _bstr_t(result.data());
+}
+
+std::string changpasswd(const std::string& id, const std::string& theold, const std::string& thenew) {
 	HTMLForm params;
 	params.set("containerId", id);
 	params.set("oldCode", theold);
@@ -626,8 +621,7 @@ BSTR CRSyncControlCtrl::RS_ChangePassWd(BSTR containerId, BSTR oldCode, BSTR new
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_ChangePassWd", body.str());
 
-	//std::string encoding = Utility::UTF8EncodingGBK(result);
-	return _bstr_t(result.data());
+	return result;
 }
 
 BSTR CRSyncControlCtrl::RS_KeyGetKeySnExt(BSTR containerId)
@@ -655,7 +649,7 @@ BSTR CRSyncControlCtrl::RS_KeyGetKeySn()
 	if (!IsLogined(id))
 	{
 		RSyncLoginView loginView(CString(id.c_str()), CString(""));
-		if (loginView.DoModal() != IDOK) return _bstr_t();
+		if (loginView.DoModal() != IDOK) return onCancelRespone();
 
 		std::string result = Login(loginView.name(), loginView.password());
 
@@ -781,7 +775,7 @@ BSTR CRSyncControlCtrl::RS_KeyDecryptData(BSTR encRsKey, BSTR containerId)
 	if (!IsLogined(id))
 	{
 		RSyncLoginView loginView(CString(id.c_str()), CString(""));
-		if (loginView.DoModal() != IDOK) return _bstr_t();
+		if (loginView.DoModal() != IDOK) return onCancelRespone();
 
 		std::string result = Login(loginView.name(), loginView.password());
 
