@@ -14,6 +14,7 @@
 #include "Poco/JSON/Object.h"
 #include "Poco/DynamicStruct.h"
 #include "CloudEventRecevier.h"
+#include "Poco/Debugger.h"
 #include <cassert>
 #include <sstream>
 #include "EncodingTransfer.h"
@@ -30,6 +31,7 @@ using Poco::Net::HTTPClientSession;
 using Poco::JSON::Parser;
 using Poco::JSON::Object;
 using Poco::DynamicStruct;
+using Poco::Debugger;
 
 using Reach::ActiveX::Utility;
 
@@ -198,88 +200,21 @@ CRSyncControlCtrl::~CRSyncControlCtrl()
 	tm.joinAll();
 }
 
-#include "Poco/Debugger.h"
-using Poco::Debugger;
-// 弹出登录界面
-BSTR CRSyncControlCtrl::ShowRSyncLoginView(BSTR containerId)
+bool IsLogined(const std::string& id)
 {
-	
-	RSyncLoginView loginView;
-	std::string id = _com_util::ConvertBSTRToString(containerId);
-	if (id == "")
-	{
-		//若id为空则获取
-		 std::string result = Utility::SuperRequest("/RS_GetUserList", "");
-		 id = Utility::formatUid(result);
-	}
-	loginView.SetInputName(CString(id.data()));
-	INT_PTR modal = loginView.DoModal();
-	if (modal == IDOK)
-	{
-		//确定
-		CString nameStr = loginView.GetInputName();
-		CString passwordStr = loginView.GetInputPassword();
-		std::string msg = (LPCSTR)(CStringA)nameStr;
-		return onRsyncLogin(msg, (LPCSTR)(CStringA)passwordStr);
-		
-	}
-	return BSTR();
-}
-//登录
-BSTR CRSyncControlCtrl::onRsyncLogin(std::string nameStr, std::string passwordStr) {
-
-	HTMLForm params;
-	params.set("containerId", nameStr);
-	params.set("password", passwordStr);
-
-	std::ostringstream body;
-	params.write(body);
-	std::string result = Utility::SuperRequest("/RS_CertLogin", body.str());
-	//获取登录状态并保存
-	if (result != "")
-	{
-		Parser ps;
-		Var res = ps.parse(result);
-		Object::Ptr object = res.extract<Object::Ptr>();
-		assert(object);
-		DynamicStruct ds = *object;
-		std::string code = ds["code"];
-		m_bLoginState = code == "0000";
-		std::string msg = ds["msg"];
-		if (!m_bLoginState)
-		{
-			auto tipmsg = EncodingTransfer(_bstr_t(msg.data()));
-			RSyncMsgTip ex(tipmsg);
-			ex.DoModal();
-		}
-	}
-	//std::string gbkstring = Utility::UTF8EncodingGBK(result);
-	return  _bstr_t(result.data());
-}
-//判断登录状态
-BSTR CRSyncControlCtrl::IsLoginState(BSTR containerId)
-{
-	m_bLoginState = FALSE;
-	std::string id = _com_util::ConvertBSTRToString(containerId);
 	HTMLForm params;
 	params.set("containerId", id);
 	std::ostringstream body;
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_KeyStatus", body.str());
-	std::string gbkstring = Utility::UTF8EncodingGBK(result);
 
 	Parser ps;
 	Var res = ps.parse(result);
 	Object::Ptr object = res.extract<Object::Ptr>();
 	assert(object);
 	DynamicStruct ds = *object;
-	std::string code = ds["code"];
-	m_bLoginState = code == "0000";
-	if (!m_bLoginState)
-	{
-		return ShowRSyncLoginView(containerId);
-	}
-	return BSTR();
+
+	return ds["code"] == "0000";
 }
 
 BSTR CRSyncControlCtrl::ShowRSyncChangePasswd(std::string containerId, std::string oldCode, std::string newCode)
@@ -307,17 +242,18 @@ BSTR CRSyncControlCtrl::ShowRSyncChangePasswd(std::string containerId, std::stri
 
 void CRSyncControlCtrl::handle1(MQTTNotification* pNf)
 {
-	 Debugger::message(format("MQTTNotification action = %s", pNf->context()));
+	Debugger::message(format("MQTTNotification action = %s", pNf->context()));
 	HWND hwnd = GetSafeHwnd();
 	if (NULL == hwnd)
 	{
 		hwnd = AfxGetMainWnd() == NULL ? NULL : AfxGetMainWnd()->m_hWnd;
 		::PostMessage(HWND_BROADCAST, UM_EVENT, (WPARAM)pNf, NULL);
 
-	} else {
- 		::PostMessage(hwnd, UM_EVENT, (WPARAM)pNf, NULL);
 	}
-	
+	else {
+		::PostMessage(hwnd, UM_EVENT, (WPARAM)pNf, NULL);
+	}
+
 }
 
 void CRSyncControlCtrl::process_event(MQTTNotification * pNf)
@@ -330,12 +266,12 @@ void CRSyncControlCtrl::process_event(MQTTNotification * pNf)
 		SignedSealAuth,
 		UnSignedSealAuth,
 		GetCertAuth,
-		GetSignResult	
+		GetSignResult
 	};
 
-	if (pNf){
+	if (pNf) {
 		std::string act = pNf->getdata("action");
-		switch(atoi(act.data()))
+		switch (atoi(act.data()))
 		{
 		case LoginAuth:
 			RS_CloudLoginAuthEvent(*pNf);
@@ -369,7 +305,7 @@ void CRSyncControlCtrl::OnSetClientSite()
 	{
 		VERIFY(CreateControlWindow(::GetDesktopWindow(), CRect(0, 0, 0, 0), CRect(0, 0, 0, 0)));
 	}
-	
+
 	COleControl::OnSetClientSite();
 }
 
@@ -387,7 +323,7 @@ LRESULT CRSyncControlCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM Lparam
 // CRSyncControlCtrl::OnDraw - 绘图函数
 
 void CRSyncControlCtrl::OnDraw(
-			CDC* pdc, const CRect& rcBounds, const CRect& /* rcInvalid */)
+	CDC* pdc, const CRect& rcBounds, const CRect& /* rcInvalid */)
 {
 	if (!pdc)
 		return;
@@ -434,7 +370,7 @@ void CRSyncControlCtrl::RS_ConfigParameters(BSTR cmd, BSTR val)
 	HTMLForm params;
 	params.set("cmd", cmdid);
 	params.set("val", valadress);
-	
+
 	std::ostringstream body;
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_ConfigParameters", body.str());
@@ -560,15 +496,19 @@ BSTR CRSyncControlCtrl::RS_KeyEncryptFile(BSTR souceFilePath, BSTR encFilePath, 
 //需要登录状态下才能调用接口
 BSTR CRSyncControlCtrl::RS_KeyDecryptFile(BSTR encFilePath, BSTR dncFilePath, BSTR containerId)
 {
-	BSTR ret = IsLoginState(containerId);
-	if (!m_bLoginState)
-	{
-		return ret;
-	}
-
 	std::string encFile = _com_util::ConvertBSTRToString(encFilePath);
 	std::string dncFile = _com_util::ConvertBSTRToString(dncFilePath);
 	std::string id = _com_util::ConvertBSTRToString(containerId);
+
+	if (!IsLogined(id))
+	{
+		RSyncLoginView loginView(CString(id.c_str()), CString(""));
+		if (loginView.DoModal() != IDOK) return _bstr_t();
+
+		std::string result = Login(loginView.name(), loginView.password());
+
+		if (!OK(result)) return _bstr_t(result.data());
+	}
 
 	HTMLForm params;
 	params.set("encFilePath", Utility::GBKEncodingUTF8(encFile));
@@ -578,7 +518,7 @@ BSTR CRSyncControlCtrl::RS_KeyDecryptFile(BSTR encFilePath, BSTR dncFilePath, BS
 	std::ostringstream body;
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_KeyDecryptFile", body.str());
-	//std::string encoding = Utility::UTF8EncodingGBK(result);
+
 	return _bstr_t(result.data());
 }
 
@@ -586,15 +526,13 @@ BSTR CRSyncControlCtrl::RS_KeyDecryptFile(BSTR encFilePath, BSTR dncFilePath, BS
 BSTR CRSyncControlCtrl::RS_GetUserList()
 {
 	std::string result = Utility::SuperRequest("/RS_GetUserList", "");
-
-	//std::string encoding = Utility::UTF8EncodingGBK(result);
 	return _bstr_t(result.data());
 }
 
 BSTR CRSyncControlCtrl::RS_GetCertBase64String(BSTR containerId, SHORT certType)
 {
 	std::string id = _com_util::ConvertBSTRToString(containerId);
-	//std::string body(Poco::format("containerId=%s&certType=%d", id, (int)certType));
+
 	HTMLForm params;
 	params.set("containerId", id);
 	params.set("certType", Var(certType));
@@ -603,7 +541,6 @@ BSTR CRSyncControlCtrl::RS_GetCertBase64String(BSTR containerId, SHORT certType)
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_GetCertBase64String", body.str());
 
-	//std::string encoding = Utility::UTF8EncodingGBK(result);
 	return _bstr_t(result.data());
 }
 
@@ -613,22 +550,41 @@ BSTR CRSyncControlCtrl::RS_CertLogin(BSTR containerId, BSTR password)
 
 	std::string id = _com_util::ConvertBSTRToString(containerId);
 	std::string word = _com_util::ConvertBSTRToString(password);
-	if (id == "" || word == "") //缺少用户名密码需要弹框
+
+	if (word.empty())
 	{
-		BSTR ret = ShowRSyncLoginView(containerId);
-		return ret;
+		RSyncLoginView loginView(CString(id.data()), CString(word.data()));
+		if (loginView.DoModal() == IDOK)
+		{
+			id = loginView.name();
+			word = loginView.password();
+		}
+		else
+			return _bstr_t();
 	}
-	//std::string body(Poco::format("containerId=%s&password=%s", id, word));
+
+	std::string result = Login(id, word);
+	return _bstr_t(result.data());
+}
+
+std::string Login(const std::string& id, const std::string& word)
+{
 	HTMLForm params;
 	params.set("containerId", id);
 	params.set("password", word);
 
 	std::ostringstream body;
 	params.write(body);
-	std::string result = Utility::SuperRequest("/RS_CertLogin", body.str());
+	return Utility::SuperRequest("/RS_CertLogin", body.str());
+}
 
-	//std::string encoding = Utility::UTF8EncodingGBK(result);
-	return _bstr_t(result.data());
+bool OK(const std::string& result)
+{
+	Parser T;
+	Var R = T.parse(result);
+	assert(R.type() == typeid(Object::Ptr));
+	DynamicStruct ds = *R.extract<Object::Ptr>();
+	return ds["code"] == "0000";
 }
 
 BSTR CRSyncControlCtrl::RS_GetPinRetryCount(BSTR containerId)
@@ -690,23 +646,22 @@ BSTR CRSyncControlCtrl::RS_KeyGetKeySnExt(BSTR containerId)
 BSTR CRSyncControlCtrl::RS_KeyGetKeySn()
 {
 	std::string result;
-	result = Utility::SuperRequest("/RS_GetUserList","");
-	
-	std::string id = Utility::formatUid(result);
-	
-	//std::string body(Poco::format("containerId=%s", id));
-	HTMLForm params;
-	params.set("containerId", id);
+	result = Utility::SuperRequest("/RS_GetUserList", "");
 
-	//需要登录状态下才能调用接口
-	BSTR containerId = _com_util::ConvertStringToBSTR(id.data());
-	BSTR ret = IsLoginState(containerId);
-	if (!m_bLoginState)
+	std::string id = Utility::formatUid(result);
+
+	if (!IsLogined(id))
 	{
-		//返回登录错误json
-		return ret;
+		RSyncLoginView loginView(CString(id.c_str()), CString(""));
+		if (loginView.DoModal() != IDOK) return _bstr_t();
+
+		std::string result = Login(loginView.name(), loginView.password());
+
+		if (!OK(result)) return _bstr_t(result.data());
 	}
 
+	HTMLForm params;
+	params.set("containerId", id);
 	std::ostringstream body;
 	params.write(body);
 	result = Utility::SuperRequest("/RS_KeyGetKeySn", body.str());
@@ -719,7 +674,7 @@ BSTR CRSyncControlCtrl::RS_KeyGetKeySn()
 	Object::Ptr object = res.extract<Object::Ptr>();
 	assert(object);
 	Object::Ptr data = object->getObject("data");
-	if(data && data->has("containerId"))
+	if (data && data->has("containerId"))
 		data->remove("containerId");
 	object->set("data", data);
 	DynamicStruct ds = *object;
@@ -736,7 +691,7 @@ BSTR CRSyncControlCtrl::RS_KeySignByP1(BSTR msg, BSTR containerId)
 	HTMLForm params;
 	params.set("containerId", id);
 	params.set("asn1Msg", Utility::GBKEncodingUTF8(text));
-	
+
 	std::ostringstream body;
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_KeySignByP1", body.str());
@@ -821,6 +776,15 @@ BSTR CRSyncControlCtrl::RS_KeyDecryptData(BSTR encRsKey, BSTR containerId)
 	std::string id = _com_util::ConvertBSTRToString(containerId);
 	std::string rskey = _com_util::ConvertBSTRToString(encRsKey);
 	//std::string body(Poco::format("containerId=%s&encRsKey=%s", id, rskey));
+	if (!IsLogined(id))
+	{
+		RSyncLoginView loginView(CString(id.c_str()), CString(""));
+		if (loginView.DoModal() != IDOK) return _bstr_t();
+
+		std::string result = Login(loginView.name(), loginView.password());
+
+		if (!OK(result)) return _bstr_t(result.data());
+	}
 	HTMLForm params;
 	params.set("containerId", id);
 	params.set("encRsKey", rskey);

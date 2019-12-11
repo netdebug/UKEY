@@ -40,11 +40,12 @@ protected:
 	DECLARE_DISPATCH_MAP()
 
 	afx_msg void AboutBox();
-	BSTR ShowRSyncLoginView(BSTR containerId);
-	BSTR onRsyncLogin(std::string nameStr, std::string passwordStr);
-	BSTR IsLoginState(BSTR containerId);
+	//BSTR ShowRSyncLoginView(BSTR containerId);
+	//BSTR onRsyncLogin(std::string nameStr, std::string passwordStr);
+	//BSTR IsLoginState(BSTR containerId);
 	
 	BSTR ShowRSyncChangePasswd(std::string containerId, std::string oldCode, std::string newCode);
+
 	/// 通用接口
 	void RS_ConfigParameters(BSTR cmd, BSTR val);
 	BSTR RS_GetParameters(BSTR cmd);
@@ -143,6 +144,10 @@ protected:
 		void process_event(MQTTNotification* pNf);
 		virtual void OnSetClientSite();
 		virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM Lparam);
+private:
+	friend std::string Login(const std::string& id, const std::string& word);
+	friend bool OK(const std::string& result);
+	friend bool IsLogined(const std::string& id);
 // 调度和事件 ID
 private:
 	enum {
