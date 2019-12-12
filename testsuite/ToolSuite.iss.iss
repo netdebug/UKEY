@@ -6,7 +6,7 @@
 [Setup]
 AppName={cm:MyAppName}
 AppId={{D773AD72-9454-4684-96A7-89E478625FB6}
-AppVerName={cm:MyAppVerName,2.0.0.0013}
+AppVerName={cm:MyAppVerName,2.0.2.002}
 AppCopyright=福建瑞术信息科技有限公司
 WizardStyle=modern
 DefaultDirName={pf}\{cm:MyAppName}
@@ -14,8 +14,8 @@ DefaultGroupName={cm:MyAppName}
 UninstallDisplayIcon={app}\MyProg.exe
 VersionInfoDescription=统一安全认证客户端
 VersionInfoProductName=统一安全认证客户端
-VersionInfoVersion=2.0.0.0025
-OutputBaseFilename=SafeCertSetup
+VersionInfoVersion=2.0.2.002
+OutputBaseFilename=SafeCertSetupV2.0.2.002
 OutputDir=.\output
 ; Uncomment the following line to disable the "Select Setup Language"
 ; dialog and have it rely solely on auto-detection.
@@ -72,7 +72,7 @@ Source: "..\bin\lng\*"; DestDir: "{app}\lng"; Flags: recursesubdirs;
 ;Architecture 2.0
 Source: "..\bin\rsyncAgent.exe"; DestDir: "{app}";
 Source: "..\bin\rsyncAgent.properties"; DestDir: "{app}";
-Source: "..\bin\RSyncControl.ocx"; DestDir: "{app}"; Flags: restartreplace regserver
+Source: "..\bin\RS_CertSafe.ocx"; DestDir: "{app}"; Flags: restartreplace regserver
 ;Source: "..\bin\rsyncDaemon.exe"; DestDir: "{app}"
 ;Source: "..\bin\rsyncDaemon.properties"; DestDir: "{app}";
 Source: "..\bin\Language.ini"; DestDir: "{app}";
@@ -149,7 +149,7 @@ Filename: "{sys}\sc.exe";Parameters:"start rsyncAgent";
 ;Filename: "{app}\rsyncClient.exe"; Parameters: "/registerService /startup=automatic" ; Flags: runascurrentuser
 ;Filename: "{sys}\sc.exe";Parameters:"start rsyncClient";
 
-Filename: "{sys}\regsvr32.exe";Parameters:" /s ""{app}\RSyncControl.ocx"" ";
+Filename: "{sys}\regsvr32.exe";Parameters:" /s ""{app}\RS_CertSafe.ocx"" ";
 Filename: "{sys}\regsvr32.exe";Parameters:" /s ""{pf}\BJCAClient\CertAppEnvV2.14.4\Program\XTXAppCOM.dll"" ";
 [UninstallRun]
 Filename: "{sys}\sc.exe";Parameters:"stop UKEYMonitor";
@@ -161,7 +161,7 @@ Filename: "{app}\rsyncAgent.exe"; Parameters: "/unregisterService " ; Flags: run
 Filename: "{sys}\sc.exe";Parameters:"stop rsyncClient";
 Filename: "{app}\rsyncClient.exe"; Parameters: "/unregisterService " ; Flags: runascurrentuser
 
-Filename: "{sys}\regsvr32.exe";Parameters:"/u /s ""{app}\RSyncControl.ocx"" "
+Filename: "{sys}\regsvr32.exe";Parameters:"/u /s ""{app}\RS_CertSafe.ocx"" "
 Filename: "{sys}\regsvr32.exe";Parameters:"/u /s ""{pf}\BJCAClient\CertAppEnvV2.14.4\Program\XTXAppCOM.dll"" ";
 [UninstallDelete]
 Type:filesandordirs; Name:"{app}\testTarget"
