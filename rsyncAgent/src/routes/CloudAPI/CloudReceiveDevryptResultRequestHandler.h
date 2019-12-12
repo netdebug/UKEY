@@ -81,7 +81,7 @@ namespace Reach {
 			std::string transid = form.get("transid", "");
 			std::string token = form.get("token", "");
 			std::string result = form.get("result", "");
-			std::string url = app.config().getString("rsigncloudTest");
+			std::string url = app.config().getString("rsigncloud");
 			CloudReceiveDevryptResult command(transid, token, result, url);
 			command.execute();
 

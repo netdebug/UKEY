@@ -87,7 +87,7 @@ namespace Reach {
 			std::string keySn = form.get("keySn", "");
 			std::string transid = form.get("transid", "");
 			std::string token = form.get("token", "");
-			std::string url = app.config().getString("rsigncloudTest");
+			std::string url = app.config().getString("rsigncloud");
 			CloudSignByP7 command(msg, keySn, transid, token, url);
 			command.execute();
 

@@ -133,7 +133,7 @@ namespace Reach {
 			std::string symKey = form.get("symKey", "");
 			std::string transid = form.get("transid", "");
 			std::string token = form.get("token", "");
-			std::string url = app.config().getString("rsigncloudTest");
+			std::string url = app.config().getString("rsigncloud");
 			CloudEncryptData command(symKey, transid, token, url);
 			command.execute();
 

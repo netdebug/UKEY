@@ -88,7 +88,7 @@ namespace Reach {
 			std::string callbackUrl = form.get("url", "");
 			std::string transid = form.get("transid", "");
 			std::string token = form.get("token", "");
-			std::string url = app.config().getString("rsigncloudTest");
+			std::string url = app.config().getString("rsigncloud");
 			CloudDevryptData command(encSymKey, callbackUrl, transid, token, url);
 			command.execute();
 

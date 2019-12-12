@@ -74,7 +74,7 @@ namespace Reach {
 
 			HTMLForm form(request, request.stream());
 			std::string userId = form.get("userId", "");
-			std::string url = app.config().getString("rsigncloudTest");
+			std::string url = app.config().getString("rsigncloud");
 			CloudLogout command(userId, url);
 			command.execute();
 

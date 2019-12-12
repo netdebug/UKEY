@@ -91,7 +91,7 @@ namespace Reach {
 
 			HTMLForm form(request, request.stream());
 			std::string transid = form.get("transid", "");
-			std::string url = app.config().getString("rsigncloudTest");
+			std::string url = app.config().getString("rsigncloud");
 			CloudSealAuth command(transid, url);
 			command.execute();
 

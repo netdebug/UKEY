@@ -424,9 +424,4 @@
       <Filter>Configuration Files</Filter>
     </ResourceCompile>
   </ItemGroup>
-  <ItemGroup>
-    <Image Include="C:\Users\Administrator\Pictures\b24.bmp">
-      <Filter>Configuration Files</Filter>
-    </Image>
-  </ItemGroup>
 </Project>

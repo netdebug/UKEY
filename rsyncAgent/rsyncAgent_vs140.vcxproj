@@ -155,9 +155,6 @@
   <ItemGroup>
     <ResourceCompile Include="rsyncAgent.rc" />
   </ItemGroup>
-  <ItemGroup>
-    <Image Include="C:\Users\Administrator\Pictures\b24.bmp" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectName>rsyncAgent</ProjectName>
     <ProjectGuid>{4B7348B3-E65F-4C27-B670-BBB244D9C436}</ProjectGuid>
