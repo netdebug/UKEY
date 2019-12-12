@@ -11,11 +11,11 @@
 
 IMPLEMENT_DYNAMIC(RSyncChangPassWd, CDialogEx)
 
-RSyncChangPassWd::RSyncChangPassWd(CString name, CWnd* pParent /*=nullptr*/)
-	: CDialogEx(IDD_DIALOG3, pParent)
+RSyncChangPassWd::RSyncChangPassWd(CString& name, CString& theold, CString& thenew)
+	: CDialogEx(IDD_DIALOG3, NULL)
 	, _name(name)
-	, _oldPassWd(_T(""))
-	, _newPassWd(_T(""))
+	, _oldPassWd(theold)
+	, _newPassWd(thenew)
 {
 
 }
@@ -26,9 +26,9 @@ RSyncChangPassWd::~RSyncChangPassWd()
 
 BOOL RSyncChangPassWd::OnInitDialog()
 {	
-	SetDlgItemTextW(IDC_EDIT1, _name);
-	SetDlgItemTextW(IDC_EDIT2, _newPassWd);
-	SetDlgItemTextW(IDC_EDIT3, _oldPassWd);
+	SetDlgItemText(IDC_EDIT1, _name);
+	SetDlgItemText(IDC_EDIT2, _newPassWd);
+	SetDlgItemText(IDC_EDIT3, _oldPassWd);
 	return 0;
 }
 
@@ -50,23 +50,17 @@ void RSyncChangPassWd::OnBnClickedOk()
 	CDialogEx::OnOK();
 }
 
-CString RSyncChangPassWd::GetInputName()
+std::string RSyncChangPassWd::name()
 {
-	return _name;
+	return toString(_name);
 }
 
-CString RSyncChangPassWd::GetInputNewPasswd()
+std::string RSyncChangPassWd::theOld()
 {
-	return _oldPassWd;
+	return toString(_oldPassWd);
 }
 
-CString RSyncChangPassWd::GetInputOldPasswd()
+std::string RSyncChangPassWd::theNew()
 {
-	return _newPassWd;
-}
-
-void RSyncChangPassWd::SetInputPassWd(CString oldCode, CString newCode)
-{
-	_oldPassWd = oldCode;
-	_newPassWd = newCode;
+	return toString(_newPassWd);
 }

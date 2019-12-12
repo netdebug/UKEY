@@ -148,6 +148,8 @@ private:
 	friend std::string Login(const std::string& id, const std::string& word);
 	friend bool OK(const std::string& result);
 	friend bool IsLogined(const std::string& id);
+	friend std::string changpasswd(const std::string& id, const std::string& theold, const std::string& thenew);
+	friend BSTR onCancelRespone();
 // 调度和事件 ID
 private:
 	enum {
