@@ -40,6 +40,7 @@ namespace Reach {
 		void initialize();
 		void createOpts();
 		void connectOpts();
+		void setConfigParameters();
 	private:
 		std::string host;
 		std::size_t port;
