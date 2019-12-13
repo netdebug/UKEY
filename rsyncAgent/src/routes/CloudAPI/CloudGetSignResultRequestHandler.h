@@ -93,14 +93,17 @@ namespace Reach {
 			poco_information_f1(app.logger(), "Request from %s", request.clientAddress().toString());
 			RESTfulRequestHandler::handleCORS(request, response);
 
-			HTMLForm form(request, request.stream());
+			std::string data("CloudGetSignResult request is deprecate!");
+			return response.sendBuffer(data.data(), data.length());
+
+			/*HTMLForm form(request, request.stream());
 			std::string transid = form.get("transid", "");
 			std::string token = form.get("token", "");
 			std::string url = app.config().getString("rsigncloud");
 			CloudGetSignResult command(transid, token, url);
 			command.execute();
 
-			return response.sendBuffer(command().data(), command().length());
+			return response.sendBuffer(command().data(), command().length());*/
 		}
 	};
 }
