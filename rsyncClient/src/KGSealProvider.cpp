@@ -25,13 +25,12 @@ KGSealProvider::KGSealProvider()
 	:app(Application::instance())
 {
 	/// Com interface
-	HRESULT	hr;
-	hr = CoInitialize(0);
+	
 }
 
 KGSealProvider::~KGSealProvider()
 {
-	::CoUninitialize();
+	
 }
 
 void KGSealProvider::extract()
