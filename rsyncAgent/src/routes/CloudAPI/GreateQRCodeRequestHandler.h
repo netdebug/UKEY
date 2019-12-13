@@ -58,7 +58,7 @@ namespace Reach {
 					std::string utf8 = (qr.getModule(x, y) ? "\xE2\x96\xA0" : "  ");
 					Poco::UTF16String ucs2;
 					UnicodeConverter::convert(utf8, ucs2);
-					
+
 					WriteConsoleW(_hConsole, ucs2.data(), static_cast<DWORD>(ucs2.size()), &written, NULL);
 				}
 				std::cout << std::endl;
@@ -66,17 +66,14 @@ namespace Reach {
 			std::cout << std::endl;
 		}
 
-		void saveBmp(const QrCode &qr) {
+		void saveBmp(const QrCode &qr, float scale = 10) {
 
 			Application& app = Application::instance();
 
 			unsigned int	unWidth, unHeight, unDataBytes;
+			int border = 0; // do not support
 
-			unHeight = unWidth = qr.getSize();
-			/*unWidthAdjusted = unWidth * 8 * 3;
-			if (unWidthAdjusted % 4)
-				unWidthAdjusted = (unWidthAdjusted / 4 + 1) * 4;
-			unDataBytes = unWidthAdjusted * unWidth * 8;*/
+			unHeight = unWidth = (qr.getSize() + border) * scale;
 
 			int iLineByteCnt = (((unWidth * 8) + 31) >> 5) << 2;
 			unDataBytes = iLineByteCnt * unHeight * 8;
@@ -98,23 +95,25 @@ namespace Reach {
 			kInfoHeader.biPlanes = 1;
 			kInfoHeader.biBitCount = 24;
 			kInfoHeader.biCompression = BI_RGB;
-			kInfoHeader.biSizeImage = 0;
+			kInfoHeader.biSizeImage = iLineByteCnt * unHeight;
 			kInfoHeader.biXPelsPerMeter = 0;
 			kInfoHeader.biYPelsPerMeter = 0;
 			kInfoHeader.biClrUsed = 0;
 			kInfoHeader.biClrImportant = 0;
 
-			int border = 0;
-
 			Poco::Buffer<char> data(unDataBytes);
-			std::memset(data.begin(), 0xCC, data.capacityBytes());
+			std::memset(data.begin(), 0xFF, data.capacityBytes());
 
-			for (int y = -border; y < qr.getSize() + border; y++) {
-				for (int x = -border; x < qr.getSize() + border; x++) {
+			int x, y = 0;
+			for (int h = -border; h < unHeight + border; h++) {
+				for (int w = -border; w < iLineByteCnt + border; w++) {
+					x = round(double(1 / scale * w));
+					y = round(double(1 / scale * h));
 					char cpixle = (qr.getModule(x, y) ? 0x00 : 0xFF);
-					data[y * iLineByteCnt * 3 + x * 3] = cpixle;
-					data[y * iLineByteCnt * 3 + x * 3 + 1] = cpixle;
-					data[y * iLineByteCnt * 3 + x * 3 + 2] = cpixle;
+					int pos = (h * iLineByteCnt + w) * 3;
+					data[pos] = cpixle;
+					data[pos + 1] = cpixle;
+					data[pos + 2] = cpixle;
 				}
 				std::cout << std::endl;
 			}
