@@ -12,12 +12,15 @@
 #include "Poco/Debugger.h"
 #include <cassert>
 #include "Poco/UUIDGenerator.h"
+#include "Poco/Net/HTMLForm.h"
+#include "Utility.h"
 
 using namespace Reach;
 using namespace Poco;
 using namespace Poco::Dynamic;
 using namespace Poco::JSON;
-using Poco::Util::Application;
+using Poco::Net::HTMLForm;
+using Reach::ActiveX::Utility;
 
 bool MQTTAsyncClient::connected = false;
 
@@ -31,7 +34,8 @@ MQTTAsyncClient::MQTTAsyncClient(bool useSSL)
 
 	deviceId = UUIDGenerator::defaultGenerator().create().toString();
 	clientIdUrl = Poco::format("%s@@@%s", groupId, deviceId);
-
+	
+	setConfigParameters();
 	int rc = 0;
 	if (rc = MQTTAsync_createWithOptions(&client, serverURI.data(),
 		clientIdUrl.data(),
@@ -217,4 +221,15 @@ std::string MQTTAsyncClient::generatorUsername(const std::string& accessKey, con
 	std::string name;
 	name.swap(Poco::format("Signature|%s|%s", accessKey, instanceId));
 	return name;
+}
+
+void Reach::MQTTAsyncClient::setConfigParameters()
+{
+	HTMLForm params;
+	params.set("cmd", "clientId");
+	params.set("val", deviceId);
+
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_ConfigParameters", body.str());
 }
