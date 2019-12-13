@@ -94,18 +94,18 @@ void RegisterControlsSafely()
 
 	/// 将控件标记为可安全编写脚本
 
-	hr = CreateComponentCategory(CATID_SafeForScripting,
-		L"Controls safely  scriptable!");
+	hr = CreateComponentCategory(CATID_SafeForInitializing,
+		L"Controls safely initializable from persistent data!");
 	assert(SUCCEEDED(hr));
 
 	hr = RegisterCLSIDInCategory(_RSyncControlCtrl,
-		CATID_SafeForScripting);
+		CATID_SafeForInitializing);
 	assert(SUCCEEDED(hr));
 
 	/// 将控件标记为可安全编写脚本
 
 	hr = CreateComponentCategory(CATID_SafeForScripting,
-		L"Controls safely  scriptable!");
+		L"Controls safely scriptable!");
 	assert(SUCCEEDED(hr));
 
 	hr = RegisterCLSIDInCategory(_RSyncControlCtrl,
