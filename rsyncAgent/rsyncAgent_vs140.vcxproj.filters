@@ -114,15 +114,6 @@
     <None Include="..\bin\config\CloudSignByP7.json">
       <Filter>RequestHandler\Clould\config</Filter>
     </None>
-    <None Include="C:\Users\Administrator\Desktop\sm2\pub2sm1.bin">
-      <Filter>Core\Source Files</Filter>
-    </None>
-    <None Include="C:\Users\Administrator\Desktop\sm2\sm2Pub.pem">
-      <Filter>Core\Source Files</Filter>
-    </None>
-    <None Include="C:\Users\Administrator\Desktop\sm2\sm2.pem">
-      <Filter>Core\Source Files</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\rsyncAgent.h">
