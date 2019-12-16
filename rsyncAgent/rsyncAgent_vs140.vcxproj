@@ -45,9 +45,6 @@
     <None Include="..\bin\config\CloudLogout.json" />
     <None Include="..\bin\config\CloudReceiveDevryptResult.json" />
     <None Include="..\bin\config\CloudSignByP7.json" />
-    <None Include="C:\Users\Administrator\Desktop\sm2\pub2sm1.bin" />
-    <None Include="C:\Users\Administrator\Desktop\sm2\sm2.pem" />
-    <None Include="C:\Users\Administrator\Desktop\sm2\sm2Pub.pem" />
     <None Include="Language.ini" />
     <None Include="rsyncAgent.properties" />
   </ItemGroup>
