@@ -6,7 +6,7 @@
 [Setup]
 AppName={cm:MyAppName}
 AppId={{D773AD72-9454-4684-96A7-89E478625FB6}
-AppVerName={cm:MyAppVerName,2.0.2.008}
+AppVerName={cm:MyAppVerName,2.0.3.002}
 AppCopyright=福建瑞术信息科技有限公司
 WizardStyle=modern
 DefaultDirName={pf}\{cm:MyAppName}
@@ -14,8 +14,8 @@ DefaultGroupName={cm:MyAppName}
 UninstallDisplayIcon={app}\MyProg.exe
 VersionInfoDescription=统一安全认证客户端
 VersionInfoProductName=统一安全认证客户端
-VersionInfoVersion=2.0.2.008
-OutputBaseFilename=SafeCertSetupV2.0.2.008
+VersionInfoVersion=2.0.3.002
+OutputBaseFilename=SafeCertSetupV2.0.3.002
 OutputDir=.\output
 ; Uncomment the following line to disable the "Select Setup Language"
 ; dialog and have it rely solely on auto-detection.
