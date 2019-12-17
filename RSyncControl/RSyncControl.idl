@@ -29,13 +29,23 @@ library RS_CertSafeLib	// RS_CertSafeLib
 		methods:
 
 			[id(DISPID_ABOUTBOX)] void AboutBox();
+			[id(10)] BSTR REACH_VerifyIdentity(BSTR authNo, BSTR password);
+			[id(13)] BSTR REACH_EncryptByDigitalEnvelope(BSTR souceFilePath, BSTR EncFilePath, BSTR authNo, BSTR password, BSTR certs);
+			[id(14)] BSTR REACH_DecryptByDigitalEnvelope(BSTR inFile, BSTR outDirectoryPath, BSTR reachKeyFilePath, BSTR authNo, BSTR password);
+			[id(15)] BSTR REACH_MultiEncryptByDigitalEnvelope(BSTR souceFilePath, BSTR EncFilePath, BSTR authNo, BSTR password, BSTR certs, BSTR locatinCertAddMode);
+			[id(16)] BSTR REACH_MultiDecryptByDigitalEnvelope(BSTR inFile, BSTR outDirectoryPath, BSTR reachKeyPath, BSTR authNo, BSTR password);
+			[id(17)] BSTR REACH_MultiDecryptDataByPrivateKey(BSTR reachKeyFileData, BSTR authNo, BSTR password);
+			[id(18)] BSTR REACH_MultiDecryptFileByKey(BSTR encfileInfor, BSTR encFilePath, BSTR dncDirectoryPath);
+			[id(19)] BSTR REACH_CreateQRCodeToken(BSTR action, BSTR bmpSaveFilePath);//这个不用了
+			[id(43)] BSTR RS_ChangePassWd(void);
+
 			[id(45)]BSTR RS_KeyGetKeySn(void);//45
-			[id(19)]BSTR RS_KeyGetKeySnExt(BSTR containerId);
+			[id(11)]BSTR RS_KeyGetKeySnExt(BSTR containerId);
 			[id(39)]BSTR RS_GetUserList(void);//39
 			[id(40)]BSTR RS_GetCertBase64String(BSTR containerId, SHORT certType);//40
 			[id(41)]BSTR RS_CertLogin(BSTR containerId, BSTR password);//41
 			[id(42)]BSTR RS_GetPinRetryCount(BSTR containerId);//42
-			[id(43)]BSTR RS_ChangePassWd(BSTR containerId, BSTR oldCdoe, BSTR newCode);//43
+			[id(12)]BSTR RS_ChangePassWdEx(BSTR containerId, BSTR oldCdoe, BSTR newCode);//43
 			[id(48)]BSTR RS_KeySignByP1(BSTR msg, BSTR containerId);//48
 			[id(49)]BSTR RS_VerifySignByP1(BSTR certBase64, BSTR msg, BSTR signdMsg);//49
 			[id(51)]BSTR RS_KeyEncryptData(BSTR rsKey, BSTR certBase64);//51

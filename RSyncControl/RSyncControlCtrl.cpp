@@ -54,13 +54,25 @@ END_MESSAGE_MAP()
 
 BEGIN_DISPATCH_MAP(CRSyncControlCtrl, COleControl)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "AboutBox", DISPID_ABOUTBOX, AboutBox, VT_EMPTY, VTS_NONE)
+
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "REACH_VerifyIdentity", dispid_10, REACH_VerifyIdentity, VT_BSTR, VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "REACH_EncryptByDigitalEnvelope", dispid_13, REACH_EncryptByDigitalEnvelope, VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "REACH_DecryptByDigitalEnvelope", dispid_14, REACH_DecryptByDigitalEnvelope, VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "REACH_MultiEncryptByDigitalEnvelope", dispid_15, REACH_MultiEncryptByDigitalEnvelope, VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "REACH_MultiDecryptByDigitalEnvelope", dispid_16, REACH_MultiDecryptByDigitalEnvelope, VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "REACH_MultiDecryptDataByPrivateKey", dispid_17, REACH_MultiDecryptDataByPrivateKey, VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "REACH_MultiDecryptFileByKey", dispid_18, REACH_MultiDecryptFileByKey, VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "REACH_CreateQRCodeToken", dispid_19, REACH_CreateQRCodeToken, VT_BSTR, VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_ChangePassWd", dispid_43, RS_ChangePassWd, VT_BSTR, VTS_NONE)
+
+
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyGetKeySn",						dispid_20,			RS_KeyGetKeySn,				VT_BSTR, VTS_NONE)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyGetKeySnExt",					dispid_21,			RS_KeyGetKeySnExt,			VT_BSTR, VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_GetUserList",						dispid_22,			RS_GetUserList,				VT_BSTR, VTS_NONE)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_GetCertBase64String",				dispid_23,			RS_GetCertBase64String,		VT_BSTR, VTS_BSTR VTS_I2)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CertLogin",							dispid_24,			RS_CertLogin,				VT_BSTR, VTS_BSTR VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_GetPinRetryCount",					dispid_25,			RS_GetPinRetryCount,		VT_BSTR, VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_ChangePassWd",						dispid_26,			RS_ChangePassWd,			VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_ChangePassWdEx",					dispid_12,			RS_ChangePassWdEx,			VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeySignByP1",						dispid_27,			RS_KeySignByP1,				VT_BSTR, VTS_BSTR VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_VerifySignByP1",					dispid_28,			RS_VerifySignByP1,			VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyEncryptData",					dispid_29,			RS_KeyEncryptData,			VT_BSTR, VTS_BSTR VTS_BSTR)
@@ -589,7 +601,7 @@ BSTR CRSyncControlCtrl::RS_GetPinRetryCount(BSTR containerId)
 	return _bstr_t(result.data());
 }
 
-BSTR CRSyncControlCtrl::RS_ChangePassWd(BSTR containerId, BSTR oldCode, BSTR newCode)
+BSTR CRSyncControlCtrl::RS_ChangePassWdEx(BSTR containerId, BSTR oldCode, BSTR newCode)
 {
 	std::string id = _com_util::ConvertBSTRToString(containerId);
 	std::string theold = _com_util::ConvertBSTRToString(oldCode);
@@ -1121,3 +1133,47 @@ inline void CRSyncControlCtrl::RS_CloudLoginAuthEvent(const MQTTNotification& Nf
 }
 
 // CRSyncControlCtrl 消息处理程序
+BSTR CRSyncControlCtrl::REACH_VerifyIdentity(BSTR authNo, BSTR password)
+{
+	return _bstr_t();
+}
+
+BSTR CRSyncControlCtrl::REACH_EncryptByDigitalEnvelope(BSTR souceFilePath, BSTR EncFilePath, BSTR authNo, BSTR password, BSTR certs)
+{
+	return _bstr_t();
+}
+
+BSTR CRSyncControlCtrl::REACH_DecryptByDigitalEnvelope(BSTR inFile, BSTR outDirectoryPath, BSTR reachKeyFilePath, BSTR authNo, BSTR password)
+{
+	return _bstr_t();
+}
+
+BSTR CRSyncControlCtrl::REACH_MultiEncryptByDigitalEnvelope(BSTR souceFilePath, BSTR EncFilePath, BSTR authNo, BSTR password, BSTR certs, BSTR locatinCertAddMode)
+{
+	return _bstr_t();
+}
+
+BSTR CRSyncControlCtrl::REACH_MultiDecryptByDigitalEnvelope(BSTR inFile, BSTR outDirectoryPath, BSTR reachKeyPath, BSTR authNo, BSTR password)
+{
+	return _bstr_t();
+}
+
+BSTR CRSyncControlCtrl::REACH_MultiDecryptDataByPrivateKey(BSTR reachKeyFileData, BSTR authNo, BSTR password)
+{
+	return _bstr_t();
+}
+
+BSTR CRSyncControlCtrl::REACH_MultiDecryptFileByKey(BSTR encfileInfor, BSTR encFilePath, BSTR dncDirectoryPath)
+{
+	return _bstr_t();
+}
+
+BSTR CRSyncControlCtrl::REACH_CreateQRCodeToken(BSTR action, BSTR bmpSaveFilePath)
+{
+	return _bstr_t();
+}
+
+BSTR CRSyncControlCtrl::RS_ChangePassWd(void)
+{
+	return _bstr_t();
+}

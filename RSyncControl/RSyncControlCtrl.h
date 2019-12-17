@@ -40,11 +40,15 @@ protected:
 	DECLARE_DISPATCH_MAP()
 
 	afx_msg void AboutBox();
-	//BSTR ShowRSyncLoginView(BSTR containerId);
-	//BSTR onRsyncLogin(std::string nameStr, std::string passwordStr);
-	//BSTR IsLoginState(BSTR containerId);
-	
-	BSTR ShowRSyncChangePasswd(std::string containerId, std::string oldCode, std::string newCode);
+	BSTR REACH_VerifyIdentity(BSTR authNo, BSTR password);
+	BSTR REACH_EncryptByDigitalEnvelope(BSTR souceFilePath, BSTR EncFilePath, BSTR authNo, BSTR password, BSTR certs);
+	BSTR REACH_DecryptByDigitalEnvelope(BSTR inFile, BSTR outDirectoryPath, BSTR reachKeyFilePath, BSTR authNo, BSTR password);
+	BSTR REACH_MultiEncryptByDigitalEnvelope(BSTR souceFilePath, BSTR EncFilePath, BSTR authNo, BSTR password, BSTR certs, BSTR locatinCertAddMode);
+	BSTR REACH_MultiDecryptByDigitalEnvelope(BSTR inFile, BSTR outDirectoryPath, BSTR reachKeyPath, BSTR authNo, BSTR password);
+	BSTR REACH_MultiDecryptDataByPrivateKey(BSTR reachKeyFileData, BSTR authNo, BSTR password);
+	BSTR REACH_MultiDecryptFileByKey(BSTR encfileInfor, BSTR encFilePath, BSTR dncDirectoryPath);
+	BSTR REACH_CreateQRCodeToken(BSTR action, BSTR bmpSaveFilePath);
+	BSTR RS_ChangePassWd(void);
 
 	/// 通用接口
 	void RS_ConfigParameters(BSTR cmd, BSTR val);
@@ -59,7 +63,7 @@ protected:
 	BSTR RS_GetCertBase64String(BSTR containerId, SHORT certType);
 	BSTR RS_CertLogin(BSTR containerId, BSTR password);
 	BSTR RS_GetPinRetryCount(BSTR containerId);
-	BSTR RS_ChangePassWd(BSTR containerId, BSTR oldCode, BSTR newCode);
+	BSTR RS_ChangePassWdEx(BSTR containerId, BSTR oldCode, BSTR newCode);
 	BSTR RS_KeyGetKeySnExt(BSTR containerId);
 	BSTR RS_KeyGetKeySn();
 	BSTR RS_KeySignByP1(BSTR msg, BSTR containerId);
@@ -159,6 +163,17 @@ private:
 		eventid_4,
 		eventid_5,
 		eventid_6,
+
+		dispid_10 = 10,
+		dispid_11,
+		dispid_12,
+		dispid_13,
+		dispid_14,
+		dispid_15,
+		dispid_16,
+		dispid_17,
+		dispid_18,
+		dispid_19,
 
 		dispid_20 = 20,
 		dispid_21,
