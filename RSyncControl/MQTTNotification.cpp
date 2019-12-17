@@ -21,7 +21,7 @@ enum action
 	SignedSealAuth,
 	UnSignedSealAuth,
 	GetCertAuth,
-	GetSignResult
+	GetSignResult = 44,
 };
 
 MQTTNotification::MQTTNotification(const std::string& msg)
@@ -29,15 +29,7 @@ MQTTNotification::MQTTNotification(const std::string& msg)
 	_code(""),
 	_msg("")
 {
-	const char* sJson = "{ \
-		\"authResult\":\"\", \
-			\"authMsg\" : \"1\",\
-			\"transid\" : \"\",\
-			\"userId\" : \"\",\
-			\"mobile\" : \"\",\
-			\"userName\" : \"1\",\
-			\"action\" : \"\",\
-			\"token\" : \"\" }";
+	const char* sJson = "{\"authResult\":\"\", \"authMsg\" : \"1\",\"transid\" : \"\",\"userId\" : \"\",\"mobile\" : \"\",\"userName\" : \"1\",\"action\" : \"\",\"token\" : \"\" ,\"signdMsg\" : \"\" ,\"certBase64\" : \"\", \"keySn\":\"\"}";
 	DynamicStruct nameList = paraseString(sJson);
 
 	DynamicStruct ds = paraseString(msg);
