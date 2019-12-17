@@ -7,21 +7,21 @@
 #include <olectl.h>
 #include <idispids.h>
 
-[ 
+[
 	//uuid(a8de96ca-374b-497d-aa5f-3c0309c8a9f0),  // _tlid
 	uuid(5FF751F0-5CAB-496C-A5E7-1F3B2CBD2F4E),
 	version(2.0),
-	control 
+	control
 ]
 library RS_CertSafeLib	// RS_CertSafeLib
 {
 	importlib(STDOLE_TLB);
 
 	//  CRSyncControlCtrl 的主调度接口
-	[ 
+	[
 		// _DRS_CertSafe
 		// uuid(db403885-f81d-41d2-80d7-40365097d60c)
-		uuid(7A58AA86-D40D-4611-9DA1-DFCEAE95315A) 
+		uuid(7A58AA86-D40D-4611-9DA1-DFCEAE95315A)
 	]
 	dispinterface _DRS_CertSafe	// _DRS_CertSafe	uuid(7A58AA86-D40D-4611-9DA1-DFCEAE95315A)
 	{
@@ -30,6 +30,8 @@ library RS_CertSafeLib	// RS_CertSafeLib
 
 			[id(DISPID_ABOUTBOX)] void AboutBox();
 			[id(10)] BSTR REACH_VerifyIdentity(BSTR authNo, BSTR password);
+			[id(11)] BSTR RS_KeyGetKeySnExt(BSTR containerId);
+			[id(12)] BSTR RS_ChangePassWdEx(BSTR containerId, BSTR oldCdoe, BSTR newCode);//43
 			[id(13)] BSTR REACH_EncryptByDigitalEnvelope(BSTR souceFilePath, BSTR EncFilePath, BSTR authNo, BSTR password, BSTR certs);
 			[id(14)] BSTR REACH_DecryptByDigitalEnvelope(BSTR inFile, BSTR outDirectoryPath, BSTR reachKeyFilePath, BSTR authNo, BSTR password);
 			[id(15)] BSTR REACH_MultiEncryptByDigitalEnvelope(BSTR souceFilePath, BSTR EncFilePath, BSTR authNo, BSTR password, BSTR certs, BSTR locatinCertAddMode);
@@ -37,55 +39,56 @@ library RS_CertSafeLib	// RS_CertSafeLib
 			[id(17)] BSTR REACH_MultiDecryptDataByPrivateKey(BSTR reachKeyFileData, BSTR authNo, BSTR password);
 			[id(18)] BSTR REACH_MultiDecryptFileByKey(BSTR encfileInfor, BSTR encFilePath, BSTR dncDirectoryPath);
 			[id(19)] BSTR REACH_CreateQRCodeToken(BSTR action, BSTR bmpSaveFilePath);//这个不用了
+			[id(20)] BSTR RS_ConfigParameters(BSTR cmd, BSTR val);//20
+			[id(21)] BSTR RS_CloudSealAuth(BSTR transid);//21
+			[id(22)] BSTR RS_GreateQRCode(BSTR qrcode, BSTR path);//22
+			[id(23)] BSTR RS_CloudGetSealList(BSTR token);//23
+			[id(24)] BSTR RS_CloudSignByP7(BSTR msg, BSTR keySn, BSTR transid, BSTR token);//24
+			[id(25)] BSTR RS_VerifySignByP7(BSTR msg, BSTR signdMsg, BSTR flag);//25
+			[id(26)] BSTR RS_CloudLogoutAuth(BSTR token);//26
+			[id(27)] BSTR RS_CloudGetAuth(BSTR transid);//27
+			[id(28)] BSTR RS_CloudGetSignResult(BSTR transid);//28
+			[id(29)] BSTR RS_CloudLoginAuth(BSTR transid);//29
+			[id(30)] BSTR RS_CloudEncryptAuth(BSTR transid);//30
+			[id(31)] BSTR RS_CloudDevryptAuth(BSTR transid);//31
+			[id(32)] BSTR RS_EncryptFile(BSTR souceFilePath, BSTR encFilePath);//32
+			[id(33)] BSTR RS_CloudEncryptData(BSTR reachKey, BSTR transid, BSTR token);//33
+			[id(34)] BSTR RS_CloudDevryptData(BSTR encReachKey, BSTR url, BSTR transid, BSTR token);//34
+			[id(35)] BSTR RS_CloudLogout(BSTR userId);//35
+			[id(36)] BSTR RS_DevryptFile(BSTR symKey, BSTR encFilePath, BSTR dncDirectoryPath);//36
+			[id(37)] BSTR RS_GetParameters(BSTR cmd);//37
+			[id(38)] BSTR RS_CloudReceiveDevryptResult(BSTR token, BSTR resultData);//38
+			[id(39)] BSTR RS_GetUserList(void);//39
+			[id(40)] BSTR RS_GetCertBase64String(BSTR containerId, SHORT certType);//40
+			[id(41)] BSTR RS_CertLogin(BSTR containerId, BSTR password);//41
+			[id(42)] BSTR RS_GetPinRetryCount(BSTR containerId);//42
 			[id(43)] BSTR RS_ChangePassWd(void);
-
-			[id(45)]BSTR RS_KeyGetKeySn(void);//45
-			[id(11)]BSTR RS_KeyGetKeySnExt(BSTR containerId);
-			[id(39)]BSTR RS_GetUserList(void);//39
-			[id(40)]BSTR RS_GetCertBase64String(BSTR containerId, SHORT certType);//40
-			[id(41)]BSTR RS_CertLogin(BSTR containerId, BSTR password);//41
-			[id(42)]BSTR RS_GetPinRetryCount(BSTR containerId);//42
-			[id(12)]BSTR RS_ChangePassWdEx(BSTR containerId, BSTR oldCdoe, BSTR newCode);//43
-			[id(48)]BSTR RS_KeySignByP1(BSTR msg, BSTR containerId);//48
-			[id(49)]BSTR RS_VerifySignByP1(BSTR certBase64, BSTR msg, BSTR signdMsg);//49
-			[id(51)]BSTR RS_KeyEncryptData(BSTR rsKey, BSTR certBase64);//51
-			[id(52)]BSTR RS_KeyDecryptData(BSTR encRsKey, BSTR containerId);//52
-			[id(56)]BSTR RS_GetCertInfo(BSTR certBase64, BSTR type);//56
-			[id(50)]BSTR RS_KeySignByP7(BSTR msg, BSTR flag, BSTR containerId);//50
-			[id(25)]BSTR RS_VerifySignByP7(BSTR msg, BSTR signdMsg, BSTR flag);//25
-			[id(29)]BSTR RS_CloudLoginAuth(BSTR transid);//29
-			[id(21)]BSTR RS_CloudSealAuth(BSTR transid);//21
-			[id(27)]BSTR RS_CloudGetAuth(BSTR transid);//27
-			[id(23)]BSTR RS_CloudGetSealList(BSTR token);//23
-			[id(24)]BSTR RS_CloudSignByP7(BSTR msg, BSTR keySn, BSTR transid, BSTR token);//24
-			[id(28)]BSTR RS_CloudGetSignResult(BSTR transid);//28
-			[id(26)]BSTR RS_CloudLogoutAuth(BSTR token);//26
-			[id(30)]BSTR RS_CloudEncryptAuth(BSTR transid);//30
-			[id(33)]BSTR RS_CloudEncryptData(BSTR reachKey, BSTR transid, BSTR token);//33
-			[id(59)]BSTR RS_CloudEncryptFile(BSTR souceFilePath, BSTR encFilePath, BSTR transid, BSTR token);//59
-			[id(31)]BSTR RS_CloudDevryptAuth(BSTR transid);//31
-			[id(34)]BSTR RS_CloudDevryptData(BSTR encReachKey, BSTR url, BSTR transid, BSTR token);//34
-			[id(60)]BSTR RS_CloudDevryptFile(BSTR encFilePath, BSTR dncFilePath, BSTR url, BSTR transid, BSTR token);//60
-			[id(38)]BSTR RS_CloudReceiveDevryptResult(BSTR token, BSTR resultData);//38
-			[id(63)]BSTR RS_CloudGetCompanyCert(BSTR transid, BSTR token);//63
-			[id(61)]BSTR RS_CloudGetCertAuth(BSTR transid);//61
-			[id(62)]BSTR RS_CloudGetCertBase64(BSTR transid, BSTR token);//62
-			[id(35)]BSTR RS_CloudLogout(BSTR userId);//35
-			[id(64)]BSTR RS_KeyStatus(BSTR containerId);//64
-			[id(20)]BSTR RS_ConfigParameters(BSTR cmd, BSTR val);//20
-			[id(37)]BSTR RS_GetParameters(BSTR cmd);//37
-			[id(22)]BSTR RS_GreateQRCode(BSTR qrcode, BSTR path);//22
-			[id(55)]BSTR RS_GetTransid(BSTR joinCode);//55
-			[id(32)]BSTR RS_EncryptFile(BSTR souceFilePath, BSTR encFilePath);//32
-			[id(36)]BSTR RS_DevryptFile(BSTR symKey, BSTR encFilePath, BSTR dncDirectoryPath);//36
-			[id(44)]BSTR RS_VerifyIdentity(BSTR certBase64, BSTR authNo);//44
-			[id(57)]BSTR RS_KeyEncryptFile(BSTR souceFilePath, BSTR encFilePath, BSTR certBase64);//57
-			[id(58)]BSTR RS_KeyDecryptFile(BSTR encFilePath, BSTR dncFilePath, BSTR containerId);//58
+			[id(44)] BSTR RS_VerifyIdentity(BSTR certBase64, BSTR authNo);//44
+			[id(45)] BSTR RS_KeyGetKeySn(void);//45
+			[id(46)] BSTR RS_KeyDigitalSignByP1(BSTR asn1Msg, BSTR containerId);
+			[id(47)] BSTR RS_VerifyDigitalSignByP1(BSTR certBase64, BSTR asn1Msg, BSTR signdMsg);
+			[id(48)] BSTR RS_KeySignByP1(BSTR msg, BSTR containerId);//48
+			[id(49)] BSTR RS_VerifySignByP1(BSTR certBase64, BSTR msg, BSTR signdMsg);//49
+			[id(50)] BSTR RS_KeySignByP7(BSTR msg, BSTR flag, BSTR containerId);//50
+			[id(51)] BSTR RS_KeyEncryptData(BSTR rsKey, BSTR certBase64);//51
+			[id(52)] BSTR RS_KeyDecryptData(BSTR encRsKey, BSTR containerId);//52
+			[id(53)] BSTR RS_KeyEncryptByDigitalEnvelope(BSTR souceFilePath, BSTR encFilePath, BSTR certBase64);
+			[id(54)] BSTR RS_KeyDecryptByDigitalEnvelope(BSTR encFilePath, BSTR dncFilePath, BSTR encRsKeyPath);
+			[id(55)] BSTR RS_GetTransid(BSTR joinCode);//55
+			[id(56)] BSTR RS_GetCertInfo(BSTR certBase64, BSTR type);//56
+			[id(57)] BSTR RS_KeyEncryptFile(BSTR souceFilePath, BSTR encFilePath, BSTR certBase64);//57
+			[id(58)] BSTR RS_KeyDecryptFile(BSTR encFilePath, BSTR dncFilePath, BSTR containerId);//58
+			[id(59)] BSTR RS_CloudEncryptFile(BSTR souceFilePath, BSTR encFilePath, BSTR transid, BSTR token);//59
+			[id(60)] BSTR RS_CloudDevryptFile(BSTR encFilePath, BSTR dncFilePath, BSTR url, BSTR transid, BSTR token);//60
+			[id(61)] BSTR RS_CloudGetCertAuth(BSTR transid);//61
+			[id(62)] BSTR RS_CloudGetCertBase64(BSTR transid, BSTR token);//62
+			[id(63)] BSTR RS_CloudGetCompanyCert(BSTR transid, BSTR token);//63
+			[id(64)] BSTR RS_KeyStatus(BSTR containerId);//64
 	};
 
 	//  CRSyncControlCtrl 的事件调度接口
 
-	[ 
+	[
 		// _DRS_CertSafeEvents
 		// uuid(b1c93fb3-0485-4837-9aaf-af8f96a2c0d2)
 		uuid(EECD3FF1-DED8-44B3-877C-99D056D5449D)

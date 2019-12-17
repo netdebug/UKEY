@@ -49,7 +49,10 @@ protected:
 	BSTR REACH_MultiDecryptFileByKey(BSTR encfileInfor, BSTR encFilePath, BSTR dncDirectoryPath);
 	BSTR REACH_CreateQRCodeToken(BSTR action, BSTR bmpSaveFilePath);
 	BSTR RS_ChangePassWd(void);
-
+	BSTR RS_KeyDigitalSignByP1(BSTR asn1Msg, BSTR containerId);
+	BSTR RS_VerifyDigitalSignByP1(BSTR certBase64, BSTR asn1Msg, BSTR signdMsg);
+	BSTR RS_KeyEncryptByDigitalEnvelope(BSTR souceFilePath, BSTR encFilePath, BSTR certBase64);
+	BSTR RS_KeyDecryptByDigitalEnvelope(BSTR encFilePath, BSTR dncFilePath, BSTR encRsKeyPath);
 	/// 通用接口
 	void RS_ConfigParameters(BSTR cmd, BSTR val);
 	BSTR RS_GetParameters(BSTR cmd);

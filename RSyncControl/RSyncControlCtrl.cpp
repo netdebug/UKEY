@@ -64,6 +64,10 @@ BEGIN_DISPATCH_MAP(CRSyncControlCtrl, COleControl)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "REACH_MultiDecryptFileByKey", dispid_18, REACH_MultiDecryptFileByKey, VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "REACH_CreateQRCodeToken", dispid_19, REACH_CreateQRCodeToken, VT_BSTR, VTS_BSTR VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_ChangePassWd", dispid_43, RS_ChangePassWd, VT_BSTR, VTS_NONE)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyDigitalSignByP1", dispid_46, RS_KeyDigitalSignByP1, VT_BSTR, VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyDigitalSignByP1", dispid_47, RS_KeyDigitalSignByP1, VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyEncryptByDigitalEnvelope", dispid_53, RS_KeyEncryptByDigitalEnvelope, VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyDecryptByDigitalEnvelope", dispid_54, RS_KeyDecryptByDigitalEnvelope, VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
 
 
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyGetKeySn",						dispid_20,			RS_KeyGetKeySn,				VT_BSTR, VTS_NONE)
@@ -1174,6 +1178,26 @@ BSTR CRSyncControlCtrl::REACH_CreateQRCodeToken(BSTR action, BSTR bmpSaveFilePat
 }
 
 BSTR CRSyncControlCtrl::RS_ChangePassWd(void)
+{
+	return _bstr_t();
+}
+
+BSTR CRSyncControlCtrl::RS_KeyDigitalSignByP1(BSTR asn1Msg, BSTR containerId)
+{
+	return _bstr_t();
+}
+
+BSTR CRSyncControlCtrl::RS_VerifyDigitalSignByP1(BSTR certBase64, BSTR asn1Msg, BSTR signdMsg)
+{
+	return _bstr_t();
+}
+
+BSTR CRSyncControlCtrl::RS_KeyEncryptByDigitalEnvelope(BSTR souceFilePath, BSTR encFilePath, BSTR certBase64)
+{
+	return _bstr_t();
+}
+
+BSTR CRSyncControlCtrl::RS_KeyDecryptByDigitalEnvelope(BSTR encFilePath, BSTR dncFilePath, BSTR encRsKeyPath)
 {
 	return _bstr_t();
 }
