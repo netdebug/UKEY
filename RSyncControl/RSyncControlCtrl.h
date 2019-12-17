@@ -3,9 +3,9 @@
 #include "MQTTNotification.h"
 // RSyncControlCtrl.h : CRSyncControlCtrl ActiveX 控件类的声明。
 
-
 // CRSyncControlCtrl : 请参阅 RSyncControlCtrl.cpp 了解实现。
 #include <string>
+#include "Poco/JSON/Object.h"
 class MQTTNotification;
 class CRSyncControlCtrl : public COleControl
 {
@@ -14,6 +14,7 @@ class CRSyncControlCtrl : public COleControl
 private:
 	Poco::TaskManager tm;
 	BOOL   m_bLoginState;
+	std::map<std::string, std::string> m_authResult;
 // 构造函数
 public:
 	CRSyncControlCtrl();
@@ -104,6 +105,7 @@ protected:
 	{
 		//LPCTSTR authResult, LPCTSTR transid, LPCTSTR token, LPCTSTR msg
 		FireEvent(eventid_1, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), CString(Nf.getdata("authResult").data()), CString(Nf.getdata("transid").data()), CString(Nf.getdata("token").data()), CString(Nf.getdata("authMsg").data()));
+		onSaveCloudEvent(Nf);
 	}
 
 	///获取签名结果事件
@@ -112,7 +114,8 @@ protected:
 		//LPCTSTR signResult, LPCTSTR signdMsg, LPCTSTR transid, LPCTSTR signdCert, LPCTSTR msg
 		std::string signdMsg, signdCert;
 		FireEvent(eventid_2, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR),
-			CString(Nf.getdata("authResult").data()), CString(Nf.getdata("transid").data()), CString(Nf.getdata("token").data()), CString(Nf.getdata("authMsg").data()));
+			CString(Nf.getdata("authResult").data()), CString(Nf.getdata("transid").data()), CString(Nf.getdata("signdMsg").data()), CString(Nf.getdata("certBase64").data()), CString(Nf.msg().data()));
+		onSaveCloudEvent(Nf);
 	}
 
 	///登入授权事件
@@ -157,6 +160,9 @@ private:
 	friend bool IsLogined(const std::string& id);
 	friend std::string changpasswd(const std::string& id, const std::string& theold, const std::string& thenew);
 	friend BSTR onCancelRespone();
+	void onSaveCloudEvent(const MQTTNotification& Nf);
+	Poco::JSON::Object onCloudAuthData(std::string authResult, std::string authMsg, std::string token, std::string keysn);
+	Poco::JSON::Object onCloudSignData(std::string signResult, std::string signdMsg, std::string signdCert);
 // 调度和事件 ID
 private:
 	enum {

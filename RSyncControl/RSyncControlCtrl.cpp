@@ -32,6 +32,7 @@ using Poco::JSON::Parser;
 using Poco::JSON::Object;
 using Poco::DynamicStruct;
 using Poco::Debugger;
+using Poco::JSONOptions;
 
 using Reach::ActiveX::Utility;
 
@@ -249,19 +250,19 @@ void CRSyncControlCtrl::handle1(MQTTNotification* pNf)
 
 }
 
+enum action
+{
+	LoginAuth = 1,
+	EncryptAuth,
+	DecryptAuth,
+	SignedSealAuth,
+	UnSignedSealAuth,
+	GetCertAuth,
+	GetSignResult = 44
+};
+
 void CRSyncControlCtrl::process_event(MQTTNotification * pNf)
 {
-	enum action
-	{
-		LoginAuth = 1,
-		EncryptAuth,
-		DecryptAuth,
-		SignedSealAuth,
-		UnSignedSealAuth,
-		GetCertAuth,
-		GetSignResult
-	};
-
 	if (pNf) {
 		std::string act = pNf->getdata("action");
 		switch (atoi(act.data()))
@@ -875,14 +876,22 @@ BSTR CRSyncControlCtrl::RS_CloudSealAuth(BSTR transid)
 BSTR CRSyncControlCtrl::RS_CloudGetAuth(BSTR transid)
 {
 	std::string TRANSID = _com_util::ConvertBSTRToString(transid);
-
-	HTMLForm params;
-	params.set("transid", TRANSID);
-	std::ostringstream body;
-	params.write(body);
-	std::string result = Utility::SuperRequest("/RS_CloudGetAuth", body.str());
-
-	//std::string encoding = Utility::UTF8EncodingGBK(result);
+	std::string result;
+	if (m_authResult.find(TRANSID) != m_authResult.end())
+	{
+		result = m_authResult[TRANSID];
+	}
+	else {
+		Poco::JSON::Object obj;
+		obj.set("code", "0000");
+		obj.set("msg", "执行成功");
+		Object data = onCloudAuthData("0", "", "", "");
+		obj.set("data", data);
+		std::ostringstream out;
+		obj.stringify(out);
+		obj.setEscapeUnicode();
+		result = out.str();
+	}
 	return _bstr_t(result.data());
 }
 
@@ -908,7 +917,7 @@ BSTR CRSyncControlCtrl::RS_CloudSignByP7(BSTR msg, BSTR keySn, BSTR transid, BST
 
 	HTMLForm params;
 	params.set("msg", Utility::GBKEncodingUTF8(MSG));
-	params.set("keySn", KEYSN);
+	params.set("keySn", Utility::GBKEncodingUTF8(KEYSN));
 	params.set("transid", TRANSID);
 	params.set("token", TOKEN);
 	std::ostringstream body;
@@ -923,14 +932,23 @@ BSTR CRSyncControlCtrl::RS_CloudGetSignResult(BSTR transid)
 {
 	OutputDebugStringA("Start RS_CloudGetSignResult\n");
 	std::string TRANSID = _com_util::ConvertBSTRToString(transid);
+	std::string result;
+	if (m_authResult.find(TRANSID) != m_authResult.end())
+	{
+		result = m_authResult[TRANSID];
+	}
+	else {
+		Poco::JSON::Object obj;
+		obj.set("code","0000");
+		obj.set("msg", "执行成功");
+		Object data = onCloudSignData("0", "", "");
+		obj.set("data", data);
+		std::ostringstream out;
+		obj.stringify(out);
+		obj.setEscapeUnicode();
+		result = out.str();
+	}
 
-	HTMLForm params;
-	params.set("transid", TRANSID);
-	std::ostringstream body;
-	params.write(body);
-	std::string result = Utility::SuperRequest("/RS_CloudGetSignResult", body.str());
-
-	//std::string encoding = Utility::UTF8EncodingGBK(result);
 	OutputDebugStringA("End RS_CloudGetSignResult\n");
 	return _bstr_t(result.data());
 }
@@ -1155,6 +1173,51 @@ inline void CRSyncControlCtrl::RS_CloudLoginAuthEvent(const MQTTNotification& Nf
 	_userID = Nf.getdata("userId").data();
 	FireEvent(eventid_3, EVENT_PARAM(VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR), _authResult, _transid, _token
 		, _mobile, _userName, _userID, _message);
+}
+
+void CRSyncControlCtrl::onSaveCloudEvent(const MQTTNotification & Nf)
+{
+	std::string transid = Nf.getdata("transid");
+	Poco::JSON::Object result(JSONOptions::JSON_ESCAPE_UNICODE);
+	result.set("code", Nf.code());
+	result.set("msg", Utility::GBKEncodingUTF8(Nf.msg()));
+	std::string act = Nf.getdata("action");
+	Object data;
+	switch (atoi(act.data()))
+	{
+	case SignedSealAuth:
+	case UnSignedSealAuth :
+		data = onCloudAuthData(Nf.getdata("authResult"), Nf.getdata("authMsg"), Nf.getdata("token"), Nf.getdata("keySn"));
+		break;
+	case GetSignResult:
+		data = onCloudSignData(Nf.getdata("authResult"), Nf.getdata("signdMsg"), Nf.getdata("certBase64"));
+		break;
+	default:
+		break;
+	}
+	result.set("data", data);
+	std::ostringstream out;
+	result.stringify(out);
+	m_authResult[transid] = out.str();
+}
+
+Poco::JSON::Object CRSyncControlCtrl::onCloudAuthData(std::string authResult, std::string authMsg, std::string token, std::string keysn)
+{
+	Object data(JSONOptions::JSON_ESCAPE_UNICODE);
+	data.set("authResult", authResult);
+	data.set("authMsg", authMsg);
+	data.set("token", token);
+	data.set("keySn", keysn);
+	return data;
+}
+
+Poco::JSON::Object CRSyncControlCtrl::onCloudSignData(std::string signResult, std::string signdMsg, std::string signdCert)
+{
+	Object data(JSONOptions::JSON_ESCAPE_UNICODE);
+	data.set("signResult", signResult);
+	data.set("signdMsg", signdMsg);
+	data.set("certBase64", signdCert);
+	return data;
 }
 
 // CRSyncControlCtrl 消息处理程序
