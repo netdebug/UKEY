@@ -409,6 +409,9 @@
     <ClCompile Include="src\routes\KeyEncryptFileRequestHandler.cpp">
       <Filter>RequestHandler\Ukey\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\routes\ConfigParametersRequestHandler.cpp">
+      <Filter>RequestHandler\common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="rsyncAgent.rc">

@@ -12,16 +12,10 @@ namespace Reach {
 	class ConfigParameters : public Command
 	{
 	public:
-		ConfigParameters(const std::string& cmd, const std::string& val)
-			:_cmd(cmd), _val(val)
-		{
-		}
-
-		void run()
-		{
-			Application& app = Application::instance();
-			app.config().setString(_cmd, _val);
-		}
+		ConfigParameters(const std::string& cmd, const std::string& val);
+		void run();
+	private:
+		void setWebAssist();
 	private:
 		std::string _cmd;
 		std::string _val;
