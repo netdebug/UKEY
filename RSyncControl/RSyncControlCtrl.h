@@ -219,7 +219,10 @@ private:
 		dispid_58,
 		dispid_59,
 		dispid_60,
-		dispid_61
+		dispid_61,
+		dispid_62,
+		dispid_63,
+		dispid_64
 	};
 };
 

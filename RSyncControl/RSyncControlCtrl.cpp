@@ -65,53 +65,53 @@ BEGIN_DISPATCH_MAP(CRSyncControlCtrl, COleControl)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "REACH_CreateQRCodeToken", dispid_19, REACH_CreateQRCodeToken, VT_BSTR, VTS_BSTR VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_ChangePassWd", dispid_43, RS_ChangePassWd, VT_BSTR, VTS_NONE)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyDigitalSignByP1", dispid_46, RS_KeyDigitalSignByP1, VT_BSTR, VTS_BSTR VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyDigitalSignByP1", dispid_47, RS_KeyDigitalSignByP1, VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_VerifyDigitalSignByP1", dispid_47, RS_VerifyDigitalSignByP1, VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyEncryptByDigitalEnvelope", dispid_53, RS_KeyEncryptByDigitalEnvelope, VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyDecryptByDigitalEnvelope", dispid_54, RS_KeyDecryptByDigitalEnvelope, VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
 
 
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyGetKeySn",						dispid_20,			RS_KeyGetKeySn,				VT_BSTR, VTS_NONE)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyGetKeySnExt",					dispid_21,			RS_KeyGetKeySnExt,			VT_BSTR, VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_GetUserList",						dispid_22,			RS_GetUserList,				VT_BSTR, VTS_NONE)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_GetCertBase64String",				dispid_23,			RS_GetCertBase64String,		VT_BSTR, VTS_BSTR VTS_I2)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CertLogin",							dispid_24,			RS_CertLogin,				VT_BSTR, VTS_BSTR VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_GetPinRetryCount",					dispid_25,			RS_GetPinRetryCount,		VT_BSTR, VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyGetKeySn",						dispid_45,			RS_KeyGetKeySn,				VT_BSTR, VTS_NONE)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyGetKeySnExt",					dispid_11,			RS_KeyGetKeySnExt,			VT_BSTR, VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_GetUserList",						dispid_39,			RS_GetUserList,				VT_BSTR, VTS_NONE)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_GetCertBase64String",				dispid_40,			RS_GetCertBase64String,		VT_BSTR, VTS_BSTR VTS_I2)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CertLogin",							dispid_41,			RS_CertLogin,				VT_BSTR, VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_GetPinRetryCount",					dispid_42,			RS_GetPinRetryCount,		VT_BSTR, VTS_BSTR)
 	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_ChangePassWdEx",					dispid_12,			RS_ChangePassWdEx,			VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeySignByP1",						dispid_27,			RS_KeySignByP1,				VT_BSTR, VTS_BSTR VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_VerifySignByP1",					dispid_28,			RS_VerifySignByP1,			VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyEncryptData",					dispid_29,			RS_KeyEncryptData,			VT_BSTR, VTS_BSTR VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyDecryptData",					dispid_30,			RS_KeyDecryptData,			VT_BSTR, VTS_BSTR VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_GetCertInfo",						dispid_31,			RS_GetCertInfo,				VT_BSTR, VTS_BSTR VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeySignByP7",						dispid_32,			RS_KeySignByP7,				VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_VerifySignByP7",					dispid_33,			RS_VerifySignByP7,			VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudLoginAuth",					dispid_34,			RS_CloudLoginAuth,			VT_BSTR, VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudSealAuth",						dispid_35,			RS_CloudSealAuth,					VT_BSTR,VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudGetAuth",						dispid_36,			RS_CloudGetAuth,					VT_BSTR,VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudGetSealList",					dispid_37,			RS_CloudGetSealList,				VT_BSTR,VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudSignByP7",						dispid_38,			RS_CloudSignByP7,					VT_BSTR,VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudGetSignResult",				dispid_39,			RS_CloudGetSignResult,				VT_BSTR,VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudLogoutAuth",					dispid_40,			RS_CloudLogoutAuth,					VT_BSTR,VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudEncryptAuth",					dispid_41,			RS_CloudEncryptAuth,				VT_BSTR,VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudEncryptData",					dispid_42,			RS_CloudEncryptData,				VT_BSTR,VTS_BSTR VTS_BSTR VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudEncryptFile",					dispid_43,			RS_CloudEncryptFile,				VT_BSTR,VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudDevryptAuth",					dispid_44,			RS_CloudDevryptAuth,				VT_BSTR,VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudDevryptData",					dispid_45,			RS_CloudDevryptData,				VT_BSTR,VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudDevryptFile",					dispid_46,			RS_CloudDevryptFile,				VT_BSTR,VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudReceiveDevryptResult",			dispid_47,			RS_CloudReceiveDevryptResult,		VT_BSTR, VTS_BSTR VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudGetCompanyCert",				dispid_48,			RS_CloudGetCompanyCert,				VT_BSTR,VTS_BSTR VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudGetCertAuth",					dispid_49,			RS_CloudGetCertAuth,				VT_BSTR,VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudGetCertBase64",				dispid_50,			RS_CloudGetCertBase64,				VT_BSTR,VTS_BSTR VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudLogout",						dispid_51,			RS_CloudLogout,						VT_BSTR,VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyStatus",							dispid_52,			RS_KeyStatus,						VT_BSTR, VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_ConfigParameters",					dispid_53,			RS_ConfigParameters,				VTS_NONE, VTS_BSTR VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_GetParameters",						dispid_54,			RS_GetParameters,					VT_BSTR, VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_GreateQRCode",						dispid_55,			RS_CreateQRCode,					VT_BSTR, VTS_BSTR VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_GetTransid",						dispid_56,			RS_GetTransid,						VT_BSTR, VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_EncryptFile",						dispid_57,			RS_EncryptFile,						VT_BSTR, VTS_BSTR VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_DevryptFile",						dispid_58,			RS_DevryptFile,						VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_VerifyIdentity",					dispid_59,			RS_VerifyIdentity,					VT_BSTR, VTS_BSTR VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyEncryptFile",					dispid_60,			RS_KeyEncryptFile,					VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
-	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyDecryptFile",					dispid_61,			RS_KeyDecryptFile,					VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeySignByP1",						dispid_48,			RS_KeySignByP1,				VT_BSTR, VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_VerifySignByP1",					dispid_49,			RS_VerifySignByP1,			VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyEncryptData",					dispid_51,			RS_KeyEncryptData,			VT_BSTR, VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyDecryptData",					dispid_52,			RS_KeyDecryptData,			VT_BSTR, VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_GetCertInfo",						dispid_56,			RS_GetCertInfo,				VT_BSTR, VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeySignByP7",						dispid_50,			RS_KeySignByP7,				VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_VerifySignByP7",					dispid_25,			RS_VerifySignByP7,			VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudLoginAuth",					dispid_29,			RS_CloudLoginAuth,			VT_BSTR, VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudSealAuth",						dispid_21,			RS_CloudSealAuth,					VT_BSTR,VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudGetAuth",						dispid_27,			RS_CloudGetAuth,					VT_BSTR,VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudGetSealList",					dispid_23,			RS_CloudGetSealList,				VT_BSTR,VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudSignByP7",						dispid_24,			RS_CloudSignByP7,					VT_BSTR,VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudGetSignResult",				dispid_28,			RS_CloudGetSignResult,				VT_BSTR,VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudLogoutAuth",					dispid_26,			RS_CloudLogoutAuth,					VT_BSTR,VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudEncryptAuth",					dispid_30,			RS_CloudEncryptAuth,				VT_BSTR,VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudEncryptData",					dispid_33,			RS_CloudEncryptData,				VT_BSTR,VTS_BSTR VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudEncryptFile",					dispid_59,			RS_CloudEncryptFile,				VT_BSTR,VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudDevryptAuth",					dispid_31,			RS_CloudDevryptAuth,				VT_BSTR,VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudDevryptData",					dispid_34,			RS_CloudDevryptData,				VT_BSTR,VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudDevryptFile",					dispid_60,			RS_CloudDevryptFile,				VT_BSTR,VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudReceiveDevryptResult",			dispid_38,			RS_CloudReceiveDevryptResult,		VT_BSTR, VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudGetCompanyCert",				dispid_63,			RS_CloudGetCompanyCert,				VT_BSTR,VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudGetCertAuth",					dispid_61,			RS_CloudGetCertAuth,				VT_BSTR,VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudGetCertBase64",				dispid_62,			RS_CloudGetCertBase64,				VT_BSTR,VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_CloudLogout",						dispid_35,			RS_CloudLogout,						VT_BSTR,VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyStatus",							dispid_64,			RS_KeyStatus,						VT_BSTR, VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_ConfigParameters",					dispid_20,			RS_ConfigParameters,				VTS_NONE, VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_GetParameters",						dispid_37,			RS_GetParameters,					VT_BSTR, VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_GreateQRCode",						dispid_22,			RS_CreateQRCode,					VT_BSTR, VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_GetTransid",						dispid_55,			RS_GetTransid,						VT_BSTR, VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_EncryptFile",						dispid_32,			RS_EncryptFile,						VT_BSTR, VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_DevryptFile",						dispid_36,			RS_DevryptFile,						VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_VerifyIdentity",					dispid_44,			RS_VerifyIdentity,					VT_BSTR, VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyEncryptFile",					dispid_57,			RS_KeyEncryptFile,					VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
+	DISP_FUNCTION_ID(CRSyncControlCtrl, "RS_KeyDecryptFile",					dispid_58,			RS_KeyDecryptFile,					VT_BSTR, VTS_BSTR VTS_BSTR VTS_BSTR)
 END_DISPATCH_MAP()
 
 // 事件映射
@@ -356,8 +356,12 @@ void CRSyncControlCtrl::AboutBox()
 
 void CRSyncControlCtrl::RS_ConfigParameters(BSTR cmd, BSTR val)
 {
+	OutputDebugStringA("Start RS_ConfigParameters\n");
+	
 	std::string cmdid = _com_util::ConvertBSTRToString(cmd);
 	std::string valadress = _com_util::ConvertBSTRToString(val);
+	std::string cmdval = format("cmd : %s, val : %s\n", cmdid, valadress);
+	OutputDebugStringA(cmdval.c_str());
 
 	HTMLForm params;
 	params.set("cmd", cmdid);
@@ -366,11 +370,12 @@ void CRSyncControlCtrl::RS_ConfigParameters(BSTR cmd, BSTR val)
 	std::ostringstream body;
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_ConfigParameters", body.str());
-	return;
+	OutputDebugStringA("End RS_ConfigParameters\n");
 }
 
 BSTR CRSyncControlCtrl::RS_GetParameters(BSTR cmd)
 {
+	OutputDebugStringA("Start RS_GetParameters\n");
 	std::string cmdid = _com_util::ConvertBSTRToString(cmd);
 
 	HTMLForm params;
@@ -380,11 +385,13 @@ BSTR CRSyncControlCtrl::RS_GetParameters(BSTR cmd)
 	std::string result = Utility::SuperRequest("/RS_GetParameters", body.str());
 
 	//std::string encoding = Utility::UTF8EncodingGBK(result);
+	OutputDebugStringA("End RS_GetParameters\n");
 	return _bstr_t(result.data());
 }
 
 BSTR CRSyncControlCtrl::RS_CreateQRCode(BSTR qrcode, BSTR path)
 {
+	OutputDebugStringA("Start RS_CreateQRCode\n");
 	std::string qrcodestr = _com_util::ConvertBSTRToString(qrcode);
 	std::string pathstr = _com_util::ConvertBSTRToString(path);
 
@@ -397,12 +404,18 @@ BSTR CRSyncControlCtrl::RS_CreateQRCode(BSTR qrcode, BSTR path)
 	std::string result = Utility::SuperRequest("/RS_GreateQRCode", body.str());
 
 	//std::string encoding = Utility::UTF8EncodingGBK(result);
+	OutputDebugStringA("End RS_CreateQRCode\n");
 	return _bstr_t(result.data());
 }
 
 BSTR CRSyncControlCtrl::RS_GetTransid(BSTR joinCode)
 {
+	OutputDebugStringA("Start RS_GetTransid\n");
+
 	std::string joinCodestr = _com_util::ConvertBSTRToString(joinCode);
+
+	std::string joincode(format("joinCode : %s \n", joinCodestr));
+	OutputDebugStringA(joincode.c_str());
 
 	HTMLForm params;
 	params.set("joinCode", joinCodestr);
@@ -411,7 +424,10 @@ BSTR CRSyncControlCtrl::RS_GetTransid(BSTR joinCode)
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_GetTransid", body.str());
 
-	//std::string encoding = Utility::UTF8EncodingGBK(result);
+	std::string fres(format("result : %s \n", result));
+	OutputDebugStringA(fres.c_str());
+
+	OutputDebugStringA("End RS_GetTransid\n");
 	return _bstr_t(result.data());
 }
 
@@ -841,6 +857,8 @@ BSTR CRSyncControlCtrl::RS_CloudLoginAuth(BSTR transid)
 
 BSTR CRSyncControlCtrl::RS_CloudSealAuth(BSTR transid)
 {
+	OutputDebugStringA("Start RS_CloudSealAuth\n");
+
 	std::string id = _com_util::ConvertBSTRToString(transid);
 
 	HTMLForm params;
@@ -850,6 +868,7 @@ BSTR CRSyncControlCtrl::RS_CloudSealAuth(BSTR transid)
 	std::string result = Utility::SuperRequest("/RS_CloudSealAuth", body.str());
 
 	//std::string encoding = Utility::UTF8EncodingGBK(result);
+	OutputDebugStringA("End RS_CloudSealAuth\n");
 	return _bstr_t(result.data());
 }
 
@@ -902,6 +921,7 @@ BSTR CRSyncControlCtrl::RS_CloudSignByP7(BSTR msg, BSTR keySn, BSTR transid, BST
 
 BSTR CRSyncControlCtrl::RS_CloudGetSignResult(BSTR transid)
 {
+	OutputDebugStringA("Start RS_CloudGetSignResult\n");
 	std::string TRANSID = _com_util::ConvertBSTRToString(transid);
 
 	HTMLForm params;
@@ -911,6 +931,7 @@ BSTR CRSyncControlCtrl::RS_CloudGetSignResult(BSTR transid)
 	std::string result = Utility::SuperRequest("/RS_CloudGetSignResult", body.str());
 
 	//std::string encoding = Utility::UTF8EncodingGBK(result);
+	OutputDebugStringA("End RS_CloudGetSignResult\n");
 	return _bstr_t(result.data());
 }
 
