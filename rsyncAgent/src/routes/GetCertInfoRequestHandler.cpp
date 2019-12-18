@@ -322,10 +322,16 @@ std::string GetCertInfo::GetCertOwnerID(const std::string& base64)
 {
 	std::string item;
 	std::string pattern("(\\d+[A-z]?)");
-	std::string special_oid("1.2.156.10260.4.1.1");
-	item = SOF_GetCertInfoByOid(base64, special_oid);
-	if (item.empty()) {
+	std::vector<std::string> special_oid;
+	special_oid.push_back("1.2.156.10260.4.1.1");
+	special_oid.push_back("1.2.86.11.7.1");
 
+	for (auto oid : special_oid) {
+		item = SOF_GetCertInfoByOid(base64, oid);
+		if (!item.empty()) break;
+	}
+
+	if (item.empty()) {
 		item = SOF_GetCertInfo(base64, SGD_CERT_SUBJECT_CN);
 		pattern = format("@%s@", pattern);
 	}
