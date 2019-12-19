@@ -328,7 +328,11 @@ std::string GetCertInfo::GetCertOwnerID(const std::string& base64)
 
 	for (auto oid : special_oid) {
 		item = SOF_GetCertInfoByOid(base64, oid);
-		if (!item.empty()) break;
+		if (!item.empty()) {
+			if (oid == "1.2.86.11.7.1")
+				pattern = "\\x31[\\xA0\\x00-\\x20]+?(\\d+[A-z]?)";
+			break;
+		}
 	}
 
 	if (item.empty()) {
@@ -344,14 +348,17 @@ std::string GetCertInfo::GetCertOwnerID(const std::string& base64)
 	return item;
 }
 
+
 std::string GetCertInfo::toLegelID(const std::string& text, const std::string& pattern)
 {
+
 	/// SGD_CERT_SUBJECT_CN identify card (330602197108300018)
 	/// CN = 041@0330602197108300018@测试个人一@00000001
 	/// 十八位：^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$
 	/// 十五位：^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}[0-9Xx]$
 	///RegularExpression pattern("@(\\d+)@");
 	int options = 0;
+
 	std::string id;
 
 	try {
