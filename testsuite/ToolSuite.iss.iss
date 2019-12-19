@@ -6,7 +6,7 @@
 [Setup]
 AppName={cm:MyAppName}
 AppId={{D773AD72-9454-4684-96A7-89E478625FB6}
-AppVerName={cm:MyAppVerName,2.0.3.010}
+AppVerName={cm:MyAppVerName,2.0.3.011}
 AppCopyright=福建瑞术信息科技有限公司
 WizardStyle=modern
 DefaultDirName={pf}\{cm:MyAppName}
@@ -14,8 +14,8 @@ DefaultGroupName={cm:MyAppName}
 UninstallDisplayIcon={app}\MyProg.exe
 VersionInfoDescription=统一安全认证客户端
 VersionInfoProductName=统一安全认证客户端
-VersionInfoVersion=2.0.3.010
-OutputBaseFilename=SafeCertSetupV2.0.3.010
+VersionInfoVersion=2.0.3.011
+OutputBaseFilename=SafeCertSetupV2.0.3.011
 OutputDir=.\output
 ; Uncomment the following line to disable the "Select Setup Language"
 ; dialog and have it rely solely on auto-detection.
@@ -63,6 +63,9 @@ Source: "..\bin\extern\msvcr100.dll"; DestDir: "{app}";
 Source: "..\bin\extern\msvcr120.dll"; DestDir: "{app}";
 Source: "..\bin\extern\vcruntime140.dll"; DestDir: "{app}";
 Source: "..\bin\extern\clearlnk.bat"; DestDir: "{app}";
+Source: "..\bin\extern\FCardCtGT.dll"; DestDir: "{app}";
+Source: "..\bin\extern\FJCA_FUN_GT_API.dll"; DestDir: "{app}";
+Source: "..\bin\extern\TCardCtGT.dll"; DestDir: "{app}";
 
 ;updater
 Source: "..\bin\updater.exe"; DestDir: "{app}";
