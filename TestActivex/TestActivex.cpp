@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "TestActivex.h"
 #include "TestActivexDlg.h"
+#include "CDRS_CertSafe.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

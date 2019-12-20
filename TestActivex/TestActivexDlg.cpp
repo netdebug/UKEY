@@ -7,6 +7,7 @@
 #include "TestActivexDlg.h"
 #include "afxdialogex.h"
 
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -161,6 +162,7 @@ void CTestActivexDlg::OnBnGetUserList()
 	// TODO: 在此添加控件通知处理程序代码
 	rstest.AboutBox();
 	CString ul = rstest.RS_GetUserList();
+	CString id = rstest.RS_GetTransid(L"1001");
 	OutputDebugString(TEXT("RS_GetUserList"));
 	OutputDebugString(ul);
 	OutputDebugString(L"\n");

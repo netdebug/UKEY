@@ -189,6 +189,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CDRS_CertSafe.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="rsynccontrolctrl2.h" />
     <ClInclude Include="stdafx.h" />
@@ -197,6 +198,7 @@
     <ClInclude Include="TestActivexDlg.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CDRS_CertSafe.cpp" />
     <ClCompile Include="rsynccontrolctrl2.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -221,7 +223,7 @@
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties _x007B_A0B23721-9350-4B4D-B581-65ADD1A77A5E_x007D_="CRsynccontrolctrl2" RESOURCE_FILE="TestActivex.rc" />
+      <UserProperties _x007B_A0B23721-9350-4B4D-B581-65ADD1A77A5E_x007D_="CRsynccontrolctrl2" _x007B_F84C8F57-5A05-4D8C-826D-29589C7A121C_x007D_="CDRS_CertSafe" RESOURCE_FILE="TestActivex.rc" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>
