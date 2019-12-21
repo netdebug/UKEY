@@ -14,18 +14,19 @@ namespace Reach {
 	{
 	public:
 		GetParameters(const std::string& cmd)
-			:_cmd(cmd)
+			:_cmd(cmd), _defaultValue("")
 		{}
 
 		void run()
 		{
 			Application& app = Application::instance();
-			std::string result = app.config().getString(_cmd);
+			std::string result = app.config().getString(_cmd, _defaultValue);
 
 			add(_cmd, result);
 		}
 	private:
 		std::string _cmd;
+		std::string _defaultValue;
 	};
 
 	class GetParametersRequestHandler : public RESTfulRequestHandler
