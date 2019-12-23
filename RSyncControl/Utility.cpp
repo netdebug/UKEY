@@ -98,7 +98,7 @@ std::string Utility::response()
 
 std::string Utility::SuperRequest(const std::string& url, const std::string& body)
 {
-	std::ostringstream ostr;
+	std::string result;
 	try
 	{
 		HTTPResponse response;
@@ -110,13 +110,15 @@ std::string Utility::SuperRequest(const std::string& url, const std::string& bod
 
 		std::istream& receive = session.receiveResponse(response);
 		
+		std::ostringstream ostr;
 		StreamCopier::copyStream(receive, ostr);
+		result = Utility::UTF8JSONStreamGBK(ostr.str());
 	}
 	catch (Poco::Exception& e)
 	{
 		Debugger::message(e.message());
 	}
-	return ostr.str();
+	return result;
 }
 
 std::string Reach::ActiveX::Utility::GBKEncodingUTF8(const std::string & inEncoding)
