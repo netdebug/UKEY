@@ -870,8 +870,8 @@ BSTR CRSyncControlCtrl::RS_CloudGetSealList(BSTR token)
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_CloudGetSealList", body.str());
 
-	//std::string encoding = Utility::UTF8EncodingGBK(result);
-	return _bstr_t(result.data());
+	std::string gbk = Utility::UTF8JSONStreamGBK(result);
+	return _bstr_t(gbk.data());
 }
 BSTR CRSyncControlCtrl::RS_CloudSignByP7(BSTR msg, BSTR keySn, BSTR transid, BSTR token)
 {
