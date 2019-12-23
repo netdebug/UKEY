@@ -139,6 +139,24 @@ std::string Reach::ActiveX::Utility::UTF8EncodingGBK(const std::string & inEncod
 	return outstring;
 }
 
+std::string Reach::ActiveX::Utility::GBKJSONStreamUTF8(const std::string & inString)
+{
+	Parser sp;
+	Var R = sp.parse(inString);
+	assert(R.type() == typeid(Object::Ptr));
+	DynamicStruct ds = *R.extract<Object::Ptr>();
+	return Utility::GBKEncodingUTF8(ds.toString());
+}
+
+std::string Reach::ActiveX::Utility::UTF8JSONStreamGBK(const std::string & inString)
+{
+	Parser sp;
+	Var R = sp.parse(inString);
+	assert(R.type() == typeid(Object::Ptr));
+	DynamicStruct ds = *R.extract<Object::Ptr>();
+	return Utility::UTF8EncodingGBK(ds.toString());
+}
+
 std::wstring Utility::convert(const std::string& utf8)
 {
 	std::wstring ucs;
