@@ -115,7 +115,7 @@
       <SubSystem>Windows</SubSystem>
       <ModuleDefinitionFile>.\RSyncControl.def</ModuleDefinitionFile>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <RegisterOutput>true</RegisterOutput>
+      <RegisterOutput>false</RegisterOutput>
       <AdditionalDependencies>comsuppw.lib;PocoFoundationd.lib;PocoNetd.lib;paho-mqtt3a.lib;paho-mqtt3as.lib;libcrypto.lib;libssl.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\lib;..\lib\libpoco</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>

@@ -177,9 +177,11 @@ BOOL CRSyncControlCtrl::CRSyncControlCtrlFactory::UpdateRegistry(BOOL bRegister)
 // CRSyncControlCtrl::CRSyncControlCtrl - 构造函数
 #include "Poco/Observer.h"
 #include "MQTTNotification.h"
+#include "Poco/String.h"
 using namespace Poco;
 
 CRSyncControlCtrl::CRSyncControlCtrl()
+:tm(ThreadPool::defaultPool())
 {
 	InitializeIIDs(&IID_DRSyncControl, &IID_DRSyncControlEvents);
 	// TODO:  在此初始化控件的实例数据。
@@ -197,6 +199,7 @@ CRSyncControlCtrl::~CRSyncControlCtrl()
 	NotificationCenter& nc = NotificationCenter::defaultCenter();
 	nc.removeObserver(Observer<CRSyncControlCtrl, MQTTNotification>(*this, &CRSyncControlCtrl::handle1));
 	// TODO:  在此清理控件的实例数据。
+	OutputDebugStringA(Poco::format("threadPool count : %d", tm.count()).c_str());
 	tm.cancelAll();
 	tm.joinAll();
 }
