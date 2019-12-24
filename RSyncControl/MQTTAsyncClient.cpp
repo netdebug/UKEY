@@ -119,11 +119,9 @@ int MQTTAsyncClient::messageArrived(void* context, char* topicName, int topicLen
 	std::string topic(topicName, topicLen);
 	std::string message((char*)msg->payload, msg->payloadlen);
 
-#ifdef OCX
 	Poco::Debugger::message(format("recv message from: %s, body is %s", topic, message));
-#else
-	Application& app = Application::instance();
-	poco_information_f2(app.logger(), "recv message from: %s, body is %s", topic, message);
+#ifdef NDEBUG
+	OutputDebugStringA(format("recv message from: %s, body is %s\n", topic, message).c_str());
 #endif // OCX
 
 	NotificationCenter::defaultCenter().postNotification(new MQTTNotification(message));
@@ -199,6 +197,22 @@ void MQTTAsyncClient::connect(const std::string& accessKey, const std::string& i
 void MQTTAsyncClient::connect(const std::string& user, const std::string& password)
 {
 	connect(user.data(), password.data(), false);
+}
+
+bool MQTTAsyncClient::isConnected()
+{
+	return MQTTAsync_isConnected(client);
+}
+
+void MQTTAsyncClient::disconnect()
+{
+	disc_opts = MQTTAsync_disconnectOptions_initializer;
+	disc_opts.timeout = 50;
+
+	int rc = 0;
+	if ((rc = MQTTAsync_disconnect(client, &disc_opts)) != MQTTASYNC_SUCCESS) {
+		Poco::Debugger::message(format("Failed to start connect, return code %d\n", rc));
+	}
 }
 
 std::string MQTTAsyncClient::generatorPassword(const std::string& secretKey)

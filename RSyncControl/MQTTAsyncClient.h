@@ -8,6 +8,7 @@ namespace Reach {
 	{
 		typedef MQTTAsync_createOptions createOptions;
 		typedef MQTTAsync_connectOptions connectOptions;
+		typedef MQTTAsync_disconnectOptions disconectOptions;
 		typedef MQTTAsync_SSLOptions sslOptions;
 		typedef MQTTAsync_successData successData;
 		typedef MQTTAsync_failureData failureData;
@@ -24,6 +25,8 @@ namespace Reach {
 
 		void connect(const std::string & accessKey, const std::string & instanceId, const std::string & secretKey);
 		void connect(const std::string & user, const std::string & password);
+		void disconnect();
+		bool isConnected();
 
 	protected:
 		static void deliveryComplete(void * context, token token);
@@ -51,6 +54,7 @@ namespace Reach {
 		MQTTAsync client;
 		createOptions create_opts;
 		connectOptions conn_opts;
+		disconectOptions disc_opts;
 		sslOptions ssl_opts;
 		bool _useSSL;
 		static bool connected;
