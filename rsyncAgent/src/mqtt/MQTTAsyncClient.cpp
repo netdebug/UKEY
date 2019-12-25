@@ -1,19 +1,27 @@
 #include "MQTTAsyncClient.h"
 #include <openssl/hmac.h>
 #include <openssl/bio.h>
-#include "Poco/Util/Application.h"
+#include "Poco/JSON/Parser.h"
+#include "Poco/JSON/Object.h"
+#include "Poco/Dynamic/Var.h"
+#include "Poco/DynamicStruct.h"
 #include "Poco/Format.h"
 #include "Poco/Util/Application.h"
+#include "Poco/NotificationCenter.h"
+#include "MQTTNotification.h"
+#include "Poco/Debugger.h"
+#include <cassert>
 #include "Poco/UUIDGenerator.h"
-#include "Poco/UUID.h"
-#include "Poco/Data/SQLite/Connector.h"
-#include "Poco/Data/Session.h"
+#include "Poco/Net/HTMLForm.h"
+#include "../Utility.h"
 
 using namespace Reach;
 using namespace Poco;
+using namespace Poco::Util;
 using namespace Poco::Dynamic;
-using namespace Poco::Data;
-using Poco::Util::Application;
+using namespace Poco::JSON;
+using Poco::Net::HTMLForm;
+using Reach::Utility;
 
 bool MQTTAsyncClient::connected = false;
 
@@ -23,20 +31,12 @@ MQTTAsyncClient::MQTTAsyncClient(bool useSSL)
 	groupId("GID_fjreach"),
 	_useSSL(useSSL)
 {
-	Poco::Data::SQLite::Connector::registerConnector();
-
-	Application& app = Application::instance();
-
 	initialize();
 
-	if (!app.config().hasProperty("clientId")) {
-		clientId = UUIDGenerator::defaultGenerator().create().toString();
-		app.config().setString("clientId", clientId);
-	}
-
-	clientId = app.config().getString("clientId", "456789");
-	clientIdUrl = Poco::format("%s@@@%s", groupId, clientId);
-
+	deviceId = UUIDGenerator::defaultGenerator().create().toString();
+	clientIdUrl = Poco::format("%s@@@%s", groupId, deviceId);
+	
+	//setConfigParameters();
 	int rc = 0;
 	if (rc = MQTTAsync_createWithOptions(&client, serverURI.data(),
 		clientIdUrl.data(),
@@ -52,43 +52,19 @@ MQTTAsyncClient::MQTTAsyncClient(bool useSSL)
 	{
 		throw Poco::Exception("MQTTAsync_setCallbacks");
 	}
+
+	Poco::Debugger::message("MQTTAsyncClient start");
 }
 
 MQTTAsyncClient::~MQTTAsyncClient()
 {
 	MQTTAsync_destroy(&client);
-
-	Poco::Data::SQLite::Connector::unregisterConnector();
 }
-
-#include <cassert>
-#include "Poco/Data/SQLite/Utility.h"
-using namespace Poco::Data::Keywords;
 
 void MQTTAsyncClient::initialize()
 {
-	Session mem(Poco::Data::SQLite::Connector::KEY, ":memory:");
-	mem << "DROP TABLE IF EXISTS Person", now;
-	mem << "CREATE TABLE IF NOT EXISTS LocalMessageCache (transid INTEGER PRIMARY KEY, mobile VARCHAR(26), authResult VARCHAR(2), action VARCHAR(2), userId VARCHAR, userName VARCHAR, token VARCHAR, msg VARCHAR)", now;
-	//assert(Poco::Data::SQLite::Utility::fileToMemory(mem, "dummy.db"));
-
 	createOpts();
 	connectOpts();
-}
-
-#include "Poco/JSON/Parser.h"
-using namespace Poco::JSON;
-
-void MQTTAsyncClient::cacheMessage(const std::string& topic, const std::string& message)
-{
-	Parser sp;
-	Var result = sp.parse(message);
-	assert(result.type() == typeid(Object::Ptr));
-	DynamicStruct ds = *result.extract<Object::Ptr>();
-	std::string action = ds["action"];
-	//assert(ds.contains())
-	Session mem(Poco::Data::SQLite::Connector::KEY, ":memory:");
-	assert(Poco::Data::SQLite::Utility::fileToMemory(mem, "dummy.db"));
 }
 
 void MQTTAsyncClient::createOpts()
@@ -96,7 +72,7 @@ void MQTTAsyncClient::createOpts()
 	create_opts = MQTTAsync_createOptions_initializer;
 	create_opts.sendWhileDisconnected = 0;
 	create_opts.maxBufferedMessages = 10;
-	
+
 	if (_useSSL) {
 		serverURI = Poco::format("ssl://%s:%u", host, port);
 	}
@@ -130,19 +106,26 @@ void MQTTAsyncClient::connectOpts()
 
 void MQTTAsyncClient::deliveryComplete(void* context, token token)
 {
+#ifdef OCX
+	Poco::Debugger::message("send message %d success\n");
+#else
 	Application& app = Application::instance();
-	poco_information_f1(app.logger(),"send message %d success\n", token);
+	poco_information_f1(app.logger(), "send message %d success\n", token);
+#endif // OCX
+
 }
 
 int MQTTAsyncClient::messageArrived(void* context, char* topicName, int topicLen, message* msg)
 {
-	Application& app = Application::instance();
 	std::string topic(topicName, topicLen);
 	std::string message((char*)msg->payload, msg->payloadlen);
-	//message.assign;
-	poco_information_f2(app.logger(), "recv message from: %s, body is %s", topic, message);
-	//printf("recv message from %s ,body is %s\n", topicName, (char *)m->payload);
-	//MQTTAsyncClient::cacheMessage(topic, message);
+
+	Poco::Debugger::message(format("recv message from: %s, body is %s", topic, message));
+#ifdef NDEBUG
+	OutputDebugStringA(format("recv message from: %s, body is %s\n", topic, message).c_str());
+#endif // OCX
+
+	NotificationCenter::defaultCenter().postNotification(new MQTTNotification(message));
 	MQTTAsync_freeMessage(&msg);
 	MQTTAsync_free(topicName);
 	return 1;
@@ -151,39 +134,56 @@ int MQTTAsyncClient::messageArrived(void* context, char* topicName, int topicLen
 void MQTTAsyncClient::connectionLost(void* context, char* cause)
 {
 	connected = false;
+#ifdef OCX
+	Poco::Debugger::message("connect lost \n");
+#else
 	Application& app = Application::instance();
 	poco_information(app.logger(), "connect lost \n");
+#endif // OCX
 }
 
 void MQTTAsyncClient::onSuccess(void* context, successData* response)
 {
 	connected = true;
+#ifdef OCX
+	Poco::Debugger::message("connect success \n");
+#else
 	Application& app = Application::instance();
-	poco_information(app.logger(),"connect success \n");
+	poco_information(app.logger(), "connect success \n");
+#endif // OCX
 }
 
 void MQTTAsyncClient::onFailure(void* context, failureData* response)
 {
-	 connected = false;
-	 Application& app = Application::instance();
-	 poco_information_f2(app.logger(),
-		 "connect failed, rc %d, message:%s\n", 
-		 response ? response->code : -1,
-		 response->message);
+	connected = false;
+#ifdef OCX
+	Poco::Debugger::message(format("connect failed, rc %d, message:%s\n",
+		response ? response->code : -1,
+		response->message));
+#else
+	Application& app = Application::instance();
+	poco_information_f2(app.logger(),
+		"connect failed, rc %d, message:%s\n",
+		response ? response->code : -1,
+		response->message);
+#endif // OCX
 }
 
 void MQTTAsyncClient::connect(const char* user, const char* password, bool useSSL, int keepAliveInterval = 60)
 {
-	Application& app = Application::instance();
-	
 	conn_opts.username = user;// generatorUsername("LTAIQklBFtjieSla", "post-cn-0pp10v4bb05").data();
 	conn_opts.password = password;// generatorPassword("FXUysOR0be9K4PIBOVXytKoEFlVTNI").data();
 	conn_opts.keepAliveInterval = keepAliveInterval;
 
 	int rc = 0;
 	if ((rc = MQTTAsync_connect(client, &conn_opts)) != MQTTASYNC_SUCCESS) {
-		poco_information_f1(app.logger(), "Failed to start connect, return code %d\n", rc);
-		throw Poco::Exception("Failed to start connect, return code %d\n");
+#ifdef OCX
+	Poco::Debugger::message(format("MQTT Failed to start connect, return code %d\n", rc));
+#else
+	Application& app = Application::instance();
+	poco_information_f1(app.logger(), "Failed to start connect, return code %d\n", rc);
+#endif // OCX
+		throw Poco::Exception("MQTT Failed to start connect, return code %d\n");
 	}
 }
 
@@ -198,6 +198,22 @@ void MQTTAsyncClient::connect(const std::string& accessKey, const std::string& i
 void MQTTAsyncClient::connect(const std::string& user, const std::string& password)
 {
 	connect(user.data(), password.data(), false);
+}
+
+bool MQTTAsyncClient::isConnected()
+{
+	return MQTTAsync_isConnected(client);
+}
+
+void MQTTAsyncClient::disconnect()
+{
+	disc_opts = MQTTAsync_disconnectOptions_initializer;
+	disc_opts.timeout = 50;
+
+	int rc = 0;
+	if ((rc = MQTTAsync_disconnect(client, &disc_opts)) != MQTTASYNC_SUCCESS) {
+		Poco::Debugger::message(format("MQTT Failed to disconnect, return code %d\n", rc));
+	}
 }
 
 std::string MQTTAsyncClient::generatorPassword(const std::string& secretKey)
@@ -221,3 +237,14 @@ std::string MQTTAsyncClient::generatorUsername(const std::string& accessKey, con
 	name.swap(Poco::format("Signature|%s|%s", accessKey, instanceId));
 	return name;
 }
+
+//void Reach::MQTTAsyncClient::setConfigParameters()
+//{
+//	HTMLForm params;
+//	params.set("cmd", "clientId");
+//	params.set("val", deviceId);
+//
+//	std::ostringstream body;
+//	params.write(body);
+//	std::string result = Utility::SuperRequest("/RS_ConfigParameters", body.str());
+//}

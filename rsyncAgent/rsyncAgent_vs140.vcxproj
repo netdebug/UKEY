@@ -51,9 +51,10 @@
   <ItemGroup>
     <ClInclude Include="resource.h" />
     <ClInclude Include="src\AdaptiveRecevier.h" />
-    <ClInclude Include="src\CloudEventRecevier.h" />
     <ClInclude Include="src\GMCrypto.h" />
-    <ClInclude Include="src\MQTTAsyncClient.h" />
+    <ClInclude Include="src\mqtt\CloudEventRecevier.h" />
+    <ClInclude Include="src\mqtt\MQTTAsyncClient.h" />
+    <ClInclude Include="src\mqtt\MQTTNotification.h" />
     <ClInclude Include="src\qrcode\BitBuffer.hpp" />
     <ClInclude Include="src\qrcode\QrCode.hpp" />
     <ClInclude Include="src\qrcode\QrSegment.hpp" />
@@ -115,8 +116,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\AdaptiveRecevier.cpp" />
-    <ClCompile Include="src\CloudEventRecevier.cpp" />
-    <ClCompile Include="src\MQTTAsyncClient.cpp" />
+    <ClCompile Include="src\mqtt\CloudEventRecevier.cpp" />
+    <ClCompile Include="src\mqtt\MQTTAsyncClient.cpp" />
+    <ClCompile Include="src\mqtt\MQTTNotification.cpp" />
     <ClCompile Include="src\qrcode\BitBuffer.cpp" />
     <ClCompile Include="src\qrcode\QrCode.cpp" />
     <ClCompile Include="src\qrcode\QrSegment.cpp" />

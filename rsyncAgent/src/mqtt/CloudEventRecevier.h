@@ -1,19 +1,23 @@
 #pragma once
 #include "Poco/Task.h"
-#include "Poco/NamedEvent.h"
 #include "Poco/Mutex.h"
-#include "MQTTAsyncClient.h"
+#include "Poco/SharedPtr.h"
 
 namespace Reach {
 
+	class MQTTAsyncClient;
 	class CloudEventRecevier
 		: public Poco::Task
 	{
 	public:
 		CloudEventRecevier();
-		void runTask();
+		~CloudEventRecevier();
+
+		virtual void runTask();
+		virtual void cancel();
+
 	private:
-		MQTTAsyncClient client;
+		MQTTAsyncClient* _mqtt;
 	};
 
 }

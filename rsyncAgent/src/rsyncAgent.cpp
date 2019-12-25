@@ -11,7 +11,7 @@
 
 #include "rsyncAgent.h"
 #include "AdaptiveRecevier.h"
-#include "CloudEventRecevier.h"
+#include "mqtt/CloudEventRecevier.h"
 #include "Poco/Util/Application.h"
 #include "Poco/Util/Option.h"
 #include "Poco/Util/OptionSet.h"

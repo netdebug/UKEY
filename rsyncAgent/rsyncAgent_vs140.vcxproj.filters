@@ -52,6 +52,9 @@
     <Filter Include="RequestHandler\qrcode">
       <UniqueIdentifier>{53a59e75-902f-4195-8087-7d9739c86664}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\mqtt">
+      <UniqueIdentifier>{c3a124ad-06ad-4750-9a27-11362e96e14c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="rsyncAgent.properties">
@@ -290,12 +293,6 @@
     <ClInclude Include="src\qrcode\QrSegment.hpp">
       <Filter>RequestHandler\qrcode</Filter>
     </ClInclude>
-    <ClInclude Include="src\CloudEventRecevier.h">
-      <Filter>Core\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\MQTTAsyncClient.h">
-      <Filter>Core\Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\routes\KeyDecryptFileRequestHandler.h">
       <Filter>RequestHandler\Ukey\Header Files</Filter>
     </ClInclude>
@@ -304,6 +301,15 @@
     </ClInclude>
     <ClInclude Include="src\routes\KeyStatusRequestHandler.h">
       <Filter>RequestHandler\Ukey\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\mqtt\CloudEventRecevier.h">
+      <Filter>Core\mqtt</Filter>
+    </ClInclude>
+    <ClInclude Include="src\mqtt\MQTTAsyncClient.h">
+      <Filter>Core\mqtt</Filter>
+    </ClInclude>
+    <ClInclude Include="src\mqtt\MQTTNotification.h">
+      <Filter>Core\mqtt</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -394,12 +400,6 @@
     <ClCompile Include="src\qrcode\QrSegment.cpp">
       <Filter>RequestHandler\qrcode</Filter>
     </ClCompile>
-    <ClCompile Include="src\CloudEventRecevier.cpp">
-      <Filter>Core\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\MQTTAsyncClient.cpp">
-      <Filter>Core\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\routes\KeyStatusRequestHandler.cpp">
       <Filter>RequestHandler\Ukey\Source Files</Filter>
     </ClCompile>
@@ -411,6 +411,15 @@
     </ClCompile>
     <ClCompile Include="src\routes\ConfigParametersRequestHandler.cpp">
       <Filter>RequestHandler\common</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mqtt\CloudEventRecevier.cpp">
+      <Filter>Core\mqtt</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mqtt\MQTTAsyncClient.cpp">
+      <Filter>Core\mqtt</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mqtt\MQTTNotification.cpp">
+      <Filter>Core\mqtt</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
