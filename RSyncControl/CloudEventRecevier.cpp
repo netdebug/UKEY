@@ -2,6 +2,7 @@
 #include "Poco/Format.h"
 #include "Poco/Thread.h"
 #include "MQTTAsyncClient.h"
+#include "Poco/Debugger.h"
 
 #include <cassert>
 #include <sstream>
@@ -11,13 +12,13 @@
 using namespace Reach;
 using namespace Poco;
 using Poco::format;
-//using namespace Poco::JSON;
-//using namespace Poco::Dynamic;
+
 
 CloudEventRecevier::CloudEventRecevier()
 	: Task("CloudEventRecevier"),
 	_mqtt(new MQTTAsyncClient(false))
 {
+	OutputDebugStringA("\n Enter CloudEventRecevier()\n");
 }
 
 CloudEventRecevier::~CloudEventRecevier()
@@ -25,6 +26,8 @@ CloudEventRecevier::~CloudEventRecevier()
 	assert(_mqtt);
 	delete _mqtt;
 	_mqtt = nullptr;
+
+	OutputDebugStringA("\n Exit ~CloudEventRecevier()\n");
 }
 
 void CloudEventRecevier::runTask()
@@ -38,22 +41,17 @@ void CloudEventRecevier::runTask()
 		}
 
 		OutputDebugStringA(format("Testing thread sleep <%lu>:<%s>:<%d>\n", Thread::currentTid(), name(), (int)state()).c_str());
-
-		if (isCancelled()){
-			OutputDebugStringA(format("Cancelling thread sleep <%lu>:<%s>\n", Thread::currentTid(), name()).c_str());
-			break;
-		}
 	}
 	
-	/*while (!sleep(10 * 60 * 1000)) {
-		std::cout << "CloudEventRecevier TID after sleep - " << Poco::Thread::currentTid();
-		if (isCancelled()) break;
-	}*/
+	if (isCancelled()){
+		OutputDebugStringA(format("isCancelled thread sleep <%lu>:<%s>\n", Thread::currentTid(), name()).c_str());
+	}
 }
 
 void CloudEventRecevier::cancel()
 {
 	Task::cancel();
+
 	assert(_mqtt);
 	_mqtt->disconnect();
 	OutputDebugStringA(format("Cancel thread sleep <%lu>:<%s>\n", Thread::currentTid(), name()).c_str());

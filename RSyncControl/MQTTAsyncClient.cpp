@@ -177,12 +177,12 @@ void MQTTAsyncClient::connect(const char* user, const char* password, bool useSS
 	int rc = 0;
 	if ((rc = MQTTAsync_connect(client, &conn_opts)) != MQTTASYNC_SUCCESS) {
 #ifdef OCX
-	Poco::Debugger::message(format("Failed to start connect, return code %d\n", rc));
+	Poco::Debugger::message(format("MQTT Failed to start connect, return code %d\n", rc));
 #else
 	Application& app = Application::instance();
 	poco_information_f1(app.logger(), "Failed to start connect, return code %d\n", rc);
 #endif // OCX
-		throw Poco::Exception("Failed to start connect, return code %d\n");
+		throw Poco::Exception("MQTT Failed to start connect, return code %d\n");
 	}
 }
 
@@ -211,7 +211,7 @@ void MQTTAsyncClient::disconnect()
 
 	int rc = 0;
 	if ((rc = MQTTAsync_disconnect(client, &disc_opts)) != MQTTASYNC_SUCCESS) {
-		Poco::Debugger::message(format("Failed to start connect, return code %d\n", rc));
+		Poco::Debugger::message(format("MQTT Failed to disconnect, return code %d\n", rc));
 	}
 }
 

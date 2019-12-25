@@ -199,7 +199,7 @@ CRSyncControlCtrl::~CRSyncControlCtrl()
 	NotificationCenter& nc = NotificationCenter::defaultCenter();
 	nc.removeObserver(Observer<CRSyncControlCtrl, MQTTNotification>(*this, &CRSyncControlCtrl::handle1));
 	// TODO:  在此清理控件的实例数据。
-	OutputDebugStringA(Poco::format("threadPool count : %d", tm.count()).c_str());
+	OutputDebugStringA(Poco::format("threadPool count : %d\n", tm.count()).c_str());
 	tm.cancelAll();
 	tm.joinAll();
 }
