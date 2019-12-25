@@ -13,7 +13,10 @@
 #include "Poco/JSON/Parser.h"
 #include "Poco/JSON/Object.h"
 #include "Poco/DynamicStruct.h"
-#include "CloudEventRecevier.h"
+#include "Poco/Observer.h"
+#include "MQTTNotification.h"
+#include "Poco/String.h"
+
 #include "Poco/Debugger.h"
 #include <cassert>
 #include <sstream>
@@ -23,6 +26,7 @@
 #include <atlconv.h>
 #include "RSyncChangPassWd.h"
 
+using namespace Poco;
 using Poco::Dynamic::Var;
 using Poco::Net::HTMLForm;
 using Poco::Net::HTTPRequest;
@@ -173,22 +177,14 @@ BOOL CRSyncControlCtrl::CRSyncControlCtrlFactory::UpdateRegistry(BOOL bRegister)
 		return AfxOleUnregisterClass(m_clsid, m_lpszProgID);
 }
 
-
-// CRSyncControlCtrl::CRSyncControlCtrl - 构造函数
-#include "Poco/Observer.h"
-#include "MQTTNotification.h"
-#include "Poco/String.h"
-using namespace Poco;
-
 CRSyncControlCtrl::CRSyncControlCtrl()
-:tm(ThreadPool::defaultPool())
 {
 	InitializeIIDs(&IID_DRSyncControl, &IID_DRSyncControlEvents);
 	// TODO:  在此初始化控件的实例数据。
-	NotificationCenter& nc = NotificationCenter::defaultCenter();
-	Observer<CRSyncControlCtrl, MQTTNotification> o1(*this, &CRSyncControlCtrl::handle1);
-	nc.addObserver(o1);
-	tm.start(new Reach::CloudEventRecevier);
+	//NotificationCenter& nc = NotificationCenter::defaultCenter();
+	//Observer<CRSyncControlCtrl, MQTTNotification> o1(*this, &CRSyncControlCtrl::handle1);
+	//nc.addObserver(o1);
+	//tm.start(new Reach::CloudEventRecevier);
 	m_bLoginState = FALSE;
 }
 
@@ -196,12 +192,12 @@ CRSyncControlCtrl::CRSyncControlCtrl()
 
 CRSyncControlCtrl::~CRSyncControlCtrl()
 {
-	NotificationCenter& nc = NotificationCenter::defaultCenter();
-	nc.removeObserver(Observer<CRSyncControlCtrl, MQTTNotification>(*this, &CRSyncControlCtrl::handle1));
+	//NotificationCenter& nc = NotificationCenter::defaultCenter();
+	//nc.removeObserver(Observer<CRSyncControlCtrl, MQTTNotification>(*this, &CRSyncControlCtrl::handle1));
 	// TODO:  在此清理控件的实例数据。
-	OutputDebugStringA(Poco::format("threadPool count : %d\n", tm.count()).c_str());
-	tm.cancelAll();
-	tm.joinAll();
+	//OutputDebugStringA(Poco::format("threadPool count : %d\n", tm.count()).c_str());
+	//tm.cancelAll();
+	//tm.joinAll();
 }
 
 bool IsLogined(const std::string& id)

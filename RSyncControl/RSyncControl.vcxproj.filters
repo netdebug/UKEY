@@ -36,15 +36,6 @@
     <ClCompile Include="Cathelp.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="MQTTNotification.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="CloudEventRecevier.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="MQTTAsyncClient.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="RSyncLoginView.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -52,6 +43,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="RSyncChangPassWd.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MQTTNotification.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -80,15 +74,6 @@
     <ClInclude Include="Cathelp.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="MQTTNotification.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="CloudEventRecevier.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="MQTTAsyncClient.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="RSyncLoginView.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -96,6 +81,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="RSyncChangPassWd.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MQTTNotification.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

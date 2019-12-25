@@ -1,18 +1,15 @@
 ﻿#pragma once
-#include "Poco/TaskManager.h"
+//#include "Poco/TaskManager.h"
 #include "MQTTNotification.h"
-// RSyncControlCtrl.h : CRSyncControlCtrl ActiveX 控件类的声明。
-
-// CRSyncControlCtrl : 请参阅 RSyncControlCtrl.cpp 了解实现。
 #include <string>
 #include "Poco/JSON/Object.h"
-class MQTTNotification;
+
 class CRSyncControlCtrl : public COleControl
 {
 	DECLARE_DYNCREATE(CRSyncControlCtrl)
 
 private:
-	Poco::TaskManager tm;
+	//Poco::TaskManager tm;
 	BOOL   m_bLoginState;
 	std::map<std::string, std::string> m_authResult;
 // 构造函数
@@ -41,9 +38,6 @@ protected:
 	DECLARE_DISPATCH_MAP()
 
 	afx_msg void AboutBox();
-	//BSTR ShowRSyncLoginView(BSTR containerId);
-	//BSTR onRsyncLogin(std::string nameStr, std::string passwordStr);
-	//BSTR IsLoginState(BSTR containerId);
 	
 	BSTR ShowRSyncChangePasswd(std::string containerId, std::string oldCode, std::string newCode);
 
