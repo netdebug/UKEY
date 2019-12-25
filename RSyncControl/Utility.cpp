@@ -96,6 +96,12 @@ std::string Utility::response()
 	return ostr.str();
 }
 
+std::string Utility::SuperRequestGBK(const std::string& url, const std::string& body)
+{
+	std::string result = SuperRequest(url, body);
+	return Utility::UTF8JSONStreamGBK(result);
+}
+
 std::string Utility::SuperRequest(const std::string& url, const std::string& body)
 {
 	std::string result;
@@ -112,7 +118,7 @@ std::string Utility::SuperRequest(const std::string& url, const std::string& bod
 		
 		std::ostringstream ostr;
 		StreamCopier::copyStream(receive, ostr);
-		result = Utility::UTF8JSONStreamGBK(ostr.str());
+		result = ostr.str();
 	}
 	catch (Poco::Exception& e)
 	{
