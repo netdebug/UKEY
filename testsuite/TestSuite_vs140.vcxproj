@@ -334,6 +334,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\ActiveXTest.cpp" />
+    <ClCompile Include="src\ActiveXTestSuite.cpp" />
     <ClCompile Include="src\Driver.cpp" />
     <ClCompile Include="src\FoundationTestSuite.cpp" />
     <ClCompile Include="src\SharedLibraryTest.cpp" />
@@ -341,6 +343,8 @@
     <ClCompile Include="src\TestUtil.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\ActiveXTest.h" />
+    <ClInclude Include="src\ActiveXTestSuite.h" />
     <ClInclude Include="src\FoundationTestSuite.h" />
     <ClInclude Include="src\SharedLibraryTest.h" />
     <ClInclude Include="src\SharedLibraryTestSuite.h" />

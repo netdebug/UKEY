@@ -10,6 +10,7 @@
 
 #include "FoundationTestSuite.h"
 #include "SharedLibraryTestSuite.h"
+#include "ActiveXTestSuite.h"
 
 
 CppUnit::Test* FoundationTestSuite::suite()
@@ -17,6 +18,7 @@ CppUnit::Test* FoundationTestSuite::suite()
 	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("FoundationTestSuite");
 
 	pSuite->addTest(SharedLibraryTestSuite::suite());
+	pSuite->addTest(ActiveXTestSuite::suite());
 
 	return pSuite;
 }
