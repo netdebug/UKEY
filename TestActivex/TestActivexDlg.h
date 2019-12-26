@@ -3,7 +3,6 @@
 //
 
 #pragma once
-#include "CDRS_CertSafe.h"
 
 // CTestActivexDlg 对话框
 class CTestActivexDlg : public CDialogEx
@@ -33,5 +32,4 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnBnGetUserList();
-	CDRS_CertSafe rstest;
 };

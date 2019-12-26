@@ -29,4 +29,4 @@ public:
 	DECLARE_MESSAGE_MAP()
 };
 
-extern CTestActivexApp theApp;
+//extern CTestActivexApp theApp;

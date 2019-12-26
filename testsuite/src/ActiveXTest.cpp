@@ -11,13 +11,6 @@
 #include "ActiveXTest.h"
 #include "CppUnit/TestCaller.h"
 #include "CppUnit/TestSuite.h"
-//#include "Poco/ActiveX.h"
-#include "Poco/Exception.h"
-
-//using Poco::ActiveX;
-using Poco::NotFoundException;
-using Poco::LibraryLoadException;
-using Poco::LibraryAlreadyLoadedException;
 
 ActiveXTest::ActiveXTest(const std::string& name): CppUnit::TestCase(name)
 {
@@ -30,7 +23,7 @@ ActiveXTest::~ActiveXTest()
 
 void ActiveXTest::test()
 {
-	std::cout << "ActiveXTest test function" << std::endl;
+	assert(false);
 }
 
 void ActiveXTest::setUp()

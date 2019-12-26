@@ -33,7 +33,7 @@ CTestActivexApp::CTestActivexApp()
 
 // 唯一的 CTestActivexApp 对象
 
-CTestActivexApp theApp;
+//CTestActivexApp theApp;
 
 
 // CTestActivexApp 初始化

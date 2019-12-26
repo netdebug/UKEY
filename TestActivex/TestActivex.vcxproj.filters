@@ -15,12 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="TestActivex.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="TestActivexDlg.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="stdafx.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -36,14 +30,14 @@
     <ClInclude Include="CDRS_CertSafe.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="TestActivex.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="TestActivexDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="TestActivex.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="TestActivexDlg.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -51,6 +45,24 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="CDRS_CertSafe.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="WinDriver.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="FoundationTestSuite.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ActiveXTest.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ActiveXTestSuite.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="TestActivex.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="TestActivexDlg.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

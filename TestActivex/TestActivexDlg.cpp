@@ -59,7 +59,6 @@ CTestActivexDlg::CTestActivexDlg(CWnd* pParent /*=nullptr*/)
 void CTestActivexDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_RSYNCCONTROLCTRL2, rstest);
 }
 
 BEGIN_MESSAGE_MAP(CTestActivexDlg, CDialogEx)
@@ -156,14 +155,7 @@ HCURSOR CTestActivexDlg::OnQueryDragIcon()
 }
 
 
-
 void CTestActivexDlg::OnBnGetUserList()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	rstest.AboutBox();
-	CString ul = rstest.RS_GetUserList();
-	CString id = rstest.RS_GetTransid(L"1001");
-	OutputDebugString(TEXT("RS_GetUserList"));
-	OutputDebugString(ul);
-	OutputDebugString(L"\n");
 }
