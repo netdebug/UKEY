@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "CDKG_GetKeyInfo_FJRS.h"
 #include "KGSealProvider.h"
 #include "Utility.h"
 #include "Poco/JSON/Parser.h"
@@ -6,8 +7,16 @@
 #include "Poco/Dynamic/Var.h"
 #include "Poco/DynamicStruct.h"
 #include "Poco/Net/HTMLForm.h"
+
 #include <cassert>
-#include "CDKG_GetKeyInfo_FJRS.h"
+
+#define JSON_PARSE(DATA) \
+	Parser ps;											\
+	Var res = ps.parse(DATA);							\
+	assert(res.type() == typeid(Object::Ptr));			\
+	Object::Ptr object = res.extract<Object::Ptr>();	\
+	assert(object);										\
+	DynamicStruct ds = *object;
 
 using namespace Reach;
 using namespace Reach::ActiveX;
@@ -22,15 +31,22 @@ using Poco::DynamicStruct;
 /// MIDL KG_GetKeyInfo_FJRS.IDL /tlb KG_GetKeyInfo_FJRS.tlb /h KG_GetKeyInfo_FJRS.h /iid KG_GetKeyInfo_FJRS_i.c /Oicf
 
 KGSealProvider::KGSealProvider()
-	:app(Application::instance())
+	:app(Application::instance()),
+	_pKG_GetKeyInfo_FJRS(nullptr)
 {
+	CoInitialize(0);
 	/// Com interface
-	
+	_pKG_GetKeyInfo_FJRS = new CDKG_GetKeyInfo_FJRS;
+	if (!_pKG_GetKeyInfo_FJRS->CreateDispatch(_T("KG_GETKEYINFO_FJ.KG_GetKeyInfo_FJCtrl.1")))
+		throw Poco::InvalidAccessException("Invalid argument", "CDKG_GetKeyInfo_FJRS");
 }
 
 KGSealProvider::~KGSealProvider()
 {
-	
+	assert(_pKG_GetKeyInfo_FJRS);
+	_pKG_GetKeyInfo_FJRS->ReleaseDispatch();
+	delete _pKG_GetKeyInfo_FJRS;
+	CoUninitialize();
 }
 
 void KGSealProvider::extract()
@@ -47,14 +63,18 @@ void KGSealProvider::extract()
 
 void KGSealProvider::readSeal()
 {
-	CDKG_GetKeyInfo_FJRS  KG_GetKeyInfo_FJRS;
-	BOOL bRet = FALSE;
-	bRet = KG_GetKeyInfo_FJRS.CreateDispatch(_T("KG_GETKEYINFO_FJ.KG_GetKeyInfo_FJCtrl.1"));
-	CString KeyInfo = _T("");
-	KeyInfo = KG_GetKeyInfo_FJRS.KGGetKeyInfo();
-	_content = KeyInfo.GetString();
-	_sealdata = Utility::GBKtoUTF8(_content);
-	poco_information_f1(app.logger(), "%s", _sealdata);
+	assert(_pKG_GetKeyInfo_FJRS);
+	CString KeyInfo = _pKG_GetKeyInfo_FJRS->KGGetKeyInfo();
+	_sealdata = Utility::GBKtoUTF8(KeyInfo.GetString());
+
+	JSON_PARSE(_sealdata);
+	/*Parser sp;
+	Var result = sp.parse(_sealdata);
+	assert(result.type() == typeid(Object::Ptr));
+	DynamicStruct ds = *result.extract<Object::Ptr>();*/
+	bool status = ds["result"];
+	if (!status) 
+	throw Poco::DataFormatException("Invalid seal data", ds.toString());
 }
 
 void KGSealProvider::FetchKeySN()
@@ -68,13 +88,16 @@ void KGSealProvider::FetchKeySN()
 	params.write(body);
 	result = Utility::SuperRequest("/RS_KeyGetKeySn", body.str());
 
-	Parser ps;
+	JSON_PARSE(result)
+	/*Parser ps;
 	Var res = ps.parse(result);
 	assert(res.type() == typeid(Object::Ptr));
 	Object::Ptr object = res.extract<Object::Ptr>();
 	assert(object);
-	DynamicStruct ds = *object;
-	assert(ds["code"] == "0000");
+	DynamicStruct ds = *object;*/
+	if (ds["code"] != "0000") 
+		handleLastError(result);
+
 	setProperty("keysn", ds["data"]["keySn"].toString());
 }
 
@@ -95,28 +118,24 @@ void KGSealProvider::TCardGetCert()
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_GetCertBase64String", body.str());
 
-	Parser ps;
+	/*Parser ps;
 	Var res = ps.parse(result);
 	assert(res.type() == typeid(Object::Ptr));
 	Object::Ptr object = res.extract<Object::Ptr>();
 	assert(object);
-	DynamicStruct ds = *object;
-	assert(ds["code"] == "0000");
+	DynamicStruct ds = *object;*/
+	JSON_PARSE(result);
+	if (ds["code"] != "0000")
+		handleLastError(result);
+		//throw Poco::InvalidAccessException("Get CertBase64String Failed!", "REACH");
+
 	std::string cert = ds["data"]["certBase64"].toString();
 	setProperty("cert", cert);
 }
 
 void KGSealProvider::ExtractSealPicture()
 {
-	Parser ps;
-	Var result = ps.parse(_sealdata);
-	std::cout << result.type().name();
-	assert(result.type() == typeid(Object::Ptr));
-	if (result.type() != typeid(Object::Ptr))
-		throw Poco::Exception("the data is not a JSON Object!");
-
-	Object::Ptr object = result.extract<Object::Ptr>();
-	DynamicStruct ds = *object;
+	JSON_PARSE(_sealdata);
 	Poco::Dynamic::Var info = ds["seals"];
 	assert(info.size() > 0);
 	if (info.size() > 0) setProperty("name", info[0]["username"]);
@@ -127,6 +146,10 @@ void KGSealProvider::ExtractSealPicture()
 		Poco::JSON::Object ob;
 		ob.set("imgdata", info[i]["imgdata"]);
 		ob.set("signname", info[i]["signname"]);
+		ob.set("height", info[i]["height"]);
+		ob.set("width", info[i]["width"]);
+		ob.set("imgext", info[i]["imgext"]);
+		ob.set("signType", "80");
 		ob.set("imgItem", "81");/// ½ð¸ñÇ©ÕÂ
 		ob.set("imgArea", "84");/// ÄÚÃÉ¹ÅCA 
 		seals.add(ob);
@@ -135,4 +158,16 @@ void KGSealProvider::ExtractSealPicture()
 	std::ostringstream ostr;
 	seals.stringify(ostr);
 	setProperty("seals", ostr.str());
+}
+
+void KGSealProvider::handleLastError(const std::string& result)
+{
+	JSON_PARSE(result);
+	int code = ds["code"];
+	switch (code) {
+	case 9001:
+		throw Poco::ProtocolException(ds.toString(),code);
+	default:
+		throw Poco::UnhandledException();
+	}
 }

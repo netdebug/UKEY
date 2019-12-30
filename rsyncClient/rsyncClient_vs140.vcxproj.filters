@@ -30,12 +30,6 @@
     <None Include="QZSyncWorker.json">
       <Filter>Configuration Files</Filter>
     </None>
-    <None Include="..\..\..\Test\gitfile\textencoding\OES_ReadSealData_utf8.json">
-      <Filter>Configuration Files</Filter>
-    </None>
-    <None Include="..\..\..\Test\gitfile\textencoding\gbk2utf8output.json">
-      <Filter>Configuration Files</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\rsyncClient.h">

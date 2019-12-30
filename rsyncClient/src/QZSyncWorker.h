@@ -18,6 +18,8 @@ namespace Reach {
 
 		void setSync(std::string& keysn, bool flag = true);
 
+		void log(const std::string& message);
+
 		template<typename T>
 		const T extract(std::istream& json)
 		{

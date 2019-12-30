@@ -34,6 +34,8 @@ QZSyncWorker::QZSyncWorker()
 	FileInputStream in(Utility::config("QZSyncWorker.json"));
 	object = extract<Object::Ptr>(in);
 	assert(object);
+	if (!object)
+		throw Poco::UnhandledException("config lost", "QZSyncWorker.json");
 }
 
 void QZSyncWorker::runTask()
@@ -54,7 +56,8 @@ void QZSyncWorker::runTask()
 		}
 		catch (Poco::Exception& e)
 		{
-			poco_information_f2(app.logger(), "QZSyncWorker Exception: code = %d, message = %s", e.code(), e.message());
+			std::string message(format("QZSyncWorker runTask Exception: %d, %s", e.code(), e.message()));
+			log(message);
 		}
 		
 	}
@@ -90,13 +93,19 @@ void QZSyncWorker::composite()
 			_seals = ptr->getProperty("seals");
 			_md5 = ptr->getProperty("dataMD5");
 
-			poco_information_f2(app.logger(), "name:%s,code%:%s", _name, _code);
-			poco_information_f2(app.logger(), "validStart:%s,validEnd%:%s", _validStart, _validEnd);
-			poco_information_f2(app.logger(), "keysn:%s,dataMD5%:%s", _keysn, _md5);
-			poco_information_f1(app.logger(), "seal -> \n%s", _seals);
+			std::string message;
+			message.append(format("name:%s,code%:%s \n", ptr->getProperty("name"), ptr->getProperty("code")));
+			message.append(format("validStart:%s,validEnd%:%s\n", ptr->getProperty("validStart"), ptr->getProperty("validEnd")));
+			message.append(format("keysn:%s,dataMD5%:%s\n", ptr->getProperty("keysn"), ptr->getProperty("dataMD5")));
+			message.append(format("seal -> \n%s", ptr->getProperty("seals")));
+			log(message);
+			
+			break;
 		}
-		catch (Poco::Exception&)
+		catch (Poco::Exception& e)
 		{
+			std::string message(format("QZSyncWorker Composite Exception %[1]d : %[0]s", e.message(), e.code()));
+			log(message);
 		}
 	}
 }
@@ -143,13 +152,12 @@ void QZSyncWorker::updateStatus()
 				sync,
 				now;
 
+			log(format("insert SQL Statement :%s, keysn=%s, md5value=%s",insert.toString(), _keysn, _md5));
+
 			break;
 		}
-		poco_information_f4(app.logger(), "id:%d, keysn:%s, md5value:%s, sync:%b",
-			syncRecord.id,
-			syncRecord.keysn,
-			syncRecord.md5,
-			syncRecord.sync);
+
+		log(format("select SQL Statement :%s ,keysn= %s, md5value=%s, sync = %b", select.toString(), syncRecord.keysn, syncRecord.md5, syncRecord.sync));
 
 		if (syncRecord.md5 != _md5) {
 
@@ -159,6 +167,8 @@ void QZSyncWorker::updateStatus()
 				use(syncRecord.keysn),
 				sync,
 				now;
+
+			log(format("update SQL Statement :%s when the md5 is different, keysn=%s, md5value=%s sync = 0", update.toString(), syncRecord.keysn, _md5));
 		}
 	}
 }
@@ -171,7 +181,7 @@ void QZSyncWorker::transfer()
 	check.set("keysn",		_keysn);
 	check.set("dataMD5",	_md5);
 
-	poco_information_f1(app.logger(), "check : %s\n ", Var(check).convert<std::string>());
+	log(format("check : %s\n ", Var(check).convert<std::string>()));
 
 	std::string data = Var(check).convert<std::string>();
 	URI uri(ds["url"]["check"].toString());
@@ -192,7 +202,7 @@ void QZSyncWorker::transfer()
 		ds["fmt"]["validStart"] = _validStart;
 		ds["fmt"]["validEnd"] = _validEnd;
 		ds["fmt"]["seals"] = _seals;
-		poco_information_f1(app.logger(), "%s", ds["fmt"].toString());
+
 		std::string data = ds["fmt"].toString();
 		URI uri(ds["url"]["sync"].toString());
 		HTTPRequest request(HTTPRequest::HTTP_POST, uri.getPath());
@@ -203,7 +213,7 @@ void QZSyncWorker::transfer()
 		HTTPResponse response;
 		std::istream& out = session.receiveResponse(response);
 		DynamicStruct res = *extract<Object::Ptr>(out);
-		poco_information_f2(app.logger(), "code:%s\n message:%s\n", res["code"].toString(), res["message"].toString());	
+		log(format("code:%s message:%s\n", res["code"].toString(), res["message"].toString()));
 	}
 	setSync(_keysn);
 }
@@ -220,4 +230,24 @@ void QZSyncWorker::setSync(std::string& keysn, bool flag)
 	Statement select(session);
 	select << "UPDATE syncSDMakeup set sync = ? WHERE keysn = ?;",
 		use(flag),use(keysn), range(0, 1), sync, now;
+
+	log(format("setSync SQL Statement :%s keysn=%s, sync=%b", select.toString(), keysn, flag));
+}
+
+void QZSyncWorker::log(const std::string& message)
+{
+	Application& app = Application::instance();
+
+	std::ostringstream ostr;
+	std::string stringToken(100, '#');
+
+	ostr << std::endl
+		<< stringToken
+		<< std::endl
+		<< message
+		<< std::endl
+		<< stringToken
+		<< std::endl << std::endl;
+
+	poco_information(app.logger(), ostr.str());
 }

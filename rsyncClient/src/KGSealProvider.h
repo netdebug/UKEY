@@ -3,6 +3,8 @@
 #include "SealProvider.h"
 #include "Poco/Util/Application.h"
 
+class CDKG_GetKeyInfo_FJRS;
+
 namespace Reach {
 
 	class KGSealProvider
@@ -18,7 +20,9 @@ namespace Reach {
 		void GetContainerId();
 		void TCardGetCert();
 		void ExtractSealPicture();
-
+		void handleLastError(const std::string & result);
+	private:
+		CDKG_GetKeyInfo_FJRS*  _pKG_GetKeyInfo_FJRS;
 	private:
 		Poco::Util::Application& app;
 

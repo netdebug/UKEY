@@ -79,7 +79,6 @@ int rsyncClient::main(const ArgVec& args)
 {
 	if (!_helpRequested)
 	{
-		CoInitialize(0);
 		Application& app = Application::instance();
 		TaskManager tm;
 		//tm.start(new SampleTask(host, port));
@@ -87,7 +86,6 @@ int rsyncClient::main(const ArgVec& args)
 		waitForTerminationRequest();
 		tm.cancelAll();
 		tm.joinAll();
-		::CoUninitialize();
 	}
 	return Application::EXIT_OK;
 }
