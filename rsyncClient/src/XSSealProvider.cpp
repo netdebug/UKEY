@@ -183,7 +183,9 @@ void XSSealProvider::TCardGetCert()
 	Object::Ptr object = res.extract<Object::Ptr>();
 	assert(object);
 	DynamicStruct ds = *object;
-	assert(ds["code"] == "0000");
+	if (ds["code"] != "0000")
+		throw Poco::Exception("XSSealProvider TCardGetCert Failed!", ds.toString());
+
 	std::string cert = ds["data"]["certBase64"].toString();
 	setProperty("cert", cert);
 }

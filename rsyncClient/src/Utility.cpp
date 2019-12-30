@@ -157,7 +157,9 @@ std::string Utility::formatUid(const std::string& entries)
 		Var result = ps.parse(entries);
 		assert(result.type() == typeid(Object::Ptr));
 		DynamicStruct ds = *result.extract<Object::Ptr>();
-		assert(ds["code"] == "0000");
+		if (ds["code"] != "0000")
+			throw Poco::Exception("formatUid error", ds.toString());
+
 		std::string userlist = ds["data"]["userlist"];
 
 		std::string pattern("(\\S+)\\|\\|(\\S+)[&&&]*");
