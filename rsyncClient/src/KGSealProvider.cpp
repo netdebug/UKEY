@@ -68,10 +68,7 @@ void KGSealProvider::readSeal()
 	_sealdata = Utility::GBKtoUTF8(KeyInfo.GetString());
 
 	JSON_PARSE(_sealdata);
-	/*Parser sp;
-	Var result = sp.parse(_sealdata);
-	assert(result.type() == typeid(Object::Ptr));
-	DynamicStruct ds = *result.extract<Object::Ptr>();*/
+
 	bool status = ds["result"];
 	if (!status) 
 	throw Poco::DataFormatException("Invalid seal data", ds.toString());
@@ -89,12 +86,7 @@ void KGSealProvider::FetchKeySN()
 	result = Utility::SuperRequest("/RS_KeyGetKeySn", body.str());
 
 	JSON_PARSE(result)
-	/*Parser ps;
-	Var res = ps.parse(result);
-	assert(res.type() == typeid(Object::Ptr));
-	Object::Ptr object = res.extract<Object::Ptr>();
-	assert(object);
-	DynamicStruct ds = *object;*/
+
 	if (ds["code"] != "0000") 
 		handleLastError(result);
 
@@ -118,16 +110,9 @@ void KGSealProvider::TCardGetCert()
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_GetCertBase64String", body.str());
 
-	/*Parser ps;
-	Var res = ps.parse(result);
-	assert(res.type() == typeid(Object::Ptr));
-	Object::Ptr object = res.extract<Object::Ptr>();
-	assert(object);
-	DynamicStruct ds = *object;*/
 	JSON_PARSE(result);
 	if (ds["code"] != "0000")
 		handleLastError(result);
-		//throw Poco::InvalidAccessException("Get CertBase64String Failed!", "REACH");
 
 	std::string cert = ds["data"]["certBase64"].toString();
 	setProperty("cert", cert);
