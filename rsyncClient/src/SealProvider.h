@@ -12,11 +12,16 @@ namespace Reach {
 		SealProvider();
 		virtual ~SealProvider();
 		virtual void extract() = 0;
-		virtual void setProperty(const std::string& name, const std::string& value);
-		virtual std::string getProperty(const std::string& name) const;
-		virtual void GeneratedMD5();
-		virtual void GeneratedCode();
+		void setProperty(const std::string& name, const std::string& value);
+		std::string getProperty(const std::string& name) const;
+		void GeneratedMD5();
+		void GeneratedCode();
+		virtual void FetchKeySN();
+	protected:
 		virtual void PeriodOfValidity();
+		virtual void GetContainerId();
+		virtual void handleLastError(const std::string& result);
+		virtual void GetCertBase64String();
 	private:
 		std::string _name;
 		std::string _code;
@@ -26,5 +31,8 @@ namespace Reach {
 		std::string _seals;
 		std::string _md5;
 		std::string _cert;
+		std::string _uid;
+		std::string _Provider;
+		const std::string _encType = "2";
 	};
 }

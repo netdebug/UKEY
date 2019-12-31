@@ -6,7 +6,11 @@
 #include "Poco/UUID.h"
 #include "Poco/UUIDGenerator.h"
 #include "Poco/Crypto/X509Certificate.h"
+#include "Utility.h"
+#include "Poco/Net/HTMLForm.h"
 #include <sstream>
+
+using Poco::Net::HTMLForm;
 
 using Poco::UUID;
 using Poco::UUIDGenerator;
@@ -17,10 +21,11 @@ using Poco::Crypto::X509Certificate;
 using Poco::DateTimeFormatter;
 
 using namespace Reach;
+using namespace Reach::ActiveX;
 
 SealProvider::SealProvider()
 {
-
+	GetContainerId();
 }
 
 
@@ -31,7 +36,11 @@ SealProvider::~SealProvider()
 
 void SealProvider::setProperty(const std::string& name, const std::string& value)
 {
-	if (name == "name")
+	if (name == "Provider")
+	{
+		_Provider = value;
+	}
+	else if (name == "name")
 	{
 		_name = value;
 	}
@@ -69,7 +78,11 @@ void SealProvider::setProperty(const std::string& name, const std::string& value
 
 std::string SealProvider::getProperty(const std::string& name) const
 {
-	if (name == "name")
+	if (name == "Provider")
+	{
+		return _Provider;
+	}
+	else if (name == "name")
 	{
 		return _name;
 	}
@@ -139,4 +152,68 @@ void SealProvider::PeriodOfValidity()
 	/// 证书有效期时间
 	setProperty("validStart", validStart);
 	setProperty("validEnd", validEnd);
+}
+
+void SealProvider::GetContainerId()
+{
+	std::string result = Utility::SuperRequest("/RS_GetUserList", "");
+	assert(!result.empty());
+
+	JSON_PARSE(result);
+
+	if (ds["code"] != "0000")
+		handleLastError(result);
+
+	_uid = Utility::formatUid(result);
+}
+
+void SealProvider::FetchKeySN()
+{
+	assert(!_uid.empty());
+
+	HTMLForm params;
+	params.set("containerId", _uid);
+
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_KeyGetKeySn", body.str());
+	assert(!result.empty());
+
+	JSON_PARSE(result);
+
+	if (ds["code"] != "0000")
+		handleLastError(result);
+
+	setProperty("keysn", ds["data"]["keySn"].toString());
+}
+
+void SealProvider::handleLastError(const std::string& result)
+{
+	JSON_PARSE(result);
+	int code = ds["code"];
+	switch (code) {
+	case 9001:
+		throw Poco::ProtocolException(ds.toString(), getProperty("Provider"), code);
+	default:
+		throw Poco::UnhandledException("UnhandledException", getProperty("Provider"), code);
+	}
+}
+
+void SealProvider::GetCertBase64String()
+{
+	HTMLForm params;
+	params.set("containerId", _uid);
+	params.set("certType", _encType);
+
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequest("/RS_GetCertBase64String", body.str());
+	assert(!result.empty());
+	JSON_PARSE(result);
+
+	if (ds["code"] != "0000")
+		handleLastError(result);
+
+	std::string cert = ds["data"]["certBase64"].toString();
+	setProperty("cert", cert);
 }

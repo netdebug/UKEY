@@ -15,16 +15,16 @@ namespace Reach {
 	protected:
 		void readSeal();
 		void count();
-		void TCardGetCert();
-		void FetchKeySN();
+		virtual void GetCertBase64String();
+		virtual void FetchKeySN();
+
+		void handleLastError(int code);
+		void GetDeviceInfo(void* hDev);
 		void ExtractSealPicture();
-		std::string GBKtoUTF8(const std::string& text);
 	private:
 	
-		Poco::Util::Application& app;
 		Poco::SharedLibrary sl;
 		int _count;
-		std::string _content;
 		std::string _certContent;
 		std::string _sealdata;
 	};

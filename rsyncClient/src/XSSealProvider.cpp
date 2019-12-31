@@ -1,11 +1,5 @@
 #include "XSSealProvider.h"
 #include "Utility.h"
-#include "Poco/Net/HTMLForm.h"
-#include "Poco/JSON/Parser.h"
-#include "Poco/JSON/Object.h"
-
-#include "Poco/Dynamic/Var.h"
-#include "Poco/DynamicStruct.h"
 
 #include "Poco/DOM/Document.h"
 #include "Poco/DOM/DOMParser.h"
@@ -17,49 +11,38 @@
 #include <cassert>
 
 using namespace Poco::XML;
-using namespace Poco::JSON;
 
 using namespace Reach;
 using namespace Reach::ActiveX;
 
-using Poco::DynamicStruct;
-using Poco::Net::HTMLForm;
 using Poco::Util::Application;
-using Poco::Dynamic::Var;
-
-#define JSON_PARSE(DATA) \
-	Parser ps;											\
-	Var res = ps.parse(DATA);							\
-	assert(res.type() == typeid(Object::Ptr));			\
-	Object::Ptr object = res.extract<Object::Ptr>();	\
-	assert(object);										\
-	DynamicStruct ds = *object;
 
 XSSealProvider::XSSealProvider()
-	:app(Application::instance())
 {
+	Utility::message("Enter XSSealProvider");
+
 	sl.load("XSSealProviderLib.dll");
+
+	setProperty("Provider", "XSSealProvider");
 }
 
 XSSealProvider::~XSSealProvider()
 {
 	sl.unload();
+
+	Utility::message("Exit XSSealProvider");
 }
 
 void XSSealProvider::extract()
 {
-	GetContainerId();
-	TCardGetCert();
 	readSeal();
-	ExtractSealPicture();
-	PeriodOfValidity();
-	FetchKeySN();
-	GeneratedCode();
-	GeneratedMD5();
+	ExtractSealPicture();;
 }
 
 void XSSealProvider::ExtractSealPicture()
 {
+	Application& app = Application::instance();
+
 	poco_information_f1(app.logger(), "xs :\n%s" , _sealdata);
 
 	std::istringstream istr(_sealdata);
@@ -88,7 +71,7 @@ void XSSealProvider::ExtractSealPicture()
 		ob.set("height", "4.00");
 		ob.set("width", "4.00");
 		ob.set("imgext", "gif");
-		ob.set("signType", "80");
+		ob.set("signType", "80");///µÚÈý·½Ç©ÕÂ
 		ob.set("imgItem", "83");/// ÏèêÉÇ©ÕÂ
 		ob.set("imgArea", "82");/// BJCA or CFCA
 		seals.add(ob);
@@ -107,83 +90,33 @@ void XSSealProvider::readSeal()
 	ReadSealData fn = (ReadSealData)sl.getSymbol("ReadSealData");
 	char* res = fn(all_seal);
 	std::string content(res,strlen(res));
-	_sealdata = Utility::GBKtoUTF8(content);
+	_sealdata = Utility::GBKEncodingUTF8(content);
 
 	if (_sealdata.empty())
-	throw Poco::DataFormatException("Invalid seal data", res);
+	throw Poco::DataFormatException("Invalid seal data", Poco::format("%[1]s\n%[0]d", content, getProperty("Provider")));
 }
 
 void XSSealProvider::count()
 {
+	Application& app = Application::instance();
+
 	typedef int(*GetSealCount)();
 	std::string name("GetSealCount");
 
 	GetSealCount fn = (GetSealCount)sl.getSymbol(name);
 	_count = fn();
+
 	poco_information_f1(app.logger(), "seal.count : -> %d", _count);
 }
 
 void XSSealProvider::testKeyIn()
 {
+	Application& app = Application::instance();
+
 	typedef int(*IsUKIn)();
 	std::string name("IsUKIn");
 	IsUKIn fn = (IsUKIn)sl.getSymbol(name);
 	_bPresent = fn();
+
 	poco_information_f1(app.logger(), "seal.count : -> %b", _bPresent);
-}
-
-void XSSealProvider::FetchKeySN()
-{
-	std::string result;
-	HTMLForm params;
-	params.set("containerId", _id);
-
-	std::ostringstream body;
-	params.write(body);
-	result = Utility::SuperRequest("/RS_KeyGetKeySn", body.str());
-
-	JSON_PARSE(result);
-
-	if(ds["code"] != "0000")
-		handleLastError(result);
-
-	setProperty("keysn", ds["data"]["keySn"].toString());
-}
-
-void XSSealProvider::GetContainerId()
-{
-	std::string result;
-	result = Utility::SuperRequest("/RS_GetUserList", "");
-	_id = Utility::formatUid(result);
-}
-
-void XSSealProvider::TCardGetCert()
-{
-	HTMLForm params;
-	params.set("containerId", _id);
-	params.set("certType", _type);
-
-	std::ostringstream body;
-	params.write(body);
-	std::string result = Utility::SuperRequest("/RS_GetCertBase64String", body.str());
-
-	JSON_PARSE(result);
-
-	if (ds["code"] != "0000")
-		handleLastError(result);
-
-	std::string cert = ds["data"]["certBase64"].toString();
-	setProperty("cert", cert);
-}
-
-void XSSealProvider::handleLastError(const std::string& result)
-{
-	JSON_PARSE(result);
-	int code = ds["code"];
-	switch (code) {
-	case 9001:
-		throw Poco::ProtocolException(ds.toString(), code);
-	default:
-		throw Poco::UnhandledException();
-	}
 }

@@ -2,26 +2,17 @@
 #include "CDKG_GetKeyInfo_FJRS.h"
 #include "KGSealProvider.h"
 #include "Utility.h"
-#include "Poco/JSON/Parser.h"
-#include "Poco/JSON/Object.h"
-#include "Poco/Dynamic/Var.h"
-#include "Poco/DynamicStruct.h"
+//#include "Poco/JSON/Parser.h"
+//#include "Poco/JSON/Object.h"
+//#include "Poco/Dynamic/Var.h"
+//#include "Poco/DynamicStruct.h"
 #include "Poco/Net/HTMLForm.h"
-
 #include <cassert>
-
-#define JSON_PARSE(DATA) \
-	Parser ps;											\
-	Var res = ps.parse(DATA);							\
-	assert(res.type() == typeid(Object::Ptr));			\
-	Object::Ptr object = res.extract<Object::Ptr>();	\
-	assert(object);										\
-	DynamicStruct ds = *object;
 
 using namespace Reach;
 using namespace Reach::ActiveX;
 
-using namespace Poco::JSON;
+//using namespace Poco::JSON;
 
 using Poco::Net::HTMLForm;
 using Poco::Util::Application;
@@ -31,14 +22,18 @@ using Poco::DynamicStruct;
 /// MIDL KG_GetKeyInfo_FJRS.IDL /tlb KG_GetKeyInfo_FJRS.tlb /h KG_GetKeyInfo_FJRS.h /iid KG_GetKeyInfo_FJRS_i.c /Oicf
 
 KGSealProvider::KGSealProvider()
-	:app(Application::instance()),
-	_pKG_GetKeyInfo_FJRS(nullptr)
+	:_pKG_GetKeyInfo_FJRS(nullptr)
 {
+	Utility::message("Enter KGSealProvider");
+
 	CoInitialize(0);
 	/// Com interface
 	_pKG_GetKeyInfo_FJRS = new CDKG_GetKeyInfo_FJRS;
-	if (!_pKG_GetKeyInfo_FJRS->CreateDispatch(_T("KG_GETKEYINFO_FJ.KG_GetKeyInfo_FJCtrl.1")))
-		throw Poco::InvalidAccessException("Invalid argument", "CDKG_GetKeyInfo_FJRS");
+	if (!_pKG_GetKeyInfo_FJRS->CreateDispatch(_T("KG_GETKEYINFO_FJ.KG_GetKeyInfo_FJCtrl.1"))) {
+		throw Poco::InvalidAccessException("Invalid argument", Poco::format("%s:\n CDKG_GetKeyInfo_FJRS", getProperty("Provider")));
+	}
+
+	setProperty("Provider", "KGSealProvider");
 }
 
 KGSealProvider::~KGSealProvider()
@@ -47,75 +42,28 @@ KGSealProvider::~KGSealProvider()
 	_pKG_GetKeyInfo_FJRS->ReleaseDispatch();
 	delete _pKG_GetKeyInfo_FJRS;
 	CoUninitialize();
+
+	Utility::message("Exit KGSealProvider");
 }
 
 void KGSealProvider::extract()
 {
+	GetCertBase64String();
 	readSeal();
-	GetContainerId();
-	TCardGetCert();
 	ExtractSealPicture();
-	PeriodOfValidity();
-	FetchKeySN();
-	GeneratedCode();
-	GeneratedMD5();
 }
 
 void KGSealProvider::readSeal()
 {
 	assert(_pKG_GetKeyInfo_FJRS);
 	CString KeyInfo = _pKG_GetKeyInfo_FJRS->KGGetKeyInfo();
-	_sealdata = Utility::GBKtoUTF8(KeyInfo.GetString());
+	_sealdata = Utility::GBKEncodingUTF8(KeyInfo.GetString());
 
 	JSON_PARSE(_sealdata);
 
 	bool status = ds["result"];
-	if (!status) 
-	throw Poco::DataFormatException("Invalid seal data", ds.toString());
-}
-
-void KGSealProvider::FetchKeySN()
-{
-	std::string result;
-
-	HTMLForm params;
-	params.set("containerId", _id);
-
-	std::ostringstream body;
-	params.write(body);
-	result = Utility::SuperRequest("/RS_KeyGetKeySn", body.str());
-
-	JSON_PARSE(result)
-
-	if (ds["code"] != "0000") 
-		handleLastError(result);
-
-	setProperty("keysn", ds["data"]["keySn"].toString());
-}
-
-void KGSealProvider::GetContainerId()
-{
-	std::string result;
-	result = Utility::SuperRequest("/RS_GetUserList", "");
-	_id = Utility::formatUid(result);
-}
-
-void KGSealProvider::TCardGetCert()
-{
-	HTMLForm params;
-	params.set("containerId", _id);
-	params.set("certType", _type);
-
-	std::ostringstream body;
-	params.write(body);
-	std::string result = Utility::SuperRequest("/RS_GetCertBase64String", body.str());
-
-	JSON_PARSE(result);
-	if (ds["code"] != "0000")
-		handleLastError(result);
-
-	std::string cert = ds["data"]["certBase64"].toString();
-	setProperty("cert", cert);
+	if (!status)
+		throw Poco::DataFormatException("Invalid seal data", Poco::format("%[1]s:\n%[0]s",ds.toString(), getProperty("Provider") ));
 }
 
 void KGSealProvider::ExtractSealPicture()
@@ -143,16 +91,4 @@ void KGSealProvider::ExtractSealPicture()
 	std::ostringstream ostr;
 	seals.stringify(ostr);
 	setProperty("seals", ostr.str());
-}
-
-void KGSealProvider::handleLastError(const std::string& result)
-{
-	JSON_PARSE(result);
-	int code = ds["code"];
-	switch (code) {
-	case 9001:
-		throw Poco::ProtocolException(ds.toString(),code);
-	default:
-		throw Poco::UnhandledException();
-	}
 }
