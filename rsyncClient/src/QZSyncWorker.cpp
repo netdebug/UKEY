@@ -85,6 +85,11 @@ void QZSyncWorker::composite()
 			Poco::AutoPtr<SealProvider> ptr = *it;
 			assert(ptr);
 			ptr->extract();
+			ptr->FetchKeySN();
+			ptr->GeneratedMD5();
+			ptr->GeneratedCode();
+			
+
 			_name = ptr->getProperty("name");
 			_code = ptr->getProperty("code");
 			_validStart = ptr->getProperty("validStart");
@@ -152,12 +157,12 @@ void QZSyncWorker::updateStatus()
 				sync,
 				now;
 
-			log(format("insert SQL Statement :%s, keysn=%s, md5value=%s",insert.toString(), _keysn, _md5));
+			log(format("[insert SQL Statement :%s], keysn=%s, md5value=%s",insert.toString(), _keysn, _md5));
 
 			break;
 		}
 
-		log(format("select SQL Statement :%s ,keysn= %s, md5value=%s, sync = %b", select.toString(), syncRecord.keysn, syncRecord.md5, syncRecord.sync));
+		log(format("[select SQL Statement :%s ],keysn= %s, md5value=%s, sync = %b", select.toString(), syncRecord.keysn, syncRecord.md5, syncRecord.sync));
 
 		if (syncRecord.md5 != _md5) {
 
@@ -168,7 +173,7 @@ void QZSyncWorker::updateStatus()
 				sync,
 				now;
 
-			log(format("update SQL Statement :%s when the md5 is different, keysn=%s, md5value=%s sync = 0", update.toString(), syncRecord.keysn, _md5));
+			log(format("[update SQL Statement :%s] when the md5 is different, keysn=%s, md5value=%s sync = 0", update.toString(), syncRecord.keysn, _md5));
 		}
 	}
 }
@@ -194,6 +199,8 @@ void QZSyncWorker::transfer()
 	std::istream& out = session.receiveResponse(response);
 	DynamicStruct res = *extract<Object::Ptr>(out);
 
+	log(format("checking code:%s message:%s\n", res["code"].toString(), res["message"].toString()));
+
 	if (res["code"] == "0" || res["code"] == "7") { /// sync
 		ds["fmt"]["keysn"] = _keysn;
 		ds["fmt"]["dataMD5"] = _md5;
@@ -213,7 +220,7 @@ void QZSyncWorker::transfer()
 		HTTPResponse response;
 		std::istream& out = session.receiveResponse(response);
 		DynamicStruct res = *extract<Object::Ptr>(out);
-		log(format("code:%s message:%s\n", res["code"].toString(), res["message"].toString()));
+		log(format("transfer code:%s message:%s\n", res["code"].toString(), res["message"].toString()));
 	}
 	setSync(_keysn);
 }
@@ -231,7 +238,7 @@ void QZSyncWorker::setSync(std::string& keysn, bool flag)
 	select << "UPDATE syncSDMakeup set sync = ? WHERE keysn = ?;",
 		use(flag),use(keysn), range(0, 1), sync, now;
 
-	log(format("setSync SQL Statement :%s keysn=%s, sync=%b", select.toString(), keysn, flag));
+	log(format("[setSync SQL Statement :%s] keysn=%s, sync=%b", select.toString(), keysn, flag));
 }
 
 void QZSyncWorker::log(const std::string& message)
