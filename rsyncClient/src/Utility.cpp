@@ -15,7 +15,7 @@
 #include "Poco/URI.h"
 #include "Poco/ASCIIEncoding.h"
 #include "Poco/StreamConverter.h"
-#include "WindowsGBKEncoding.h"
+#include "Poco/Windows936Encoding.h"
 #include "Poco/TextConverter.h"
 #include "Poco/Util/Application.h"
 
@@ -36,7 +36,6 @@ using Poco::DynamicStruct;
 using Poco::Dynamic::Var;
 using Poco::OutputStreamConverter;
 using Poco::UTF8Encoding;
-using Poco::WindowsGBKEncoding;
 using Poco::Util::Application;
 using Poco::Path;
 using Poco::replace;
@@ -185,20 +184,40 @@ std::string Utility::formatUid(const std::string& entries)
 	return uid;
 }
 
-std::string Utility::GBKtoUTF8(const std::string& text)
+std::string Utility::GBKEncodingUTF8(const std::string & inEncoding)
 {
-	UTF8Encoding utf8Encoding;
-	WindowsGBKEncoding gbkEncoding;
-#ifndef TEST
+	std::string outstring;
+	Poco::UTF8Encoding utf8;
+	Poco::Windows936Encoding gbk;
+	Poco::TextConverter coverter(gbk, utf8);
+	coverter.convert(inEncoding, outstring);
+	return outstring;
+}
+
+std::string Utility::UTF8EncodingGBK(const std::string & inEncoding)
+{
+	std::string outstring;
+	Poco::UTF8Encoding utf8;
+	Poco::Windows936Encoding gbk;
+	Poco::TextConverter coverter(utf8, gbk);
+	coverter.convert(inEncoding, outstring);
+	return outstring;
+}
+
+void Utility::message(const std::string& message)
+{
+	Application& app = Application::instance();
+
 	std::ostringstream ostr;
-	OutputStreamConverter converter(ostr, gbkEncoding, utf8Encoding);
-	converter << text;
-	return ostr.str();
-#else
-	std::string convertext;
-	Poco::TextConverter tc(gbkEncoding, utf8Encoding);
-	tc.convert(text, convertext);
-	poco_information_f1(app.logger(), "%s", convertext);
-	return convertext;
-#endif // TEST
+	std::string stringToken(100, '#');
+
+	ostr << std::endl
+		<< stringToken
+		<< std::endl
+		<< message
+		<< std::endl
+		<< stringToken
+		<< std::endl << std::endl;
+
+	poco_information(app.logger(), ostr.str());
 }
