@@ -1140,3 +1140,11 @@ Poco::JSON::Object CRSyncControlCtrl::onCloudSignData(std::string signResult, st
 }
 
 // CRSyncControlCtrl 消息处理程序
+
+
+BOOL CRSyncControlCtrl::IsInvokeAllowed(DISPID /*dispid*/)
+{
+	// TODO: 在此添加专用代码和/或调用基类
+
+	return TRUE;
+}
