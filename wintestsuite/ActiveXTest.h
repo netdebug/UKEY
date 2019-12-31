@@ -16,6 +16,7 @@
 
 #include "Poco/Foundation.h"
 #include "CppUnit/TestCase.h"
+#include <wtypes.h>
 
 
 class ActiveXTest: public CppUnit::TestCase
@@ -72,6 +73,11 @@ public:
 	void setUp();
 	void tearDown();
 
+	std::string parseCode(BSTR str);
+	std::string parseData(BSTR str);
+	std::string parseCertBase64(BSTR str, std::string name);
+	std::string GBKEncodingUTF8(const std::string& instring);
+	std::string UTF8EncodingGBK(const std::string& instring);
 	static CppUnit::Test* suite();
 
 private:

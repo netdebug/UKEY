@@ -93,7 +93,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;NO_WARN_MBCS_MFC_DEPRECATION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\include\poco\CppUnit\include;..\include\poco\CppUnit\WinTestRunner\include;..\include\poco\Foundation\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include\poco\Encodings\include;..\include\poco\JSON\include;..\include\poco\CppUnit\include;..\include\poco\CppUnit\WinTestRunner\include;..\include\poco\Foundation\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -122,7 +122,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;NO_WARN_MBCS_MFC_DEPRECATION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\include\poco\CppUnit\include;..\include\poco\CppUnit\WinTestRunner\include;..\include\poco\Foundation\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include\poco\Encodings\include;..\include\poco\JSON\include;..\include\poco\CppUnit\include;..\include\poco\CppUnit\WinTestRunner\include;..\include\poco\Foundation\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -158,9 +158,18 @@
   <ItemGroup>
     <ClInclude Include="ActiveXTest.h" />
     <ClInclude Include="ActiveXTestSuite.h" />
+    <ClInclude Include="CDRS_CertSafe0.h" />
+    <ClInclude Include="CDRS_CertSafeEvents.h" />
     <ClInclude Include="FoundationTestSuite.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties _x007B_F84C8F57-5A05-4D8C-826D-29589C7A121C_x007D_="CDRS_CertSafe0" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>

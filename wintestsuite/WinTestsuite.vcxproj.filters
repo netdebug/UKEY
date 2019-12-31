@@ -38,5 +38,17 @@
     <ClInclude Include="FoundationTestSuite.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CDRS_CertSafe0.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CDRS_CertSafeEvents.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
