@@ -19,6 +19,7 @@ namespace Reach {
 		void FetchKeySN();
 		void GetContainerId();
 		void TCardGetCert();
+		void handleLastError(const std::string & result);
 		void ExtractSealPicture();
 	private:
 		Poco::Util::Application& app;

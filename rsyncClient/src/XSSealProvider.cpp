@@ -27,17 +27,18 @@ using Poco::Net::HTMLForm;
 using Poco::Util::Application;
 using Poco::Dynamic::Var;
 
+#define JSON_PARSE(DATA) \
+	Parser ps;											\
+	Var res = ps.parse(DATA);							\
+	assert(res.type() == typeid(Object::Ptr));			\
+	Object::Ptr object = res.extract<Object::Ptr>();	\
+	assert(object);										\
+	DynamicStruct ds = *object;
+
 XSSealProvider::XSSealProvider()
 	:app(Application::instance())
 {
-	try
-	{
-		sl.load("XSSealProviderLib.dll");
-	}
-	catch (Poco::LibraryLoadException& e)
-	{
-		poco_information_f1(app.logger(), "%s", e.message());
-	}
+	sl.load("XSSealProviderLib.dll");
 }
 
 XSSealProvider::~XSSealProvider()
@@ -59,6 +60,8 @@ void XSSealProvider::extract()
 
 void XSSealProvider::ExtractSealPicture()
 {
+	poco_information_f1(app.logger(), "xs :\n%s" , _sealdata);
+
 	std::istringstream istr(_sealdata);
 	InputSource source(istr);
 	DOMParser parser;
@@ -67,7 +70,6 @@ void XSSealProvider::ExtractSealPicture()
 	Node* pUsername = pDoc->getNodeByPath("/sealinfos/sealbaseinfo/username");
 	assert(pUsername);
 	setProperty("name", pUsername->innerText());
-	poco_information_f1(app.logger(), "%s", pUsername->innerText());
 
 	NodeList* pSealinfo = pDoc->getElementsByTagName("sealinfo");
 	assert(pSealinfo);
@@ -79,15 +81,14 @@ void XSSealProvider::ExtractSealPicture()
 		Element* sealname = ele->getChildElement("sealname");
 		Element* sealdata = ele->getChildElement("sealdata");
 		assert(sealdata && sealname);
-		poco_information_f1(app.logger(), "index:%d", i);
-		poco_information_f2(app.logger(), "%s:%s",
-			sealname->tagName(), sealname->innerText());
-		poco_information_f2(app.logger(), "%s:%s",
-			sealdata->tagName(), sealdata->innerText());
 
 		Poco::JSON::Object ob;
 		ob.set("imgdata", sealdata->innerText());
 		ob.set("signname", sealname->innerText());
+		ob.set("height", "4.00");
+		ob.set("width", "4.00");
+		ob.set("imgext", "gif");
+		ob.set("signType", "80");
 		ob.set("imgItem", "83");/// ÏèêÉÇ©ÕÂ
 		ob.set("imgArea", "82");/// BJCA or CFCA
 		seals.add(ob);
@@ -103,46 +104,37 @@ void XSSealProvider::readSeal()
 	static const int all_seal = -1;
 	typedef char* (*ReadSealData)(int nIndex);
 
-	std::string name("ReadSealData");
-	if (sl.hasSymbol(name))
-	{
-		ReadSealData fn = (ReadSealData)sl.getSymbol(name);
-		char* res = fn(all_seal);
-		_content.append(res);
-		poco_information_f1(app.logger(), "seal.data : -> %s", _content);
-		_sealdata = Utility::GBKtoUTF8(_content);
-		poco_information_f1(app.logger(), "%s", _sealdata);
-	}
+	ReadSealData fn = (ReadSealData)sl.getSymbol("ReadSealData");
+	char* res = fn(all_seal);
+	std::string content(res,strlen(res));
+	_sealdata = Utility::GBKtoUTF8(content);
+
+	if (_sealdata.empty())
+	throw Poco::DataFormatException("Invalid seal data", res);
 }
 
 void XSSealProvider::count()
 {
 	typedef int(*GetSealCount)();
 	std::string name("GetSealCount");
-	if (sl.hasSymbol(name))
-	{
-		GetSealCount fn = (GetSealCount)sl.getSymbol(name);
-		_count = fn();
-		poco_information_f1(app.logger(), "seal.count : -> %d", _count);
-	}
+
+	GetSealCount fn = (GetSealCount)sl.getSymbol(name);
+	_count = fn();
+	poco_information_f1(app.logger(), "seal.count : -> %d", _count);
 }
 
 void XSSealProvider::testKeyIn()
 {
 	typedef int(*IsUKIn)();
 	std::string name("IsUKIn");
-	if (sl.hasSymbol(name))
-	{
-		IsUKIn fn = (IsUKIn)sl.getSymbol(name);
-		_bPresent = fn();
-		poco_information_f1(app.logger(), "seal.count : -> %b", _bPresent);
-	}
+	IsUKIn fn = (IsUKIn)sl.getSymbol(name);
+	_bPresent = fn();
+	poco_information_f1(app.logger(), "seal.count : -> %b", _bPresent);
 }
 
 void XSSealProvider::FetchKeySN()
 {
 	std::string result;
-
 	HTMLForm params;
 	params.set("containerId", _id);
 
@@ -150,13 +142,11 @@ void XSSealProvider::FetchKeySN()
 	params.write(body);
 	result = Utility::SuperRequest("/RS_KeyGetKeySn", body.str());
 
-	Parser ps;
-	Var res = ps.parse(result);
-	assert(res.type() == typeid(Object::Ptr));
-	Object::Ptr object = res.extract<Object::Ptr>();
-	assert(object);
-	DynamicStruct ds = *object;
-	assert(ds["code"] == "0000");
+	JSON_PARSE(result);
+
+	if(ds["code"] != "0000")
+		handleLastError(result);
+
 	setProperty("keysn", ds["data"]["keySn"].toString());
 }
 
@@ -177,15 +167,23 @@ void XSSealProvider::TCardGetCert()
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_GetCertBase64String", body.str());
 
-	Parser ps;
-	Var res = ps.parse(result);
-	assert(res.type() == typeid(Object::Ptr));
-	Object::Ptr object = res.extract<Object::Ptr>();
-	assert(object);
-	DynamicStruct ds = *object;
+	JSON_PARSE(result);
+
 	if (ds["code"] != "0000")
-		throw Poco::Exception("XSSealProvider TCardGetCert Failed!", ds.toString());
+		handleLastError(result);
 
 	std::string cert = ds["data"]["certBase64"].toString();
 	setProperty("cert", cert);
+}
+
+void XSSealProvider::handleLastError(const std::string& result)
+{
+	JSON_PARSE(result);
+	int code = ds["code"];
+	switch (code) {
+	case 9001:
+		throw Poco::ProtocolException(ds.toString(), code);
+	default:
+		throw Poco::UnhandledException();
+	}
 }
