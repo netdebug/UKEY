@@ -93,6 +93,15 @@
     <ClInclude Include="src\CDKG_GetKeyInfo_FJRS.h">
       <Filter>Core\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\MediaBase.h">
+      <Filter>Core\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FJCAMedia.h">
+      <Filter>Core\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SOFMedia.h">
+      <Filter>Core\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\rsyncClient.cpp">
@@ -147,6 +156,15 @@
       <Filter>Core\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\KGSealProvider.cpp">
+      <Filter>Core\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MediaBase.cpp">
+      <Filter>Core\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FJCAMedia.cpp">
+      <Filter>Core\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SOFMedia.cpp">
       <Filter>Core\Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -14,6 +14,7 @@
 #include "Poco/Util/HelpFormatter.h"
 #include "Poco/TaskManager.h"
 #include "rsyncClient.h"
+#include "Poco/Data/SQLite/Connector.h"
 //#include "SampleTask.h"
 #include "QZSyncWorker.h"
 #include <objbase.h>
@@ -77,15 +78,20 @@ void rsyncClient::displayHelp()
 
 int rsyncClient::main(const ArgVec& args)
 {
+	
 	if (!_helpRequested)
 	{
 		Application& app = Application::instance();
+		Poco::Data::SQLite::Connector::registerConnector();
+
 		TaskManager tm;
 		//tm.start(new SampleTask(host, port));
 		tm.start(new QZSyncWorker);
 		waitForTerminationRequest();
 		tm.cancelAll();
 		tm.joinAll();
+
+		Poco::Data::SQLite::Connector::unregisterConnector();
 	}
 	return Application::EXIT_OK;
 }
