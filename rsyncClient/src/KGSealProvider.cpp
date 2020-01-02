@@ -2,17 +2,11 @@
 #include "CDKG_GetKeyInfo_FJRS.h"
 #include "KGSealProvider.h"
 #include "Utility.h"
-//#include "Poco/JSON/Parser.h"
-//#include "Poco/JSON/Object.h"
-//#include "Poco/Dynamic/Var.h"
-//#include "Poco/DynamicStruct.h"
 #include "Poco/Net/HTMLForm.h"
 #include <cassert>
 
 using namespace Reach;
 using namespace Reach::ActiveX;
-
-//using namespace Poco::JSON;
 
 using Poco::Net::HTMLForm;
 using Poco::Util::Application;
@@ -46,9 +40,9 @@ KGSealProvider::~KGSealProvider()
 	Utility::message("Exit KGSealProvider");
 }
 
-void KGSealProvider::extract()
+void KGSealProvider::extract(const std::string& cert)
 {
-	GetCertBase64String();
+	setProperty("cert", cert);
 	readSeal();
 	ExtractSealPicture();
 }

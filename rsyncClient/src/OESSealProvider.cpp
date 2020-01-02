@@ -4,12 +4,9 @@
 #include "Poco/Base64Encoder.h"
 #include "Windows.h"
 #include "TCardCert.h"
-#include "BridgeKG_HARD_EXT.h"
 #include "Utility.h"
 #include <fstream>
 #include <cassert>
-
-//using namespace Poco::JSON;
 
 using namespace Reach;
 using namespace Reach::ActiveX;
@@ -36,9 +33,10 @@ OESSealProvider::~OESSealProvider()
 	Utility::message("Exit OESSealProvider");
 }
 
-void Reach::OESSealProvider::extract()
+void Reach::OESSealProvider::extract(const std::string& cert)
 {
-	GetCertBase64String();
+	setProperty("cert", cert);
+	_certContent  = cert;
 	readSeal();
 	ExtractSealPicture();
 }
@@ -115,49 +113,6 @@ void OESSealProvider::count()
 	}
 }
 
-void OESSealProvider::GetCertBase64String()
-{
-	int rv = 0;
-	HANDLE hDev = NULL;
-	std::string content;
-
-	rv = InitTCard("USB1", &hDev);
-	//if (!rv) throw Poco::LogicException("USB1");
-	if (!rv) handleLastError(rv);
-
-	BYTE no = 0;
-	rv = TCardGetCertNo(&no, hDev);
-	//if (!rv && !no) throw Poco::LogicException("OESSealProvider cerification not found!");
-	if (!rv) handleLastError(rv);
-
-	rv = TCardSetCertNo(0x01, hDev);
-	//if (!rv) throw Poco::LogicException("OESSealProvider cerification not found!");
-	if (!rv) handleLastError(rv);
-
-	DWORD len = 1024;
-	std::vector<char> vCert(len, 0);
-	rv = TCardReadCert((BYTE*)vCert.data(), &len, hDev);
-	if (!rv && len > vCert.size()) {
-		vCert.resize(len + 1);
-		rv = TCardReadCert((BYTE*)vCert.data(), &len, hDev);
-	}
-	//if (!rv) throw Poco::LogicException("TCardReadCert failed!");
-	if (!rv) handleLastError(rv);
-
-	vCert.resize(len);
-
-	std::ostringstream ostr;
-	Poco::Base64Encoder encoder(ostr);
-	encoder.write(vCert.data(), vCert.size());
-	encoder.close();
-
-	
-
-	_certContent = ostr.str();
-	setProperty("cert", _certContent);
-	rv = ExitTCard(hDev);
-}
-
 void OESSealProvider::handleLastError(int code)
 {
 	switch (code) {
@@ -166,15 +121,6 @@ void OESSealProvider::handleLastError(int code)
 	default:
 		throw Poco::UnhandledException("UnhandledException", getProperty("Provider"), code);
 	}
-}
-
-void OESSealProvider::FetchKeySN()
-{
-	BridgeKG_HARD_EXT ext;
-	ext.WebConnectDev();
-	std::string keysn = ext.WebGetSerial();
-	setProperty("keysn", keysn);
-	ext.WebDisconnectDev();
 }
 
 void OESSealProvider::GetDeviceInfo(void* hDev)

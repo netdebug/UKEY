@@ -33,10 +33,11 @@ XSSealProvider::~XSSealProvider()
 	Utility::message("Exit XSSealProvider");
 }
 
-void XSSealProvider::extract()
+void XSSealProvider::extract(const std::string& cert)
 {
+	setProperty("cert", cert);
 	readSeal();
-	ExtractSealPicture();;
+	ExtractSealPicture();
 }
 
 void XSSealProvider::ExtractSealPicture()

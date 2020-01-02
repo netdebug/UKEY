@@ -3,6 +3,7 @@
 #include "SealProvider.h"
 #include "Poco/SharedLibrary.h"
 #include "Poco/Util/Application.h"
+#include "BridgeKG_HARD_EXT.h"
 
 namespace Reach {
 	class OESSealProvider
@@ -11,18 +12,15 @@ namespace Reach {
 	public:
 		OESSealProvider();
 		~OESSealProvider();
-		virtual void extract();
+		virtual void extract(const std::string& cert);
 	protected:
 		void readSeal();
 		void count();
-		virtual void GetCertBase64String();
-		virtual void FetchKeySN();
-
 		void handleLastError(int code);
 		void GetDeviceInfo(void* hDev);
 		void ExtractSealPicture();
 	private:
-	
+		BridgeKG_HARD_EXT ext;
 		Poco::SharedLibrary sl;
 		int _count;
 		std::string _certContent;

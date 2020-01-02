@@ -10,9 +10,15 @@
 #include "Poco/Net/HTTPRequest.h"
 #include "Poco/Net/HTTPClientSession.h"
 #include "Poco/Net/HTTPResponse.h"
+#include "Poco/UUID.h"
+#include "Poco/UUIDGenerator.h"
+#include "Poco/MD5Engine.h"
+#include "Poco/DigestStream.h"
 #include "OESSealProvider.h"
 #include "XSSealProvider.h"
 #include "KGSealProvider.h"
+#include "FJCAMedia.h"
+#include "SOFMedia.h"
 #include "Utility.h"
 #include <cassert>
 
@@ -24,13 +30,22 @@ using namespace Poco::Data::SQLite;
 using namespace Poco::Data::Keywords;
 using namespace Poco::JSON;
 using namespace Poco::Net;
+
 using Poco::Dynamic::Var;
 using Poco::Util::Application;
+using Poco::UUID;
+using Poco::UUIDGenerator;
+using Poco::MD5Engine;
+using Poco::DigestEngine;
 
 QZSyncWorker::QZSyncWorker()
-	:Task("QZSyncWorker")
+	:Task("QZSyncWorker"),
+	session("SQLite", "syncQLite.db")
 {
-	Poco::Data::SQLite::Connector::registerConnector();
+#ifdef _DEBUG
+	session.swap(Session("SQLite", "C:\\Windows\\SysWOW64\\syncQLite.db"));
+#endif // _DEBUG
+
 	FileInputStream in(Utility::config("QZSyncWorker.json"));
 	object = extract<Object::Ptr>(in);
 	assert(object);
@@ -59,7 +74,7 @@ void QZSyncWorker::runTask()
 			std::string message(format("QZSyncWorker runTask Exception: %d, %s", e.code(), e.message()));
 			log(message);
 		}
-		
+
 	}
 }
 
@@ -68,43 +83,20 @@ bool QZSyncWorker::IsUSBKeyPresent()
 	return true;
 }
 
-void QZSyncWorker::composite()
+void QZSyncWorker::extractKeyInfo()
 {
-	Application& app = Application::instance();
+	typedef std::vector<Poco::AutoPtr<MediaBase>> SPVec;
+	typedef std::vector<Poco::AutoPtr<MediaBase>>::iterator SPIter;
+	SPVec media;
+	media.push_back(new FJCAMedia);
+	media.push_back(new SOFMedia);
 
-	typedef std::vector<Poco::AutoPtr<SealProvider>> SPVec;
-	typedef std::vector<Poco::AutoPtr<SealProvider>>::iterator SPIter;
-	SPVec oess;
-	oess.push_back(new OESSealProvider);
-	oess.push_back(new XSSealProvider);
-	oess.push_back(new KGSealProvider);
-	for (SPIter it = oess.begin(); it != oess.end(); it++)
-	{
-		try
+	for (SPIter it = media.begin(); it != media.end(); it++) {
+		try 
 		{
-			Poco::AutoPtr<SealProvider> ptr = *it;
-			assert(ptr);
-			ptr->extract();
-			ptr->FetchKeySN();
-			ptr->GeneratedMD5();
-			ptr->GeneratedCode();
-			
-
-			_name = ptr->getProperty("name");
-			_code = ptr->getProperty("code");
-			_validStart = ptr->getProperty("validStart");
-			_validEnd = ptr->getProperty("validEnd");
-			_keysn = ptr->getProperty("keysn");
-			_seals = ptr->getProperty("seals");
-			_md5 = ptr->getProperty("dataMD5");
-
-			std::string message;
-			message.append(format("name:%s,code%:%s \n", ptr->getProperty("name"), ptr->getProperty("code")));
-			message.append(format("validStart:%s,validEnd%:%s\n", ptr->getProperty("validStart"), ptr->getProperty("validEnd")));
-			message.append(format("keysn:%s,dataMD5%:%s\n", ptr->getProperty("keysn"), ptr->getProperty("dataMD5")));
-			message.append(format("seal -> \n%s", ptr->getProperty("seals")));
-			log(message);
-			
+			(*it)->extract();
+			_cert = (*it)->getProperty("cert");
+			_keysn = (*it)->getProperty("keysn");
 			break;
 		}
 		catch (Poco::Exception& e)
@@ -115,6 +107,71 @@ void QZSyncWorker::composite()
 	}
 }
 
+void QZSyncWorker::extractSealData()
+{
+	typedef std::vector<Poco::AutoPtr<SealProvider>> SPVec;
+	typedef std::vector<Poco::AutoPtr<SealProvider>>::iterator SPIter;
+	SPVec oess;
+	oess.push_back(new OESSealProvider);
+	oess.push_back(new XSSealProvider);
+	oess.push_back(new KGSealProvider);
+
+	for (SPIter it = oess.begin(); it != oess.end(); it++) {
+		try
+		{
+			(*it)->extract(_cert);
+			_name = (*it)->getProperty("name");
+			_validStart = (*it)->getProperty("validStart");
+			_validEnd = (*it)->getProperty("validEnd");
+			_seals = (*it)->getProperty("seals");
+
+			break;
+		}
+		catch (Poco::Exception& e)
+		{
+			std::string message(format("QZSyncWorker Composite Exception %[1]d : %[0]s", e.message(), e.code()));
+			log(message);
+		}
+	}
+}
+
+void QZSyncWorker::GeneratedMD5()
+{
+	MD5Engine md5;
+	DigestOutputStream ds(md5);
+	ds << _keysn
+		<< "&&"
+		<< _seals;
+	ds.close();
+
+	_md5 = DigestEngine::digestToHex(md5.digest());
+}
+
+void QZSyncWorker::GeneratedCode()
+{
+	UUIDGenerator& gen = UUIDGenerator::defaultGenerator();
+	UUID uuid = gen.createFromName(UUID::uri(), _keysn);
+	_code = uuid.toString();
+}
+
+
+void QZSyncWorker::composite()
+{
+	Application& app = Application::instance();
+
+	extractKeyInfo();
+	extractSealData();
+	GeneratedMD5();
+	GeneratedCode();
+
+	std::string message;
+	message.append(format("name:%s,code%:%s \n", _name, _code));
+	message.append(format("validStart:%s,validEnd%:%s\n", _validStart, _validEnd));
+	message.append(format("keysn:%s,dataMD5%:%s\n", _keysn, _md5));
+	message.append(format("seal -> \n%s", _seals));
+	log(message);
+}
+
 void QZSyncWorker::updateStatus()
 {
 	/// | Title		 |	T	|	F	|	T	|	F	|
@@ -122,13 +179,13 @@ void QZSyncWorker::updateStatus()
 	/// | sync		 |	1	|	0	|	1	|	0	|
 	///	| transfer   |	No	|	Yes	|	Yes	|	YES	|
 	/// | Final		 |		|	Y	|		|		|
-
+	///
+	///	SQLITE syntax:
+	/// CREATE TABLE syncSDMakeup (id integer primary key, keysn VARCHAR(32), md5value VARCHAR(32),
+	/// sync BOOLEAN DEFAULT 0, create_time datetime DEFAULT (datetime('now','localtime')), 
+	/// modify_time datetime DEFAULT (datetime('now','localtime'))
+	/// );
 	Application& app = Application::instance();
-#ifdef _DEBUG
-	Session session("SQLite", "C:\\Windows\\SysWOW64\\DeQLite.db");
-#else
-	Session session("SQLite", "DeQLite.db");
-#endif // _DEBUG
 
 	struct Makeup {
 		int id;
@@ -157,7 +214,7 @@ void QZSyncWorker::updateStatus()
 				sync,
 				now;
 
-			log(format("[insert SQL Statement :%s], keysn=%s, md5value=%s",insert.toString(), _keysn, _md5));
+			log(format("[insert SQL Statement :%s], keysn=%s, md5value=%s", insert.toString(), _keysn, _md5));
 
 			break;
 		}
@@ -178,18 +235,20 @@ void QZSyncWorker::updateStatus()
 	}
 }
 
-void QZSyncWorker::transfer()
+bool QZSyncWorker::checkFromServer()
 {
-	Application& app = Application::instance();
-	Object check; DynamicStruct ds = *object;
-	check.set("appcode",	ds["fmt"]["appcode"].toString());
-	check.set("keysn",		_keysn);
-	check.set("dataMD5",	_md5);
+	DynamicStruct ds = *object;
+
+	Object check;
+	check.set("appcode", ds["fmt"]["appcode"].toString());
+	check.set("keysn", _keysn);
+	check.set("dataMD5", _md5);
 
 	log(format("check : %s\n ", Var(check).convert<std::string>()));
 
 	std::string data = Var(check).convert<std::string>();
 	URI uri(ds["url"]["check"].toString());
+
 	HTTPRequest request(HTTPRequest::HTTP_POST, uri.getPath());
 	HTTPClientSession session(uri.getHost(), uri.getPort());
 	request.setContentLength((int)data.length());
@@ -201,42 +260,56 @@ void QZSyncWorker::transfer()
 
 	log(format("checking code:%s message:%s\n", res["code"].toString(), res["message"].toString()));
 
-	if (res["code"] == "0" || res["code"] == "7") { /// sync
-		ds["fmt"]["keysn"] = _keysn;
-		ds["fmt"]["dataMD5"] = _md5;
-		ds["fmt"]["username"] = _name;
-		ds["fmt"]["usercode"] = _code;
-		ds["fmt"]["validStart"] = _validStart;
-		ds["fmt"]["validEnd"] = _validEnd;
-		ds["fmt"]["seals"] = _seals;
+	if (res["code"] == "1" || res["code"] == "6")
+		setSync(_keysn);
 
-		std::string data = ds["fmt"].toString();
-		URI uri(ds["url"]["sync"].toString());
-		HTTPRequest request(HTTPRequest::HTTP_POST, uri.getPath());
-		HTTPClientSession session(uri.getHost(), uri.getPort());
-		request.setContentLength((int)data.length());
-		session.sendRequest(request) << data;
+	return (res["code"] == "0" || res["code"] == "7");
+}
 
-		HTTPResponse response;
-		std::istream& out = session.receiveResponse(response);
-		DynamicStruct res = *extract<Object::Ptr>(out);
-		log(format("transfer code:%s message:%s\n", res["code"].toString(), res["message"].toString()));
+void QZSyncWorker::sendToServer()
+{
+	DynamicStruct ds = *object;
+
+	ds["fmt"]["keysn"] = _keysn;
+	ds["fmt"]["dataMD5"] = _md5;
+	ds["fmt"]["username"] = _name;
+	ds["fmt"]["usercode"] = _code;
+	ds["fmt"]["validStart"] = _validStart;
+	ds["fmt"]["validEnd"] = _validEnd;
+	ds["fmt"]["seals"] = _seals;
+
+	std::string data = ds["fmt"].toString();
+	URI uri(ds["url"]["sync"].toString());
+	HTTPRequest request(HTTPRequest::HTTP_POST, uri.getPath());
+	HTTPClientSession session(uri.getHost(), uri.getPort());
+	request.setContentLength((int)data.length());
+	session.sendRequest(request) << data;
+
+	HTTPResponse response;
+	std::istream& out = session.receiveResponse(response);
+	DynamicStruct res = *extract<Object::Ptr>(out);
+	//log(format("transfer code:%s message:%s\n", res["code"].toString(), res["message"].toString()));
+
+	if (res["code"] != "0" && res["code"] != "10")
+		throw Poco::LogicException("transfer failed!", res.toString());
+}
+
+void QZSyncWorker::transfer()
+{
+	if (checkFromServer())
+	{
+		sendToServer();
+		setSync(_keysn);
 	}
-	setSync(_keysn);
 }
 
 void QZSyncWorker::setSync(std::string& keysn, bool flag)
 {
 	Application& app = Application::instance();
-#ifdef _DEBUG
-	Poco::Data::Session session("SQLite", "C:\\Windows\\SysWOW64\\DeQLite.db");
-#else
-	Poco::Data::Session session("SQLite", "DeQLite.db");
-#endif // _DEBUG
 
 	Statement select(session);
 	select << "UPDATE syncSDMakeup set sync = ? WHERE keysn = ?;",
-		use(flag),use(keysn), range(0, 1), sync, now;
+		use(flag), use(keysn), range(0, 1), sync, now;
 
 	log(format("[setSync SQL Statement :%s] keysn=%s, sync=%b", select.toString(), keysn, flag));
 }
@@ -257,4 +330,5 @@ void QZSyncWorker::log(const std::string& message)
 		<< std::endl << std::endl;
 
 	poco_information(app.logger(), ostr.str());
+	OutputDebugStringA(Utility::UTF8EncodingGBK(ostr.str()).c_str());
 }

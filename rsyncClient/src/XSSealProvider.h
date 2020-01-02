@@ -11,7 +11,7 @@ namespace Reach {
 	public:
 		XSSealProvider();
 		~XSSealProvider();
-		virtual void extract();
+		virtual void extract(const std::string& cert);
 	protected:
 		void readSeal();
 		void count();

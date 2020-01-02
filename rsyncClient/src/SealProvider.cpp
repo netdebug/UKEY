@@ -25,7 +25,6 @@ using namespace Reach::ActiveX;
 
 SealProvider::SealProvider()
 {
-	GetContainerId();
 }
 
 
@@ -44,10 +43,6 @@ void SealProvider::setProperty(const std::string& name, const std::string& value
 	{
 		_name = value;
 	}
-	else if (name == "code")
-	{
-		_code = value;
-	}
 	else if (name == "validStart")
 	{
 		_validStart = value;
@@ -56,21 +51,9 @@ void SealProvider::setProperty(const std::string& name, const std::string& value
 	{
 		_validEnd = value;
 	}
-	else if (name == "keysn")
-	{
-		_keysn = value;
-	}
 	else if (name == "seals")
 	{
 		_seals = value;
-	}
-	else if (name == "dataMD5")
-	{
-		_md5 = value;
-	}
-	else if (name == "cert")
-	{
-		_cert = value;
 	}
 	else
 		throw Poco::PropertyNotSupportedException(name);
@@ -86,10 +69,6 @@ std::string SealProvider::getProperty(const std::string& name) const
 	{
 		return _name;
 	}
-	else if (name == "code")
-	{
-		return _code;
-	}
 	else if (name == "validStart")
 	{
 		return _validStart;
@@ -98,44 +77,12 @@ std::string SealProvider::getProperty(const std::string& name) const
 	{
 		return _validEnd;
 	}
-	else if (name == "keysn")
-	{
-		return _keysn;
-	}
 	else if (name == "seals")
 	{
 		return _seals;
 	}
-	else if (name == "dataMD5")
-	{
-		return _md5;
-	}
-	else if (name == "cert")
-	{
-		return _cert;
-	}
 	else
 		throw Poco::PropertyNotSupportedException(name);
-}
-
-void SealProvider::GeneratedMD5()
-{
-	MD5Engine md5;
-	DigestOutputStream ds(md5);
-	ds << _keysn
-		<< "&&"
-		<< _md5;
-	ds.close();
-
-	std::string digest = DigestEngine::digestToHex(md5.digest());
-	setProperty("dataMD5", digest);
-}
-
-void SealProvider::GeneratedCode()
-{
-	UUIDGenerator& gen = UUIDGenerator::defaultGenerator();
-	UUID uuid = gen.createFromName(UUID::uri(), _keysn);
-	setProperty("code", uuid.toString());
 }
 
 void SealProvider::PeriodOfValidity()
@@ -154,39 +101,6 @@ void SealProvider::PeriodOfValidity()
 	setProperty("validEnd", validEnd);
 }
 
-void SealProvider::GetContainerId()
-{
-	std::string result = Utility::SuperRequest("/RS_GetUserList", "");
-	assert(!result.empty());
-
-	JSON_PARSE(result);
-
-	if (ds["code"] != "0000")
-		handleLastError(result);
-
-	_uid = Utility::formatUid(result);
-}
-
-void SealProvider::FetchKeySN()
-{
-	assert(!_uid.empty());
-
-	HTMLForm params;
-	params.set("containerId", _uid);
-
-	std::ostringstream body;
-	params.write(body);
-	std::string result = Utility::SuperRequest("/RS_KeyGetKeySn", body.str());
-	assert(!result.empty());
-
-	JSON_PARSE(result);
-
-	if (ds["code"] != "0000")
-		handleLastError(result);
-
-	setProperty("keysn", ds["data"]["keySn"].toString());
-}
-
 void SealProvider::handleLastError(const std::string& result)
 {
 	JSON_PARSE(result);
@@ -197,23 +111,4 @@ void SealProvider::handleLastError(const std::string& result)
 	default:
 		throw Poco::UnhandledException("UnhandledException", getProperty("Provider"), code);
 	}
-}
-
-void SealProvider::GetCertBase64String()
-{
-	HTMLForm params;
-	params.set("containerId", _uid);
-	params.set("certType", _encType);
-
-	std::ostringstream body;
-	params.write(body);
-	std::string result = Utility::SuperRequest("/RS_GetCertBase64String", body.str());
-	assert(!result.empty());
-	JSON_PARSE(result);
-
-	if (ds["code"] != "0000")
-		handleLastError(result);
-
-	std::string cert = ds["data"]["certBase64"].toString();
-	setProperty("cert", cert);
 }

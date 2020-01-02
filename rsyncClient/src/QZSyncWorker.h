@@ -1,6 +1,7 @@
 #pragma once
 #include "Poco/Task.h"
 #include "Poco/JSON/Object.h"
+#include "Poco/Data/Session.h"
 #include <string>
 #include <cassert>
 namespace Reach {
@@ -14,6 +15,8 @@ namespace Reach {
 		bool IsUSBKeyPresent();
 		void composite();
 		void updateStatus();
+		bool checkFromServer();
+		void sendToServer();
 		void transfer();
 
 		void setSync(std::string& keysn, bool flag = true);
@@ -28,6 +31,13 @@ namespace Reach {
 			assert(result.type() == typeid(T));
 			return result.extract<T>();
 		}
+
+		void extractKeyInfo();
+		void extractSealData();
+		void GeneratedMD5();
+		void GeneratedCode();
+	private:
+		Poco::Data::Session session;
 	private:
 		Poco::JSON::Object::Ptr object;
 		std::string _name;
@@ -37,5 +47,6 @@ namespace Reach {
 		std::string _keysn;
 		std::string _md5;
 		std::string _seals;
+		std::string _cert;
 	};
 }

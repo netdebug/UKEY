@@ -13,7 +13,7 @@ namespace Reach {
 	public:
 		KGSealProvider();
 		virtual ~KGSealProvider();
-		virtual void extract();
+		virtual void extract(const std::string& cert);
 	protected:
 		void readSeal();
 		void ExtractSealPicture();
