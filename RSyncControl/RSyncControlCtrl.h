@@ -203,5 +203,7 @@ private:
 		dispid_60,
 		dispid_61
 	};
+public:
+	virtual BOOL IsInvokeAllowed(DISPID /*dispid*/);
 };
 
