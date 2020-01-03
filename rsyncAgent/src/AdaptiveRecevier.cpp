@@ -12,7 +12,7 @@
 #include <vector>
 #include "Reach/Data/SOF/Connector.h"
 #include "Reach/Data/FJCA/Connector.h"
-#include "routes/Utility.h"
+#include "Utility.h"
 
 using namespace Reach;
 using Poco::FastMutex;

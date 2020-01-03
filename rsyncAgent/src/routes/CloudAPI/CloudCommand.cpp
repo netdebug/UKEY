@@ -4,7 +4,7 @@
 #include "Poco/DynamicStruct.h"
 #include "Poco/Dynamic/Var.h"
 #include <cassert>
-#include "../Utility.h"
+#include "../src/Utility.h"
 
 using namespace Reach;
 using Poco::Util::Application;

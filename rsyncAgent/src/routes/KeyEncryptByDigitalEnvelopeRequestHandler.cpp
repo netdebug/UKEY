@@ -1,7 +1,7 @@
 #include "KeyEncryptByDigitalEnvelopeRequestHandler.h"
 #include "RequestHandleException.h"
 #include "Poco/File.h"
-#include "Utility.h"
+#include "../Utility.h"
 
 using namespace Reach;
 

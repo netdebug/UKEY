@@ -4,7 +4,6 @@
 #include "Poco/Random.h"
 #include "Poco/DateTimeFormatter.h"
 #include "Poco/LocalDateTime.h"
-#include "../Utility.h"
 #include "../Command.h"
 #include "../RESTfulRequestHandler.h"
 

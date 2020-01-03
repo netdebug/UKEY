@@ -1,7 +1,7 @@
 #include "DecryptFileRequestHandler.h"
 #include "RequestHandleException.h"
 #include "ErrorCode.h"
-#include "Utility.h"
+#include "../Utility.h"
 #include "Poco/FileStream.h"
 #include "Poco/Crypto/CipherFactory.h"
 #include "Poco/Crypto/CipherKey.h"

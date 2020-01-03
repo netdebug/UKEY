@@ -7,7 +7,7 @@
 #include "Poco/DynamicStruct.h"
 #include "Poco/JSON/Object.h"
 #include "Poco/FileStream.h"
-#include "../Utility.h"
+#include "../src/Utility.h"
 #include "../Command.h"
 #include "../RESTfulRequestHandler.h"
 #include "CloudCommand.h"

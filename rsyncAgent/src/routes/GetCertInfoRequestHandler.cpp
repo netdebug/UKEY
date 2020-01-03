@@ -1,7 +1,7 @@
 #include "GetCertInfoRequestHandler.h"
 #include "RequestHandleException.h"
 #include "Reach/Data/Session.h"
-#include "Utility.h"
+#include "../Utility.h"
 #include "Poco/Crypto/X509Certificate.h"
 #include "Poco/String.h"
 #include "Poco/DateTimeFormatter.h"

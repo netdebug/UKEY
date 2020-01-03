@@ -1,7 +1,7 @@
 #include "KeyEncryptDataRequestHandler.h"
 #include "RequestHandleException.h"
 #include "Reach/Data/Session.h"
-#include "Utility.h"
+#include "../Utility.h"
 
 using namespace Reach;
 using Reach::Data::Session;

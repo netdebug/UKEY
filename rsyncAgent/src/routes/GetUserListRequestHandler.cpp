@@ -3,7 +3,7 @@
 #include "Reach/Data/Session.h"
 #include "Reach/Data/DataException.h"
 #include "ErrorCode.h"
-#include "Utility.h"
+#include "../Utility.h"
 
 using namespace Reach;
 using Reach::Data::Session;

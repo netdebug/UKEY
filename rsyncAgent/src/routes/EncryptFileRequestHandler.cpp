@@ -10,7 +10,7 @@
 #include "Poco/Base64Encoder.h"
 #include "Poco/StreamCopier.h"
 #include "Poco/String.h"
-#include "Utility.h"
+#include "../Utility.h"
 #include <cassert>
 
 using namespace Reach;

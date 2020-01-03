@@ -8,7 +8,7 @@
 #include "Poco/Crypto/X509Certificate.h"
 #include "Poco/Net/HTTPClientSession.h"
 #include "Poco/StreamCopier.h"
-#include "Utility.h"
+#include "../Utility.h"
 #include <string>
 #include <cassert>
 
