@@ -4,6 +4,7 @@
 #include "KG_HARD_EXT.h"
 #include <iostream>
 #include <cassert>
+#include "Poco/Exception.h"
 
 using namespace Reach;
 
@@ -21,6 +22,7 @@ BridgeKG_HARD_EXT::BridgeKG_HARD_EXT()
 		(void**)&_ext);
 
 	assert(SUCCEEDED(hr));
+	if (!_ext) throw Poco::ApplicationException("BridgeKG_HARD_EXT", "CoCreateInstance Failed!");
 }
 
 void BridgeKG_HARD_EXT::WebConnectDev()
@@ -29,7 +31,8 @@ void BridgeKG_HARD_EXT::WebConnectDev()
 	long ret;
 
 	hr = _ext->WebConnectDev(0, &ret);
-	assert(SUCCEEDED(hr) && !ret);
+	assert(SUCCEEDED(hr));
+	if (!ret) throw Poco::ApplicationException("BridgeKG_HARD_EXT", "WebConnectDev Failed!");
 }
 
 const std::string BridgeKG_HARD_EXT::WebGetSerial()

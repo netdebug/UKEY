@@ -15,15 +15,11 @@ namespace Reach {
 		void setProperty(const std::string& name, const std::string& value);
 		std::string getProperty(const std::string& name) const;
 	protected:
-		virtual void PeriodOfValidity();
 		virtual void handleLastError(const std::string& result);
 	private:
 		std::string _name;
-		std::string _validStart;
-		std::string _validEnd;
 		std::string _keysn;
 		std::string _seals;
-		std::string _cert;
 		std::string _uid;
 		std::string _Provider;
 		const std::string _encType = "2";

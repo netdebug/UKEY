@@ -42,10 +42,6 @@ QZSyncWorker::QZSyncWorker()
 	:Task("QZSyncWorker"),
 	session("SQLite", "syncQLite.db")
 {
-#ifdef _DEBUG
-	session.swap(Session("SQLite", "C:\\Windows\\SysWOW64\\syncQLite.db"));
-#endif // _DEBUG
-
 	FileInputStream in(Utility::config("QZSyncWorker.json"));
 	object = extract<Object::Ptr>(in);
 	assert(object);
@@ -97,6 +93,8 @@ void QZSyncWorker::extractKeyInfo()
 			(*it)->extract();
 			_cert = (*it)->getProperty("cert");
 			_keysn = (*it)->getProperty("keysn");
+			_validStart = (*it)->getProperty("validStart");
+			_validEnd = (*it)->getProperty("validEnd");
 			break;
 		}
 		catch (Poco::Exception& e)
@@ -121,8 +119,6 @@ void QZSyncWorker::extractSealData()
 		{
 			(*it)->extract(_cert);
 			_name = (*it)->getProperty("name");
-			_validStart = (*it)->getProperty("validStart");
-			_validEnd = (*it)->getProperty("validEnd");
 			_seals = (*it)->getProperty("seals");
 
 			break;

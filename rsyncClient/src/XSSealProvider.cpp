@@ -35,7 +35,6 @@ XSSealProvider::~XSSealProvider()
 
 void XSSealProvider::extract(const std::string& cert)
 {
-	setProperty("cert", cert);
 	readSeal();
 	ExtractSealPicture();
 }

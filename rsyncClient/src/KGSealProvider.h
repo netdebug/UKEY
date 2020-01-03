@@ -1,7 +1,6 @@
 #pragma once
 #include <string>
 #include "SealProvider.h"
-#include "Poco/Util/Application.h"
 
 class CDKG_GetKeyInfo_FJRS;
 

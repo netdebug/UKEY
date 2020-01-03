@@ -1,15 +1,12 @@
 #include "stdafx.h"
 #include "CDKG_GetKeyInfo_FJRS.h"
 #include "KGSealProvider.h"
-#include "Utility.h"
-#include "Poco/Net/HTMLForm.h"
 #include <cassert>
+#include "Utility.h"
 
 using namespace Reach;
 using namespace Reach::ActiveX;
 
-using Poco::Net::HTMLForm;
-using Poco::Util::Application;
 using Poco::Dynamic::Var;
 using Poco::DynamicStruct;
 // MIDL Compiler
@@ -42,7 +39,6 @@ KGSealProvider::~KGSealProvider()
 
 void KGSealProvider::extract(const std::string& cert)
 {
-	setProperty("cert", cert);
 	readSeal();
 	ExtractSealPicture();
 }

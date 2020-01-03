@@ -26,6 +26,7 @@ void FJCAMedia::extract()
 {
 	FetchKeySN();
 	GetCertBase64String();
+	CertValidity();
 }
 
 void FJCAMedia::GetCertBase64String()
