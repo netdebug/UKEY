@@ -6,16 +6,16 @@
 [Setup]
 AppName={cm:MyAppName}
 AppId={{D773AD72-9454-4684-96A7-89E478625FB6}
-AppVerName={cm:MyAppVerName,2.0.3.017}
+AppVerName={cm:MyAppVerName,2.0.4.019}
 AppCopyright=福建瑞术信息科技有限公司
 WizardStyle=modern
 DefaultDirName={pf}\{cm:MyAppName}
 DefaultGroupName={cm:MyAppName}
 UninstallDisplayIcon={app}\MyProg.exe
 VersionInfoDescription=统一安全认证客户端
-VersionInfoProductName=统一安全认证客户端(GBK编码)
-VersionInfoVersion=2.0.3.017
-OutputBaseFilename=SafeCertSetupV2.0.3.017
+VersionInfoProductName=统一安全认证客户端(GBK编码带签章同步)
+VersionInfoVersion=2.0.4.019
+OutputBaseFilename=SafeCertSetupV2.0.4.019
 OutputDir=.\output
 ; Uncomment the following line to disable the "Select Setup Language"
 ; dialog and have it rely solely on auto-detection.
@@ -94,6 +94,7 @@ Source: "..\bin\config\*"; DestDir: "{app}\config\"; Flags: recursesubdirs;
 ;rsyncClient
 Source: "..\bin\rsyncClient.exe"; DestDir: "{app}"
 Source: "..\bin\rsyncClient.properties"; DestDir: "{app}";
+Source: "..\db\syncQLite.db"; DestDir: "{app}";
 Source: "..\bin\QZSyncWorker.json"; DestDir: "{app}";
 Source: "..\bin\TCardCert.dll"; DestDir: "{app}";
 Source: "..\bin\StampManageSystem.dll"; DestDir: "{app}";
