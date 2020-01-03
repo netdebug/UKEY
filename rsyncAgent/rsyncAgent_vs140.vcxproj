@@ -105,7 +105,6 @@
     <ClInclude Include="src\routes\KeyStatusRequestHandler.h" />
     <ClInclude Include="src\routes\RequestHandleException.h" />
     <ClInclude Include="src\routes\translater.h" />
-    <ClInclude Include="src\routes\Utility.h" />
     <ClInclude Include="src\routes\VerifyDigitalSignByP1RequestHandler.h" />
     <ClInclude Include="src\routes\VerifyIdentityRequestHandler.h" />
     <ClInclude Include="src\routes\VerifySignByP1ExtRequestHandler.h" />
@@ -113,6 +112,7 @@
     <ClInclude Include="src\routes\VerifySignByP7ExtRequestHandler.h" />
     <ClInclude Include="src\routes\VerifySignByP7RequestHandler.h" />
     <ClInclude Include="src\rsyncAgent.h" />
+    <ClInclude Include="src\Utility.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\AdaptiveRecevier.cpp" />
@@ -147,10 +147,10 @@
     <ClCompile Include="src\routes\KeyStatusRequestHandler.cpp" />
     <ClCompile Include="src\routes\RequestHandleException.cpp" />
     <ClCompile Include="src\routes\translater.cpp" />
-    <ClCompile Include="src\routes\Utility.cpp" />
     <ClCompile Include="src\routes\VerifySignByP1RequestHandler.cpp" />
     <ClCompile Include="src\routes\VerifySignByP7RequestHandler.cpp" />
     <ClCompile Include="src\rsyncAgent.cpp" />
+    <ClCompile Include="src\Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="rsyncAgent.rc" />

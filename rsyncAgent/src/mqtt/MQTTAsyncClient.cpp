@@ -36,6 +36,7 @@ MQTTAsyncClient::MQTTAsyncClient(bool useSSL)
 	deviceId = UUIDGenerator::defaultGenerator().create().toString();
 	clientIdUrl = Poco::format("%s@@@%s", groupId, deviceId);
 	
+	Application::instance().config().setString("clientId", deviceId);
 	//setConfigParameters();
 	int rc = 0;
 	if (rc = MQTTAsync_createWithOptions(&client, serverURI.data(),
@@ -106,24 +107,14 @@ void MQTTAsyncClient::connectOpts()
 
 void MQTTAsyncClient::deliveryComplete(void* context, token token)
 {
-#ifdef OCX
-	Poco::Debugger::message("send message %d success\n");
-#else
-	Application& app = Application::instance();
-	poco_information_f1(app.logger(), "send message %d success\n", token);
-#endif // OCX
-
+	Poco::Debugger::message(format("send message %d success\n", token));
 }
 
 int MQTTAsyncClient::messageArrived(void* context, char* topicName, int topicLen, message* msg)
 {
 	std::string topic(topicName, topicLen);
 	std::string message((char*)msg->payload, msg->payloadlen);
-
 	Poco::Debugger::message(format("recv message from: %s, body is %s", topic, message));
-#ifdef NDEBUG
-	OutputDebugStringA(format("recv message from: %s, body is %s\n", topic, message).c_str());
-#endif // OCX
 
 	NotificationCenter::defaultCenter().postNotification(new MQTTNotification(message));
 	MQTTAsync_freeMessage(&msg);
@@ -134,39 +125,23 @@ int MQTTAsyncClient::messageArrived(void* context, char* topicName, int topicLen
 void MQTTAsyncClient::connectionLost(void* context, char* cause)
 {
 	connected = false;
-#ifdef OCX
 	Poco::Debugger::message("connect lost \n");
-#else
-	Application& app = Application::instance();
-	poco_information(app.logger(), "connect lost \n");
-#endif // OCX
 }
 
 void MQTTAsyncClient::onSuccess(void* context, successData* response)
 {
 	connected = true;
-#ifdef OCX
+
 	Poco::Debugger::message("connect success \n");
-#else
-	Application& app = Application::instance();
-	poco_information(app.logger(), "connect success \n");
-#endif // OCX
 }
 
 void MQTTAsyncClient::onFailure(void* context, failureData* response)
 {
 	connected = false;
-#ifdef OCX
+
 	Poco::Debugger::message(format("connect failed, rc %d, message:%s\n",
 		response ? response->code : -1,
 		response->message));
-#else
-	Application& app = Application::instance();
-	poco_information_f2(app.logger(),
-		"connect failed, rc %d, message:%s\n",
-		response ? response->code : -1,
-		response->message);
-#endif // OCX
 }
 
 void MQTTAsyncClient::connect(const char* user, const char* password, bool useSSL, int keepAliveInterval = 60)
@@ -177,12 +152,7 @@ void MQTTAsyncClient::connect(const char* user, const char* password, bool useSS
 
 	int rc = 0;
 	if ((rc = MQTTAsync_connect(client, &conn_opts)) != MQTTASYNC_SUCCESS) {
-#ifdef OCX
-	Poco::Debugger::message(format("MQTT Failed to start connect, return code %d\n", rc));
-#else
-	Application& app = Application::instance();
-	poco_information_f1(app.logger(), "Failed to start connect, return code %d\n", rc);
-#endif // OCX
+		Poco::Debugger::message(format("MQTT Failed to start connect, return code %d\n", rc));
 		throw Poco::Exception("MQTT Failed to start connect, return code %d\n");
 	}
 }
@@ -237,14 +207,3 @@ std::string MQTTAsyncClient::generatorUsername(const std::string& accessKey, con
 	name.swap(Poco::format("Signature|%s|%s", accessKey, instanceId));
 	return name;
 }
-
-//void Reach::MQTTAsyncClient::setConfigParameters()
-//{
-//	HTMLForm params;
-//	params.set("cmd", "clientId");
-//	params.set("val", deviceId);
-//
-//	std::ostringstream body;
-//	params.write(body);
-//	std::string result = Utility::SuperRequest("/RS_ConfigParameters", body.str());
-//}

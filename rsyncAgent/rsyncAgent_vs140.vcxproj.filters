@@ -137,9 +137,6 @@
     <ClInclude Include="src\GMCrypto.h">
       <Filter>Core\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\routes\Utility.h">
-      <Filter>RequestHandler</Filter>
-    </ClInclude>
     <ClInclude Include="src\routes\RequestHandleException.h">
       <Filter>RequestHandler\Command</Filter>
     </ClInclude>
@@ -311,6 +308,9 @@
     <ClInclude Include="src\mqtt\MQTTNotification.h">
       <Filter>Core\mqtt</Filter>
     </ClInclude>
+    <ClInclude Include="src\Utility.h">
+      <Filter>Core\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\RequestHandlerFactory.cpp">
@@ -324,9 +324,6 @@
     </ClCompile>
     <ClCompile Include="src\routes\Command.cpp">
       <Filter>RequestHandler\Command</Filter>
-    </ClCompile>
-    <ClCompile Include="src\routes\Utility.cpp">
-      <Filter>RequestHandler</Filter>
     </ClCompile>
     <ClCompile Include="src\routes\RequestHandleException.cpp">
       <Filter>RequestHandler\Command</Filter>
@@ -420,6 +417,9 @@
     </ClCompile>
     <ClCompile Include="src\mqtt\MQTTNotification.cpp">
       <Filter>Core\mqtt</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Utility.cpp">
+      <Filter>Core\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
