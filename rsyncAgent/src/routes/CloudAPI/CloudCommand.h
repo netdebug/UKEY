@@ -2,7 +2,6 @@
 #include "Poco/JSON/Parser.h"
 #include "Poco/Dynamic/Var.h"
 
-#include "../Command.h"
 namespace Reach {
 
 	class CloudCommand :
