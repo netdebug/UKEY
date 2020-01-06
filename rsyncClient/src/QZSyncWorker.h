@@ -2,6 +2,7 @@
 #include "Poco/Task.h"
 #include "Poco/JSON/Object.h"
 #include "Poco/Data/Session.h"
+#include "Poco/Mutex.h"
 #include <string>
 #include <cassert>
 namespace Reach {
@@ -36,6 +37,7 @@ namespace Reach {
 		void extractSealData();
 		void GeneratedMD5();
 		void GeneratedCode();
+		void clear();
 	private:
 		Poco::Data::Session session;
 	private:
@@ -48,5 +50,7 @@ namespace Reach {
 		std::string _md5;
 		std::string _seals;
 		std::string _cert;
+
+		Poco::FastMutex _mutex;
 	};
 }

@@ -60,6 +60,7 @@ void QZSyncWorker::runTask()
 		try
 		{
 			if (IsUSBKeyPresent()) {
+				clear();
 				composite();
 				updateStatus();
 				transfer();
@@ -87,6 +88,8 @@ void QZSyncWorker::extractKeyInfo()
 	media.push_back(new FJCAMedia);
 	media.push_back(new SOFMedia);
 
+	Poco::FastMutex::ScopedLock loc(_mutex);
+
 	for (SPIter it = media.begin(); it != media.end(); it++) {
 		try 
 		{
@@ -113,6 +116,8 @@ void QZSyncWorker::extractSealData()
 	oess.push_back(new OESSealProvider);
 	oess.push_back(new XSSealProvider);
 	oess.push_back(new KGSealProvider);
+
+	Poco::FastMutex::ScopedLock loc(_mutex);
 
 	for (SPIter it = oess.begin(); it != oess.end(); it++) {
 		try
@@ -150,6 +155,17 @@ void QZSyncWorker::GeneratedCode()
 	_code = uuid.toString();
 }
 
+void QZSyncWorker::clear()
+{
+	_name.clear();
+	_code.clear();
+	_validStart.clear();
+	_validEnd.clear();
+	_keysn.clear();
+	_md5.clear();
+	_seals.clear();
+	_cert.clear();
+}
 
 void QZSyncWorker::composite()
 {
@@ -157,6 +173,10 @@ void QZSyncWorker::composite()
 
 	extractKeyInfo();
 	extractSealData();
+
+	if (_seals.empty())
+		throw Poco::CircularReferenceException("Can not read seal data!","composite");
+
 	GeneratedMD5();
 	GeneratedCode();
 
