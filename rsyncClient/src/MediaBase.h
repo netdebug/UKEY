@@ -19,6 +19,7 @@ namespace Reach {
 		virtual void GetCertBase64String();
 		virtual void CertValidity();
 		virtual void FetchKeySN();
+		virtual void GetImgAreaFromDN();
 		virtual void handleLastError(const std::string& result);
 	private:
 		void GetContainerId();
@@ -27,6 +28,7 @@ namespace Reach {
 		std::string _cert;
 		std::string _validStart;
 		std::string _validEnd;
+		std::string _imgArea;
 
 		std::string _uid;
 		std::string _Provider;

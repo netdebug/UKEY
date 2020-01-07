@@ -27,6 +27,7 @@ void FJCAMedia::extract()
 	FetchKeySN();
 	GetCertBase64String();
 	CertValidity();
+	GetImgAreaFromDN();
 }
 
 void FJCAMedia::GetCertBase64String()

@@ -18,4 +18,5 @@ void SOFMedia::extract()
 	FetchKeySN();
 	GetCertBase64String();
 	CertValidity();
+	GetImgAreaFromDN();
 }

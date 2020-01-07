@@ -43,6 +43,10 @@ void MediaBase::setProperty(const std::string& name, const std::string& value)
 	{
 		_validEnd = value;
 	}
+	else if (name == "imgArea")
+	{
+		_imgArea = value;
+	}
 	else
 		throw Poco::PropertyNotSupportedException(name);
 }
@@ -68,6 +72,10 @@ std::string MediaBase::getProperty(const std::string& name) const
 	else if (name == "validEnd")
 	{
 		return _validEnd;
+	}
+	else if (name == "imgArea")
+	{
+		return _imgArea;
 	}
 	else
 		throw Poco::PropertyNotSupportedException(name);
@@ -109,6 +117,21 @@ void MediaBase::CertValidity()
 	/// 证书有效期时间
 	setProperty("validStart", validStart);
 	setProperty("validEnd", validEnd);
+}
+
+void MediaBase::GetImgAreaFromDN()
+{
+	std::stringstream ss;
+	ss << "-----BEGIN CERTIFICATE-----\n"
+		<< _cert
+		<< "\n-----END CERTIFICATE-----\n";
+
+	X509Certificate cert(ss);
+
+	std::string issuer = cert.issuerName();
+
+	//_imgArea 通过搜索表格获取地区号编码，周鹏提供表
+	setProperty("imgArea", "");
 }
 
 void MediaBase::FetchKeySN()
