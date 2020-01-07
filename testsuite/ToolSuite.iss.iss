@@ -6,7 +6,7 @@
 [Setup]
 AppName={cm:MyAppName}
 AppId={{D773AD72-9454-4684-96A7-89E478625FB6}
-AppVerName={cm:MyAppVerName,2.0.4.019}
+AppVerName={cm:MyAppVerName,2.0.4.021}
 AppCopyright=福建瑞术信息科技有限公司
 WizardStyle=modern
 DefaultDirName={pf}\{cm:MyAppName}
@@ -14,8 +14,8 @@ DefaultGroupName={cm:MyAppName}
 UninstallDisplayIcon={app}\MyProg.exe
 VersionInfoDescription=统一安全认证客户端
 VersionInfoProductName=统一安全认证客户端(GBK编码带签章同步)
-VersionInfoVersion=2.0.4.019
-OutputBaseFilename=SafeCertSetupV2.0.4.019
+VersionInfoVersion=2.0.4.021
+OutputBaseFilename=SafeCertSetupV2.0.4.021
 OutputDir=.\output
 ; Uncomment the following line to disable the "Select Setup Language"
 ; dialog and have it rely solely on auto-detection.
@@ -144,6 +144,7 @@ Filename: "{app}\Driver\UKey20079_User_Silent_x64 _5.1.2019.9111_NoTool.exe";
 Filename: "{app}\Driver\NETCA_Crypto.exe"; Parameters:" /sp- /VERYSILENT /norestart ";
 Filename: "{app}\Driver\NETCA_Devices(ES).exe"; Parameters:" /sp- /VERYSILENT /norestart ";
 Filename: "{app}\Driver\USK218CSP(BJCA).exe"; Parameters:" /verysilent /suppressmsgboxes /norestart /DETACHEDMSG ";
+Filename: "{app}\Driver\GdcaSKFCSP_Setup.exe"; Parameters:" /verysilent /norestart  ";
 ;
 Filename: "{app}\clearlnk.bat";
 
