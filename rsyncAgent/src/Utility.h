@@ -2,9 +2,18 @@
 #include <string>
 #include "Reach/Data/Session.h"
 #include "Reach/Data/SessionContainer.h"
+#include "Poco/DynamicStruct.h"
 
 using Reach::Data::Session;
 using Reach::Data::SessionContainer;
+
+#define JSON_PARSE(DATA) \
+	Poco::JSON::Parser ps;														\
+	Poco::Dynamic::Var res = ps.parse(DATA);									\
+	assert(res.type() == typeid(Poco::JSON::Object::Ptr));						\
+	Poco::JSON::Object::Ptr object = res.extract<Poco::JSON::Object::Ptr>();	\
+	assert(object);																\
+	Poco::DynamicStruct ds = *object;
 
 namespace Reach {
 

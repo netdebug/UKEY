@@ -112,6 +112,7 @@
     <ClInclude Include="src\routes\VerifySignByP7ExtRequestHandler.h" />
     <ClInclude Include="src\routes\VerifySignByP7RequestHandler.h" />
     <ClInclude Include="src\rsyncAgent.h" />
+    <ClInclude Include="src\TokenManager.h" />
     <ClInclude Include="src\Utility.h" />
   </ItemGroup>
   <ItemGroup>
@@ -150,6 +151,7 @@
     <ClCompile Include="src\routes\VerifySignByP1RequestHandler.cpp" />
     <ClCompile Include="src\routes\VerifySignByP7RequestHandler.cpp" />
     <ClCompile Include="src\rsyncAgent.cpp" />
+    <ClCompile Include="src\TokenManager.cpp" />
     <ClCompile Include="src\Utility.cpp" />
   </ItemGroup>
   <ItemGroup>

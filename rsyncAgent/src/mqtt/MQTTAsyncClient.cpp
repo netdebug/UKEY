@@ -13,6 +13,7 @@
 #include <cassert>
 #include "Poco/UUIDGenerator.h"
 #include "Poco/Net/HTMLForm.h"
+#include "../TokenManager.h"
 #include "../Utility.h"
 
 using namespace Reach;
@@ -115,8 +116,14 @@ int MQTTAsyncClient::messageArrived(void* context, char* topicName, int topicLen
 	std::string topic(topicName, topicLen);
 	std::string message((char*)msg->payload, msg->payloadlen);
 	Poco::Debugger::message(format("recv message from: %s, body is %s", topic, message));
+	
+	JSON_PARSE(message);
 
-	NotificationCenter::defaultCenter().postNotification(new MQTTNotification(message));
+	poco_assert((ds["code"] == "0000") && ds.contains("data"));
+	if (ds["code"] == "0000" && ds.contains("data")) {
+		TokenManager::default().add(ds["data"]["transid"], ds["data"]);
+	}
+
 	MQTTAsync_freeMessage(&msg);
 	MQTTAsync_free(topicName);
 	return 1;

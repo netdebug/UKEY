@@ -311,6 +311,9 @@
     <ClInclude Include="src\Utility.h">
       <Filter>Core\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\TokenManager.h">
+      <Filter>Core\mqtt</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\RequestHandlerFactory.cpp">
@@ -419,6 +422,9 @@
       <Filter>Core\mqtt</Filter>
     </ClCompile>
     <ClCompile Include="src\Utility.cpp">
+      <Filter>Core\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TokenManager.cpp">
       <Filter>Core\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
