@@ -64,5 +64,11 @@
     "hardwareID": "USB#VID_1EA8&PID_C001&REV_0100",
     "description": "007Net",
     "ruleType": "include"
+  },
+  {
+    "engine": "SOF",
+    "hardwareID": "USB#VID_096E&PID_0312&REV_1203&MI_01",
+    "description": "GDCA_FT3000GM",
+    "ruleType": "include"
   }
 ]
