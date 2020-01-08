@@ -38,6 +38,9 @@ namespace Reach {
 			add("authResult", _authResult);
 			add("token", _token);
 			add("keySn", _keysn);
+			add("mobile", _mobile);
+			add("userName", _userName);
+			add("userID", _userID);
 		}
 	protected:
 		virtual void mixValue()
@@ -50,6 +53,10 @@ namespace Reach {
 				JSON_PARSE(cache);
 
 				_authResult = ds["authResult"].toString();
+				_mobile = ds["mobile"].toString();
+				_userName = ds["userName"].toString();
+				_userID = ds["userId"].toString();
+
 				size_t authType = app.config().getUInt("authType", 0);
 				if (!authType)
 					_token = ds["token"].toString();
@@ -64,6 +71,9 @@ namespace Reach {
 		std::string _authResult;
 		std::string _token;
 		std::string _keysn;
+		std::string _mobile;
+		std::string _userName;
+		std::string _userID;
 	};
 
 	class CloudGetAuthRequestHandler : public RESTfulRequestHandler
