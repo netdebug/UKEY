@@ -30,7 +30,7 @@ namespace Reach {
 			CloudCommand(url),
 			_token(token),
 			_result(result),
-			_action("")
+			_action("3")
 		{
 		}
 
