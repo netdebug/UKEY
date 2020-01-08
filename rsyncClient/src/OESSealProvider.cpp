@@ -42,18 +42,7 @@ void Reach::OESSealProvider::extract(const std::string& cert)
 
 void OESSealProvider::ExtractSealPicture()
 {
-	/*
 	JSON_PARSE(_sealdata);
-	*/
-	Poco::DynamicStruct ds;
-	[&ds](const std::string& data){
-			Poco::JSON::Parser ps;														
-			Poco::Dynamic::Var res = ps.parse(data);
-			assert(res.type() == typeid(Poco::JSON::Object::Ptr));						
-			Poco::JSON::Object::Ptr object = res.extract<Poco::JSON::Object::Ptr>();	
-			assert(object);																
-			return *object;;
-	};
 
 	setProperty("name", ds["sealinfos"]["sealbaseinfo"]["username"]);
 
