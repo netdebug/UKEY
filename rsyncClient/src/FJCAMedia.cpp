@@ -38,15 +38,18 @@ void FJCAMedia::GetCertBase64String()
 
 	rv = InitTCard("USB1", &hDev);
 	//if (!rv) throw Poco::LogicException("USB1");
+	poco_assert(rv);
 	if (!rv) handleLastError(rv);
 
 	BYTE no = 0;
 	rv = TCardGetCertNo(&no, hDev);
 	//if (!rv && !no) throw Poco::LogicException("OESSealProvider cerification not found!");
+	poco_assert(rv);
 	if (!rv) handleLastError(rv);
 
 	rv = TCardSetCertNo(0x01, hDev);
 	//if (!rv) throw Poco::LogicException("OESSealProvider cerification not found!");
+	poco_assert(rv);
 	if (!rv) handleLastError(rv);
 
 	DWORD len = 1024;
@@ -57,6 +60,7 @@ void FJCAMedia::GetCertBase64String()
 		rv = TCardReadCert((BYTE*)vCert.data(), &len, hDev);
 	}
 	//if (!rv) throw Poco::LogicException("TCardReadCert failed!");
+	poco_assert(rv);
 	if (!rv) handleLastError(rv);
 
 	vCert.resize(len);

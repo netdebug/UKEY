@@ -6,6 +6,7 @@ namespace Reach {
 	
 	class FJCAMedia
 		: public MediaBase
+		/// Haitai UKEY Device
 	{
 	public:
 		FJCAMedia();
