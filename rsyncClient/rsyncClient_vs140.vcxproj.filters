@@ -102,6 +102,12 @@
     <ClInclude Include="src\SOFMedia.h">
       <Filter>Core\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\SKFSealProvider.h">
+      <Filter>Core\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SNSealProvider.h">
+      <Filter>Core\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\rsyncClient.cpp">
@@ -165,6 +171,12 @@
       <Filter>Core\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\SOFMedia.cpp">
+      <Filter>Core\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SKFSealProvider.cpp">
+      <Filter>Core\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SNSealProvider.cpp">
       <Filter>Core\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
