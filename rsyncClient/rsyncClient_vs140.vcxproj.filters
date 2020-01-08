@@ -102,6 +102,9 @@
     <ClInclude Include="src\SOFMedia.h">
       <Filter>Core\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\FT3000GMMedia.h">
+      <Filter>Core\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\rsyncClient.cpp">
@@ -165,6 +168,9 @@
       <Filter>Core\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\SOFMedia.cpp">
+      <Filter>Core\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FT3000GMMedia.cpp">
       <Filter>Core\Source Files</Filter>
     </ClCompile>
   </ItemGroup>

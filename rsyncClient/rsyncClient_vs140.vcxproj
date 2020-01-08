@@ -36,6 +36,7 @@
     <ClCompile Include="src\BridgeWindowsLiveLogin.cpp" />
     <ClCompile Include="src\Container.cpp" />
     <ClCompile Include="src\FJCAMedia.cpp" />
+    <ClCompile Include="src\FT3000GMMedia.cpp" />
     <ClCompile Include="src\iWebPDF_i.c" />
     <ClCompile Include="src\KGSealProvider.cpp" />
     <ClCompile Include="src\KG_HARD_EXT_i.c" />
@@ -62,6 +63,7 @@
     <ClInclude Include="src\Certificate.h" />
     <ClInclude Include="src\Container.h" />
     <ClInclude Include="src\FJCAMedia.h" />
+    <ClInclude Include="src\FT3000GMMedia.h" />
     <ClInclude Include="src\iWebPDF.h" />
     <ClInclude Include="src\KGSealProvider.h" />
     <ClInclude Include="src\KG_GetKeyInfo_FJRS.h" />
@@ -199,7 +201,7 @@
       <CompileAs>Default</CompileAs>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>PocoFoundationd.lib;PocoJSONd.lib;PocoNetd.lib;PocoUtild.lib;PocoDatad.lib;PocoCryptod.lib;PocoDataSQLited.lib;SoFProviderd.lib;Iphlpapi.lib;msi.lib;ws2_32.lib;TCardCert.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PocoFoundationd.lib;PocoJSONd.lib;PocoNetd.lib;PocoUtild.lib;PocoDatad.lib;PocoCryptod.lib;PocoDataSQLited.lib;SoFProviderd.lib;Iphlpapi.lib;msi.lib;ws2_32.lib;TCardCert.lib;FCardCert.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetFileName)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -236,7 +238,7 @@ xcopy /y $(ProjectDir)QZSyncWorker.json $(OutDir)</Command>
       <CompileAs>Default</CompileAs>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>PocoFoundation.lib;PocoJSON.lib;PocoUtil.lib;PocoNet.lib;PocoData.lib;PocoDataSQLite.lib;SoFProvider.lib;TCardCert.lib;ws2_32.lib;iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PocoFoundation.lib;PocoJSON.lib;PocoUtil.lib;PocoNet.lib;PocoData.lib;PocoDataSQLite.lib;SoFProvider.lib;TCardCert.lib;FCardCert.lib;ws2_32.lib;iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\bin\rsyncClient.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
