@@ -90,7 +90,7 @@ void MediaBase::GetCertBase64String()
 	std::ostringstream body;
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_GetCertBase64String", body.str());
-	assert(!result.empty());
+	poco_assert(!result.empty());
 	if (_uid.empty())
 		throw Poco::IOException("IOException : RS_GetCertBase64String result is empty!", getProperty("Provider"));
 
@@ -136,7 +136,7 @@ void MediaBase::GetImgAreaFromDN()
 
 void MediaBase::FetchKeySN()
 {
-	assert(!_uid.empty());
+	poco_assert(!_uid.empty());
 	if (_uid.empty())
 		throw Poco::IOException("IOException : _uid is empty!", getProperty("Provider"));
 
@@ -146,7 +146,7 @@ void MediaBase::FetchKeySN()
 	std::ostringstream body;
 	params.write(body);
 	std::string result = Utility::SuperRequest("/RS_KeyGetKeySn", body.str());
-	assert(!result.empty());
+	poco_assert(!result.empty());
 
 	JSON_PARSE(result);
 
@@ -159,7 +159,7 @@ void MediaBase::FetchKeySN()
 void MediaBase::GetContainerId()
 {
 	std::string result = Utility::SuperRequest("/RS_GetUserList", "");
-	assert(!result.empty());
+	poco_assert(!result.empty());
 	if (result.empty())
 		throw Poco::IOException("IOException : RS_GetUserList result is empty!", getProperty("Provider"));
 
