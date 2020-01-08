@@ -22,6 +22,8 @@
 #include "SOFMedia.h"
 #include "Utility.h"
 #include <cassert>
+#include "SKFSealProvider.h"
+#include "SNSealProvider.h"
 
 using namespace Reach;
 using namespace Reach::ActiveX;
@@ -118,6 +120,8 @@ void QZSyncWorker::extractSealData()
 	oess.push_back(new OESSealProvider);
 	oess.push_back(new XSSealProvider);
 	oess.push_back(new KGSealProvider);
+	oess.push_back(new SKFSealProvider);
+	oess.push_back(new SNSealProvider);
 
 	Poco::FastMutex::ScopedLock loc(_mutex);
 

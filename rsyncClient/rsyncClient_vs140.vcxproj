@@ -46,6 +46,8 @@
     <ClCompile Include="src\rsyncClient.cpp" />
     <ClCompile Include="src\SampleTask.cpp" />
     <ClCompile Include="src\SealProvider.cpp" />
+    <ClCompile Include="src\SKFSealProvider.cpp" />
+    <ClCompile Include="src\SNSealProvider.cpp" />
     <ClCompile Include="src\SOFMedia.cpp" />
     <ClCompile Include="src\UKeyDevice.cpp" />
     <ClCompile Include="src\Certificate.cpp" />
@@ -74,6 +76,8 @@
     <ClInclude Include="src\rsyncClient.h" />
     <ClInclude Include="src\SampleTask.h" />
     <ClInclude Include="src\SealProvider.h" />
+    <ClInclude Include="src\SKFSealProvider.h" />
+    <ClInclude Include="src\SNSealProvider.h" />
     <ClInclude Include="src\SOFMedia.h" />
     <ClInclude Include="src\UKeyDevice.h" />
     <ClInclude Include="src\Utility.h" />
