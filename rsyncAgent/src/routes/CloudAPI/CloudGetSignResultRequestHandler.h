@@ -28,51 +28,35 @@ namespace Reach {
 		CloudGetSignResult(const std::string& transid, const std::string& token,
 			const std::string& url) :
 			CloudCommand(url),
-			_token(token), _transid(transid)
+			_token(token), _transid(transid), _signResult("0")
 		{
 		}
 
 		void run()
 		{
 			mixValue();
-			sendRequest();
-
-			filter();
 
 			add("signResult", _signResult);
 			add("signdMsg", _signdMsg);
 			add("certBase64", _certBase64);
 		}
 	protected:
-		void filter()
-		{
-			const std::string code = extract("head", "code");
-			if (code == "0028")
-				_signResult = "0";/// 还未产生签名结果
-			if (code == "0000") {
-				_signResult = "1";/// 获取签名结果成功
-				_signdMsg = extract("body", "signdMsg");
-				_certBase64 = extract("body", "certBase64");
-			}
-			else
-				_signResult = "2"; /// 其他失败
-		}
-
 		virtual void mixValue()
 		{
 			Application& app = Application::instance();
-			FileInputStream in(Utility::config("config\\CloudGetSignResult.json"));
-			DynamicStruct ds = *parse(in).extract<Object::Ptr>();
 
-			ds["bodyJson"]["token"] = _token;
-			ds["bodyJson"]["transid"] = _transid;
+			std::string cache = TokenManager::default().get(_transid);
 
-			ds["bodyJson"]["authCode"] = app.config().getString("authCode", "");
-			ds["body"] = ds["bodyJson"].toString();
-			ds.erase("bodyJson");
+			if (!cache.empty())
+			{
+				JSON_PARSE(cache);
 
-			prepare(ds.toString());
-			poco_information_f1(app.logger(), "CloudGetSignResult mixValue:\n%s", ds.toString());
+				_signResult = ds["authResult"].toString();
+				if (_signResult == "1") {
+					_signdMsg = ds["signdMsg"].toString();
+					_certBase64 = ds["certBase64"].toString();
+				}
+			}
 		}
 
 	private:
@@ -93,17 +77,14 @@ namespace Reach {
 			poco_information_f1(app.logger(), "Request from %s", request.clientAddress().toString());
 			RESTfulRequestHandler::handleCORS(request, response);
 
-			std::string data("CloudGetSignResult request is deprecate!");
-			return response.sendBuffer(data.data(), data.length());
-
-			/*HTMLForm form(request, request.stream());
+			HTMLForm form(request, request.stream());
 			std::string transid = form.get("transid", "");
 			std::string token = form.get("token", "");
 			std::string url = app.config().getString("rsigncloud");
 			CloudGetSignResult command(transid, token, url);
 			command.execute();
 
-			return response.sendBuffer(command().data(), command().length());*/
+			return response.sendBuffer(command().data(), command().length());
 		}
 	};
 }

@@ -65,10 +65,19 @@ void GetCertInfo::parse()
 		_item = x509ptr->serialNumber();
 		break;
 	case 5:
-		extract(x509ptr->issuerName()); break;
+	case 7:
+	case 33:
+	case 34:
+	case 35:
+	case 49:
+	case 50:
+	case 51:
+	case 52:
+		//extract(x509ptr->issuerName()); break;
+		_item = SOF_GetCertInfo(_cer, _type); break;
 	case 6:
 		x509_validFrom_expiresOn(); break;
-	case 7:
+	/*case 7:
 		extract(x509ptr->subjectName()); break;
 	case 33:
 		_item = x509ptr->issuerName(X509Certificate::NID_COMMON_NAME);
@@ -91,6 +100,7 @@ void GetCertInfo::parse()
 	case 52:
 		_item = x509ptr->subjectName(X509Certificate::NID_PKCS9_EMAIL_ADDRESS);
 		break;
+		*/
 	case 53:
 		personal(); break;
 	case 54:
@@ -205,6 +215,7 @@ void GetCertInfo::decode_utf8(const std::string& text)
 		poco_information_f1(app.logger(), "%s", e.message());
 	}
 }
+/*
 void GetCertInfo::extract(const std::string& text)
 {
 	std::string st = text;
@@ -235,31 +246,9 @@ void GetCertInfo::extract(const std::string& text)
 	decoder >> s;
 	_item += s;
 
-	/*std::string pattern("/(\\w+)=(\\w+|.+)");
-	std::string::size_type offset = 0;
-	int options = 0;
-
-	try
-	{
-		RegularExpression re(pattern, options);
-		RegularExpression::Match mtch = { 0,0 };
-
-		while (re.match(text, offset, mtch) > 0)
-		{
-			std::string str;
-			re.extract(text, mtch.offset, str);
-			_item += str;
-			offset += mtch.length;
-			_item += "\r\n";
-		}
-	}
-	catch (Poco::RegularExpressionException&)
-	{
-		_item.clear();
-	}*/
-
 	Debugger::message(format("%s", _item));
 }
+*/
 void GetCertInfo::extract(const std::string& text, const std::string& tag)
 {
 	std::string pattern("/(\\w+)=(\\w+|.+)");

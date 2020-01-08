@@ -177,7 +177,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <ModuleDefinitionFile>.\RSyncControl.def</ModuleDefinitionFile>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <RegisterOutput>false</RegisterOutput>
+      <RegisterOutput>true</RegisterOutput>
       <AdditionalDependencies>comsuppw.lib;PocoFoundation.lib;PocoNet.lib;paho-mqtt3a.lib;paho-mqtt3as.lib;libcrypto.lib;libssl.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\lib;..\lib\libpoco</AdditionalLibraryDirectories>
     </Link>

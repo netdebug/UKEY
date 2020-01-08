@@ -17,6 +17,7 @@
 #include "OESSealProvider.h"
 #include "XSSealProvider.h"
 #include "KGSealProvider.h"
+#include "FT3000GMMedia.h"
 #include "FJCAMedia.h"
 #include "SOFMedia.h"
 #include "Utility.h"
@@ -87,6 +88,7 @@ void QZSyncWorker::extractKeyInfo()
 	typedef std::vector<Poco::AutoPtr<MediaBase>> SPVec;
 	typedef std::vector<Poco::AutoPtr<MediaBase>>::iterator SPIter;
 	SPVec media;
+	media.push_back(new FT3000GMMedia);
 	media.push_back(new FJCAMedia);
 	media.push_back(new SOFMedia);
 

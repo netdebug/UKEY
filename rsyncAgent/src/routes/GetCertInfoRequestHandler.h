@@ -28,7 +28,7 @@ namespace Reach {
 		void enterprise();
 		void personal();
 		void decode_utf8(const std::string & text);
-		void extract(const std::string & text);
+		//void extract(const std::string & text);
 		void extract(const std::string & text, const std::string & tag);
 		void x509_validFrom_expiresOn();
 		std::string cat(const std::string & delim, std::size_t pos, const std::string & str);

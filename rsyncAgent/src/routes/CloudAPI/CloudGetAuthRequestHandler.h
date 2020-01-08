@@ -10,6 +10,7 @@
 #include "../Command.h"
 #include "../RESTfulRequestHandler.h"
 #include "CloudCommand.h"
+#include "../../TokenManager.h"
 
 
 namespace Reach {
@@ -26,53 +27,42 @@ namespace Reach {
 	{
 	public:
 		CloudGetAuth(const std::string& transid, const std::string& url)
-			:CloudCommand(url), _transid(transid)
+			:CloudCommand(url), _transid(transid), _authResult("0")
 		{
 		}
 
 		void run()
 		{
 			mixValue();
-			sendRequest();
 
-			filter();
-			
 			add("authResult", _authResult);
 			add("token", _token);
 			add("keySn", _keysn);
+			add("mobile", _mobile);
+			add("userName", _userName);
+			add("userID", _userID);
 		}
 	protected:
-		void filter()
-		{
-			Application& app = Application::instance();
-
-			const std::string code = extract("head", "code");
-			if (code == "0000")
-				_authResult = "1";//授权成功
-			else if (code == "0028")
-				_authResult = "0";//未授权
-			else
-				_authResult = "4";//其他情况
-
-			size_t authType = app.config().getUInt("authType", 0);
-			if (!authType)
-				_token = extract("body", "token");
-			else
-				_keysn = app.config().getString("keySn");
-		}
 		virtual void mixValue()
 		{
 			Application& app = Application::instance();
-			FileInputStream in(Utility::config("config\\CloudGetAuth.json"));
-			DynamicStruct ds = *parse(in).extract<Object::Ptr>();
-			ds["bodyJson"]["action"] = _action;
-			ds["bodyJson"]["transid"] = _transid;
-			ds["bodyJson"]["authCode"] = app.config().getString("authCode", "");
-			ds["body"] = ds["bodyJson"].toString();
-			ds.erase("bodyJson");
 
-			prepare(ds.toString());
-			poco_information_f1(app.logger(), "CloudGetAuth mixValue:\n%s", ds.toString());
+			std::string cache = TokenManager::default().get(_transid);
+			if (!cache.empty()) 
+			{
+				JSON_PARSE(cache);
+
+				_authResult = ds["authResult"].toString();
+				_mobile = ds["mobile"].toString();
+				_userName = ds["userName"].toString();
+				_userID = ds["userId"].toString();
+
+				size_t authType = app.config().getUInt("authType", 0);
+				if (!authType)
+					_token = ds["token"].toString();
+				else
+					_keysn = app.config().getString("keySn");
+			}
 		}
 
 	private:
@@ -81,6 +71,9 @@ namespace Reach {
 		std::string _authResult;
 		std::string _token;
 		std::string _keysn;
+		std::string _mobile;
+		std::string _userName;
+		std::string _userID;
 	};
 
 	class CloudGetAuthRequestHandler : public RESTfulRequestHandler
@@ -93,16 +86,13 @@ namespace Reach {
 
 			RESTfulRequestHandler::handleCORS(request, response);
 
-			std::string data("CloudGetAuth request is deprecate!");
-			return response.sendBuffer(data.data(), data.length());
-
-			/*HTMLForm form(request, request.stream());
+			HTMLForm form(request, request.stream());
 			std::string transid = form.get("transid", "");
 			std::string url = app.config().getString("rsigncloud");
 			CloudGetAuth command(transid, url);
 			command.execute();
 
-			return response.sendBuffer(command().data(), command().length());*/
+			return response.sendBuffer(command().data(), command().length());
 		}
 	};
 }

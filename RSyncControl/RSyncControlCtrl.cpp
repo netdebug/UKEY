@@ -814,22 +814,13 @@ BSTR CRSyncControlCtrl::RS_CloudSealAuth(BSTR transid)
 BSTR CRSyncControlCtrl::RS_CloudGetAuth(BSTR transid)
 {
 	std::string TRANSID = _com_util::ConvertBSTRToString(transid);
-	std::string result;
-	if (m_authResult.find(TRANSID) != m_authResult.end())
-	{
-		result = m_authResult[TRANSID];
-	}
-	else {
-		Poco::JSON::Object obj;
-		obj.set("code", "0000");
-		obj.set("msg", "执行成功");
-		Object data = onCloudAuthData("0", "", "", "");
-		obj.set("data", data);
-		std::ostringstream out;
-		obj.stringify(out);
-		obj.setEscapeUnicode();
-		result = out.str();
-	}
+
+	HTMLForm params;
+	params.set("transid", TRANSID);
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequestGBK("/RS_CloudGetAuth", body.str());
+
 	return _bstr_t(result.data());
 }
 
@@ -866,22 +857,12 @@ BSTR CRSyncControlCtrl::RS_CloudSignByP7(BSTR msg, BSTR keySn, BSTR transid, BST
 BSTR CRSyncControlCtrl::RS_CloudGetSignResult(BSTR transid)
 {
 	std::string TRANSID = _com_util::ConvertBSTRToString(transid);
-	std::string result;
-	if (m_authResult.find(TRANSID) != m_authResult.end())
-	{
-		result = m_authResult[TRANSID];
-	}
-	else {
-		Poco::JSON::Object obj;
-		obj.set("code","0000");
-		obj.set("msg", "执行成功");
-		Object data = onCloudSignData("0", "", "");
-		obj.set("data", data);
-		std::ostringstream out;
-		obj.stringify(out);
-		obj.setEscapeUnicode();
-		result = out.str();
-	}
+
+	HTMLForm params;
+	params.set("transid", TRANSID);
+	std::ostringstream body;
+	params.write(body);
+	std::string result = Utility::SuperRequestGBK("/RS_CloudGetSignResult", body.str());
 
 	return _bstr_t(result.data());
 }
