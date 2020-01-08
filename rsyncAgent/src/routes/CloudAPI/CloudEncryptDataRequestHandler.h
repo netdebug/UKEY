@@ -68,7 +68,7 @@ namespace Reach {
 #ifdef TEST
 			std::string source(_symKey);
 			v_encrypt_by_sm2(std::string("standard encryption"), "0420F19FF762F0CC0EE77243FF76E02657E6596A4F9CD74A671BA862A485441051ED415A59DA78D5D087AFCB2EF12DF99561FB658B11645D3F92C4CA638730BA05");
-			add("encSymKey", ciphertext);
+			add("encReachKey", ciphertext);
 			add("signCertBase64", "signCertBase64");
 			add("encCertBase64", "encCertBase64");
 #else
