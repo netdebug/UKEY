@@ -49,6 +49,7 @@ namespace Reach {
 
 			if (!cache.empty())
 			{
+				poco_information(app.logger(), cache);
 				JSON_PARSE(cache);
 
 				_signResult = ds["authResult"].toString();

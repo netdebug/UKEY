@@ -16,7 +16,7 @@ void ConfigParameters::run()
 {
 	Application& app = Application::instance();
 	app.config().setString(_cmd, _val);
-	if (_cmd == "authCode") {
+	if (_cmd == "setWebAssist") {
 		setWebAssist();
 	}
 }

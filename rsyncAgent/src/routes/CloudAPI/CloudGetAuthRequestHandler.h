@@ -50,6 +50,7 @@ namespace Reach {
 			std::string cache = TokenManager::default().get(_transid);
 			if (!cache.empty()) 
 			{
+				poco_information(app.logger(), cache);
 				JSON_PARSE(cache);
 
 				_authResult = ds["authResult"].toString();
