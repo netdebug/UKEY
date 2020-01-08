@@ -344,8 +344,8 @@ void CRSyncControlCtrl::RS_ConfigParameters(BSTR cmd, BSTR val)
 	std::string valadress = _com_util::ConvertBSTRToString(val);
 
 	HTMLForm params;
-	params.set("cmd", Utility::GBKEncodingUTF8(cmdid));
-	params.set("val", Utility::GBKEncodingUTF8(valadress));
+	params.set("cmd", cmdid);
+	params.set("val", valadress);
 
 	std::ostringstream body;
 	params.write(body);
