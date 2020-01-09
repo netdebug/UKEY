@@ -4,17 +4,35 @@
 #include "Poco/JSON/Parser.h"
 #include "Poco/JSON/Object.h"
 #include "Poco/JSON/Array.h"
+#include "Poco/DOM/Document.h"
+#include "Poco/DOM/DOMParser.h"
+#include "Poco/SAX/InputSource.h"
 #include "Poco/DynamicStruct.h"
 #include "Poco/Dynamic/Var.h"
+#include <sstream>
 #include <cassert>
+#include <string>
 
 #define JSON_PARSE(DATA) \
 	Poco::JSON::Parser ps;														\
 	Poco::Dynamic::Var res = ps.parse(DATA);									\
-	assert(res.type() == typeid(Poco::JSON::Object::Ptr));						\
+	poco_assert(res.type() == typeid(Poco::JSON::Object::Ptr));					\
 	Poco::JSON::Object::Ptr object = res.extract<Poco::JSON::Object::Ptr>();	\
-	assert(object);																\
+	poco_assert(object);														\
 	Poco::DynamicStruct ds = *object;
+
+#define XML_PARSE(XMLData)	\
+	std::istringstream istr(XMLData);											\
+	Poco::XML::InputSource source(istr);										\
+	Poco::XML::DOMParser parser;												\
+	parser.setFeature(Poco::XML::DOMParser::FEATURE_FILTER_WHITESPACE, true);	\
+	Poco::AutoPtr<Poco::XML::Document> pDoc = parser.parse(&source);
+
+#define utility_message_f1(fmt, arg) \
+	Utility::message(Poco::format((fmt),(arg)));
+
+#define utility_message(msg) \
+	Utility::message(msg);
 
 namespace Reach {
 	namespace ActiveX {

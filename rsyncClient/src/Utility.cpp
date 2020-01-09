@@ -154,7 +154,7 @@ std::string Utility::formatUid(const std::string& entries)
 	{
 		Parser ps;
 		Var result = ps.parse(entries);
-		assert(result.type() == typeid(Object::Ptr));
+		poco_assert(result.type() == typeid(Object::Ptr));
 		DynamicStruct ds = *result.extract<Object::Ptr>();
 		if (ds["code"] != "0000")
 			throw Poco::Exception("formatUid error", ds.toString());
@@ -173,7 +173,7 @@ std::string Utility::formatUid(const std::string& entries)
 
 		std::vector<std::string> tags;
 		re.split(userlist, tags, options);
-		assert(tags.size() > 1);
+		poco_assert(tags.size() > 1);
 		uid = tags[2];
 	}
 	catch (Poco::Exception& e)
