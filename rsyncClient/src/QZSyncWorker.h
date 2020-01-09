@@ -29,7 +29,7 @@ namespace Reach {
 		{
 			Poco::JSON::Parser p;
 			Poco::Dynamic::Var result = p.parse(json);
-			assert(result.type() == typeid(T));
+			poco_assert(result.type() == typeid(T));
 			return result.extract<T>();
 		}
 

@@ -10,7 +10,7 @@ using Poco::RegularExpression;
 UKeyDevice::UKeyDevice(const std::string entries)
 	:_entries(entries)
 {
-	assert(!_entries.empty());
+	poco_assert(!_entries.empty());
 	extract();
 }
 

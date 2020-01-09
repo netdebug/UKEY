@@ -24,6 +24,7 @@
 #include <cassert>
 #include "SKFSealProvider.h"
 #include "SNSealProvider.h"
+#include "BCBSSealProvider.h"
 
 using namespace Reach;
 using namespace Reach::ActiveX;
@@ -47,7 +48,7 @@ QZSyncWorker::QZSyncWorker()
 {
 	FileInputStream in(Utility::config("QZSyncWorker.json"));
 	object = extract<Object::Ptr>(in);
-	assert(object);
+	poco_assert(object);
 	if (!object)
 		throw Poco::UnhandledException("config lost", "QZSyncWorker.json");
 }
@@ -122,6 +123,7 @@ void QZSyncWorker::extractSealData()
 	oess.push_back(new KGSealProvider);
 	oess.push_back(new SKFSealProvider);
 	oess.push_back(new SNSealProvider);
+	oess.push_back(new BCBSSealProvider);
 
 	Poco::FastMutex::ScopedLock loc(_mutex);
 

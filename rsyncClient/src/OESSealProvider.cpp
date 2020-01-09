@@ -19,7 +19,7 @@ using Poco::StreamCopier;
 
 OESSealProvider::OESSealProvider()
 {
-	Utility::message("Enter OESSealProvider");
+	utility_message("Enter OESSealProvider kinsec");
 
 	sl.load("StampManageSystem.dll");
 
@@ -30,7 +30,7 @@ OESSealProvider::~OESSealProvider()
 {
 	sl.unload();
 
-	Utility::message("Exit OESSealProvider");
+	utility_message("Exit OESSealProvider kinsec");
 }
 
 void Reach::OESSealProvider::extract(const std::string& cert)
@@ -57,7 +57,7 @@ void OESSealProvider::ExtractSealPicture()
 		ob.set("width", "4.00");
 		ob.set("imgext", "gif");
 		ob.set("signType", "80");///第三方签章
-		ob.set("imgItem", "82");/// 凯特签章
+		ob.set("imgItem", "99002");/// 凯特签章
 		ob.set("imgArea", "81");/// 福建CA 
 		seals.add(ob);
 	}
@@ -95,8 +95,6 @@ void OESSealProvider::readSeal()
 
 void OESSealProvider::count()
 {
-	Application& app = Application::instance();
-
 	typedef int(__stdcall *OES_GetSealCount)(const char*signCert, const long DataLen, unsigned char* puchID, long* puchIDsLen);
 	std::string name("OES_GetSealCount");
 	if (sl.hasSymbol(name))
@@ -108,7 +106,7 @@ void OESSealProvider::count()
 		if (_count < 0)
 			throw Poco::Exception("count exception!", Poco::format("%[1]s\n%[0]d", _count, getProperty("Provider")));
 
-		poco_information_f1(app.logger(), "seal.data : -> %s", _count);
+		utility_message("kinsec seal.data : -> %s", _count);
 	}
 }
 

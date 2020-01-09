@@ -168,9 +168,9 @@ void SampleTask::QueryUSBKeyType(const std::string& data)
 	Array da = *result.extract<Array::Ptr>();
 
 	for (int i = 0; i < da.size(); i++) {
-		assert(da.isObject(i));
+		poco_assert(da.isObject(i));
 		DynamicStruct ds = *da.getObject(i);
-		assert(ds.contains("Description"));
+		poco_assert(ds.contains("Description"));
 		if (ds["Description"] == "FJCA") {
 			_fjca = true; break;
 		}

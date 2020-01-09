@@ -2,7 +2,6 @@
 #include <string>
 #include "SealProvider.h"
 #include "Poco/SharedLibrary.h"
-#include "Poco/Util/Application.h"
 
 namespace Reach {
 	class XSSealProvider 

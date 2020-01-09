@@ -4,6 +4,7 @@
 #include "WindowsLiveLogin.h"
 #include <iostream>
 #include <cassert>
+#include "Poco/Bugcheck.h"
 
 using namespace Reach;
 
@@ -11,7 +12,7 @@ BridgeWindowsLiveLogin::BridgeWindowsLiveLogin()
 {
 	HRESULT	hr;
 	hr = CoInitialize(0);
-	assert(SUCCEEDED(hr));
+	poco_assert(SUCCEEDED(hr));
 
 	hr = CoCreateInstance(CLSID_IDBHOCtrl,
 		NULL,
@@ -19,14 +20,14 @@ BridgeWindowsLiveLogin::BridgeWindowsLiveLogin()
 		IID_IIDBHOCtrl,
 		(void**)&_bho);
 
-	assert(SUCCEEDED(hr));
+	poco_assert(SUCCEEDED(hr));
 }
 
 BridgeWindowsLiveLogin::~BridgeWindowsLiveLogin()
 {
 	HRESULT	hr;
 	hr = _bho->Release();
-	assert(SUCCEEDED(hr));
+	poco_assert(SUCCEEDED(hr));
 
 	::CoUninitialize();
 }
@@ -39,11 +40,11 @@ void BridgeWindowsLiveLogin::GetAuthenticatedUserToken()
 	int val;
 
 	hr = _bho->get_Version(version.GetAddress());
-	assert(SUCCEEDED(hr));
+	poco_assert(SUCCEEDED(hr));
 	
 	hr = _bho->get_ComputerSetting(&val);
-	assert(SUCCEEDED(hr));
+	poco_assert(SUCCEEDED(hr));
 	hr = _bho->GetAuthenticatedUserToken(token.GetAddress());
 
-	assert(SUCCEEDED(hr));
+	poco_assert(SUCCEEDED(hr));
 }

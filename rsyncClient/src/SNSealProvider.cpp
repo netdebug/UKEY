@@ -20,14 +20,17 @@ using Poco::XML::Element;
 
 SNSealProvider::SNSealProvider()
 {
-	Utility::message("Enter SNSealProvider");
-	sl.load("SNCA_GetSeal180514.dll");
+	utility_message("Enter SNSealProvider tongzhi");
 	setProperty("Provider", "SNSealProvider");
+
+	sl.load("SNCA_GetSeal180514.dll");
 }
 
 SNSealProvider::~SNSealProvider()
 {
 	sl.unload();
+
+	utility_message("SNSealProvider tongzhi");
 }
 
 void Reach::SNSealProvider::extract(const std::string& cert)
@@ -55,63 +58,58 @@ void Reach::SNSealProvider::readSeal()
 
 void Reach::SNSealProvider::count()
 {
-	Application& app = Application::instance();
 	typedef int(__stdcall *GetSealCount)();
 
 	std::string name("GetSealCount");
 	GetSealCount fn = (GetSealCount)sl.getSymbol(name);
 	_count = fn();
 
-	poco_information_f1(app.logger(), "seal.count : -> %d", _count);
+	utility_message_f1("tongzhi seal.count : -> %d", _count);
 }
 
 void Reach::SNSealProvider::keyin()
 {
-	Application& app = Application::instance();
 	typedef int(__stdcall *IsUKIn)();
 
 	std::string name("IsUKIn");
 	IsUKIn fn = (IsUKIn)sl.getSymbol("IsUKIn");
 	_bPresent = fn() == 0;
 
-	poco_information_f1(app.logger(), "seal.keyin : -> %b", _bPresent);
+	utility_message_f1("tongzhi seal.keyin : -> %b", _bPresent);
 }
 
 void Reach::SNSealProvider::ExtractSealPicture()
 {
-	Application& app = Application::instance();
-	//poco_information_f1(app.logger(), "xs:\n%s", _sealdata);
+	utility_message_f1("tongzhi Seal :\n%s", _sealdata);
+	poco_assert(!_sealdata.empty());
 
-	std::istringstream istr(_sealdata);
-	InputSource soure(istr);
-	DOMParser parser;
-	parser.setFeature(DOMParser::FEATURE_FILTER_WHITESPACE, true);
-	Poco::AutoPtr<Document> pDoc = parser.parse(&soure);
+	XML_PARSE(_sealdata);
 	Node* pUsername = pDoc->getNodeByPath("/sealinfos/sealbaseinfo/username");
-	assert(pUsername);
+	poco_assert(pUsername);
 	setProperty("name", pUsername->innerText());
 	NodeList* pSealinfo = pDoc->getElementsByTagName("sealinfo");
-	assert(pSealinfo);
+	poco_assert(pSealinfo);
 
 	Poco::JSON::Array seals;
 	for (int i = 0; i < pSealinfo->length(); ++i)
 	{
 		Element* ele = dynamic_cast<Element*>(pSealinfo->item(i));
-		assert(ele);
+		poco_assert(ele);
 		Element* sealname = ele->getChildElement("sealname");
 		Element* sealdata = ele->getChildElement("sealdata");
-		Element* sealwidth = ele->getChildElement("sealwidth");
-		assert(sealname && sealdata);
+		Element* w = ele->getChildElement("sealwidth");
+		Element* h = ele->getChildElement("sealheight");
+		poco_assert(sealname && sealdata);
 		Poco::JSON::Object obj;
 
 		obj.set("imgdata", sealdata->innerText());
 		obj.set("signname", sealname->innerText());
-		obj.set("width", "4.00");
-		obj.set("height", "4.00");
+		obj.set("width", w->innerText());
+		obj.set("height", h->innerText());
 		obj.set("signType", "80");
 		obj.set("imgext", "gif");
-		obj.set("imgItem", "86");/// 点聚
-		obj.set("imgArea", "87");/// 陕西CA
+		obj.set("imgItem", "99006");///同智伟业
+		obj.set("imgArea", "87");/// 
 		seals.add(obj);
 	}
 	std::ostringstream ostr;

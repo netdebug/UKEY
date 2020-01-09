@@ -15,7 +15,7 @@ using Poco::DynamicStruct;
 KGSealProvider::KGSealProvider()
 	:_pKG_GetKeyInfo_FJRS(nullptr)
 {
-	Utility::message("Enter KGSealProvider");
+	utility_message("Enter KGSealProvider Kinggrid");
 
 	CoInitialize(0);
 	/// Com interface
@@ -29,12 +29,12 @@ KGSealProvider::KGSealProvider()
 
 KGSealProvider::~KGSealProvider()
 {
-	assert(_pKG_GetKeyInfo_FJRS);
+	poco_assert(_pKG_GetKeyInfo_FJRS);
 	_pKG_GetKeyInfo_FJRS->ReleaseDispatch();
 	delete _pKG_GetKeyInfo_FJRS;
 	CoUninitialize();
 
-	Utility::message("Exit KGSealProvider");
+	utility_message("Exit KGSealProvider Kinggrid");
 }
 
 void KGSealProvider::extract(const std::string& cert)
@@ -45,7 +45,7 @@ void KGSealProvider::extract(const std::string& cert)
 
 void KGSealProvider::readSeal()
 {
-	assert(_pKG_GetKeyInfo_FJRS);
+	poco_assert(_pKG_GetKeyInfo_FJRS);
 	CString KeyInfo = _pKG_GetKeyInfo_FJRS->KGGetKeyInfo();
 	_sealdata = Utility::GBKEncodingUTF8(KeyInfo.GetString());
 
@@ -60,7 +60,7 @@ void KGSealProvider::ExtractSealPicture()
 {
 	JSON_PARSE(_sealdata);
 	Poco::Dynamic::Var info = ds["seals"];
-	assert(info.size() > 0);
+	poco_assert(info.size() > 0);
 	if (info.size() > 0) setProperty("name", info[0]["username"]);
 
 	Poco::JSON::Array seals;
@@ -73,7 +73,7 @@ void KGSealProvider::ExtractSealPicture()
 		ob.set("width", info[i]["width"]);
 		ob.set("imgext", info[i]["imgext"]);
 		ob.set("signType", "80");
-		ob.set("imgItem", "81");/// 金格签章
+		ob.set("imgItem", "99001");/// 金格签章
 		ob.set("imgArea", "84");/// 内蒙古CA 
 		seals.add(ob);
 	}
