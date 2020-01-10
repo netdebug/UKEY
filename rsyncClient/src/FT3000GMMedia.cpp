@@ -29,9 +29,9 @@ FT3000GMMedia::~FT3000GMMedia()
 
 void FT3000GMMedia::extract()
 {
-	FetchKeySN();
 	GetCertBase64String();
 	CertValidity();
+	FetchKeySN();
 	GetImgAreaFromDN();
 }
 
@@ -163,6 +163,7 @@ std::string FT3000GMMedia::readRSACert()
 
 	std::ostringstream ostr;
 	Poco::Base64Encoder encoder(ostr);
+	encoder.rdbuf()->setLineLength(0);
 	encoder.write(vCert.data(), vCert.size());
 	encoder.close();
 
@@ -203,6 +204,7 @@ std::string FT3000GMMedia::readECCCert()
 
 	std::ostringstream ostr;
 	Poco::Base64Encoder encoder(ostr);
+	encoder.rdbuf()->setLineLength(0);
 	encoder.write(vCert.data(), vCert.size());
 	encoder.close();
 
@@ -214,4 +216,12 @@ void FT3000GMMedia::FetchKeySN()
 	std::string cert = getProperty("cert");
 	std::string text = SOF_GetCertInfoByOid(cert, "1.2.156.112578.1");
 	utility_message(text);
+
+	text = text.substr(text.rfind('@') + 1);
+	utility_message(text);
+	if (text.size() > 12)
+		text = text.substr(0, 12);
+
+	utility_message(text);
+	setProperty("keysn", text);
 }
