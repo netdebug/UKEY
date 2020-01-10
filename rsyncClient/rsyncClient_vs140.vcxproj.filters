@@ -87,9 +87,6 @@
     <ClInclude Include="src\Utility.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\WindowsGBKEncoding.h">
-      <Filter>Core\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\CDKG_GetKeyInfo_FJRS.h">
       <Filter>Core\Header Files</Filter>
     </ClInclude>
@@ -112,6 +109,9 @@
       <Filter>Core\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\BCBSSealProvider.h">
+      <Filter>Core\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\HT5488003Media.h">
       <Filter>Core\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -186,6 +186,9 @@
       <Filter>Core\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\BCBSSealProvider.cpp">
+      <Filter>Core\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\HT5488003Media.cpp">
       <Filter>Core\Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -21,7 +21,6 @@ namespace Reach {
 		virtual void FetchKeySN();
 		virtual void GetImgAreaFromDN();
 		virtual void handleLastError(const std::string& result);
-	private:
 		void GetContainerId();
 	private:
 		std::string _keysn;

@@ -13,7 +13,7 @@ using Poco::Crypto::X509Certificate;
 
 MediaBase::MediaBase()
 {
-	GetContainerId();
+	//GetContainerId();
 }
 
 MediaBase::~MediaBase()
