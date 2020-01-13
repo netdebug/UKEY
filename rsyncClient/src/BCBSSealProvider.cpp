@@ -49,7 +49,7 @@ void BCBSSealProvider::ExtractSealPicture()
 		Element* n = ele->getChildElement("sealname");
 		Element* d = ele->getChildElement("sealdata");
 		Element* w = ele->getChildElement("sealwidth");
-		Element* h = ele->getChildElement("sealheight");
+		Element* h = ele->getChildElement("sealhight");
 		poco_assert(n && d && w && h);
 
 		Poco::JSON::Object ob;

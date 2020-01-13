@@ -98,7 +98,7 @@ void Reach::SNSealProvider::ExtractSealPicture()
 		Element* sealname = ele->getChildElement("sealname");
 		Element* sealdata = ele->getChildElement("sealdata");
 		Element* w = ele->getChildElement("sealwidth");
-		Element* h = ele->getChildElement("sealheight");
+		Element* h = ele->getChildElement("sealhight");
 		poco_assert(sealname && sealdata);
 		Poco::JSON::Object obj;
 
