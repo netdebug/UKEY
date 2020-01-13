@@ -55,6 +55,8 @@
 #include "routes/CloudAPI/CloudSealAuthRequestHandler.h"
 #include "routes/CloudAPI/CloudSignByP7RequestHandler.h"
 #include "routes/CloudAPI/GetTransidRequestHandler.h"
+#include "routes/CloudAPI/EncryptDataBase64RequestHandler.h"
+#include "routes/CloudAPI/EncryptFileBase64RequestHandler.h"
 
 using namespace Reach;
 
@@ -64,6 +66,7 @@ using Poco::Net::HTTPServerRequest;
 
 HTTPRequestHandler * Reach::RequestHandlerFactory::createRequestHandler(const HTTPServerRequest & request)
 {
+	return new EncryptFileBase64RequestHandler;
 
 	if (request.getURI() == "/echoBody")
 		return new EchoBodyRequestHandler;
@@ -169,6 +172,9 @@ HTTPRequestHandler * Reach::RequestHandlerFactory::createRequestHandler(const HT
 		return new CloudSealAuthRequestHandler;
 	else if (request.getURI() == "/RS_CloudSignByP7")
 		return new CloudSignByP7RequestHandler;
-
+	else if (request.getURI() == "/RS_EncryptData")
+		return new EncryptDataBase64RequestHandler;
+	else if (request.getURI() == "/RS_EncryptFile")
+		return new EncryptFileBase64RequestHandler;
 		return 0;
 }

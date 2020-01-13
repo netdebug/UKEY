@@ -63,6 +63,8 @@
     <ClInclude Include="src\routes\ChangePassWdRequestHandler.h" />
     <ClInclude Include="src\routes\CloudAPI\CloudCommand.h" />
     <ClInclude Include="src\routes\CloudAPI\CloudLoginAuthRequestHandler.h" />
+    <ClInclude Include="src\routes\CloudAPI\EncryptDataBase64RequestHandler.h" />
+    <ClInclude Include="src\routes\CloudAPI\EncryptFileBase64RequestHandler.h" />
     <ClInclude Include="src\routes\CloudAPI\GetTransidRequestHandler.h" />
     <ClInclude Include="src\routes\CloudAPI\GreateQRCodeRequestHandler.h" />
     <ClInclude Include="src\routes\CloudAPI\CloudDevryptAuthRequestHandler.h" />

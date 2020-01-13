@@ -314,6 +314,12 @@
     <ClInclude Include="src\TokenManager.h">
       <Filter>Core\mqtt</Filter>
     </ClInclude>
+    <ClInclude Include="src\routes\CloudAPI\EncryptFileBase64RequestHandler.h">
+      <Filter>RequestHandler\Clould\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\routes\CloudAPI\EncryptDataBase64RequestHandler.h">
+      <Filter>RequestHandler\Clould\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\RequestHandlerFactory.cpp">
