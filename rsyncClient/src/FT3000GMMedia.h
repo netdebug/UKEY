@@ -1,30 +1,30 @@
 #pragma once
-#include "MediaBase.h"
+#include "FJCAMedia.h"
 #include <string>
 #include "Poco/SharedLibrary.h"
 
 namespace Reach {
 
+	///
+	/// USB\VID_096E&PID_0309&REV_0100
+	/// USB\VID_096E&PID_0309&REV_3200
+	///
+
 	class FT3000GMMedia
-		: public MediaBase
+		: public FJCAMedia
 	{
 	public:
 		FT3000GMMedia();
 		~FT3000GMMedia();
 		void open();
 		void close();
-		bool hasCert(const std::string & type);
-		virtual void extract();
 
 	protected:
-		virtual void GetCertBase64String();
-		
-		bool hasRSACert();
-		bool hasECCCert();
-		std::string readRSACert();
-		std::string readECCCert();
-		virtual void FetchKeySN();
-		
+		virtual bool hasRSACert();
+		virtual bool hasECCCert();
+		virtual std::string readRSACert();
+		virtual std::string readECCCert();
+
 	private:
 		Poco::SharedLibrary sl;
 		typedef void* HANDLE;

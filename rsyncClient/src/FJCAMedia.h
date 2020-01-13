@@ -6,18 +6,21 @@ namespace Reach {
 	
 	class FJCAMedia
 		: public MediaBase
-		/// Haitai UKEY Device
 	{
 	public:
 		FJCAMedia();
-		~FJCAMedia();
-		virtual void extract();
+		virtual ~FJCAMedia();
 
+		virtual void extract();
+		bool hasCert(const std::string & type);
+		void GetCertBase64String();
+		void fetchKeySN();
 	protected:
-		virtual void GetCertBase64String();
-		virtual void FetchKeySN();
+		virtual bool hasRSACert() = 0;
+		virtual bool hasECCCert() = 0;
+		virtual std::string readRSACert() = 0;
+		virtual std::string readECCCert() = 0;
+
 		virtual void handleLastError(int code);
-	private:
-		BridgeKG_HARD_EXT ext;
 	};
 }

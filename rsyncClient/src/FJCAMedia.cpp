@@ -11,75 +11,71 @@ using namespace Reach::ActiveX;
 using Poco::Base64Encoder;
 using Poco::Base64EncodingOptions;
 
+extern std::string SOF_GetCertInfoByOid(std::string Base64EncodeCert, std::string oid);
+
 FJCAMedia::FJCAMedia()
 {
-	Utility::message("Enter FJCAMedia");
-	setProperty("Provider", "FJCAMedia");
 }
 
 FJCAMedia::~FJCAMedia()
 {
-	Utility::message("Exit FJCAMedia");
 }
 
 void FJCAMedia::extract()
 {
-	FetchKeySN();
 	GetCertBase64String();
 	CertValidity();
+	fetchKeySN();
 	GetImgAreaFromDN();
+}
+
+bool Reach::FJCAMedia::hasCert(const std::string & type)
+{
+	if (type == "RSA")
+		return hasRSACert();
+	else if (type == "ECC")
+		return hasECCCert();
+	else
+		poco_assert(0);
+
+	return false;
 }
 
 void FJCAMedia::GetCertBase64String()
 {
-	int rv = 0;
-	HANDLE hDev = NULL;
-	std::string content;
+	std::string nakedCert;
 
-	rv = InitTCard("USB1", &hDev);
-	//if (!rv) throw Poco::LogicException("USB1");
-	poco_assert(rv);
-	if (!rv) handleLastError(rv);
+	if (hasCert("RSA"))
+		nakedCert = readRSACert();
+	else if (hasCert("ECC"))
+		nakedCert = readECCCert();
+	else
+		poco_assert(0);
 
-	BYTE no = 0;
-	rv = TCardGetCertNo(&no, hDev);
-	//if (!rv && !no) throw Poco::LogicException("OESSealProvider cerification not found!");
-	poco_assert(rv);
-	if (!rv) handleLastError(rv);
-
-	rv = TCardSetCertNo(0x01, hDev);
-	//if (!rv) throw Poco::LogicException("OESSealProvider cerification not found!");
-	poco_assert(rv);
-	if (!rv) handleLastError(rv);
-
-	DWORD len = 1024;
-	std::vector<char> vCert(len, 0);
-	rv = TCardReadCert((BYTE*)vCert.data(), &len, hDev);
-	if (!rv && len > vCert.size()) {
-		vCert.resize(len + 1);
-		rv = TCardReadCert((BYTE*)vCert.data(), &len, hDev);
-	}
-	//if (!rv) throw Poco::LogicException("TCardReadCert failed!");
-	poco_assert(rv);
-	if (!rv) handleLastError(rv);
-
-	vCert.resize(len);
+	poco_assert(!nakedCert.empty());
 
 	std::ostringstream ostr;
 	Poco::Base64Encoder encoder(ostr);
-	encoder.write(vCert.data(), vCert.size());
+	encoder.rdbuf()->setLineLength(0);
+	encoder.write(nakedCert.data(), nakedCert.size());
 	encoder.close();
 
 	setProperty("cert", ostr.str());
-	rv = ExitTCard(hDev);
 }
 
-void FJCAMedia::FetchKeySN()
+void FJCAMedia::fetchKeySN()
 {
-	ext.WebConnectDev();
-	std::string keysn = ext.WebGetSerial();
-	setProperty("keysn", keysn);
-	ext.WebDisconnectDev();
+	std::string cert = getProperty("cert");
+	std::string text = SOF_GetCertInfoByOid(cert, "1.2.156.112578.1");
+	utility_message(text);
+
+	text = text.substr(text.rfind('@') + 1);
+	utility_message(text);
+	if (text.size() > 12)
+		text = text.substr(0, 12);
+
+	utility_message(text);
+	setProperty("keysn", text);
 }
 
 void FJCAMedia::handleLastError(int code)

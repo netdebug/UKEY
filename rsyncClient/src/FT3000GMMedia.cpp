@@ -9,15 +9,12 @@ using namespace Reach::ActiveX;
 using Poco::Base64Encoder;
 using Poco::Base64EncodingOptions;
 
-extern std::string SOF_GetCertInfoByOid(std::string Base64EncodeCert, std::string oid);
-
 FT3000GMMedia::FT3000GMMedia()
 	:_hDev(0)
 {
 	Utility::message("Enter FT3000GMMedia");
 	setProperty("Provider", "FT3000GMMedia");
 	sl.load("FJCA_FCardCert.dll");
-	open();
 }
 
 FT3000GMMedia::~FT3000GMMedia()
@@ -25,24 +22,6 @@ FT3000GMMedia::~FT3000GMMedia()
 	close();
 	sl.unload();
 	Utility::message("Exit FT3000GMMedia");
-}
-
-void FT3000GMMedia::extract()
-{
-	GetCertBase64String();
-	CertValidity();
-	FetchKeySN();
-	GetImgAreaFromDN();
-}
-
-void FT3000GMMedia::GetCertBase64String()
-{
-	if (hasCert("RSA"))
-		setProperty("cert", readRSACert());
-	else if (hasCert("ECC"))
-		setProperty("cert", readECCCert());
-	else
-		poco_assert(0);
 }
 
 void FT3000GMMedia::open()
@@ -62,6 +41,8 @@ void FT3000GMMedia::open()
 
 void FT3000GMMedia::close()
 {
+	if (!_hDev) return;
+
 	typedef BOOL (*ExitFCard)(
 		IN DEVHANDLE	hDev
 	);
@@ -72,18 +53,6 @@ void FT3000GMMedia::close()
 	int rv = 0;
 	rv = (*pfn)(_hDev);
 	poco_assert(rv);
-}
-
-bool FT3000GMMedia::hasCert(const std::string& type)
-{
-	if (type == "RSA")
-		return hasRSACert();
-	else if (type == "ECC")
-		return hasECCCert();
-	else
-		poco_assert(0);
-
-	return false;
 }
 
 bool FT3000GMMedia::hasRSACert()
@@ -161,13 +130,10 @@ std::string FT3000GMMedia::readRSACert()
 	poco_assert(rv);
 	vCert.resize(len);
 
-	std::ostringstream ostr;
-	Poco::Base64Encoder encoder(ostr);
-	encoder.rdbuf()->setLineLength(0);
-	encoder.write(vCert.data(), vCert.size());
-	encoder.close();
+	std::string text;
+	std::move(vCert.begin(), vCert.end(), std::back_inserter(text));
 
-	return ostr.str();
+	return text;
 }
 
 std::string FT3000GMMedia::readECCCert()
@@ -202,26 +168,8 @@ std::string FT3000GMMedia::readECCCert()
 	poco_assert(rv);
 	vCert.resize(len);
 
-	std::ostringstream ostr;
-	Poco::Base64Encoder encoder(ostr);
-	encoder.rdbuf()->setLineLength(0);
-	encoder.write(vCert.data(), vCert.size());
-	encoder.close();
+	std::string text;
+	std::move(vCert.begin(), vCert.end(), std::back_inserter(text));
 
-	return ostr.str();
-}
-
-void FT3000GMMedia::FetchKeySN()
-{
-	std::string cert = getProperty("cert");
-	std::string text = SOF_GetCertInfoByOid(cert, "1.2.156.112578.1");
-	utility_message(text);
-
-	text = text.substr(text.rfind('@') + 1);
-	utility_message(text);
-	if (text.size() > 12)
-		text = text.substr(0, 12);
-
-	utility_message(text);
-	setProperty("keysn", text);
+	return text;
 }

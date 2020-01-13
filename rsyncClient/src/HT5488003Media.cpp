@@ -9,15 +9,12 @@ using namespace Reach::ActiveX;
 using Poco::Base64Encoder;
 using Poco::Base64EncodingOptions;
 
-extern std::string SOF_GetCertInfoByOid(std::string Base64EncodeCert, std::string oid);
-
 HT5488003Media::HT5488003Media()
 	:_hDev(0)
 {
 	Utility::message("Enter HT5488003Media");
 	setProperty("Provider", "HT5488003Media");
 	sl.load("FJCA_TCardCert.dll");
-	open();
 }
 
 HT5488003Media::~HT5488003Media()
@@ -25,24 +22,6 @@ HT5488003Media::~HT5488003Media()
 	close();
 	sl.unload();
 	Utility::message("Exit HT5488003Media");
-}
-
-void HT5488003Media::extract()
-{
-	GetCertBase64String();
-	CertValidity();
-	FetchKeySN();
-	GetImgAreaFromDN();
-}
-
-void HT5488003Media::GetCertBase64String()
-{
-	if (hasCert("RSA"))
-		setProperty("cert", readRSACert());
-	else if (hasCert("ECC"))
-		setProperty("cert", readECCCert());
-	else
-		poco_assert(0);
 }
 
 void HT5488003Media::open()
@@ -62,6 +41,8 @@ void HT5488003Media::open()
 
 void HT5488003Media::close()
 {
+	if (!_hDev) return;
+
 	typedef BOOL(*ExitTCard)(
 		IN DEVHANDLE	hDev
 		);
@@ -72,18 +53,6 @@ void HT5488003Media::close()
 	int rv = 0;
 	rv = (*pfn)(_hDev);
 	poco_assert(rv);
-}
-
-bool HT5488003Media::hasCert(const std::string& type)
-{
-	if (type == "RSA")
-		return hasRSACert();
-	else if (type == "ECC")
-		return hasECCCert();
-	else
-		poco_assert(0);
-
-	return false;
 }
 
 bool HT5488003Media::hasRSACert()
@@ -161,13 +130,10 @@ std::string HT5488003Media::readRSACert()
 	poco_assert(rv);
 	vCert.resize(len);
 
-	std::ostringstream ostr;
-	Poco::Base64Encoder encoder(ostr);
-	encoder.rdbuf()->setLineLength(0);
-	encoder.write(vCert.data(), vCert.size());
-	encoder.close();
+	std::string text;
+	std::move(vCert.begin(), vCert.end(), std::back_inserter(text));
 
-	return ostr.str();
+	return text;
 }
 
 std::string HT5488003Media::readECCCert()
@@ -202,26 +168,8 @@ std::string HT5488003Media::readECCCert()
 	poco_assert(rv);
 	vCert.resize(len);
 
-	std::ostringstream ostr;
-	Poco::Base64Encoder encoder(ostr);
-	encoder.rdbuf()->setLineLength(0);
-	encoder.write(vCert.data(), vCert.size());
-	encoder.close();
+	std::string text;
+	std::move(vCert.begin(), vCert.end(), std::back_inserter(text));
 
-	return ostr.str();
-}
-
-void HT5488003Media::FetchKeySN()
-{
-	std::string cert = getProperty("cert");
-	std::string text = SOF_GetCertInfoByOid(cert, "1.2.156.112578.1");
-	utility_message(text);
-
-	text = text.substr(text.rfind('@') + 1);
-	utility_message(text);
-	if (text.size() > 12)
-		text = text.substr(0, 12);
-
-	utility_message(text);
-	setProperty("keysn", text);
+	return text;
 }
