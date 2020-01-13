@@ -100,6 +100,7 @@ void QZSyncWorker::extractKeyInfo()
 	for (SPIter it = media.begin(); it != media.end(); it++) {
 		try 
 		{
+			(*it)->open();
 			(*it)->extract();
 			_cert = (*it)->getProperty("cert");
 			_keysn = (*it)->getProperty("keysn");
