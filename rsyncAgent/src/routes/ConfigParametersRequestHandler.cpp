@@ -1,10 +1,21 @@
 #include "ConfigParametersRequestHandler.h"
 #include "Objbase.h"
+#include "Poco/Environment.h"
+#include "Poco/FileStream.h"
+//#include "Poco/Util/IniFileConfiguration.h"
+#include "Poco/LineEndingConverter.h"
+#include "Poco/String.h"
+#include "Poco/AutoPtr.h"
 #include "../../iWebAssist.h"
 #include <cassert>
 #include <comutil.h>
 
 using namespace Reach;
+//using Poco::AutoPtr;
+using Poco::format;
+using Poco::FileStream;
+using Poco::Environment;
+//using Poco::Util::IniFileConfiguration;
 
 ConfigParameters::ConfigParameters(const std::string& cmd, const std::string& val)
 :_cmd(cmd), _val(val)
@@ -16,9 +27,36 @@ void ConfigParameters::run()
 {
 	Application& app = Application::instance();
 	app.config().setString(_cmd, _val);
-	if (_cmd == "setWebAssist") {
-		setWebAssist();
+	if (_cmd == "authCode") {
+		writeKCode();
 	}
+}
+
+void ConfigParameters::writeKCode()
+{
+	///
+	/// %temp%\KCODE.ini
+	/// AUTHORIZECODE=5D65B01305564D2CB5308B7C71D98994
+	/// The function needs to find KCODE.ini by current user(eg. Administrator)
+	/// CreateProcessAsUser
+	/// 
+	
+#if defined(_INI)
+	const std::string path = ".\\KCODE_DEBUG.ini";
+	bool rv = WritePrivateProfileStringA("",
+		"AUTHORIZECODE",
+		_val.c_str(),
+		path.c_str());
+	poco_assert_msg(rv, format("WritePrivateProfileStringA %s", path).c_str());
+#else
+	const std::string path = Environment::get("TEMP").append("\\KCODE.ini");
+
+	std::string authcode = format("AUTHORIZECODE=%s", _val);
+	FileStream fs(path);
+	fs.write(authcode.data(), authcode.size());
+	fs.flush();
+	fs.close();
+#endif
 }
 
 void ConfigParameters::setWebAssist()
