@@ -32,6 +32,9 @@ XSSealProvider::~XSSealProvider()
 
 void XSSealProvider::extract(const std::string& cert)
 {
+	if (!hasStamps())
+		poco_assert(0);
+
 	readSeal();
 	ExtractSealPicture();
 }
@@ -87,23 +90,36 @@ void XSSealProvider::readSeal()
 	throw Poco::DataFormatException("Invalid seal data", Poco::format("%[1]s\n%[0]d", content, getProperty("Provider")));
 }
 
-void XSSealProvider::count()
+
+bool XSSealProvider::hasStamps()
 {
-	typedef int(*GetSealCount)();
+	if (hasKey() && count() > 0)
+		return true;
+
+	return false;
+}
+
+int XSSealProvider::count()
+{
+	typedef int(__stdcall *GetSealCount)();
 	std::string name("GetSealCount");
 
 	GetSealCount fn = (GetSealCount)sl.getSymbol(name);
-	_count = fn();
+	int count = fn();
 
-	utility_message_f1("share-sun seal.count : -> %d", _count);
+	utility_message_f1("dianju seal.count : -> %d", count);
+
+	return count;
 }
 
-void XSSealProvider::testKeyIn()
+bool XSSealProvider::hasKey()
 {
-	typedef int(*IsUKIn)();
-	std::string name("IsUKIn");
-	IsUKIn fn = (IsUKIn)sl.getSymbol(name);
-	_bPresent = fn();
+	typedef int(__stdcall *IsUKIn)();
 
-	utility_message_f1("share-sun seal.count : -> %b", _bPresent);
+	IsUKIn fn = (IsUKIn)sl.getSymbol("IsUKIn");
+	int k = fn();
+
+	utility_message_f1("dianju seal.keyin : -> %d", k);
+
+	return (k == 0);
 }

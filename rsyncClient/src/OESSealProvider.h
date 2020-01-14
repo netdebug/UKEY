@@ -14,15 +14,16 @@ namespace Reach {
 		~OESSealProvider();
 		virtual void extract(const std::string& cert);
 	protected:
+		bool hasStamps();
 		void readSeal();
-		void count();
-		void handleLastError(int code);
-		void GetDeviceInfo(void* hDev);
+		//void GetDeviceInfo(void* hDev);
 		void ExtractSealPicture();
+	private:
+		int count();
+		void handleLastError(int code);
 	private:
 		BridgeKG_HARD_EXT ext;
 		Poco::SharedLibrary sl;
-		int _count;
 		std::string _certContent;
 		std::string _sealdata;
 	};

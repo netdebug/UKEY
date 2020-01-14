@@ -25,6 +25,9 @@ BCBSSealProvider::~BCBSSealProvider()
 
 void BCBSSealProvider::extract(const std::string& cert)
 {
+	if (!hasStamps())
+		poco_assert(0);
+
 	readSeal();
 	ExtractSealPicture();
 }
@@ -69,6 +72,17 @@ void BCBSSealProvider::ExtractSealPicture()
 	setProperty("seals", ostr.str());
 }
 
+bool BCBSSealProvider::hasStamps()
+{
+	int k = IsUKIn();
+	int c = GetSealCount();
+
+	if (k == 0 && c > 0) 
+		return true;
+
+	return false;
+}
+
 void BCBSSealProvider::readSeal()
 {
 	static const int all_seal = -1;
@@ -78,14 +92,4 @@ void BCBSSealProvider::readSeal()
 
 	if (_sealdata.empty())
 		throw Poco::DataFormatException("Invalid seal data", Poco::format("%[1]s\n%[0]d", content, getProperty("Provider")));
-}
-
-void BCBSSealProvider::count()
-{
-	_count = GetSealCount();
-}
-
-void BCBSSealProvider::testKeyIn()
-{
-	_bPresent = IsUKIn();
 }

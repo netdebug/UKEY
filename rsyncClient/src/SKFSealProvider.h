@@ -15,17 +15,15 @@ namespace Reach {
 
 	protected:
 		void readSeal();
-		void count();
-		void keyin();
+		bool hasStamps();
 		void ExtractSealPicture();
-
+	private:
+		int count();
+		bool hasKey();
 	private:
 		std::string _certContent;
 		std::string _sealdata;
 		Poco::SharedLibrary sl;
-
-		int _count;
-		bool _bPresent;
 	};
 }
 

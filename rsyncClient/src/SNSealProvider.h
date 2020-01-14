@@ -13,8 +13,9 @@ namespace Reach {
 
 	protected:
 		void readSeal();
-		void count();
-		void keyin();
+		bool hasStamps();
+		int count();
+		bool hasKey();
 		void ExtractSealPicture();
 
 	private:

@@ -23,7 +23,7 @@ SNSealProvider::SNSealProvider()
 	utility_message("Enter SNSealProvider tongzhi");
 	setProperty("Provider", "SNSealProvider");
 
-	sl.load("SNCA_GetSeal180514.dll");
+	sl.load("SNCA_GetSeal.dll");
 }
 
 SNSealProvider::~SNSealProvider()
@@ -33,15 +33,16 @@ SNSealProvider::~SNSealProvider()
 	utility_message("SNSealProvider tongzhi");
 }
 
-void Reach::SNSealProvider::extract(const std::string& cert)
+void SNSealProvider::extract(const std::string& cert)
 {
+	if (!hasStamps())
+		poco_assert(0);
+
 	readSeal();
 	ExtractSealPicture();
-	count();
-	keyin();
 }
 
-void Reach::SNSealProvider::readSeal()
+void SNSealProvider::readSeal()
 {
 	static const int all_seal = -1;
 	typedef char*(__stdcall *ReadSealData)(int idx);
@@ -56,29 +57,40 @@ void Reach::SNSealProvider::readSeal()
 	}
 }
 
-void Reach::SNSealProvider::count()
+bool SNSealProvider::hasStamps()
 {
-	typedef int(__stdcall *GetSealCount)();
+	if (hasKey() && count() > 0)
+		return true;
 
-	std::string name("GetSealCount");
-	GetSealCount fn = (GetSealCount)sl.getSymbol(name);
-	_count = fn();
-
-	utility_message_f1("tongzhi seal.count : -> %d", _count);
+	return false;
 }
 
-void Reach::SNSealProvider::keyin()
+int SNSealProvider::count()
+{
+	typedef int(__stdcall *GetSealCount)();
+	std::string name("GetSealCount");
+
+	GetSealCount fn = (GetSealCount)sl.getSymbol(name);
+	int count = fn();
+
+	utility_message_f1("dianju seal.count : -> %d", count);
+
+	return count;
+}
+
+bool SNSealProvider::hasKey()
 {
 	typedef int(__stdcall *IsUKIn)();
 
-	std::string name("IsUKIn");
 	IsUKIn fn = (IsUKIn)sl.getSymbol("IsUKIn");
-	_bPresent = fn() == 0;
+	int k = fn();
 
-	utility_message_f1("tongzhi seal.keyin : -> %b", _bPresent);
+	utility_message_f1("dianju seal.keyin : -> %d", k);
+
+	return (k == 0);
 }
 
-void Reach::SNSealProvider::ExtractSealPicture()
+void SNSealProvider::ExtractSealPicture()
 {
 	utility_message_f1("tongzhi Seal :\n%s", _sealdata);
 	poco_assert(!_sealdata.empty());

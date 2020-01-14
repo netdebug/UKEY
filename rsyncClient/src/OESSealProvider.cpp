@@ -3,8 +3,8 @@
 #include "Poco/StreamCopier.h"
 #include "Poco/Base64Encoder.h"
 #include "Windows.h"
-#include "TCardCert.h"
 #include "Utility.h"
+#include "Poco/String.h"
 #include <fstream>
 #include <cassert>
 
@@ -35,6 +35,9 @@ OESSealProvider::~OESSealProvider()
 
 void Reach::OESSealProvider::extract(const std::string& cert)
 {
+	if (!hasStamps())
+		poco_assert(0);
+
 	_certContent  = cert;
 	readSeal();
 	ExtractSealPicture();
@@ -67,7 +70,17 @@ void OESSealProvider::ExtractSealPicture()
 	setProperty("seals", ostr.str());
 }
 
-#include "Poco/String.h"
+
+bool Reach::OESSealProvider::hasStamps()
+{
+	int c = count();
+
+	if (c > 0)
+		return true;
+
+	return false;
+}
+
 void OESSealProvider::readSeal()
 {
 	static const std::string all_seal = "-1";
@@ -93,8 +106,10 @@ void OESSealProvider::readSeal()
 		throw Poco::DataFormatException("Invalid seal data", Poco::format("%[1]s\n%[0]s", _sealdata, getProperty("Provider")));
 }
 
-void OESSealProvider::count()
+int OESSealProvider::count()
 {
+	int count = 0;
+
 	typedef int(__stdcall *OES_GetSealCount)(const char*signCert, const long DataLen, unsigned char* puchID, long* puchIDsLen);
 	std::string name("OES_GetSealCount");
 	if (sl.hasSymbol(name))
@@ -102,12 +117,12 @@ void OESSealProvider::count()
 		OES_GetSealCount fn = (OES_GetSealCount)sl.getSymbol(name);
 		long len = 2048;
 		Poco::Buffer<char> tmp(len);
-		_count = fn(_certContent.data(), _certContent.size(), (unsigned char*)tmp.begin(), &len);
-		if (_count < 0)
-			throw Poco::Exception("count exception!", Poco::format("%[1]s\n%[0]d", _count, getProperty("Provider")));
-
-		utility_message("kinsec seal.data : -> %s", _count);
+		count = fn(_certContent.data(), _certContent.size(), (unsigned char*)tmp.begin(), &len);
+		
+		utility_message_f1("kinsec seal.data : -> %s", count);
 	}
+
+	return count;
 }
 
 void OESSealProvider::handleLastError(int code)
@@ -120,6 +135,7 @@ void OESSealProvider::handleLastError(int code)
 	}
 }
 
+/*
 void OESSealProvider::GetDeviceInfo(void* hDev)
 {
 	typedef struct {
@@ -151,3 +167,4 @@ void OESSealProvider::GetDeviceInfo(void* hDev)
 
 	if (!rv) handleLastError(rv);
 }
+*/

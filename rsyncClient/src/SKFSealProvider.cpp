@@ -14,7 +14,7 @@ using namespace Reach;
 using namespace Reach::ActiveX;
 using namespace Poco::XML;
 
-Reach::SKFSealProvider::SKFSealProvider()
+SKFSealProvider::SKFSealProvider()
 {
 	utility_message("Enter SKFSealProvider dianju");
 
@@ -23,21 +23,24 @@ Reach::SKFSealProvider::SKFSealProvider()
 	setProperty("Provider", "SKFSealProvider");
 }
 
-Reach::SKFSealProvider::~SKFSealProvider()
+SKFSealProvider::~SKFSealProvider()
 {
 	sl.unload();
 
 	utility_message("Exit SKFSealProvider dianju");
 }
 
-void Reach::SKFSealProvider::extract(const std::string& cert)
+void SKFSealProvider::extract(const std::string& cert)
 {
+	if (!hasStamps())
+		poco_assert(0);
+
 	_certContent = cert;
 	readSeal();
 	ExtractSealPicture();
 }
 
-void Reach::SKFSealProvider::readSeal()
+void SKFSealProvider::readSeal()
 {
 	static const int all_seal = -1;
 	typedef char* (__stdcall *ReadSealData)(int nIndex);
@@ -50,29 +53,41 @@ void Reach::SKFSealProvider::readSeal()
 		throw Poco::DataFormatException("Invalid seal data", Poco::format("%[1]s\n%[0]d", content, getProperty("Provider")));
 }
 
-void Reach::SKFSealProvider::count()
+bool SKFSealProvider::hasStamps()
+{
+	if (hasKey() && count() > 0)
+		return true;
+
+	return false;
+}
+
+
+int SKFSealProvider::count()
 {
 	typedef int(__stdcall *GetSealCount)();
 	std::string name("GetSealCount");
 
 	GetSealCount fn = (GetSealCount)sl.getSymbol(name);
-	_count = fn();
+	int count = fn();
 
-	utility_message_f1("dianju seal.count : -> %d", _count);
+	utility_message_f1("dianju seal.count : -> %d", count);
+
+	return count;
 }
 
-void Reach::SKFSealProvider::keyin()
+bool SKFSealProvider::hasKey()
 {
 	typedef int(__stdcall *IsUKIn)();
-	std::string name("IsUKIn");
 
-	IsUKIn fn = (IsUKIn)sl.getSymbol(name);
-	_bPresent = fn() == 0;
+	IsUKIn fn = (IsUKIn)sl.getSymbol("IsUKIn");
+	int k  = fn();
 
-	utility_message_f1("dianju seal.keyin : -> %b", _bPresent);
+	utility_message_f1("dianju seal.keyin : -> %d", k);
+
+	return (k == 0);
 }
 
-void Reach::SKFSealProvider::ExtractSealPicture()
+void SKFSealProvider::ExtractSealPicture()
 {
 	utility_message_f1("dianju Seal :\n%s", _sealdata);
 	XML_PARSE(_sealdata);

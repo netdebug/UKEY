@@ -13,14 +13,12 @@ namespace Reach {
 		virtual void extract(const std::string& cert);
 	protected:
 		void readSeal();
-		void count();
-		void testKeyIn();
+		bool hasStamps();
+		int count();
+		bool hasKey();
 		void ExtractSealPicture();
 	private:
 		Poco::SharedLibrary sl;
-
-		int _count;
-		bool _bPresent;
 		std::string _sealdata;
 	};
 }
