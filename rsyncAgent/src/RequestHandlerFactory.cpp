@@ -66,8 +66,6 @@ using Poco::Net::HTTPServerRequest;
 
 HTTPRequestHandler * Reach::RequestHandlerFactory::createRequestHandler(const HTTPServerRequest & request)
 {
-	return new EncryptFileBase64RequestHandler;
-
 	if (request.getURI() == "/echoBody")
 		return new EchoBodyRequestHandler;
 	else if (request.getURI() == "/echoHeader")
