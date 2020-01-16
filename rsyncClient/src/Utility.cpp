@@ -249,6 +249,7 @@ std::string Utility::CodeFromDN(const std::string& cert)
 	std::string md5str = Poco::DigestEngine::digestToHex(md5.digest());
 	std::string xpath = format("CA[@md5=%s].code", md5str);
 
-	Poco::AutoPtr<XMLConfiguration> pConf(new XMLConfiguration("F:\\source\\RSTestRunner\\rsyncClient\\CASignature.xml"));
+	std::string signxml = Utility::config("CASignature.xml");
+	Poco::AutoPtr<XMLConfiguration> pConf(new XMLConfiguration(signxml));
 	return pConf->getString(xpath);
 }

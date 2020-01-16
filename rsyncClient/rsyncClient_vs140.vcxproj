@@ -220,7 +220,8 @@
     </Link>
     <PostBuildEvent>
       <Command>xcopy /y $(ProjectDir)rsyncClient.properties $(OutDir)
-xcopy /y $(ProjectDir)QZSyncWorker.json $(OutDir)</Command>
+xcopy /y $(ProjectDir)QZSyncWorker.json $(OutDir)
+xcopy /y $(ProjectDir)CASignature.xml $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='release_shared|Win32'">
