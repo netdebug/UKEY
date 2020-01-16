@@ -26,7 +26,9 @@ BCBSSealProvider::~BCBSSealProvider()
 void BCBSSealProvider::extract(const std::string& cert)
 {
 	if (!hasStamps())
-		poco_assert(0);
+		throw Poco::NotFoundException("The stamps were not Found!", "BCBSSealProvider");
+
+	_areacode = Utility::CodeFromDN(cert);
 
 	readSeal();
 	ExtractSealPicture();
@@ -62,7 +64,7 @@ void BCBSSealProvider::ExtractSealPicture()
 		ob.set("height", h->innerText());
 		ob.set("imgext", "gif");
 		ob.set("signType", "80");///第三方签章
-		ob.set("imgItem", "99004");/// 百城签章
+		ob.set("imgItem", _areacode);/// 百城签章
 		ob.set("imgArea", "82");/// BJCA or CFCA
 		seals.add(ob);
 	}

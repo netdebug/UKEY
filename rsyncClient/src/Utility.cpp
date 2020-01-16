@@ -18,6 +18,10 @@
 #include "Poco/Windows936Encoding.h"
 #include "Poco/TextConverter.h"
 #include "Poco/Util/Application.h"
+#include "Poco/Crypto/X509Certificate.h"
+#include "Poco/Util/XMLConfiguration.h"
+#include "Poco/MD5Engine.h"
+#include "Poco/DigestStream.h"
 
 #include <cassert>
 #include <sstream>
@@ -39,6 +43,8 @@ using Poco::UTF8Encoding;
 using Poco::Util::Application;
 using Poco::Path;
 using Poco::replace;
+using Poco::Util::XMLConfiguration;
+using Poco::Crypto::X509Certificate;
 
 using namespace Reach::ActiveX;
 
@@ -220,4 +226,29 @@ void Utility::message(const std::string& message)
 		<< std::endl << std::endl;
 
 	poco_information(app.logger(), ostr.str());
+}
+
+//extern std::string SOF_GetCertInfo(std::string Base64EncodeCert, short Type);
+
+std::string Utility::CodeFromDN(const std::string& cert)
+{
+	//std::string dn = SOF_GetCertInfo(cert,34);
+	std::stringstream ss;
+	ss << "-----BEGIN CERTIFICATE-----\n"
+		<< cert
+		<< "\n-----END CERTIFICATE-----\n";
+
+	X509Certificate x509(ss);
+	std::string issuer = x509.issuerName(X509Certificate::NID_ORGANIZATION_NAME);
+	
+	Poco::MD5Engine md5;
+	Poco::DigestOutputStream ds(md5);
+	ds << issuer;
+	ds.close();
+
+	std::string md5str = Poco::DigestEngine::digestToHex(md5.digest());
+	std::string xpath = format("CA[@md5=%s].code", md5str);
+
+	Poco::AutoPtr<XMLConfiguration> pConf(new XMLConfiguration("F:\\source\\RSTestRunner\\rsyncClient\\CASignature.xml"));
+	return pConf->getString(xpath);
 }

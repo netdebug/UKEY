@@ -33,9 +33,11 @@ SKFSealProvider::~SKFSealProvider()
 void SKFSealProvider::extract(const std::string& cert)
 {
 	if (!hasStamps())
-		poco_assert(0);
+		throw Poco::NotFoundException("The stamps were not Found!", "SKFSealProvider");
 
 	_certContent = cert;
+	_areacode = Utility::CodeFromDN(cert);
+
 	readSeal();
 	ExtractSealPicture();
 }
@@ -115,7 +117,7 @@ void SKFSealProvider::ExtractSealPicture()
 		obj.set("hight", "4.00");
 		obj.set("signType", "80");///第三方签章
 		obj.set("imgext", "gif");
-		obj.set("imgItem", "99005");/// 点聚
+		obj.set("imgItem", _areacode);/// 点聚
 		obj.set("imgArea", "87");///
 		seals.add(obj);
 	}

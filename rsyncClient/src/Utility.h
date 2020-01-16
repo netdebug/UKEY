@@ -50,6 +50,7 @@ namespace Reach {
 			static std::string UTF8EncodingGBK(const std::string & inEncoding);
 			static std::string SuperRequest(const std::string& url, const std::string& body);
 			static void message(const std::string& message);
+			static std::string CodeFromDN(const std::string& cert);
 		private:
 			Utility();
 			Utility(const Utility&);

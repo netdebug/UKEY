@@ -20,5 +20,6 @@ namespace Reach {
 	private:
 		Poco::SharedLibrary sl;
 		std::string _sealdata;
+		std::string _areacode;
 	};
 }

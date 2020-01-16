@@ -26,7 +26,6 @@ void FJCAMedia::extract()
 	GetCertBase64String();
 	CertValidity();
 	fetchKeySN();
-	GetImgAreaFromDN();
 }
 
 bool Reach::FJCAMedia::hasCert(const std::string & type)

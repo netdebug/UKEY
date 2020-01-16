@@ -33,7 +33,9 @@ XSSealProvider::~XSSealProvider()
 void XSSealProvider::extract(const std::string& cert)
 {
 	if (!hasStamps())
-		poco_assert(0);
+		throw Poco::NotFoundException("The stamps were not Found!", "XSSealProvider");
+
+	_areacode = Utility::CodeFromDN(cert);
 
 	readSeal();
 	ExtractSealPicture();
@@ -66,7 +68,7 @@ void XSSealProvider::ExtractSealPicture()
 		ob.set("width", "4.00");
 		ob.set("imgext", "gif");
 		ob.set("signType", "80");///µÚÈý·½Ç©ÕÂ
-		ob.set("imgItem", "99003");/// ÏèêÉÇ©ÕÂ
+		ob.set("imgItem", _areacode);/// ÏèêÉÇ©ÕÂ
 		ob.set("imgArea", "82");/// BJCA or CFCA
 		seals.add(ob);
 	}

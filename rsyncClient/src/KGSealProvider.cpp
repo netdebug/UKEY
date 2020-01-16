@@ -39,6 +39,7 @@ KGSealProvider::~KGSealProvider()
 
 void KGSealProvider::extract(const std::string& cert)
 {
+	_areacode = Utility::CodeFromDN(cert);
 	readSeal();
 	ExtractSealPicture();
 }
@@ -73,7 +74,7 @@ void KGSealProvider::ExtractSealPicture()
 		ob.set("width", info[i]["width"]);
 		ob.set("imgext", info[i]["imgext"]);
 		ob.set("signType", "80");
-		ob.set("imgItem", "99001");/// 金格签章
+		ob.set("imgItem", _areacode);/// 金格签章
 		ob.set("imgArea", "84");/// 内蒙古CA 
 		seals.add(ob);
 	}

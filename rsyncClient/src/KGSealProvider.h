@@ -21,5 +21,6 @@ namespace Reach {
 	private:
 		static const int all_seal = -1;
 		std::string _sealdata;
+		std::string _areacode;
 	};
 }

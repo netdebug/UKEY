@@ -19,13 +19,11 @@ namespace Reach {
 		std::string getProperty(const std::string& name) const;
 	protected:
 		virtual void CertValidity();
-		virtual void GetImgAreaFromDN();
 	private:
 		std::string _keysn;
 		std::string _cert;
 		std::string _validStart;
 		std::string _validEnd;
-		std::string _imgArea;
 
 		std::string _Provider;
 	};

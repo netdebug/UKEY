@@ -16,5 +16,6 @@ namespace Reach {
 		void ExtractSealPicture();
 	private:
 		std::string _sealdata;
+		std::string _areacode;
 	};
 }

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+  <!--Beijing SM2 CA-->
+  <CA type="SM2" md5="be61a96b8df693aa602728c4d01ed98a">
+    <name>BJCA</name>
+    <code>90017</code>
+  </CA>
+  <!--CFCA SM2 OCA1-->
+  <CA type="SM2" md5="d6087456b6a6628352525f66014a8612">
+    <name>CFCA</name>
+    <code>91008</code>
+  </CA>
+  <!--CPPCA-->
+  <CA type="RSA" md5="ad1397f44c421b8079aea6c99c1efd48">
+    <name>CPPCA</name>
+    <code>92002</code>
+  </CA>
+  <!--ca-test-->
+  <CA type="SM2" md5="0d8bb1f7e4a57db0f49979f858c47d3c">
+    <name>CWCA</name>
+    <code>91009</code>
+  </CA>
+  <!--testfjcasm2-->
+  <CA type="SM2" md5="86cad7d698f12fb3451323e827e63f67">
+    <name>FJCA</name>
+    <code>91011</code>
+  </CA>
+  <!--GDCA TrustAUTH E1 CA-->
+  <CA type="SM2" md5="cfb05a72f1026f260bd9e29df34a2559">
+    <name>GDCA</name>
+    <code>91014</code>
+  </CA>
+  <!--CCS NETCA T2 Sub1 CA-->
+  <CA type="RSA" md5="7c06e8a44646418e82a3bb5431b142fc">
+    <name>NETCA</name>
+    <code>91013</code>
+  </CA>
+  <!--NETCA SM2 TEST01 and Evaluation CA01-->
+  <CA type="SM2" md5="a868b24f4cf8df9b23fdf0391b898272">
+    <name>NETCA</name>
+    <code>91013</code>
+  </CA>
+  <!--Certificate Authority Of MOF SM2-->
+  <CA type="SM2" md5="29b94f8fab861f62ffd02045de4a51c3">
+    <name>NMGMOFCA</name>
+    <code>92001</code>
+  </CA>
+  <!--NMG Certificate Authority Center-->
+  <CA type="RSA" md5="32dea3204bbbd71cf5d5ad803d6356b0">
+    <name>NMGCA</name>
+    <code></code>
+  </CA>
+  <!--NMG SM2 CA-->
+  <CA type="SM2" md5="31fefe65918a6b6115010817d18aa085">
+    <name>NMGCA</name>
+    <code></code>
+  </CA>
+  <!--InnerMongoliaCA-->
+  <CA type="SM2" md5="0640cd4020095eaead3a237475f25fdb">
+    <name>SNCA</name>
+    <code>91003</code>
+  </CA>
+</config>
