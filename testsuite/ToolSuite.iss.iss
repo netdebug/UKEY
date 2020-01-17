@@ -6,7 +6,7 @@
 [Setup]
 AppName={cm:MyAppName}
 AppId={{D773AD72-9454-4684-96A7-89E478625FB6}
-AppVerName={cm:MyAppVerName,2.0.4.024}
+AppVerName={cm:MyAppVerName,2.0.4.025}
 AppCopyright=福建瑞术信息科技有限公司
 WizardStyle=modern
 DefaultDirName={pf}\{cm:MyAppName}
@@ -14,8 +14,8 @@ DefaultGroupName={cm:MyAppName}
 UninstallDisplayIcon={app}\MyProg.exe
 VersionInfoDescription=统一安全认证客户端
 VersionInfoProductName=统一安全认证客户端(GBK编码带签章同步)
-VersionInfoVersion=2.0.4.024
-OutputBaseFilename=SafeCertSetupV2.0.4.024
+VersionInfoVersion=2.0.4.025
+OutputBaseFilename=SafeCertSetupV2.0.4.025
 OutputDir=.\output
 ; Uncomment the following line to disable the "Select Setup Language"
 ; dialog and have it rely solely on auto-detection.
@@ -48,10 +48,11 @@ Source: "..\bin\extern\BJCAClient\*"; DestDir: "{pf}\BJCAClient\"; Flags: recurs
 Source: "..\bin\extern\Driver\*"; DestDir: "{app}\Driver\"; Flags: recursesubdirs;
 Source: "..\bin\extern\CertTools\*"; DestDir: "{app}\CertTools\"; Flags: recursesubdirs;
 Source: "..\bin\extern\redist\*"; DestDir: "{app}\redist\"; Flags: recursesubdirs;
-Source: "..\bin\extern\SKF_APP_XS.dll"; DestDir: "{sys}";
-Source: "..\bin\extern\SKF_IFD_XS.dll"; DestDir: "{sys}";
-Source: "..\bin\extern\XSCipherService.dll"; DestDir: "{sys}";
-Source: "..\bin\extern\XSSealProviderLib.dll"; DestDir: "{sys}";
+Source: "..\bin\extern\seals\*"; DestDir: "{app}"; Flags: recursesubdirs;
+;Source: "..\bin\extern\SKF_APP_XS.dll"; DestDir: "{sys}";
+;Source: "..\bin\extern\SKF_IFD_XS.dll"; DestDir: "{sys}";
+;Source: "..\bin\extern\XSCipherService.dll"; DestDir: "{sys}";
+;Source: "..\bin\extern\XSSealProviderLib.dll"; DestDir: "{sys}";
 Source: "..\bin\extern\*.dll"; DestDir: "{app}";
 Source: "..\bin\extern\clearlnk.bat"; DestDir: "{app}";
 ;Source: "..\bin\extern\msvcrt.dll"; DestDir: "{app}"
@@ -98,6 +99,7 @@ Source: "..\bin\rsyncClient.exe"; DestDir: "{app}"
 Source: "..\bin\rsyncClient.properties"; DestDir: "{app}";
 Source: "..\db\syncQLite.db"; DestDir: "{app}";
 Source: "..\bin\QZSyncWorker.json"; DestDir: "{app}";
+Source: "..\bin\CASignature.xml"; DestDir: "{app}";
 ;Source: "..\bin\TCardCert.dll"; DestDir: "{app}";
 ;Source: "..\bin\StampManageSystem.dll"; DestDir: "{app}";
 ;Source: "..\bin\GEA_FJCA.dll"; DestDir: "{app}";

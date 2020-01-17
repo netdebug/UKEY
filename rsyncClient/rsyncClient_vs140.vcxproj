@@ -32,63 +32,45 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\BCBSSealProvider.cpp" />
-    <ClCompile Include="src\BridgeKG_HARD_EXT.cpp" />
-    <ClCompile Include="src\BridgePDFReader.cpp" />
-    <ClCompile Include="src\BridgeWindowsLiveLogin.cpp" />
-    <ClCompile Include="src\Container.cpp" />
     <ClCompile Include="src\FJCAMedia.cpp" />
     <ClCompile Include="src\FT3000GMMedia.cpp" />
     <ClCompile Include="src\HT5488003Media.cpp" />
-    <ClCompile Include="src\iWebPDF_i.c" />
     <ClCompile Include="src\KGSealProvider.cpp" />
-    <ClCompile Include="src\KG_HARD_EXT_i.c" />
     <ClCompile Include="src\MediaBase.cpp" />
     <ClCompile Include="src\OESSealProvider.cpp" />
     <ClCompile Include="src\QZSyncWorker.cpp" />
     <ClCompile Include="src\rsyncClient.cpp" />
-    <ClCompile Include="src\SampleTask.cpp" />
     <ClCompile Include="src\SealProvider.cpp" />
     <ClCompile Include="src\SKFSealProvider.cpp" />
     <ClCompile Include="src\SNSealProvider.cpp" />
     <ClCompile Include="src\SOFMedia.cpp" />
-    <ClCompile Include="src\UKeyDevice.cpp" />
-    <ClCompile Include="src\Certificate.cpp" />
     <ClCompile Include="src\Utility.cpp" />
-    <ClCompile Include="src\WindowsLiveLogin_i.c" />
     <ClCompile Include="src\XSSealProvider.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
     <ClInclude Include="src\BCBSSealProvider.h" />
-    <ClInclude Include="src\BridgeKG_HARD_EXT.h" />
-    <ClInclude Include="src\BridgePDFReader.h" />
-    <ClInclude Include="src\BridgeWindowsLiveLogin.h" />
     <ClInclude Include="src\CDKG_GetKeyInfo_FJRS.h" />
-    <ClInclude Include="src\Certificate.h" />
-    <ClInclude Include="src\Container.h" />
     <ClInclude Include="src\FJCAMedia.h" />
     <ClInclude Include="src\FT3000GMMedia.h" />
     <ClInclude Include="src\HT5488003Media.h" />
-    <ClInclude Include="src\iWebPDF.h" />
     <ClInclude Include="src\KGSealProvider.h" />
-    <ClInclude Include="src\KG_GetKeyInfo_FJRS.h" />
-    <ClInclude Include="src\KG_HARD_EXT.h" />
     <ClInclude Include="src\MediaBase.h" />
     <ClInclude Include="src\OESSealProvider.h" />
     <ClInclude Include="src\QZSyncWorker.h" />
     <ClInclude Include="src\rsyncClient.h" />
-    <ClInclude Include="src\SampleTask.h" />
     <ClInclude Include="src\SealProvider.h" />
     <ClInclude Include="src\SKFSealProvider.h" />
     <ClInclude Include="src\SNSealProvider.h" />
     <ClInclude Include="src\SOFMedia.h" />
-    <ClInclude Include="src\UKeyDevice.h" />
     <ClInclude Include="src\Utility.h" />
-    <ClInclude Include="src\WindowsLiveLogin.h" />
     <ClInclude Include="src\XSSealProvider.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="rsyncClient.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="CASignature.xml" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectName>rsyncClient</ProjectName>
@@ -245,7 +227,7 @@ xcopy /y $(ProjectDir)CASignature.xml $(OutDir)</Command>
       <CompileAs>Default</CompileAs>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>PocoFoundation.lib;PocoJSON.lib;PocoUtil.lib;PocoNet.lib;PocoData.lib;PocoDataSQLite.lib;SoFProvider.lib;TCardCert.lib;FCardCert.lib;ws2_32.lib;iphlpapi.lib;SEAL_BaiCheng.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PocoFoundation.lib;PocoJSON.lib;PocoUtil.lib;PocoNet.lib;PocoData.lib;PocoDataSQLite.lib;SoFProvider.lib;ws2_32.lib;iphlpapi.lib;FJCA_TCardCert.lib;FJCA_FCardCert.lib;SEAL_BaiCheng.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\bin\rsyncClient.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
