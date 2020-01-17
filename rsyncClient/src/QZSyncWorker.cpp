@@ -26,6 +26,10 @@
 #include "SKFSealProvider.h"
 #include "SNSealProvider.h"
 #include "BCBSSealProvider.h"
+#include "Poco/Util/JSONConfiguration.h"
+#include "Poco/Util/AbstractConfiguration.h"
+
+
 
 using namespace Reach;
 using namespace Reach::ActiveX;
@@ -35,13 +39,9 @@ using namespace Poco::Data::SQLite;
 using namespace Poco::Data::Keywords;
 using namespace Poco::JSON;
 using namespace Poco::Net;
+using namespace Poco::Util;
 
 using Poco::Dynamic::Var;
-using Poco::Util::Application;
-using Poco::UUID;
-using Poco::UUIDGenerator;
-using Poco::MD5Engine;
-using Poco::DigestEngine;
 
 QZSyncWorker::QZSyncWorker()
 	:Task("QZSyncWorker"),
@@ -73,7 +73,7 @@ void QZSyncWorker::runTask()
 		}
 		catch (Poco::Exception& e)
 		{
-			std::string message(format("QZSyncWorker runTask Exception: %d, %s", e.code(), e.message()));
+			std::string message(format("QZSyncWorker runTask Exception: %d, %s", e.code(), e.displayText()));
 			log(message);
 		}
 
@@ -82,6 +82,15 @@ void QZSyncWorker::runTask()
 
 bool QZSyncWorker::IsUSBKeyPresent()
 {
+	std::string devicelist = Utility::get("/buffer");
+	utility_message(devicelist);
+	JSON_ARRARY_PARSE(devicelist);
+	if (da.size() > 1 && da.empty())
+		return false;
+
+	_now_hid = da[0]["HardwareID"].toString();
+	utility_message(da[0]);
+
 	return true;
 }
 
@@ -90,10 +99,10 @@ void QZSyncWorker::extractKeyInfo()
 	typedef std::vector<Poco::AutoPtr<MediaBase>> SPVec;
 	typedef std::vector<Poco::AutoPtr<MediaBase>>::iterator SPIter;
 	SPVec media;
-	media.push_back(new FT3000GMMedia);
-	media.push_back(new HT5488003Media);
+	media.push_back(new FT3000GMMedia(_now_hid));
+	media.push_back(new HT5488003Media(_now_hid));
 	//media.push_back(new FJCAMedia);
-	media.push_back(new SOFMedia);
+	media.push_back(new SOFMedia(_now_hid));
 
 	Poco::FastMutex::ScopedLock loc(_mutex);
 

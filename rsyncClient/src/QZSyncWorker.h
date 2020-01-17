@@ -51,6 +51,7 @@ namespace Reach {
 		std::string _seals;
 		std::string _cert;
 
+		std::string _now_hid; /// current hardware's vid&pid string
 		Poco::FastMutex _mutex;
 	};
 }
