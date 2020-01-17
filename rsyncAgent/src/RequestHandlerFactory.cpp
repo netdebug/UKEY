@@ -174,5 +174,6 @@ HTTPRequestHandler * Reach::RequestHandlerFactory::createRequestHandler(const HT
 		return new EncryptDataBase64RequestHandler;
 	else if (request.getURI() == "/RS_EncryptFile")
 		return new EncryptFileBase64RequestHandler;
+
 		return 0;
 }
