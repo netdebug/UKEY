@@ -48,12 +48,12 @@
   <!--NMG Certificate Authority Center-->
   <CA type="RSA" md5="32dea3204bbbd71cf5d5ad803d6356b0">
     <name>NMGCA</name>
-    <code></code>
+    <code>91007</code>
   </CA>
   <!--NMG SM2 CA-->
   <CA type="SM2" md5="31fefe65918a6b6115010817d18aa085">
     <name>NMGCA</name>
-    <code></code>
+    <code>91007</code>
   </CA>
   <!--InnerMongoliaCA-->
   <CA type="SM2" md5="0640cd4020095eaead3a237475f25fdb">
