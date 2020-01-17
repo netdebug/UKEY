@@ -25,7 +25,9 @@ SKFSealProvider::SKFSealProvider()
 
 SKFSealProvider::~SKFSealProvider()
 {
-	sl.unload();
+	poco_assert(sl.isLoaded());
+
+	//sl.unload();
 
 	utility_message("Exit SKFSealProvider dianju");
 }
