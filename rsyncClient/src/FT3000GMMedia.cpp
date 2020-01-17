@@ -9,8 +9,8 @@ using namespace Reach::ActiveX;
 using Poco::Base64Encoder;
 using Poco::Base64EncodingOptions;
 
-FT3000GMMedia::FT3000GMMedia()
-	:_hDev(0)
+FT3000GMMedia::FT3000GMMedia(const std::string& hid)
+	:_hDev(0), _hid(hid)
 {
 	Utility::message("Enter FT3000GMMedia");
 	setProperty("Provider", "FT3000GMMedia");

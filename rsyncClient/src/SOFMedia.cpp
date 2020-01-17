@@ -6,8 +6,10 @@ using namespace Reach;
 using namespace Reach::ActiveX;
 
 using Poco::Net::HTMLForm;
+using Poco::icompare;
 
-SOFMedia::SOFMedia()
+SOFMedia::SOFMedia(const std::string& hid)
+	:_hid(hid)
 {
 	
 }
@@ -19,7 +21,10 @@ SOFMedia::~SOFMedia()
 
 void SOFMedia::extract()
 {
-	FetchKeySN();
+	if (_hid != "VID_5448&PID_0004")
+		FetchKeySN();
+	else
+		KeySN();
 	GetCertBase64String();
 	CertValidity();
 }
@@ -54,6 +59,40 @@ void SOFMedia::GetCertBase64String()
 
 	std::string cert = ds["data"]["certBase64"].toString();
 	setProperty("cert", cert);
+}
+
+//#include <atlbase.h>
+//#include <comdef.h>
+#include <ObjBase.h>
+#include <comutil.h>
+#include "KG_HARD_EXT.h"
+#include "KG_HARD_EXT_i.c"
+
+void SOFMedia::KeySN()
+{
+	HRESULT	hr; long ret; _bstr_t sn;
+	IKG_HARD_EXT* ikg = 0;
+
+	CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+
+	hr = CoCreateInstance(CLSID_KG_HARD_EXT,
+		NULL,
+		CLSCTX_INPROC_SERVER,
+		IID_IKG_HARD_EXT,
+		(void**)&ikg);
+
+	poco_assert(SUCCEEDED(hr) && ikg);
+
+	hr = ikg->WebConnectDev(0, &ret);
+	poco_assert(SUCCEEDED(hr));
+	hr = ikg->WebGetSerial(sn.GetAddress());
+	poco_assert(SUCCEEDED(hr));
+	hr = ikg->WebDisconnectDev(&ret);
+	poco_assert(SUCCEEDED(hr));
+
+	setProperty("keysn", std::string(sn, sn.length()));
+
+	CoUninitialize();
 }
 
 void SOFMedia::FetchKeySN()

@@ -3,7 +3,6 @@
 #include "SealProvider.h"
 #include "Poco/SharedLibrary.h"
 #include "Poco/Util/Application.h"
-#include "BridgeKG_HARD_EXT.h"
 
 namespace Reach {
 	class OESSealProvider
@@ -22,7 +21,6 @@ namespace Reach {
 		int count();
 		void handleLastError(int code);
 	private:
-		BridgeKG_HARD_EXT ext;
 		Poco::SharedLibrary sl;
 		std::string _certContent;
 		std::string _sealdata;

@@ -1,6 +1,5 @@
 #pragma once
 #include "MediaBase.h"
-#include "BridgeKG_HARD_EXT.h"
 
 namespace Reach {
 	

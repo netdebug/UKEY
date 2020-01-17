@@ -9,8 +9,8 @@ using namespace Reach::ActiveX;
 using Poco::Base64Encoder;
 using Poco::Base64EncodingOptions;
 
-HT5488003Media::HT5488003Media()
-	:_hDev(0)
+HT5488003Media::HT5488003Media(const std::string& hid)
+	:_hDev(0), _hid(hid)
 {
 	Utility::message("Enter HT5488003Media");
 	setProperty("Provider", "HT5488003Media");

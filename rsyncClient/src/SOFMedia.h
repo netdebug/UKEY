@@ -20,7 +20,7 @@ namespace Reach {
 		///												004 gm3k_for_bjca.dll
 		///												006 FJCAMedia
 	public:
-		SOFMedia();
+		SOFMedia(const std::string& hid);
 		~SOFMedia();
 		virtual void open();
 		virtual void extract();
@@ -28,11 +28,12 @@ namespace Reach {
 		void GetCertBase64String();
 		void FetchKeySN();
 		void GetContainerId();
-
+		void KeySN();
 		void handleLastError(const std::string & result);
 
 	private:
 		std::string _uid;
+		std::string _hid;
 		const std::string _signType = "1";
 	};
 }

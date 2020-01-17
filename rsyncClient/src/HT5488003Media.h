@@ -12,7 +12,7 @@ namespace Reach {
 		: public FJCAMedia
 	{
 	public:
-		HT5488003Media();
+		HT5488003Media(const std::string& hid);
 		~HT5488003Media();
 		void open();
 		void close();
@@ -27,5 +27,6 @@ namespace Reach {
 		Poco::SharedLibrary sl;
 		typedef void* HANDLE;
 		HANDLE _hDev;
+		std::string _hid;
 	};
 }
