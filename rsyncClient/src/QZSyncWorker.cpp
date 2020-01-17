@@ -83,9 +83,13 @@ void QZSyncWorker::runTask()
 bool QZSyncWorker::IsUSBKeyPresent()
 {
 	std::string devicelist = Utility::get("/buffer");
+	poco_assert(!devicelist.empty());
+	if (devicelist.empty())
+		return false;
+
 	utility_message(devicelist);
 	JSON_ARRARY_PARSE(devicelist);
-	if (da.size() > 1 && da.empty())
+	if (da.size() > 1 || da.empty())
 		return false;
 
 	_now_hid = da[0]["HardwareID"].toString();
