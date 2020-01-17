@@ -56,24 +56,24 @@ Utility::Utility()
 	_session.reset();
 }
 
-void Utility::get(const std::string& url)
+std::string Utility::get(const std::string& url)
 {
+	std::ostringstream ostr;
 	try
 	{
-		Debugger::message(format("request url [%s] body [%s]", url));
-		HTTPRequest request(HTTPRequest::HTTP_GET, url);
-		_session.sendRequest(request);
-
 		HTTPResponse response;
-		std::istream& receive = _session.receiveResponse(response);
-		std::ostringstream ostr;
+		HTTPRequest request(HTTPRequest::HTTP_GET, url);
+		HTTPClientSession session("127.0.0.1", 11200);
+		session.sendRequest(request);
+
+		std::istream& receive = session.receiveResponse(response);
 		StreamCopier::copyStream(receive, ostr);
-		Debugger::message(format("response {%s}", ostr.str()));
 	}
 	catch (Poco::Exception& e)
 	{
 		Debugger::message(e.message());
 	}
+	return ostr.str();
 }
 
 void Utility::request(const std::string& url, const std::string& body)

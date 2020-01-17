@@ -21,6 +21,14 @@
 	poco_assert(object);														\
 	Poco::DynamicStruct ds = *object;
 
+#define JSON_ARRARY_PARSE(DATA) \
+	Poco::JSON::Parser ps;														\
+	Poco::Dynamic::Var res = ps.parse(DATA);									\
+	poco_assert(res.type() == typeid(Poco::JSON::Array::Ptr));					\
+	Poco::JSON::Array::Ptr object = res.extract<Poco::JSON::Array::Ptr>();		\
+	poco_assert(object);														\
+	Poco::Dynamic::Array da = *object;
+
 #define XML_PARSE(XMLData)	\
 	std::istringstream istr(XMLData);											\
 	Poco::XML::InputSource source(istr);										\
@@ -40,7 +48,7 @@ namespace Reach {
 		class Utility
 		{
 		public:
-			static void get(const std::string & url);
+			static std::string get(const std::string & url);
 			static void request(const std::string & url, const std::string & body = "");
 			static std::string response();
 			static std::wstring convert(const std::string& utf8);
