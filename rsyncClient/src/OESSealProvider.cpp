@@ -121,7 +121,7 @@ int OESSealProvider::count()
 		Poco::Buffer<char> tmp(len);
 		count = fn(_certContent.data(), _certContent.size(), (unsigned char*)tmp.begin(), &len);
 		
-		utility_message_f1("kinsec seal.data : -> %s", count);
+		utility_message_f1("kinsec seal.data : -> %d", count);
 	}
 
 	return count;

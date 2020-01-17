@@ -251,5 +251,5 @@ std::string Utility::CodeFromDN(const std::string& cert)
 
 	std::string signxml = Utility::config("CASignature.xml");
 	Poco::AutoPtr<XMLConfiguration> pConf(new XMLConfiguration(signxml));
-	return pConf->getString(xpath);
+	return pConf->getString(xpath, "NA");
 }

@@ -1,6 +1,6 @@
 // 从类型库向导中用“添加类”创建的计算机生成的 IDispatch 包装类
 
-#import "../COM/KG_GetKeyInfo_FJRS.ocx" no_namespace
+//#import "../COM/KG_GetKeyInfo_FJRS.ocx" no_namespace
 // CDKG_GetKeyInfo_FJRS 包装类
 
 class CDKG_GetKeyInfo_FJRS : public COleDispatchDriver
