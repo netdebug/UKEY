@@ -68,8 +68,8 @@ void XSSealProvider::ExtractSealPicture()
 		ob.set("width", "4.00");
 		ob.set("imgext", "gif");
 		ob.set("signType", "80");///µÚÈı·½Ç©ÕÂ
-		ob.set("imgItem", _areacode);/// ÏèêÉÇ©ÕÂ
-		ob.set("imgArea", "82");/// BJCA or CFCA
+		ob.set("imgArea", _areacode);
+		ob.set("imgItem", "99003");/// ÏèêÉÇ©ÕÂ
 		seals.add(ob);
 	}
 

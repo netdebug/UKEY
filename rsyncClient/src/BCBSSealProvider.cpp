@@ -64,8 +64,8 @@ void BCBSSealProvider::ExtractSealPicture()
 		ob.set("height", h->innerText());
 		ob.set("imgext", "gif");
 		ob.set("signType", "80");///第三方签章
-		ob.set("imgItem", _areacode);/// 百城签章
-		ob.set("imgArea", "82");/// BJCA or CFCA
+		ob.set("imgArea", _areacode);
+		ob.set("imgItem", "99004");/// 百城签章
 		seals.add(ob);
 	}
 

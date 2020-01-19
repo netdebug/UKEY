@@ -105,7 +105,6 @@ void QZSyncWorker::extractKeyInfo()
 	SPVec media;
 	media.push_back(new FT3000GMMedia(_now_hid));
 	media.push_back(new HT5488003Media(_now_hid));
-	//media.push_back(new FJCAMedia);
 	media.push_back(new SOFMedia(_now_hid));
 
 	Poco::FastMutex::ScopedLock loc(_mutex);

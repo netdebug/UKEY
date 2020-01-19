@@ -121,8 +121,8 @@ void TZWYSealProvider::ExtractSealPicture()
 		obj.set("height", h->innerText());
 		obj.set("signType", "80");
 		obj.set("imgext", "gif");
-		obj.set("imgItem", _areacode);///同智伟业
-		obj.set("imgArea", "87");/// 
+		obj.set("imgArea", _areacode);
+		obj.set("imgItem", "99006");///同智伟业
 		seals.add(obj);
 	}
 	std::ostringstream ostr;

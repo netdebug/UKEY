@@ -27,7 +27,7 @@ DianJuSealProvider::~DianJuSealProvider()
 {
 	poco_assert(sl.isLoaded());
 
-	sl.unload();
+	//sl.unload();
 
 	utility_message("Exit DianJuSealProvider dianju");
 }
@@ -119,8 +119,8 @@ void DianJuSealProvider::ExtractSealPicture()
 		obj.set("hight", "4.00");
 		obj.set("signType", "80");///第三方签章
 		obj.set("imgext", "gif");
-		obj.set("imgItem", _areacode);/// 点聚
-		obj.set("imgArea", "87");///
+		obj.set("imgArea", _areacode);
+		obj.set("imgItem", "99005");/// 点聚
 		seals.add(obj);
 	}
 	std::ostringstream ostr;

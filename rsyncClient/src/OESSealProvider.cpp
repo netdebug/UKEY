@@ -62,8 +62,8 @@ void OESSealProvider::ExtractSealPicture()
 		ob.set("width", "4.00");
 		ob.set("imgext", "gif");
 		ob.set("signType", "80");///第三方签章
-		ob.set("imgItem", _areacode);/// 凯特签章
-		ob.set("imgArea", "81");/// 福建CA 
+		ob.set("imgArea", _areacode);
+		ob.set("imgItem", "99002");/// 凯特签章
 		seals.add(ob);
 	}
 

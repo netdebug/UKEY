@@ -74,8 +74,8 @@ void KGSealProvider::ExtractSealPicture()
 		ob.set("width", info[i]["width"]);
 		ob.set("imgext", info[i]["imgext"]);
 		ob.set("signType", "80");
-		ob.set("imgItem", _areacode);/// 金格签章
-		ob.set("imgArea", "84");/// 内蒙古CA 
+		ob.set("imgArea", _areacode);
+		ob.set("imgItem", "99001");/// 金格签章
 		seals.add(ob);
 	}
 
