@@ -23,8 +23,8 @@
 #include "SOFMedia.h"
 #include "Utility.h"
 #include <cassert>
-#include "SKFSealProvider.h"
-#include "SNSealProvider.h"
+#include "DianJuSealProvider.h"
+#include "TZWYSealProvider.h"
 #include "BCBSSealProvider.h"
 #include "Poco/Util/JSONConfiguration.h"
 #include "Poco/Util/AbstractConfiguration.h"
@@ -137,8 +137,8 @@ void QZSyncWorker::extractSealData()
 	oess.push_back(new OESSealProvider);
 	oess.push_back(new XSSealProvider);
 	oess.push_back(new KGSealProvider);
-	oess.push_back(new SKFSealProvider);
-	oess.push_back(new SNSealProvider);
+	oess.push_back(new DianJuSealProvider);
+	oess.push_back(new TZWYSealProvider);
 	oess.push_back(new BCBSSealProvider);
 
 	Poco::FastMutex::ScopedLock loc(_mutex);

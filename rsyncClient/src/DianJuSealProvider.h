@@ -2,15 +2,13 @@
 #include "SealProvider.h"
 #include "Poco/SharedLibrary.h"
 
-
-
 namespace Reach {
-	class SKFSealProvider : 
+	class DianJuSealProvider : 
 		public SealProvider
 	{
 	public:
-		SKFSealProvider();
-		~SKFSealProvider();
+		DianJuSealProvider();
+		~DianJuSealProvider();
 		virtual void extract(const std::string& cert);
 
 	protected:

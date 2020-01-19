@@ -3,12 +3,12 @@
 #include "Poco/SharedLibrary.h"
 
 namespace Reach {
-	class SNSealProvider :
+	class TZWYSealProvider :
 		public SealProvider
 	{
 	public:
-		SNSealProvider();
-		~SNSealProvider();
+		TZWYSealProvider();
+		~TZWYSealProvider();
 		virtual void extract(const std::string& cert);
 
 	protected:

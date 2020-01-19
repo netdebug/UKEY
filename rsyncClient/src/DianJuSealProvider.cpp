@@ -1,4 +1,4 @@
-#include "SKFSealProvider.h"
+#include "DianJuSealProvider.h"
 #include "Utility.h"
 #include "Poco/Util/Application.h"
 #include <iosfwd>
@@ -14,28 +14,28 @@ using namespace Reach;
 using namespace Reach::ActiveX;
 using namespace Poco::XML;
 
-SKFSealProvider::SKFSealProvider()
+DianJuSealProvider::DianJuSealProvider()
 {
-	utility_message("Enter SKFSealProvider dianju");
+	utility_message("Enter DianJuSealProvider dianju");
 
 	sl.load("HWPostil.ocx");
 
-	setProperty("Provider", "SKFSealProvider");
+	setProperty("Provider", "DianJuSealProvider");
 }
 
-SKFSealProvider::~SKFSealProvider()
+DianJuSealProvider::~DianJuSealProvider()
 {
 	poco_assert(sl.isLoaded());
 
-	//sl.unload();
+	sl.unload();
 
-	utility_message("Exit SKFSealProvider dianju");
+	utility_message("Exit DianJuSealProvider dianju");
 }
 
-void SKFSealProvider::extract(const std::string& cert)
+void DianJuSealProvider::extract(const std::string& cert)
 {
 	if (!hasStamps())
-		throw Poco::NotFoundException("The stamps were not Found!", "SKFSealProvider");
+		throw Poco::NotFoundException("The stamps were not Found!", "DianJuSealProvider");
 
 	_certContent = cert;
 	_areacode = Utility::CodeFromDN(cert);
@@ -44,7 +44,7 @@ void SKFSealProvider::extract(const std::string& cert)
 	ExtractSealPicture();
 }
 
-void SKFSealProvider::readSeal()
+void DianJuSealProvider::readSeal()
 {
 	static const int all_seal = -1;
 	typedef char* (__stdcall *ReadSealData)(int nIndex);
@@ -57,7 +57,7 @@ void SKFSealProvider::readSeal()
 		throw Poco::DataFormatException("Invalid seal data", Poco::format("%[1]s\n%[0]d", content, getProperty("Provider")));
 }
 
-bool SKFSealProvider::hasStamps()
+bool DianJuSealProvider::hasStamps()
 {
 	if (hasKey() && count() > 0)
 		return true;
@@ -66,7 +66,7 @@ bool SKFSealProvider::hasStamps()
 }
 
 
-int SKFSealProvider::count()
+int DianJuSealProvider::count()
 {
 	typedef int(__stdcall *GetSealCount)();
 	std::string name("GetSealCount");
@@ -79,7 +79,7 @@ int SKFSealProvider::count()
 	return count;
 }
 
-bool SKFSealProvider::hasKey()
+bool DianJuSealProvider::hasKey()
 {
 	typedef int(__stdcall *IsUKIn)();
 
@@ -91,7 +91,7 @@ bool SKFSealProvider::hasKey()
 	return (k == 0);
 }
 
-void SKFSealProvider::ExtractSealPicture()
+void DianJuSealProvider::ExtractSealPicture()
 {
 	utility_message_f1("dianju Seal :\n%s", _sealdata);
 	XML_PARSE(_sealdata);
@@ -127,4 +127,3 @@ void SKFSealProvider::ExtractSealPicture()
 	seals.stringify(ostr);
 	setProperty("seals", ostr.str());
 }
-

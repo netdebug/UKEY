@@ -1,4 +1,4 @@
-#include "SNSealProvider.h"
+#include "TZWYSealProvider.h"
 #include "Utility.h"
 #include "Poco/Util/Application.h"
 #include "Poco/SAX/InputSource.h"
@@ -18,32 +18,32 @@ using Poco::XML::Node;
 using Poco::XML::NodeList;
 using Poco::XML::Element;
 
-SNSealProvider::SNSealProvider()
+TZWYSealProvider::TZWYSealProvider()
 {
-	utility_message("Enter SNSealProvider tongzhi");
-	setProperty("Provider", "SNSealProvider");
+	utility_message("Enter TZWYSealProvider tongzhi");
+	setProperty("Provider", "TZWYSealProvider");
 
 	sl.load("SNCA_GetSeal.dll");
 }
 
-SNSealProvider::~SNSealProvider()
+TZWYSealProvider::~TZWYSealProvider()
 {
 	sl.unload();
 
-	utility_message("SNSealProvider tongzhi");
+	utility_message("TZWYSealProvider tongzhi");
 }
 
-void SNSealProvider::extract(const std::string& cert)
+void TZWYSealProvider::extract(const std::string& cert)
 {
 	if (!hasStamps())
-		throw Poco::NotFoundException("The stamps were not Found!", "SNSealProvider");
+		throw Poco::NotFoundException("The stamps were not Found!", "TZWYSealProvider");
 
 	_areacode = Utility::CodeFromDN(cert);
 	readSeal();
 	ExtractSealPicture();
 }
 
-void SNSealProvider::readSeal()
+void TZWYSealProvider::readSeal()
 {
 	static const int all_seal = -1;
 	typedef char*(__stdcall *ReadSealData)(int idx);
@@ -58,7 +58,7 @@ void SNSealProvider::readSeal()
 	}
 }
 
-bool SNSealProvider::hasStamps()
+bool TZWYSealProvider::hasStamps()
 {
 	if (hasKey() && count() > 0)
 		return true;
@@ -66,7 +66,7 @@ bool SNSealProvider::hasStamps()
 	return false;
 }
 
-int SNSealProvider::count()
+int TZWYSealProvider::count()
 {
 	typedef int(__stdcall *GetSealCount)();
 	std::string name("GetSealCount");
@@ -79,7 +79,7 @@ int SNSealProvider::count()
 	return count;
 }
 
-bool SNSealProvider::hasKey()
+bool TZWYSealProvider::hasKey()
 {
 	typedef int(__stdcall *IsUKIn)();
 
@@ -91,7 +91,7 @@ bool SNSealProvider::hasKey()
 	return (k == 0);
 }
 
-void SNSealProvider::ExtractSealPicture()
+void TZWYSealProvider::ExtractSealPicture()
 {
 	utility_message_f1("tongzhi Seal :\n%s", _sealdata);
 	poco_assert(!_sealdata.empty());
