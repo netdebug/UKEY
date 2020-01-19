@@ -239,7 +239,7 @@ std::string Utility::CodeFromDN(const std::string& cert)
 		<< "\n-----END CERTIFICATE-----\n";
 
 	X509Certificate x509(ss);
-	std::string issuer = x509.issuerName(X509Certificate::NID_ORGANIZATION_NAME);
+	std::string issuer = x509.issuerName(X509Certificate::NID_COMMON_NAME); ///DN - CN
 	
 	Poco::MD5Engine md5;
 	Poco::DigestOutputStream ds(md5);
